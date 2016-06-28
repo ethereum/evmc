@@ -12,6 +12,7 @@
 ///
 /// @defgroup EVMC EVM-C
 /// @{
+#pragma once
 
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
@@ -96,6 +97,7 @@ struct evm_result {
 };
 
 /// The query callback key.
+/// TODO: Reorder and assign values manually.
 enum evm_query_key {
     EVM_ADDRESS,         ///< Address of the contract for ADDRESS.
     EVM_CALLER,          ///< Message sender address for CALLER.
@@ -108,6 +110,7 @@ enum evm_query_key {
     EVM_TIMESTAMP,       ///< Current block timestamp for TIMESTAMP.
     EVM_CODE_BY_ADDRESS, ///< Code by an address for EXTCODE/SIZE.
     EVM_BALANCE,         ///< Balance of a given address for BALANCE.
+    EVM_BLOCKHASH,       ///< Block hash of a given block number for BLOCKHASH.
     EVM_STORAGE,         ///< Storage value of a given key for SLOAD.
 };
 
@@ -127,6 +130,9 @@ union evm_variant {
 
     /// A host-endian 256-bit integer.
     struct evm_uint256 uint256;
+
+    /// A big-endian 256-bit integer/hash.
+    struct evm_hash256 hash256;
 
     struct {
         /// Additional padding to align the evm_variant::address with lower
@@ -153,7 +159,7 @@ union evm_variant {
 ///
 /// ## Types of queries
 /// Key                   | Arg                  | Expected result
-/// ----------------------| -------------------- | ----------------------------------
+/// ----------------------| -------------------- | ----------------------------
 /// ::EVM_GAS_PRICE       |                      | evm_variant::uint256
 /// ::EVM_ADDRESS         |                      | evm_variant::address
 /// ::EVM_CALLER          |                      | evm_variant::address
@@ -165,6 +171,7 @@ union evm_variant {
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
+/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
 /// ::EVM_STORAGE         | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
