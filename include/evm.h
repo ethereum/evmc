@@ -65,35 +65,22 @@ struct evm_mutable_bytes_view {
     size_t size;        ///< The memory size.
 };
 
-/// The EVM execution return code.
-enum evm_return_code {
-    EVM_RETURN = 0,        ///< The execution ended by STOP or RETURN.
-    EVM_SELFDESTRUCT = 1,  ///< The execution ended by SELFDESTRUCT.
-    EVM_EXCEPTION = -1,    ///< The execution ended with an exception.
+enum {
+    EVM_EXCEPTION = (int64_t)-1,    ///< The execution ended with an exception.
 };
 
 /// Complex struct representing execution result.
 struct evm_result {
-    /// Success? OOG? Selfdestruction?
-    enum evm_return_code return_code;
-    union {
-        /// In case of successful execution this substruct is filled.
-        struct {
-            /// Rerefence to output data. The memory containing the output data
-            /// is owned by EVM and is freed with evm_destroy_result().
-            struct evm_bytes_view output_data;
+    /// Gas left after execution or exception indicator.
+    int64_t gas_left;
 
-            /// Gas left after execution. Non-negative.
-            /// @todo We could squeeze gas_left and return_code together.
-            int64_t gas_left;
+    /// Rerefence to output data. The memory containing the output data
+    /// is owned by EVM and is freed with evm_destroy_result().
+    struct evm_bytes_view output_data;
 
-            /// Pointer to EVM-owned memory.
-            /// @see output_data.
-            void* internal_memory;
-        };
-        /// In case of selfdestruction here is the address where money goes.
-        struct evm_hash160 selfdestruct_beneficiary;
-    };
+    /// Pointer to EVM-owned memory.
+    /// @see output_data.
+    void* internal_memory;
 };
 
 /// The query callback key.
@@ -181,6 +168,7 @@ typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
 
 enum evm_update_key {
     EVM_SSTORE,
+    EVM_SELFDESTRUCT,
 };
 
 
