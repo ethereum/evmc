@@ -111,6 +111,7 @@ enum evm_query_key {
     EVM_CODE_BY_ADDRESS, ///< Code by an address for EXTCODE/SIZE.
     EVM_BALANCE,         ///< Balance of a given address for BALANCE.
     EVM_BLOCKHASH,       ///< Block hash of a given block number for BLOCKHASH.
+    /// TODO: Rename to EVM_SLOAD
     EVM_STORAGE,         ///< Storage value of a given key for SLOAD.
 };
 
@@ -178,13 +179,16 @@ typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           union evm_variant arg);
 
 
-/// Callback function for modifying the storage.
-///
-/// Endianness: host-endianness is used because C++'s storage API uses big ints,
-///             not bytes. What do you use?
-typedef void (*evm_store_storage_fn)(struct evm_env* env,
-                                     struct evm_uint256 key,
-                                     struct evm_uint256 value);
+enum evm_update_key {
+    EVM_SSTORE,
+};
+
+
+/// Callback function for modifying a contract state.
+typedef void (*evm_update_fn)(struct evm_env* env,
+                              enum evm_update_key key,
+                              union evm_variant arg1,
+                              union evm_variant arg2);
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
@@ -250,13 +254,13 @@ struct evm_instance;
 /// **multiple instances is safe but discouraged** as it has not benefits over
 /// having the singleton.
 ///
-/// @param query_fn    Pointer to query callback function. Nonnull.
-/// @param storage_fn  Pointer to storage callback function. Nonnull.
-/// @param call_fn     Pointer to call callback function. Nonnull.
-/// @param log_fn      Pointer to log callback function. Nonnull.
-/// @return            Pointer to the created EVM instance.
+/// @param query_fn   Pointer to query callback function. Nonnull.
+/// @param update_fn  Pointer to update callback function. Nonnull.
+/// @param call_fn    Pointer to call callback function. Nonnull.
+/// @param log_fn     Pointer to log callback function. Nonnull.
+/// @return           Pointer to the created EVM instance.
 struct evm_instance* evm_create(evm_query_fn query_fn,
-                                evm_store_storage_fn storage_fn,
+                                evm_update_fn update_fn,
                                 evm_call_fn call_fn,
                                 evm_log_fn log_fn);
 
