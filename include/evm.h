@@ -168,6 +168,7 @@ typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
 
 enum evm_update_key {
     EVM_SSTORE,
+    EVM_LOG,
     EVM_SELFDESTRUCT,
 };
 
@@ -210,15 +211,6 @@ typedef int64_t (*evm_call_fn)(
     struct evm_bytes_view input_data,
     struct evm_mutable_bytes_view output_data);
 
-/// Pointer to the callback function supporting EVM logs.
-///
-/// @param log_data    Reference to memory containing non-indexed log data.
-/// @param num_topics  Number of topics added to the log. Valid values 0-4.
-/// @param topics      Pointer to an array containing `num_topics` topics.
-typedef void (*evm_log_fn)(struct evm_bytes_view log_data,
-                           size_t num_topics,
-                           struct evm_hash256 topics[]);
-
 
 /// A piece of information about the EVM implementation.
 enum evm_info_key {
@@ -245,12 +237,10 @@ struct evm_instance;
 /// @param query_fn   Pointer to query callback function. Nonnull.
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
-/// @param log_fn     Pointer to log callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
 struct evm_instance* evm_create(evm_query_fn query_fn,
                                 evm_update_fn update_fn,
-                                evm_call_fn call_fn,
-                                evm_log_fn log_fn);
+                                evm_call_fn call_fn);
 
 /// Destroys the EVM instance.
 ///

@@ -20,7 +20,7 @@ union evm_variant query(struct evm_env* env,
 
 /// Example how the API is supposed to be used.
 void example() {
-    struct evm_instance* jit = evm_create(query, 0, 0, 0);
+    struct evm_instance* jit = evm_create(query, 0, 0);
 
     char const code[] = "exec()";
     struct evm_bytes_view code_view = {code, sizeof(code)};
