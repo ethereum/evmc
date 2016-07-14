@@ -140,7 +140,7 @@ union evm_variant {
 /// This callback function is used by the EVM to query the host application
 /// about additional data required to execute EVM code.
 /// @param env  Pointer to execution environment managed by the host
-/// application.
+///             application.
 /// @param key  The kind of the query. See evm_query_key and details below.
 /// @param arg  Additional argument to the query. It has defined value only for
 ///             the subset of query keys.
@@ -189,6 +189,8 @@ enum evm_call_kind {
 
 /// Pointer to the callback function supporting EVM calls.
 ///
+/// @param env          Pointer to execution environment managed by the host
+///                     application.
 /// @param kind         The kind of call-like opcode requested.
 /// @param gas          The amount of gas for the call.
 /// @param address      The address of a contract to be called. Ignored in case
@@ -204,6 +206,7 @@ enum evm_call_kind {
 ///              If negative - an exception occurred during the call/create.
 ///              There is no need to set 0 address in the output in this case.
 typedef int64_t (*evm_call_fn)(
+    struct evm_env* env,
     enum evm_call_kind kind,
     int64_t gas,
     struct evm_hash160 address,
