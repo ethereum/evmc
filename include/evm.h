@@ -59,12 +59,6 @@ struct evm_bytes_view {
     size_t size;        ///< The memory size.
 };
 
-/// Reference to mutable memory.
-struct evm_mutable_bytes_view {
-    char* bytes;        ///< Pointer the begining of the mutable memory.
-    size_t size;        ///< The memory size.
-};
-
 enum {
     EVM_EXCEPTION = (int64_t)-1,    ///< The execution ended with an exception.
 };
@@ -211,8 +205,10 @@ typedef int64_t (*evm_call_fn)(
     int64_t gas,
     struct evm_hash160 address,
     struct evm_uint256 value,
-    struct evm_bytes_view input_data,
-    struct evm_mutable_bytes_view output_data);
+    char const* input_data,
+	size_t input_size,
+	char* output_data,
+	size_t output_size);
 
 
 /// A piece of information about the EVM implementation.
