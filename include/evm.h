@@ -60,7 +60,7 @@ struct evm_bytes_view {
 };
 
 enum {
-    EVM_EXCEPTION = (int64_t)-1,    ///< The execution ended with an exception.
+    EVM_EXCEPTION = INT64_MIN,    ///< The execution ended with an exception.
 };
 
 /// Complex struct representing execution result.
