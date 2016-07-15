@@ -59,9 +59,8 @@ struct evm_bytes_view {
     size_t size;        ///< The memory size.
 };
 
-enum {
-    EVM_EXCEPTION = INT64_MIN,    ///< The execution ended with an exception.
-};
+
+#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
 
 /// Complex struct representing execution result.
 struct evm_result {
