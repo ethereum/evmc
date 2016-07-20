@@ -24,7 +24,7 @@ void example() {
 
     char const code[] = "exec()";
     struct evm_bytes_view code_view = {code, sizeof(code)};
-    struct evm_hash256 code_hash = {{1, 2, 3}};
+    struct evm_hash256 code_hash = {.words = {1, 2, 3}};
     struct evm_bytes_view input = {"Hello World!", 12};
     struct evm_uint256 value = {{1, 0, 0, 0}};
 
