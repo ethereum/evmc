@@ -53,12 +53,6 @@ struct evm_hash256 {
     };
 };
 
-/// Reference to non-mutable memory.
-struct evm_bytes_view {
-    char const* bytes;  ///< Pointer the begining of the memory.
-    size_t size;        ///< The memory size.
-};
-
 
 #define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
 
@@ -69,7 +63,10 @@ struct evm_result {
 
     /// Rerefence to output data. The memory containing the output data
     /// is owned by EVM and is freed with evm_destroy_result().
-    struct evm_bytes_view output_data;
+    char const* output_data;
+
+    /// Size of the output data.
+    size_t output_size;
 
     /// Pointer to EVM-owned memory.
     /// @see output_data.
@@ -125,7 +122,13 @@ union evm_variant {
     };
 
     /// A memory reference.
-    struct evm_bytes_view bytes;
+    struct {
+        /// Pointer to the data.
+        char const* data;
+
+        /// Size of the referenced memory/data.
+        size_t data_size;
+    };
 };
 
 /// Query callback function.
@@ -190,11 +193,14 @@ enum evm_call_kind {
 ///                     of CREATE.
 /// @param value        The value sent to the callee. The endowment in case of
 ///                     CREATE.
-/// @param input_data   The call input data or the create init code.
-/// @param output_data  The reference to the memory where the call output is to
+/// @param input        The call input data or the create init code.
+/// @param input_size   The size of the input data.
+/// @param output       The reference to the memory where the call output is to
 ///                     be copied. In case of create, the memory is guaranteed
 ///                     to be at least 160 bytes to hold the address of the
 ///                     created contract.
+/// @param output_data  The size of the output data. In case of create, expected
+///                     value is 160.
 /// @return      If non-negative - the amount of gas left,
 ///              If negative - an exception occurred during the call/create.
 ///              There is no need to set 0 address in the output in this case.
@@ -204,10 +210,10 @@ typedef int64_t (*evm_call_fn)(
     int64_t gas,
     struct evm_hash160 address,
     struct evm_uint256 value,
-    char const* input_data,
-	size_t input_size,
-	char* output_data,
-	size_t output_size);
+    char const* input,
+    size_t input_size,
+    char* output,
+    size_t output_size);
 
 
 /// A piece of information about the EVM implementation.
@@ -275,16 +281,20 @@ bool evm_set_option(struct evm_instance* evm,
 ///                    hash the code itself if it requires it, but the host
 ///                    application usually has the hash already.
 /// @param code        Reference to the bytecode to be executed.
+/// @param code_size   The length of the bytecode.
 /// @param gas         Gas for execution. Min 0, max 2^63-1.
-/// @param input_data  Reference to the call input data.
+/// @param input       Reference to the input data.
+/// @param input_size  The size of the input data.
 /// @param value       Call value.
 /// @return            All execution results.
 struct evm_result evm_execute(struct evm_instance* instance,
                               struct evm_env* env,
                               struct evm_hash256 code_hash,
-                              struct evm_bytes_view code,
+                              char const* code,
+                              size_t code_size,
                               int64_t gas,
-                              struct evm_bytes_view input_data,
+                              char const* input,
+                              size_t input_size,
                               struct evm_uint256 value);
 
 /// Destroys execution result.
