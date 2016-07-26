@@ -12,6 +12,7 @@
 ///
 /// @defgroup EVMC EVM-C
 /// @{
+#pragma once
 
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
@@ -52,50 +53,28 @@ struct evm_hash256 {
     };
 };
 
-/// Reference to non-mutable memory.
-struct evm_bytes_view {
-    char const* bytes;  ///< Pointer the begining of the memory.
-    size_t size;        ///< The memory size.
-};
 
-/// Reference to mutable memory.
-struct evm_mutable_bytes_view {
-    char* bytes;        ///< Pointer the begining of the mutable memory.
-    size_t size;        ///< The memory size.
-};
-
-/// The EVM execution return code.
-enum evm_return_code {
-    EVM_RETURN = 0,        ///< The execution ended by STOP or RETURN.
-    EVM_SELFDESTRUCT = 1,  ///< The execution ended by SELFDESTRUCT.
-    EVM_EXCEPTION = -1,    ///< The execution ended with an exception.
-};
+#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
 
 /// Complex struct representing execution result.
 struct evm_result {
-    /// Success? OOG? Selfdestruction?
-    enum evm_return_code return_code;
-    union {
-        /// In case of successful execution this substruct is filled.
-        struct {
-            /// Rerefence to output data. The memory containing the output data
-            /// is owned by EVM and is freed with evm_destroy_result().
-            struct evm_bytes_view output_data;
+    /// Gas left after execution or exception indicator.
+    int64_t gas_left;
 
-            /// Gas left after execution. Non-negative.
-            /// @todo We could squeeze gas_left and return_code together.
-            int64_t gas_left;
+    /// Rerefence to output data. The memory containing the output data
+    /// is owned by EVM and is freed with evm_destroy_result().
+    char const* output_data;
 
-            /// Pointer to EVM-owned memory.
-            /// @see output_data.
-            void* internal_memory;
-        };
-        /// In case of selfdestruction here is the address where money goes.
-        struct evm_hash160 selfdestruct_beneficiary;
-    };
+    /// Size of the output data.
+    size_t output_size;
+
+    /// Pointer to EVM-owned memory.
+    /// @see output_data.
+    void* internal_memory;
 };
 
 /// The query callback key.
+/// TODO: Reorder and assign values manually.
 enum evm_query_key {
     EVM_ADDRESS,         ///< Address of the contract for ADDRESS.
     EVM_CALLER,          ///< Message sender address for CALLER.
@@ -108,6 +87,8 @@ enum evm_query_key {
     EVM_TIMESTAMP,       ///< Current block timestamp for TIMESTAMP.
     EVM_CODE_BY_ADDRESS, ///< Code by an address for EXTCODE/SIZE.
     EVM_BALANCE,         ///< Balance of a given address for BALANCE.
+    EVM_BLOCKHASH,       ///< Block hash of a given block number for BLOCKHASH.
+    /// TODO: Rename to EVM_SLOAD
     EVM_STORAGE,         ///< Storage value of a given key for SLOAD.
 };
 
@@ -128,6 +109,9 @@ union evm_variant {
     /// A host-endian 256-bit integer.
     struct evm_uint256 uint256;
 
+    /// A big-endian 256-bit integer/hash.
+    struct evm_hash256 hash256;
+
     struct {
         /// Additional padding to align the evm_variant::address with lower
         /// bytes of a full 256-bit hash.
@@ -138,7 +122,13 @@ union evm_variant {
     };
 
     /// A memory reference.
-    struct evm_bytes_view bytes;
+    struct {
+        /// Pointer to the data.
+        char const* data;
+
+        /// Size of the referenced memory/data.
+        size_t data_size;
+    };
 };
 
 /// Query callback function.
@@ -146,14 +136,14 @@ union evm_variant {
 /// This callback function is used by the EVM to query the host application
 /// about additional data required to execute EVM code.
 /// @param env  Pointer to execution environment managed by the host
-/// application.
+///             application.
 /// @param key  The kind of the query. See evm_query_key and details below.
 /// @param arg  Additional argument to the query. It has defined value only for
 ///             the subset of query keys.
 ///
 /// ## Types of queries
 /// Key                   | Arg                  | Expected result
-/// ----------------------| -------------------- | ----------------------------------
+/// ----------------------| -------------------- | ----------------------------
 /// ::EVM_GAS_PRICE       |                      | evm_variant::uint256
 /// ::EVM_ADDRESS         |                      | evm_variant::address
 /// ::EVM_CALLER          |                      | evm_variant::address
@@ -165,19 +155,25 @@ union evm_variant {
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
+/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
 /// ::EVM_STORAGE         | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
                                           union evm_variant arg);
 
 
-/// Callback function for modifying the storage.
-///
-/// Endianness: host-endianness is used because C++'s storage API uses big ints,
-///             not bytes. What do you use?
-typedef void (*evm_store_storage_fn)(struct evm_env* env,
-                                     struct evm_uint256 key,
-                                     struct evm_uint256 value);
+enum evm_update_key {
+    EVM_SSTORE,
+    EVM_LOG,
+    EVM_SELFDESTRUCT,
+};
+
+
+/// Callback function for modifying a contract state.
+typedef void (*evm_update_fn)(struct evm_env* env,
+                              enum evm_update_key key,
+                              union evm_variant arg1,
+                              union evm_variant arg2);
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
@@ -189,36 +185,35 @@ enum evm_call_kind {
 
 /// Pointer to the callback function supporting EVM calls.
 ///
+/// @param env          Pointer to execution environment managed by the host
+///                     application.
 /// @param kind         The kind of call-like opcode requested.
 /// @param gas          The amount of gas for the call.
 /// @param address      The address of a contract to be called. Ignored in case
 ///                     of CREATE.
 /// @param value        The value sent to the callee. The endowment in case of
 ///                     CREATE.
-/// @param input_data   The call input data or the create init code.
-/// @param output_data  The reference to the memory where the call output is to
+/// @param input        The call input data or the create init code.
+/// @param input_size   The size of the input data.
+/// @param output       The reference to the memory where the call output is to
 ///                     be copied. In case of create, the memory is guaranteed
 ///                     to be at least 160 bytes to hold the address of the
 ///                     created contract.
+/// @param output_data  The size of the output data. In case of create, expected
+///                     value is 160.
 /// @return      If non-negative - the amount of gas left,
 ///              If negative - an exception occurred during the call/create.
 ///              There is no need to set 0 address in the output in this case.
 typedef int64_t (*evm_call_fn)(
+    struct evm_env* env,
     enum evm_call_kind kind,
     int64_t gas,
     struct evm_hash160 address,
     struct evm_uint256 value,
-    struct evm_bytes_view input_data,
-    struct evm_mutable_bytes_view output_data);
-
-/// Pointer to the callback function supporting EVM logs.
-///
-/// @param log_data    Reference to memory containing non-indexed log data.
-/// @param num_topics  Number of topics added to the log. Valid values 0-4.
-/// @param topics      Pointer to an array containing `num_topics` topics.
-typedef void (*evm_log_fn)(struct evm_bytes_view log_data,
-                           size_t num_topics,
-                           struct evm_hash256 topics[]);
+    char const* input,
+    size_t input_size,
+    char* output,
+    size_t output_size);
 
 
 /// A piece of information about the EVM implementation.
@@ -243,15 +238,13 @@ struct evm_instance;
 /// **multiple instances is safe but discouraged** as it has not benefits over
 /// having the singleton.
 ///
-/// @param query_fn    Pointer to query callback function. Nonnull.
-/// @param storage_fn  Pointer to storage callback function. Nonnull.
-/// @param call_fn     Pointer to call callback function. Nonnull.
-/// @param log_fn      Pointer to log callback function. Nonnull.
-/// @return            Pointer to the created EVM instance.
+/// @param query_fn   Pointer to query callback function. Nonnull.
+/// @param update_fn  Pointer to update callback function. Nonnull.
+/// @param call_fn    Pointer to call callback function. Nonnull.
+/// @return           Pointer to the created EVM instance.
 struct evm_instance* evm_create(evm_query_fn query_fn,
-                                evm_store_storage_fn storage_fn,
-                                evm_call_fn call_fn,
-                                evm_log_fn log_fn);
+                                evm_update_fn update_fn,
+                                evm_call_fn call_fn);
 
 /// Destroys the EVM instance.
 ///
@@ -288,16 +281,20 @@ bool evm_set_option(struct evm_instance* evm,
 ///                    hash the code itself if it requires it, but the host
 ///                    application usually has the hash already.
 /// @param code        Reference to the bytecode to be executed.
+/// @param code_size   The length of the bytecode.
 /// @param gas         Gas for execution. Min 0, max 2^63-1.
-/// @param input_data  Reference to the call input data.
+/// @param input       Reference to the input data.
+/// @param input_size  The size of the input data.
 /// @param value       Call value.
 /// @return            All execution results.
 struct evm_result evm_execute(struct evm_instance* instance,
                               struct evm_env* env,
                               struct evm_hash256 code_hash,
-                              struct evm_bytes_view code,
+                              char const* code,
+                              size_t code_size,
                               int64_t gas,
-                              struct evm_bytes_view input_data,
+                              char const* input,
+                              size_t input_size,
                               struct evm_uint256 value);
 
 /// Destroys execution result.
