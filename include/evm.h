@@ -36,7 +36,7 @@ struct evm_uint256 {
 /// 160-bit hash suitable for keeping an Ethereum address.
 struct evm_hash160 {
     /// The 20 bytes of the hash.
-    char bytes[20];
+    uint8_t bytes[20];
 };
 
 
@@ -47,7 +47,7 @@ struct evm_hash160 {
 struct evm_hash256 {
     union {
         /// The 32 bytes of the integer/hash. Memory aligned to 8 bytes.
-        char bytes[32];
+        uint8_t bytes[32];
         /// Additional access by uint64 words to enforce 8 bytes alignment.
         uint64_t words[4];
     };
@@ -63,7 +63,7 @@ struct evm_result {
 
     /// Rerefence to output data. The memory containing the output data
     /// is owned by EVM and is freed with evm_destroy_result().
-    char const* output_data;
+    uint8_t const* output_data;
 
     /// Size of the output data.
     size_t output_size;
@@ -115,7 +115,7 @@ union evm_variant {
     struct {
         /// Additional padding to align the evm_variant::address with lower
         /// bytes of a full 256-bit hash.
-        char address_padding[12];
+        uint8_t address_padding[12];
 
         /// An Ethereum address.
         struct evm_hash160 address;
@@ -124,7 +124,7 @@ union evm_variant {
     /// A memory reference.
     struct {
         /// Pointer to the data.
-        char const* data;
+        uint8_t const* data;
 
         /// Size of the referenced memory/data.
         size_t data_size;
@@ -210,9 +210,9 @@ typedef int64_t (*evm_call_fn)(
     int64_t gas,
     struct evm_hash160 address,
     struct evm_uint256 value,
-    char const* input,
+    uint8_t const* input,
     size_t input_size,
-    char* output,
+    uint8_t* output,
     size_t output_size);
 
 
@@ -290,10 +290,10 @@ bool evm_set_option(struct evm_instance* evm,
 struct evm_result evm_execute(struct evm_instance* instance,
                               struct evm_env* env,
                               struct evm_hash256 code_hash,
-                              char const* code,
+                              uint8_t const* code,
                               size_t code_size,
                               int64_t gas,
-                              char const* input,
+                              uint8_t const* input,
                               size_t input_size,
                               struct evm_uint256 value);
 
@@ -314,7 +314,7 @@ bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
                           evm_hash256 code_hash);
 
 void evmjit_compile(evm_instance* instance, evm_mode mode,
-                    unsigned char const* code, size_t code_size,
+                    uint8_t const* code, size_t code_size,
                     evm_hash256 code_hash);
 
 
