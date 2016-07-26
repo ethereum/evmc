@@ -301,6 +301,23 @@ struct evm_result evm_execute(struct evm_instance* instance,
 void evm_destroy_result(struct evm_result);
 
 
+/// @defgroup EVMJIT EVMJIT extenstion to EVM-C
+/// @{
+
+enum evm_mode {
+    EVM_FRONTIER,
+    EVM_HOMESTEAD,
+};
+
+
+bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
+                          evm_hash256 code_hash);
+
+void evmjit_compile(evm_instance* instance, evm_mode mode,
+                    unsigned char const* code, size_t code_size,
+                    evm_hash256 code_hash);
+
+
 #if __cplusplus
 }
 #endif
