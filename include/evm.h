@@ -256,7 +256,6 @@ void evm_destroy(struct evm_instance* evm);
 ///
 /// Allows modifying options of the EVM instance.
 /// Options:
-/// - compatibility mode: frontier, homestead, metropolis, ...
 /// - code cache behavior: on, off, read-only, ...
 /// - optimizations,
 ///
@@ -269,6 +268,14 @@ bool evm_set_option(struct evm_instance* evm,
                     char const* value);
 
 
+/// EVM compatibility mode aka chain mode.
+/// TODO: Can you suggest better name?
+enum evm_mode {
+    EVM_FRONTIER,
+    EVM_HOMESTEAD,
+};
+
+
 /// Generates and executes machine code for given EVM bytecode.
 ///
 /// All the fun is here. This function actually does something useful.
@@ -276,6 +283,7 @@ bool evm_set_option(struct evm_instance* evm,
 /// @param instance    A EVM instance.
 /// @param env         A pointer to the execution environment provided by the
 ///                    user and passed to callback functions.
+/// @param mode        EVM compatibility mode.
 /// @param code_hash   A hash of the bytecode, usually Keccak. The EVM uses it
 ///                    as the code identifier. A EVM implementation is able to
 ///                    hash the code itself if it requires it, but the host
@@ -289,6 +297,7 @@ bool evm_set_option(struct evm_instance* evm,
 /// @return            All execution results.
 struct evm_result evm_execute(struct evm_instance* instance,
                               struct evm_env* env,
+                              enum evm_mode mode,
                               struct evm_hash256 code_hash,
                               uint8_t const* code,
                               size_t code_size,
@@ -304,11 +313,6 @@ void evm_destroy_result(struct evm_result);
 /// @defgroup EVMJIT EVMJIT extenstion to EVM-C
 /// @{
 
-enum evm_mode {
-    EVM_FRONTIER,
-    EVM_HOMESTEAD,
-};
-
 
 bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
                           evm_hash256 code_hash);
@@ -316,6 +320,8 @@ bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
 void evmjit_compile(evm_instance* instance, evm_mode mode,
                     uint8_t const* code, size_t code_size,
                     evm_hash256 code_hash);
+
+/// @}
 
 
 #if __cplusplus
