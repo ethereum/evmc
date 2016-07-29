@@ -74,22 +74,20 @@ struct evm_result {
 };
 
 /// The query callback key.
-/// TODO: Reorder and assign values manually.
 enum evm_query_key {
-    EVM_ADDRESS,         ///< Address of the contract for ADDRESS.
-    EVM_CALLER,          ///< Message sender address for CALLER.
-    EVM_ORIGIN,          ///< Transaction origin address for ORIGIN.
-    EVM_GAS_PRICE,       ///< Transaction gas price for GASPRICE.
-    EVM_COINBASE,        ///< Current block miner address for COINBASE.
-    EVM_DIFFICULTY,      ///< Current block difficulty for DIFFICULTY.
-    EVM_GAS_LIMIT,       ///< Current block gas limit for GASLIMIT.
-    EVM_NUMBER,          ///< Current block number for NUMBER.
-    EVM_TIMESTAMP,       ///< Current block timestamp for TIMESTAMP.
-    EVM_CODE_BY_ADDRESS, ///< Code by an address for EXTCODE/SIZE.
-    EVM_BALANCE,         ///< Balance of a given address for BALANCE.
-    EVM_BLOCKHASH,       ///< Block hash of a given block number for BLOCKHASH.
-    /// TODO: Rename to EVM_SLOAD
-    EVM_STORAGE,         ///< Storage value of a given key for SLOAD.
+    EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
+    EVM_ADDRESS = 1,          ///< Address of the contract for ADDRESS.
+    EVM_CALLER = 2,           ///< Message sender address for CALLER.
+    EVM_ORIGIN = 3,           ///< Transaction origin address for ORIGIN.
+    EVM_GAS_PRICE = 4,        ///< Transaction gas price for GASPRICE.
+    EVM_COINBASE = 5,         ///< Current block miner address for COINBASE.
+    EVM_DIFFICULTY = 6,       ///< Current block difficulty for DIFFICULTY.
+    EVM_GAS_LIMIT = 7,        ///< Current block gas limit for GASLIMIT.
+    EVM_NUMBER = 8,           ///< Current block number for NUMBER.
+    EVM_TIMESTAMP = 9,        ///< Current block timestamp for TIMESTAMP.
+    EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODE/SIZE.
+    EVM_BALANCE = 11,         ///< Balance of a given address for BALANCE.
+    EVM_BLOCKHASH = 12        ///< Block hash of by block number for BLOCKHASH.
 };
 
 
@@ -156,16 +154,17 @@ union evm_variant {
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
 /// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
-/// ::EVM_STORAGE         | evm_variant::uint256 | evm_variant::uint256?
+/// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
                                           union evm_variant arg);
 
-
+/// The update callback key.
 enum evm_update_key {
-    EVM_SSTORE,
-    EVM_LOG,
-    EVM_SELFDESTRUCT,
+    EVM_SSTORE = 0,        ///< Update storage entry
+    EVM_LOG = 1,           ///< Log.
+    EVM_SELFDESTRUCT = 2,  ///< Mark contract as selfdestructed and set
+                           ///  beneficiary address.
 };
 
 
@@ -177,10 +176,10 @@ typedef void (*evm_update_fn)(struct evm_env* env,
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
-    EVM_CALL,         ///< Request CALL.
-    EVM_DELEGATECALL, ///< Request DELEGATECALL. The value param ignored.
-    EVM_CALLCODE,     ///< Request CALLCODE.
-    EVM_CREATE        ///< Request CREATE. Semantic of some params changes.
+    EVM_CALL = 0,         ///< Request CALL.
+    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+    EVM_CALLCODE = 2,     ///< Request CALLCODE.
+    EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
 
 /// Pointer to the callback function supporting EVM calls.
@@ -218,8 +217,8 @@ typedef int64_t (*evm_call_fn)(
 
 /// A piece of information about the EVM implementation.
 enum evm_info_key {
-    EVM_NAME,     ///< The name of the EVM implementation.
-    EVM_VERSION   ///< The software version of the EVM.
+    EVM_NAME  = 0,   ///< The name of the EVM implementation. ASCII encoded.
+    EVM_VERSION = 1  ///< The software version of the EVM.
 };
 
 /// Request information about the EVM implementation.
@@ -271,8 +270,8 @@ bool evm_set_option(struct evm_instance* evm,
 /// EVM compatibility mode aka chain mode.
 /// TODO: Can you suggest better name?
 enum evm_mode {
-    EVM_FRONTIER,
-    EVM_HOMESTEAD,
+    EVM_FRONTIER = 0,
+    EVM_HOMESTEAD = 1
 };
 
 
