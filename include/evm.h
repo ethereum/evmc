@@ -18,6 +18,12 @@
 #include <stddef.h>    // Definition of size_t.
 #include <stdbool.h>   // Definition of bool.
 
+/// Allow implementation to inject some additional information about function
+/// linkage and/or symbol visibility in the output library.
+#ifndef EXPORT
+#define EXPORT
+#endif
+
 #if __cplusplus
 extern "C" {
 #endif
@@ -225,7 +231,7 @@ enum evm_info_key {
 ///
 /// @param key  What do you want to know?
 /// @return     Requested information as a c-string. Nonnull.
-char const* evm_get_info(enum evm_info_key key);
+EXPORT char const* evm_get_info(enum evm_info_key key);
 
 /// Opaque type representing a EVM instance.
 struct evm_instance;
@@ -241,14 +247,14 @@ struct evm_instance;
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
-struct evm_instance* evm_create(evm_query_fn query_fn,
-                                evm_update_fn update_fn,
-                                evm_call_fn call_fn);
+EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
+                                       evm_update_fn update_fn,
+                                       evm_call_fn call_fn);
 
 /// Destroys the EVM instance.
 ///
 /// @param evm  The EVM instance to be destroyed.
-void evm_destroy(struct evm_instance* evm);
+EXPORT void evm_destroy(struct evm_instance* evm);
 
 
 /// Configures the EVM instance.
@@ -262,9 +268,9 @@ void evm_destroy(struct evm_instance* evm);
 /// @param name   The option name. Cannot be null.
 /// @param value  The new option value. Cannot be null.
 /// @return       True if the option set successfully.
-bool evm_set_option(struct evm_instance* evm,
-                    char const* name,
-                    char const* value);
+EXPORT bool evm_set_option(struct evm_instance* evm,
+                           char const* name,
+                           char const* value);
 
 
 /// EVM compatibility mode aka chain mode.
@@ -294,31 +300,31 @@ enum evm_mode {
 /// @param input_size  The size of the input data.
 /// @param value       Call value.
 /// @return            All execution results.
-struct evm_result evm_execute(struct evm_instance* instance,
-                              struct evm_env* env,
-                              enum evm_mode mode,
-                              struct evm_hash256 code_hash,
-                              uint8_t const* code,
-                              size_t code_size,
-                              int64_t gas,
-                              uint8_t const* input,
-                              size_t input_size,
-                              struct evm_uint256 value);
+EXPORT struct evm_result evm_execute(struct evm_instance* instance,
+                                     struct evm_env* env,
+                                     enum evm_mode mode,
+                                     struct evm_hash256 code_hash,
+                                     uint8_t const* code,
+                                     size_t code_size,
+                                     int64_t gas,
+                                     uint8_t const* input,
+                                     size_t input_size,
+                                     struct evm_uint256 value);
 
 /// Destroys execution result.
-void evm_destroy_result(struct evm_result);
+EXPORT void evm_destroy_result(struct evm_result);
 
 
 /// @defgroup EVMJIT EVMJIT extenstion to EVM-C
 /// @{
 
 
-bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
-                          evm_hash256 code_hash);
+EXPORT bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
+                                 evm_hash256 code_hash);
 
-void evmjit_compile(evm_instance* instance, evm_mode mode,
-                    uint8_t const* code, size_t code_size,
-                    evm_hash256 code_hash);
+EXPORT void evmjit_compile(evm_instance* instance, evm_mode mode,
+                           uint8_t const* code, size_t code_size,
+                           evm_hash256 code_hash);
 
 /// @}
 
