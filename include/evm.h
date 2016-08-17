@@ -18,6 +18,12 @@
 #include <stddef.h>    // Definition of size_t.
 #include <stdbool.h>   // Definition of bool.
 
+/// Allow implementation to inject some additional information about function
+/// linkage and/or symbol visibility in the output library.
+#ifndef EXPORT
+#define EXPORT
+#endif
+
 #if __cplusplus
 extern "C" {
 #endif
@@ -36,7 +42,7 @@ struct evm_uint256 {
 /// 160-bit hash suitable for keeping an Ethereum address.
 struct evm_hash160 {
     /// The 20 bytes of the hash.
-    char bytes[20];
+    uint8_t bytes[20];
 };
 
 
@@ -47,7 +53,7 @@ struct evm_hash160 {
 struct evm_hash256 {
     union {
         /// The 32 bytes of the integer/hash. Memory aligned to 8 bytes.
-        char bytes[32];
+        uint8_t bytes[32];
         /// Additional access by uint64 words to enforce 8 bytes alignment.
         uint64_t words[4];
     };
@@ -63,7 +69,7 @@ struct evm_result {
 
     /// Rerefence to output data. The memory containing the output data
     /// is owned by EVM and is freed with evm_destroy_result().
-    char const* output_data;
+    uint8_t const* output_data;
 
     /// Size of the output data.
     size_t output_size;
@@ -74,22 +80,20 @@ struct evm_result {
 };
 
 /// The query callback key.
-/// TODO: Reorder and assign values manually.
 enum evm_query_key {
-    EVM_ADDRESS,         ///< Address of the contract for ADDRESS.
-    EVM_CALLER,          ///< Message sender address for CALLER.
-    EVM_ORIGIN,          ///< Transaction origin address for ORIGIN.
-    EVM_GAS_PRICE,       ///< Transaction gas price for GASPRICE.
-    EVM_COINBASE,        ///< Current block miner address for COINBASE.
-    EVM_DIFFICULTY,      ///< Current block difficulty for DIFFICULTY.
-    EVM_GAS_LIMIT,       ///< Current block gas limit for GASLIMIT.
-    EVM_NUMBER,          ///< Current block number for NUMBER.
-    EVM_TIMESTAMP,       ///< Current block timestamp for TIMESTAMP.
-    EVM_CODE_BY_ADDRESS, ///< Code by an address for EXTCODE/SIZE.
-    EVM_BALANCE,         ///< Balance of a given address for BALANCE.
-    EVM_BLOCKHASH,       ///< Block hash of a given block number for BLOCKHASH.
-    /// TODO: Rename to EVM_SLOAD
-    EVM_STORAGE,         ///< Storage value of a given key for SLOAD.
+    EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
+    EVM_ADDRESS = 1,          ///< Address of the contract for ADDRESS.
+    EVM_CALLER = 2,           ///< Message sender address for CALLER.
+    EVM_ORIGIN = 3,           ///< Transaction origin address for ORIGIN.
+    EVM_GAS_PRICE = 4,        ///< Transaction gas price for GASPRICE.
+    EVM_COINBASE = 5,         ///< Current block miner address for COINBASE.
+    EVM_DIFFICULTY = 6,       ///< Current block difficulty for DIFFICULTY.
+    EVM_GAS_LIMIT = 7,        ///< Current block gas limit for GASLIMIT.
+    EVM_NUMBER = 8,           ///< Current block number for NUMBER.
+    EVM_TIMESTAMP = 9,        ///< Current block timestamp for TIMESTAMP.
+    EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODE/SIZE.
+    EVM_BALANCE = 11,         ///< Balance of a given address for BALANCE.
+    EVM_BLOCKHASH = 12        ///< Block hash of by block number for BLOCKHASH.
 };
 
 
@@ -115,7 +119,7 @@ union evm_variant {
     struct {
         /// Additional padding to align the evm_variant::address with lower
         /// bytes of a full 256-bit hash.
-        char address_padding[12];
+        uint8_t address_padding[12];
 
         /// An Ethereum address.
         struct evm_hash160 address;
@@ -124,7 +128,7 @@ union evm_variant {
     /// A memory reference.
     struct {
         /// Pointer to the data.
-        char const* data;
+        uint8_t const* data;
 
         /// Size of the referenced memory/data.
         size_t data_size;
@@ -156,16 +160,17 @@ union evm_variant {
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
 /// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
-/// ::EVM_STORAGE         | evm_variant::uint256 | evm_variant::uint256?
+/// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
                                           union evm_variant arg);
 
-
+/// The update callback key.
 enum evm_update_key {
-    EVM_SSTORE,
-    EVM_LOG,
-    EVM_SELFDESTRUCT,
+    EVM_SSTORE = 0,        ///< Update storage entry
+    EVM_LOG = 1,           ///< Log.
+    EVM_SELFDESTRUCT = 2,  ///< Mark contract as selfdestructed and set
+                           ///  beneficiary address.
 };
 
 
@@ -177,10 +182,10 @@ typedef void (*evm_update_fn)(struct evm_env* env,
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
-    EVM_CALL,         ///< Request CALL.
-    EVM_DELEGATECALL, ///< Request DELEGATECALL. The value param ignored.
-    EVM_CALLCODE,     ///< Request CALLCODE.
-    EVM_CREATE        ///< Request CREATE. Semantic of some params changes.
+    EVM_CALL = 0,         ///< Request CALL.
+    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+    EVM_CALLCODE = 2,     ///< Request CALLCODE.
+    EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
 
 /// Pointer to the callback function supporting EVM calls.
@@ -210,23 +215,23 @@ typedef int64_t (*evm_call_fn)(
     int64_t gas,
     struct evm_hash160 address,
     struct evm_uint256 value,
-    char const* input,
+    uint8_t const* input,
     size_t input_size,
-    char* output,
+    uint8_t* output,
     size_t output_size);
 
 
 /// A piece of information about the EVM implementation.
 enum evm_info_key {
-    EVM_NAME,     ///< The name of the EVM implementation.
-    EVM_VERSION   ///< The software version of the EVM.
+    EVM_NAME  = 0,   ///< The name of the EVM implementation. ASCII encoded.
+    EVM_VERSION = 1  ///< The software version of the EVM.
 };
 
 /// Request information about the EVM implementation.
 ///
 /// @param key  What do you want to know?
 /// @return     Requested information as a c-string. Nonnull.
-char const* evm_get_info(enum evm_info_key key);
+EXPORT char const* evm_get_info(enum evm_info_key key);
 
 /// Opaque type representing a EVM instance.
 struct evm_instance;
@@ -242,21 +247,20 @@ struct evm_instance;
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
-struct evm_instance* evm_create(evm_query_fn query_fn,
-                                evm_update_fn update_fn,
-                                evm_call_fn call_fn);
+EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
+                                       evm_update_fn update_fn,
+                                       evm_call_fn call_fn);
 
 /// Destroys the EVM instance.
 ///
 /// @param evm  The EVM instance to be destroyed.
-void evm_destroy(struct evm_instance* evm);
+EXPORT void evm_destroy(struct evm_instance* evm);
 
 
 /// Configures the EVM instance.
 ///
 /// Allows modifying options of the EVM instance.
 /// Options:
-/// - compatibility mode: frontier, homestead, metropolis, ...
 /// - code cache behavior: on, off, read-only, ...
 /// - optimizations,
 ///
@@ -264,9 +268,17 @@ void evm_destroy(struct evm_instance* evm);
 /// @param name   The option name. Cannot be null.
 /// @param value  The new option value. Cannot be null.
 /// @return       True if the option set successfully.
-bool evm_set_option(struct evm_instance* evm,
-                    char const* name,
-                    char const* value);
+EXPORT bool evm_set_option(struct evm_instance* evm,
+                           char const* name,
+                           char const* value);
+
+
+/// EVM compatibility mode aka chain mode.
+/// TODO: Can you suggest better name?
+enum evm_mode {
+    EVM_FRONTIER = 0,
+    EVM_HOMESTEAD = 1
+};
 
 
 /// Generates and executes machine code for given EVM bytecode.
@@ -276,6 +288,7 @@ bool evm_set_option(struct evm_instance* evm,
 /// @param instance    A EVM instance.
 /// @param env         A pointer to the execution environment provided by the
 ///                    user and passed to callback functions.
+/// @param mode        EVM compatibility mode.
 /// @param code_hash   A hash of the bytecode, usually Keccak. The EVM uses it
 ///                    as the code identifier. A EVM implementation is able to
 ///                    hash the code itself if it requires it, but the host
@@ -287,18 +300,33 @@ bool evm_set_option(struct evm_instance* evm,
 /// @param input_size  The size of the input data.
 /// @param value       Call value.
 /// @return            All execution results.
-struct evm_result evm_execute(struct evm_instance* instance,
-                              struct evm_env* env,
-                              struct evm_hash256 code_hash,
-                              char const* code,
-                              size_t code_size,
-                              int64_t gas,
-                              char const* input,
-                              size_t input_size,
-                              struct evm_uint256 value);
+EXPORT struct evm_result evm_execute(struct evm_instance* instance,
+                                     struct evm_env* env,
+                                     enum evm_mode mode,
+                                     struct evm_hash256 code_hash,
+                                     uint8_t const* code,
+                                     size_t code_size,
+                                     int64_t gas,
+                                     uint8_t const* input,
+                                     size_t input_size,
+                                     struct evm_uint256 value);
 
 /// Destroys execution result.
-void evm_destroy_result(struct evm_result);
+EXPORT void evm_destroy_result(struct evm_result);
+
+
+/// @defgroup EVMJIT EVMJIT extenstion to EVM-C
+/// @{
+
+
+EXPORT bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
+                                 evm_hash256 code_hash);
+
+EXPORT void evmjit_compile(evm_instance* instance, evm_mode mode,
+                           uint8_t const* code, size_t code_size,
+                           evm_hash256 code_hash);
+
+/// @}
 
 
 #if __cplusplus
