@@ -319,12 +319,15 @@ EXPORT void evm_destroy_result(struct evm_result);
 /// @{
 
 
-EXPORT bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
-                                 evm_hash256 code_hash);
+EXPORT bool evmjit_is_code_ready(struct evm_instance* instance,
+                                 enum evm_mode mode,
+                                 struct evm_hash256 code_hash);
 
-EXPORT void evmjit_compile(evm_instance* instance, evm_mode mode,
-                           uint8_t const* code, size_t code_size,
-                           evm_hash256 code_hash);
+EXPORT void evmjit_compile(struct evm_instance* instance,
+                           enum evm_mode mode,
+                           uint8_t const* code,
+                           size_t code_size,
+                           struct evm_hash256 code_hash);
 
 /// @}
 
