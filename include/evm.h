@@ -154,12 +154,12 @@ union evm_variant {
 /// ::EVM_ORIGIN          |                      | evm_variant::address
 /// ::EVM_COINBASE        |                      | evm_variant::address
 /// ::EVM_DIFFICULTY      |                      | evm_variant::uint256
-/// ::EVM_GAS_LIMIT       |                      | evm_variant::int64
+/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256
 /// ::EVM_NUMBER          |                      | evm_variant::int64?
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
-/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
+/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::hash256
 /// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
