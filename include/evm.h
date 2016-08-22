@@ -338,22 +338,32 @@ EXPORT struct evm_result evm_execute(struct evm_instance* instance,
 ///                invalid and user should discard it as well.
 EXPORT void evm_release_result_resources(struct evm_result const* result);
 
+/// Status of a code in VM. Useful for JIT-like implementations.
+enum evm_code_status {
+    /// The code is uknown to the VM.
+    EVM_UNKNOWN,
 
-/// @defgroup EVMJIT EVMJIT extenstion to EVM-C
-/// @{
+    /// The code has been compiled and is available in memory.
+    EVM_READY,
+
+    /// The compiled version of the code is available in on-disk cache.
+    EVM_CACHED,
+};
 
 
-EXPORT bool evmjit_is_code_ready(struct evm_instance* instance,
-                                 enum evm_mode mode,
-                                 struct evm_hash256 code_hash);
+/// Get information the status of the code in the VM.
+EXPORT enum evm_code_status evm_get_code_status(struct evm_instance* instance,
+                                                enum evm_mode mode,
+                                                struct evm_hash256 code_hash);
 
-EXPORT void evmjit_compile(struct evm_instance* instance,
-                           enum evm_mode mode,
-                           uint8_t const* code,
-                           size_t code_size,
-                           struct evm_hash256 code_hash);
-
-/// @}
+/// Request preparation of the code for faster execution. It is not required
+/// to execute the code but allows compilation of the code ahead of time in
+/// JIT-like VMs.
+EXPORT void evm_prepare_code(struct evm_instance* instance,
+                             enum evm_mode mode,
+                             uint8_t const* code,
+                             size_t code_size,
+                             struct evm_hash256 code_hash);
 
 
 #if __cplusplus
