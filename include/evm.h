@@ -191,7 +191,7 @@ enum evm_update_key {
 /// ----------------------| -------------------- | --------------------
 /// ::EVM_SSTORE          | evm_variant::uint256 | evm_variant::uint256
 /// ::EVM_LOG             | evm_variant::data    | evm_variant::data
-/// ::EVM_SELFDESTRUCT    | evm_variant::address |
+/// ::EVM_SELFDESTRUCT    | evm_variant::address | n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
