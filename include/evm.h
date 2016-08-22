@@ -328,8 +328,15 @@ EXPORT struct evm_result evm_execute(struct evm_instance* instance,
                                      size_t input_size,
                                      struct evm_uint256 value);
 
-/// Destroys execution result.
-EXPORT void evm_destroy_result(struct evm_result);
+/// Releases the resources assigned to the execution result.
+///
+/// This function releases memory (and other resources, if any) assigned to the
+/// specified execution result making the result object invalid.
+///
+/// @param result  The execution result which resource are to be released. The
+///                result itself it not modified by this function, but becomes
+///                invalid and user should discard it as well.
+EXPORT void evm_release_result_resources(struct evm_result const* result);
 
 
 /// @defgroup EVMJIT EVMJIT extenstion to EVM-C

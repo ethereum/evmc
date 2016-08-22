@@ -29,9 +29,10 @@ void example() {
 
     int64_t gas = 200000;
     struct evm_result result =
-        evm_execute(jit, NULL, code_hash, code, sizeof(code), gas, input,
+        evm_execute(jit, NULL, EVM_FRONTIER, code_hash, (uint8_t const*)code,
+                    sizeof(code), gas, (uint8_t const*)input,
                     sizeof(input), value);
 
-    evm_destroy_result(result);
+    evm_release_result_resources(&result);
     evm_destroy(jit);
 }
