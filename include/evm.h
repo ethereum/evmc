@@ -219,10 +219,10 @@ enum evm_call_kind {
 /// @param input_size   The size of the input data.
 /// @param output       The reference to the memory where the call output is to
 ///                     be copied. In case of CREATE, the memory is guaranteed
-///                     to be at least 160 bytes to hold the address of the
+///                     to be at least 20 bytes to hold the address of the
 ///                     created contract.
 /// @param output_data  The size of the output data. In case of CREATE, expected
-///                     value is 160.
+///                     value is 20.
 /// @return      If non-negative - the amount of gas left,
 ///              If negative - an exception occurred during the call/create.
 ///              There is no need to set 0 address in the output in this case.
