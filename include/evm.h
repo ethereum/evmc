@@ -154,12 +154,12 @@ union evm_variant {
 /// ::EVM_ORIGIN          |                      | evm_variant::address
 /// ::EVM_COINBASE        |                      | evm_variant::address
 /// ::EVM_DIFFICULTY      |                      | evm_variant::uint256
-/// ::EVM_GAS_LIMIT       |                      | evm_variant::int64
+/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256
 /// ::EVM_NUMBER          |                      | evm_variant::int64?
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
-/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
+/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::data
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
-/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256
+/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::hash256
 /// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
@@ -174,7 +174,24 @@ enum evm_update_key {
 };
 
 
-/// Callback function for modifying a contract state.
+/// Update callback function.
+///
+/// This callback function is used by the EVM to modify contract state in the
+/// host application.
+/// @param env  Pointer to execution environment managed by the host
+///             application.
+/// @param key  The kind of the update. See evm_update_key and details below.
+/// @param arg1 Additional argument to the update. It has defined value only for
+///             the subset of update keys.
+/// @param arg1 Additional argument to the update. It has defined value only for
+///             the subset of update keys.
+///
+/// ## Types of updates
+/// Key                   | Arg1                 | Arg2
+/// ----------------------| -------------------- | --------------------
+/// ::EVM_SSTORE          | evm_variant::uint256 | evm_variant::uint256
+/// ::EVM_LOG             | evm_variant::data    | evm_variant::data
+/// ::EVM_SELFDESTRUCT    | evm_variant::address |
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
@@ -319,12 +336,15 @@ EXPORT void evm_destroy_result(struct evm_result);
 /// @{
 
 
-EXPORT bool evmjit_is_code_ready(evm_instance* instance, evm_mode mode,
-                                 evm_hash256 code_hash);
+EXPORT bool evmjit_is_code_ready(struct evm_instance* instance,
+                                 enum evm_mode mode,
+                                 struct evm_hash256 code_hash);
 
-EXPORT void evmjit_compile(evm_instance* instance, evm_mode mode,
-                           uint8_t const* code, size_t code_size,
-                           evm_hash256 code_hash);
+EXPORT void evmjit_compile(struct evm_instance* instance,
+                           enum evm_mode mode,
+                           uint8_t const* code,
+                           size_t code_size,
+                           struct evm_hash256 code_hash);
 
 /// @}
 
