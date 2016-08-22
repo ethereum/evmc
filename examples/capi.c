@@ -33,6 +33,6 @@ void example() {
                     sizeof(code), gas, (uint8_t const*)input,
                     sizeof(input), value);
 
-    evm_release_result_resources(&result);
+    evm_release_result(&result);
     evm_destroy(jit);
 }
