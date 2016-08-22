@@ -215,13 +215,13 @@ enum evm_call_kind {
 ///                     of CREATE.
 /// @param value        The value sent to the callee. The endowment in case of
 ///                     CREATE.
-/// @param input        The call input data or the create init code.
+/// @param input        The call input data or the CREATE init code.
 /// @param input_size   The size of the input data.
 /// @param output       The reference to the memory where the call output is to
-///                     be copied. In case of create, the memory is guaranteed
+///                     be copied. In case of CREATE, the memory is guaranteed
 ///                     to be at least 160 bytes to hold the address of the
 ///                     created contract.
-/// @param output_data  The size of the output data. In case of create, expected
+/// @param output_data  The size of the output data. In case of CREATE, expected
 ///                     value is 160.
 /// @return      If non-negative - the amount of gas left,
 ///              If negative - an exception occurred during the call/create.
