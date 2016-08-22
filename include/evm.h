@@ -157,7 +157,7 @@ union evm_variant {
 /// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256
 /// ::EVM_NUMBER          |                      | evm_variant::int64?
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
-/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::bytes
+/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::data
 /// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
 /// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::hash256
 /// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
