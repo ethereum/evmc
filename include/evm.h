@@ -16,7 +16,6 @@
 
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
-#include <stdbool.h>   // Definition of bool.
 
 /// Allow implementation to inject some additional information about function
 /// linkage and/or symbol visibility in the output library.
@@ -284,10 +283,10 @@ EXPORT void evm_destroy(struct evm_instance* evm);
 /// @param evm    The EVM instance to be configured.
 /// @param name   The option name. Cannot be null.
 /// @param value  The new option value. Cannot be null.
-/// @return       True if the option set successfully.
-EXPORT bool evm_set_option(struct evm_instance* evm,
-                           char const* name,
-                           char const* value);
+/// @return       1 if the option set successfully, 0 otherwise.
+EXPORT int evm_set_option(struct evm_instance* evm,
+                          char const* name,
+                          char const* value);
 
 
 /// EVM compatibility mode aka chain mode.

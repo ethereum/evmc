@@ -39,11 +39,11 @@ EXPORT void evm_destroy(struct evm_instance* evm)
     free(evm);
 }
 
-EXPORT bool evm_set_option(struct evm_instance* evm,
-                           char const* name,
-                           char const* value)
+EXPORT int evm_set_option(struct evm_instance* evm,
+                          char const* name,
+                          char const* value)
 {
-    return false;
+    return 0;
 }
 
 EXPORT struct evm_result evm_execute(struct evm_instance* instance,
