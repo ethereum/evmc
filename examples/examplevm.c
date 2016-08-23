@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include "evm.h"
 
 struct evm_instance {
@@ -39,6 +38,18 @@ static void evm_destroy(struct evm_instance* evm)
     free(evm);
 }
 
+/// Example options.
+///
+/// VMs are allowed to omit this function implementation.
+int evm_set_option(struct evm_instance* evm,
+                   char const* name,
+                   char const* value)
+{
+    if (strcmp(name, "example-option") == 0)
+        return 1;
+    return 0;
+}
+
 static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_env* env,
                                      enum evm_mode mode,
@@ -73,5 +84,6 @@ EXPORT struct evm_fn_table examplevm_get_fn_table()
     ftab.destroy = evm_destroy;
     ftab.execute = evm_execute;
     ftab.release_result = evm_release_result;
+    ftab.set_option = evm_set_option;
     return ftab;
 }
