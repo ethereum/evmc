@@ -368,27 +368,46 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     size_t code_size,
                                     struct evm_hash256 code_hash);
 
+/// VM implementation's function table
+///
+/// Defines the implementation of EVM-C interface for a VM.
 struct evm_fn_table {
+    /// Pointer to function creating a VM's instance.
     evm_create_fn create;
+
+    /// Pointer to function destroying a VM's instance.
     evm_destroy_fn destroy;
+
+    /// Pointer to function execuing a code in a VM.
     evm_execute_fn execute;
+
+    /// Pointer to function releasing an execution result.
     evm_release_result_fn release_result;
 
-    /// Optional.
+    /// Optional pointer to function returning a status of a code.
+    ///
+    /// If the VM does not support this feature the pointer can be NULL.
     evm_get_code_status_fn get_code_status;
 
-    /// Optional.
+    /// Optional pointer to function compiling  a code.
+    ///
+    /// If the VM does not support this feature the pointer can be NULL.
     evm_prepare_code_fn prepare_code;
 
-    /// Optional.
+    /// Optional pointer to function modifying VM's options.
+    ///
+    /// If the VM does not support this feature the pointer can be NULL.
     evm_set_option_fn set_option;
 };
 
-
+/// Example of a function exporting a function table for an example VM.
+///
+/// Each VM implementation is obligates to provided a function returning
+/// a function table of type `evm_fn_table` defining VM's interface.
+/// The function has to be named as `<vm-name>_get_fn_table()`.
+///
+/// @return  Implementation's function table
 struct evm_fn_table examplevm_get_fn_table();
-
-
-EXPORT struct evm_fn_table evmjit_get_fn_table();
 
 
 #if __cplusplus
