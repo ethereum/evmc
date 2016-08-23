@@ -1,3 +1,5 @@
+add_compile_options("-Wno-extra")  # Override -Wextra, I don't know better option.
+
 add_library(example-vm STATIC EXCLUDE_FROM_ALL examplevm.c)
 target_include_directories(example-vm PRIVATE ../include)
 

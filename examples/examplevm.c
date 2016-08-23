@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include "evm.h"
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
 struct evm_instance {
     evm_query_fn query_fn;
     evm_update_fn update_fn;
@@ -70,7 +67,11 @@ static void evm_release_result(struct evm_result const* result)
 
 EXPORT struct evm_fn_table examplevm_get_fn_table()
 {
-    struct evm_fn_table ftab = {evm_create, evm_destroy, evm_execute,
-                                evm_release_result, 0, 0, 0};
+    struct evm_fn_table ftab;
+    memset(&ftab, 0, sizeof(struct evm_result));
+    ftab.create = evm_create;
+    ftab.destroy = evm_destroy;
+    ftab.execute = evm_execute;
+    ftab.release_result = evm_release_result;
     return ftab;
 }

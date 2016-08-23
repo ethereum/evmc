@@ -1,11 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
 #include "evm.h"
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-parameter"
 
 struct evm_uint256 balance(struct evm_env* env, struct evm_hash160 address)
 {
@@ -86,8 +83,8 @@ int main(int argc, char *argv[]) {
     if (result.gas_left & EVM_EXCEPTION) {
       printf("  EVM eception\n");
     }
-    printf("  Gas used: " PRId64 "\n", gas - result.gas_left);
-    printf("  Gas left: " PRId64 "\n", result.gas_left);
+    printf("  Gas used: %ld\n", gas - result.gas_left);
+    printf("  Gas left: %ld\n", result.gas_left);
     printf("  Output size: %zd\n", result.output_size);
 
     printf("  Output: ");
