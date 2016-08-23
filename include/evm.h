@@ -59,9 +59,6 @@ struct evm_hash256 {
     };
 };
 
-
-#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
-
 /// The outcome of an execution.
 enum evm_result_outcome {
     EVM_RESULT_SUCCESS = 0,
@@ -219,6 +216,9 @@ enum evm_call_kind {
     EVM_CALLCODE = 2,     ///< Request CALLCODE.
     EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
+
+/// This is used as a result code with evm_call_fn.
+#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
 
 /// Pointer to the callback function supporting EVM calls.
 ///
