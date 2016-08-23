@@ -1,7 +1,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "evm.h"
+
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-parameter"
 
 struct evm_uint256 balance(struct evm_env* env, struct evm_hash160 address)
 {
@@ -64,7 +68,8 @@ int64_t call(
 int main(int argc, char *argv[]) {
     printf("Using VM: %s (%s)\n", evm_get_info(EVM_NAME), evm_get_info(EVM_VERSION));
 
-    struct evm_instance* jit = evm_create(query, update, call);
+    struct evm_fn_table ftab = examplevm_get_fn_table();
+    struct evm_instance* jit = ftab.create(query, update, call);
 
     char const code[] = "exec()";
     const size_t code_size = sizeof(code);
@@ -74,23 +79,24 @@ int main(int argc, char *argv[]) {
 
     int64_t gas = 200000;
     struct evm_result result =
-        evm_execute(jit, NULL, EVM_HOMESTEAD, code_hash, (const uint8_t *)code, code_size, gas, (const uint8_t *)input,
+        ftab.execute(jit, NULL, EVM_HOMESTEAD, code_hash, (const uint8_t *)code, code_size, gas, (const uint8_t *)input,
                     sizeof(input), value);
 
     printf("Execution result:\n");
     if (result.gas_left & EVM_EXCEPTION) {
       printf("  EVM eception\n");
     }
-    printf("  Gas used: %lld\n", gas - result.gas_left);
-    printf("  Gas left: %lld\n", result.gas_left);
+    printf("  Gas used: " PRId64 "\n", gas - result.gas_left);
+    printf("  Gas left: " PRId64 "\n", result.gas_left);
     printf("  Output size: %zd\n", result.output_size);
 
     printf("  Output: ");
-    for (int i = 0; i < result.output_size; i++) {
+    size_t i = 0;
+    for (i = 0; i < result.output_size; i++) {
         printf("%02x ", result.output_data[i]);
     }
     printf("\n");
 
-    evm_destroy_result(result);
-    evm_destroy(jit);
+    ftab.release_result(&result);
+    ftab.destroy(jit);
 }

@@ -384,6 +384,10 @@ struct evm_fn_table {
     evm_set_option_fn set_option;
 };
 
+
+struct evm_fn_table examplevm_get_fn_table();
+
+
 EXPORT struct evm_fn_table evmjit_get_fn_table();
 
 

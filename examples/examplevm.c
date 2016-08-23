@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include "evm.h"
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 struct evm_instance {
     evm_query_fn query_fn;
     evm_update_fn update_fn;
@@ -19,7 +22,7 @@ EXPORT char const* evm_get_info(enum evm_info_key key)
   return "";
 }
 
-EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
+static struct evm_instance* evm_create(evm_query_fn query_fn,
                                        evm_update_fn update_fn,
                                        evm_call_fn call_fn)
 {
@@ -34,19 +37,12 @@ EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
     return ret;
 }
 
-EXPORT void evm_destroy(struct evm_instance* evm)
+static void evm_destroy(struct evm_instance* evm)
 {
     free(evm);
 }
 
-EXPORT int evm_set_option(struct evm_instance* evm,
-                          char const* name,
-                          char const* value)
-{
-    return 0;
-}
-
-EXPORT struct evm_result evm_execute(struct evm_instance* instance,
+static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_env* env,
                                      enum evm_mode mode,
                                      struct evm_hash256 code_hash,
@@ -68,21 +64,13 @@ EXPORT struct evm_result evm_execute(struct evm_instance* instance,
     return ret;
 }
 
-EXPORT void evm_destroy_result(struct evm_result result)
+static void evm_release_result(struct evm_result const* result)
 {
 }
 
-EXPORT bool evmjit_is_code_ready(struct evm_instance* instance,
-                                 enum evm_mode mode,
-                                 struct evm_hash256 code_hash)
+EXPORT struct evm_fn_table examplevm_get_fn_table()
 {
-    return true;
-}
-
-EXPORT void evmjit_compile(struct evm_instance* instance,
-                           enum evm_mode mode,
-                           uint8_t const* code,
-                           size_t code_size,
-                           struct evm_hash256 code_hash)
-{
+    struct evm_fn_table ftab = {evm_create, evm_destroy, evm_execute,
+                                evm_release_result, 0, 0, 0};
+    return ftab;
 }
