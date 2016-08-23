@@ -244,6 +244,9 @@ enum evm_info_key {
 };
 
 /// Request information about the EVM implementation.
+/// FIXME: I don't think we need this, as we don't go towards fully dynamic
+///        solution (DLLs, dlopen()). User should know a priori what he is
+///        integrating with.
 ///
 /// @param key  What do you want to know?
 /// @return     Requested information as a c-string. Nonnull.
@@ -263,14 +266,14 @@ struct evm_instance;
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
-EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
-                                       evm_update_fn update_fn,
-                                       evm_call_fn call_fn);
+typedef struct evm_instance* (*evm_create_fn)(evm_query_fn query_fn,
+                                              evm_update_fn update_fn,
+                                              evm_call_fn call_fn);
 
 /// Destroys the EVM instance.
 ///
 /// @param evm  The EVM instance to be destroyed.
-EXPORT void evm_destroy(struct evm_instance* evm);
+typedef void (*evm_destroy_fn)(struct evm_instance* evm);
 
 
 /// Configures the EVM instance.
@@ -284,9 +287,9 @@ EXPORT void evm_destroy(struct evm_instance* evm);
 /// @param name   The option name. Cannot be null.
 /// @param value  The new option value. Cannot be null.
 /// @return       1 if the option set successfully, 0 otherwise.
-EXPORT int evm_set_option(struct evm_instance* evm,
-                          char const* name,
-                          char const* value);
+typedef int (*evm_set_option_fn)(struct evm_instance* evm,
+                                 char const* name,
+                                 char const* value);
 
 
 /// EVM compatibility mode aka chain mode.
@@ -316,16 +319,16 @@ enum evm_mode {
 /// @param input_size  The size of the input data.
 /// @param value       Call value.
 /// @return            All execution results.
-EXPORT struct evm_result evm_execute(struct evm_instance* instance,
-                                     struct evm_env* env,
-                                     enum evm_mode mode,
-                                     struct evm_hash256 code_hash,
-                                     uint8_t const* code,
-                                     size_t code_size,
-                                     int64_t gas,
-                                     uint8_t const* input,
-                                     size_t input_size,
-                                     struct evm_uint256 value);
+typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
+                                            struct evm_env* env,
+                                            enum evm_mode mode,
+                                            struct evm_hash256 code_hash,
+                                            uint8_t const* code,
+                                            size_t code_size,
+                                            int64_t gas,
+                                            uint8_t const* input,
+                                            size_t input_size,
+                                            struct evm_uint256 value);
 
 /// Releases resources assigned to an execution result.
 ///
@@ -335,7 +338,7 @@ EXPORT struct evm_result evm_execute(struct evm_instance* instance,
 /// @param result  The execution result which resource are to be released. The
 ///                result itself it not modified by this function, but becomes
 ///                invalid and user should discard it as well.
-EXPORT void evm_release_result(struct evm_result const* result);
+typedef void (*evm_release_result_fn)(struct evm_result const* result);
 
 /// Status of a code in VM. Useful for JIT-like implementations.
 enum evm_code_status {
@@ -351,18 +354,37 @@ enum evm_code_status {
 
 
 /// Get information the status of the code in the VM.
-EXPORT enum evm_code_status evm_get_code_status(struct evm_instance* instance,
-                                                enum evm_mode mode,
-                                                struct evm_hash256 code_hash);
+typedef enum evm_code_status
+(*evm_get_code_status_fn)(struct evm_instance* instance,
+                          enum evm_mode mode,
+                          struct evm_hash256 code_hash);
 
 /// Request preparation of the code for faster execution. It is not required
 /// to execute the code but allows compilation of the code ahead of time in
 /// JIT-like VMs.
-EXPORT void evm_prepare_code(struct evm_instance* instance,
-                             enum evm_mode mode,
-                             uint8_t const* code,
-                             size_t code_size,
-                             struct evm_hash256 code_hash);
+typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
+                                    enum evm_mode mode,
+                                    uint8_t const* code,
+                                    size_t code_size,
+                                    struct evm_hash256 code_hash);
+
+struct evm_fn_table {
+    evm_create_fn create;
+    evm_destroy_fn destroy;
+    evm_execute_fn execute;
+    evm_release_result_fn release_result;
+
+    /// Optional.
+    evm_get_code_status_fn get_code_status;
+
+    /// Optional.
+    evm_prepare_code_fn prepare_code;
+
+    /// Optional.
+    evm_set_option_fn set_option;
+};
+
+EXPORT struct evm_fn_table evmjit_get_fn_table();
 
 
 #if __cplusplus
