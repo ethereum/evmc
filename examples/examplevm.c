@@ -76,14 +76,14 @@ static void evm_release_result(struct evm_result const* result)
 {
 }
 
-EXPORT struct evm_fn_table examplevm_get_fn_table()
+EXPORT struct evm_interface examplevm_get_interface()
 {
-    struct evm_fn_table ftab;
-    memset(&ftab, 0, sizeof(struct evm_result));
-    ftab.create = evm_create;
-    ftab.destroy = evm_destroy;
-    ftab.execute = evm_execute;
-    ftab.release_result = evm_release_result;
-    ftab.set_option = evm_set_option;
-    return ftab;
+    struct evm_interface intf;
+    memset(&intf, 0, sizeof(struct evm_result));
+    intf.create = evm_create;
+    intf.destroy = evm_destroy;
+    intf.execute = evm_execute;
+    intf.release_result = evm_release_result;
+    intf.set_option = evm_set_option;
+    return intf;
 }

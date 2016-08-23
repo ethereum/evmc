@@ -369,10 +369,10 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     size_t code_size,
                                     struct evm_hash256 code_hash);
 
-/// VM implementation's function table
+/// VM interface.
 ///
 /// Defines the implementation of EVM-C interface for a VM.
-struct evm_fn_table {
+struct evm_interface {
     /// Pointer to function creating a VM's instance.
     evm_create_fn create;
 
@@ -401,14 +401,13 @@ struct evm_fn_table {
     evm_set_option_fn set_option;
 };
 
-/// Example of a function exporting a function table for an example VM.
+/// Example of a function exporting an interface for an example VM.
 ///
 /// Each VM implementation is obligates to provided a function returning
-/// a function table of type `evm_fn_table` defining VM's interface.
-/// The function has to be named as `<vm-name>_get_fn_table()`.
+/// VM's interface. The function has to be named as `<vm-name>_get_interface()`.
 ///
-/// @return  Implementation's function table
-struct evm_fn_table examplevm_get_fn_table();
+/// @return  VM interface
+struct evm_interface examplevm_get_interface();
 
 
 #if __cplusplus

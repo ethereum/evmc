@@ -65,8 +65,8 @@ int64_t call(
 int main(int argc, char *argv[]) {
     printf("Using VM: %s (%s)\n", evm_get_info(EVM_NAME), evm_get_info(EVM_VERSION));
 
-    struct evm_fn_table ftab = examplevm_get_fn_table();
-    struct evm_instance* jit = ftab.create(query, update, call);
+    struct evm_interface intf = examplevm_get_interface();
+    struct evm_instance* jit = intf.create(query, update, call);
 
     char const code[] = "exec()";
     const size_t code_size = sizeof(code);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
     int64_t gas = 200000;
     struct evm_result result =
-        ftab.execute(jit, NULL, EVM_HOMESTEAD, code_hash, (const uint8_t *)code, code_size, gas, (const uint8_t *)input,
+        intf.execute(jit, NULL, EVM_HOMESTEAD, code_hash, (const uint8_t *)code, code_size, gas, (const uint8_t *)input,
                     sizeof(input), value);
 
     printf("Execution result:\n");
@@ -94,6 +94,6 @@ int main(int argc, char *argv[]) {
     }
     printf("\n");
 
-    ftab.release_result(&result);
-    ftab.destroy(jit);
+    intf.release_result(&result);
+    intf.destroy(jit);
 }
