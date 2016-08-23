@@ -12,7 +12,8 @@
 ///
 /// @defgroup EVMC EVM-C
 /// @{
-#pragma once
+#ifndef EVM_H
+#define EVM_H
 
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
@@ -413,4 +414,6 @@ struct evm_fn_table examplevm_get_fn_table();
 #if __cplusplus
 }
 #endif
+
+#endif  // EVM_H
 /// @}
