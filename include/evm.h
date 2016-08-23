@@ -62,9 +62,24 @@ struct evm_hash256 {
 
 #define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
 
+/// The outcome of an execution.
+enum evm_result_outcome {
+    EVM_RESULT_SUCCESS = 0,
+    EVM_RESULT_OUT_OF_GAS = 1,
+    EVM_RESULT_BAD_INSTRUCTION = 2,
+    EVM_RESULT_EXCEPTION = 3
+};
+
 /// Complex struct representing execution result.
 struct evm_result {
-    /// Gas left after execution or exception indicator.
+    /// The outcome of the execution.
+    enum evm_result_outcome outcome;
+
+    /// Optional reason why the execution didn't succeed.
+    /// @see outcome.
+    const char *outcome_reason;
+
+    /// Gas left after execution.
     int64_t gas_left;
 
     /// Rerefence to output data. The memory containing the output data
