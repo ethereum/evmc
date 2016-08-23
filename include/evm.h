@@ -39,7 +39,7 @@ struct evm_uint256 {
     uint64_t words[4];
 };
 
-/// 160-bit hash suitable for keeping an Ethereum address.
+/// Big-endian 160-bit hash suitable for keeping an Ethereum address.
 struct evm_hash160 {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
@@ -191,7 +191,7 @@ enum evm_update_key {
 /// ----------------------| -------------------- | --------------------
 /// ::EVM_SSTORE          | evm_variant::uint256 | evm_variant::uint256
 /// ::EVM_LOG             | evm_variant::data    | evm_variant::data
-/// ::EVM_SELFDESTRUCT    | evm_variant::address |
+/// ::EVM_SELFDESTRUCT    | evm_variant::address | n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
@@ -215,14 +215,14 @@ enum evm_call_kind {
 ///                     of CREATE.
 /// @param value        The value sent to the callee. The endowment in case of
 ///                     CREATE.
-/// @param input        The call input data or the create init code.
+/// @param input        The call input data or the CREATE init code.
 /// @param input_size   The size of the input data.
 /// @param output       The reference to the memory where the call output is to
-///                     be copied. In case of create, the memory is guaranteed
-///                     to be at least 160 bytes to hold the address of the
+///                     be copied. In case of CREATE, the memory is guaranteed
+///                     to be at least 20 bytes to hold the address of the
 ///                     created contract.
-/// @param output_data  The size of the output data. In case of create, expected
-///                     value is 160.
+/// @param output_data  The size of the output data. In case of CREATE, expected
+///                     value is 20.
 /// @return      If non-negative - the amount of gas left,
 ///              If negative - an exception occurred during the call/create.
 ///              There is no need to set 0 address in the output in this case.
