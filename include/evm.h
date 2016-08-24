@@ -61,13 +61,13 @@ struct evm_hash256 {
 
 /// The outcome of an execution.
 enum evm_result_outcome {
-    EVM_RESULT_SUCCESS = 0,
-    EVM_RESULT_OUT_OF_GAS = 1,
-    EVM_RESULT_BAD_INSTRUCTION = 2,
-    EVM_RESULT_BAD_JUMP_DESTINATION = 3,
-    EVM_RESULT_STACK_OVERFLOW = 4,
-    EVM_RESULT_STACK_UNDERFLOW = 5,
-    EVM_RESULT_EXCEPTION = 6
+    EVM_SUCCESS = 0,
+    EVM_OUT_OF_GAS = 1,
+    EVM_BAD_INSTRUCTION = 2,
+    EVM_BAD_JUMP_DESTINATION = 3,
+    EVM_STACK_OVERFLOW = 4,
+    EVM_STACK_UNDERFLOW = 5,
+    EVM_EXCEPTION = 6
 };
 
 /// Complex struct representing execution result.

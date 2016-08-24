@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
                     sizeof(input), value);
 
     printf("Execution result:\n");
-    if (result.outcome == EVM_RESULT_EXCEPTION) {
+    if (result.outcome == EVM_EXCEPTION) {
       printf("  EVM exception\n");
     }
     printf("  Gas used: %ld\n", gas - result.gas_left);

@@ -67,7 +67,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 
     // Execute code and refer to callbacks: instance->query_fn()
 
-    ret.outcome = EVM_RESULT_EXCEPTION;
+    ret.outcome = EVM_EXCEPTION;
     ret.gas_left = 0;
 
     return ret;
