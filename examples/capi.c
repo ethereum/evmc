@@ -80,19 +80,20 @@ int main(int argc, char *argv[]) {
                     sizeof(input), value);
 
     printf("Execution result:\n");
-    if (result.outcome == EVM_EXCEPTION) {
-      printf("  EVM exception\n");
-    }
-    printf("  Gas used: %ld\n", gas - result.gas_left);
-    printf("  Gas left: %ld\n", result.gas_left);
-    printf("  Output size: %zd\n", result.output_size);
+    if (result.outcome != EVM_SUCCESS) {
+      printf("  EVM execution failure: %d\n", result.outcome);
+    } else {
+        printf("  Gas used: %ld\n", gas - result.gas_left);
+        printf("  Gas left: %ld\n", result.gas_left);
+        printf("  Output size: %zd\n", result.output_size);
 
-    printf("  Output: ");
-    size_t i = 0;
-    for (i = 0; i < result.output_size; i++) {
-        printf("%02x ", result.output_data[i]);
+        printf("  Output: ");
+        size_t i = 0;
+        for (i = 0; i < result.output_size; i++) {
+            printf("%02x ", result.output_data[i]);
+        }
+        printf("\n");
     }
-    printf("\n");
 
     intf.release_result(&result);
     intf.destroy(jit);
