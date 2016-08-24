@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include "evm.h"
 
 struct evm_instance {
@@ -19,7 +18,7 @@ EXPORT char const* evm_get_info(enum evm_info_key key)
   return "";
 }
 
-EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
+static struct evm_instance* evm_create(evm_query_fn query_fn,
                                        evm_update_fn update_fn,
                                        evm_call_fn call_fn)
 {
@@ -34,19 +33,24 @@ EXPORT struct evm_instance* evm_create(evm_query_fn query_fn,
     return ret;
 }
 
-EXPORT void evm_destroy(struct evm_instance* evm)
+static void evm_destroy(struct evm_instance* evm)
 {
     free(evm);
 }
 
-EXPORT bool evm_set_option(struct evm_instance* evm,
-                           char const* name,
-                           char const* value)
+/// Example options.
+///
+/// VMs are allowed to omit this function implementation.
+int evm_set_option(struct evm_instance* evm,
+                   char const* name,
+                   char const* value)
 {
-    return false;
+    if (strcmp(name, "example-option") == 0)
+        return 1;
+    return 0;
 }
 
-EXPORT struct evm_result evm_execute(struct evm_instance* instance,
+static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_env* env,
                                      enum evm_mode mode,
                                      struct evm_hash256 code_hash,
@@ -68,21 +72,18 @@ EXPORT struct evm_result evm_execute(struct evm_instance* instance,
     return ret;
 }
 
-EXPORT void evm_destroy_result(struct evm_result result)
+static void evm_release_result(struct evm_result const* result)
 {
 }
 
-EXPORT bool evmjit_is_code_ready(struct evm_instance* instance,
-                                 enum evm_mode mode,
-                                 struct evm_hash256 code_hash)
+EXPORT struct evm_interface examplevm_get_interface()
 {
-    return true;
-}
-
-EXPORT void evmjit_compile(struct evm_instance* instance,
-                           enum evm_mode mode,
-                           uint8_t const* code,
-                           size_t code_size,
-                           struct evm_hash256 code_hash)
-{
+    struct evm_interface intf;
+    memset(&intf, 0, sizeof(struct evm_result));
+    intf.create = evm_create;
+    intf.destroy = evm_destroy;
+    intf.execute = evm_execute;
+    intf.release_result = evm_release_result;
+    intf.set_option = evm_set_option;
+    return intf;
 }
