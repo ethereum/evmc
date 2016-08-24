@@ -76,6 +76,11 @@ struct evm_result {
     /// @see outcome.
     const char *outcome_reason;
 
+    /// The last program counter position
+    /// It can be optionally present when certain conditions are hit.
+    /// @see outcome.
+    int32_t last_pc;
+
     /// Gas left after execution.
     int64_t gas_left;
 
