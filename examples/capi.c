@@ -58,7 +58,7 @@ int64_t call(
 )
 {
     printf("EVM-C: CALL %d\n", _kind);
-    return EVM_EXCEPTION;
+    return EVM_CALL_FAILURE;
 }
 
 /// Example how the API is supposed to be used.

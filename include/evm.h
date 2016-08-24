@@ -226,7 +226,7 @@ enum evm_call_kind {
 };
 
 /// This is used as a result code with evm_call_fn.
-#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
+#define EVM_CALL_FAILURE INT64_MIN  ///< The execution ended with a failure.
 
 /// Pointer to the callback function supporting EVM calls.
 ///
