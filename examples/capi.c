@@ -58,7 +58,7 @@ int64_t call(
 )
 {
     printf("EVM-C: CALL %d\n", _kind);
-    return EVM_EXCEPTION;
+    return EVM_CALL_FAILURE;
 }
 
 /// Example how the API is supposed to be used.
@@ -80,19 +80,20 @@ int main(int argc, char *argv[]) {
                     sizeof(input), value);
 
     printf("Execution result:\n");
-    if (result.gas_left & EVM_EXCEPTION) {
-      printf("  EVM eception\n");
-    }
-    printf("  Gas used: %ld\n", gas - result.gas_left);
-    printf("  Gas left: %ld\n", result.gas_left);
-    printf("  Output size: %zd\n", result.output_size);
+    if (result.code != EVM_SUCCESS) {
+      printf("  EVM execution failure: %d\n", result.code);
+    } else {
+        printf("  Gas used: %ld\n", gas - result.gas_left);
+        printf("  Gas left: %ld\n", result.gas_left);
+        printf("  Output size: %zd\n", result.output_size);
 
-    printf("  Output: ");
-    size_t i = 0;
-    for (i = 0; i < result.output_size; i++) {
-        printf("%02x ", result.output_data[i]);
+        printf("  Output: ");
+        size_t i = 0;
+        for (i = 0; i < result.output_size; i++) {
+            printf("%02x ", result.output_data[i]);
+        }
+        printf("\n");
     }
-    printf("\n");
 
     intf.release_result(&result);
     intf.destroy(jit);

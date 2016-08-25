@@ -59,24 +59,46 @@ struct evm_hash256 {
     };
 };
 
+/// The execution result code.
+enum evm_result_code {
+    EVM_SUCCESS = 0,               ///< Execution finished with success.
+    EVM_FAILURE = 1,               ///< Generic execution failure.
+    EVM_OUT_OF_GAS = 2,
+    EVM_BAD_INSTRUCTION = 3,
+    EVM_BAD_JUMP_DESTINATION = 4,
+    EVM_STACK_OVERFLOW = 5,
+    EVM_STACK_UNDERFLOW = 6,
+};
 
-#define EVM_EXCEPTION INT64_MIN  ///< The execution ended with an exception.
-
-/// Complex struct representing execution result.
+/// The EVM code execution result.
 struct evm_result {
-    /// Gas left after execution or exception indicator.
+    /// The execution result code.
+    enum evm_result_code code;
+
+    /// The amount of gas left after the execution.
+    ///
+    /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    /// Rerefence to output data. The memory containing the output data
-    /// is owned by EVM and is freed with evm_destroy_result().
+    /// The reference to output data. The memory containing the output data
+    /// is owned by EVM and is freed with evm_release_result_fn().
     uint8_t const* output_data;
 
-    /// Size of the output data.
+    /// The size of the output data.
     size_t output_size;
 
-    /// Pointer to EVM-owned memory.
+    /// @name Optional
+    /// The optional information that EVM is not required to provide.
+    /// @{
+
+    /// The pointer to EVM-owned memory. For EVM internal use.
     /// @see output_data.
     void* internal_memory;
+
+    /// The error message explaining the result code.
+    char const* error_message;
+
+    /// @}
 };
 
 /// The query callback key.
@@ -204,6 +226,9 @@ enum evm_call_kind {
     EVM_CALLCODE = 2,     ///< Request CALLCODE.
     EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
+
+/// The flag indicating call failure in evm_call_fn().
+static const int64_t EVM_CALL_FAILURE = INT64_MIN;
 
 /// Pointer to the callback function supporting EVM calls.
 ///
