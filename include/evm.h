@@ -59,10 +59,10 @@ struct evm_hash256 {
     };
 };
 
-/// The outcome of an execution.
+/// The result error code.
 enum evm_result_error_code {
-    EVM_SUCCESS = 0,
-    EVM_FAILURE = 1,
+    EVM_SUCCESS = 0,               ///< Execution finished with success.
+    EVM_FAILURE = 1,               ///< Generic execution failure.
     EVM_OUT_OF_GAS = 2,
     EVM_BAD_INSTRUCTION = 3,
     EVM_BAD_JUMP_DESTINATION = 4,
@@ -77,17 +77,18 @@ struct evm_result {
 
     /// The amount of gas left after the execution.
     ///
-    /// The value is valid only if error_code == ::EVM_SUCCESS.
+    /// The value is valid only if
+    /// evm_result_error_code::error_code == evm_result_error_code::EVM_SUCCESS.
     int64_t gas_left;
 
     /// The rerefence to output data. The memory containing the output data
-    /// is owned by EVM and is freed with evm_release_result().
+    /// is owned by EVM and is freed with evm_release_result_fn().
     uint8_t const* output_data;
 
     /// The size of the output data.
     size_t output_size;
 
-    /// @defgroup Optional
+    /// @name Optional
     /// The optional information that EVM is not required to provide.
     /// @{
 
