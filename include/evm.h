@@ -18,12 +18,6 @@
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
 
-/// Allow implementation to inject some additional information about function
-/// linkage and/or symbol visibility in the output library.
-#ifndef EXPORT
-#define EXPORT
-#endif
-
 #if __cplusplus
 extern "C" {
 #endif
@@ -262,21 +256,6 @@ typedef int64_t (*evm_call_fn)(
     uint8_t* output,
     size_t output_size);
 
-
-/// A piece of information about the EVM implementation.
-enum evm_info_key {
-    EVM_NAME  = 0,   ///< The name of the EVM implementation. ASCII encoded.
-    EVM_VERSION = 1  ///< The software version of the EVM.
-};
-
-/// Request information about the EVM implementation.
-/// FIXME: I don't think we need this, as we don't go towards fully dynamic
-///        solution (DLLs, dlopen()). User should know a priori what he is
-///        integrating with.
-///
-/// @param key  What do you want to know?
-/// @return     Requested information as a c-string. Nonnull.
-EXPORT char const* evm_get_info(enum evm_info_key key);
 
 /// Opaque type representing a EVM instance.
 struct evm_instance;

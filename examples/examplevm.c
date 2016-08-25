@@ -8,16 +8,6 @@ struct evm_instance {
     evm_call_fn call_fn;
 };
 
-EXPORT char const* evm_get_info(enum evm_info_key key)
-{
-  switch(key) {
-    case EVM_NAME: return "ExampleVM"; break;
-    case EVM_VERSION: return "git"; break;
-  }
-
-  return "";
-}
-
 static struct evm_instance* evm_create(evm_query_fn query_fn,
                                        evm_update_fn update_fn,
                                        evm_call_fn call_fn)
@@ -77,7 +67,7 @@ static void evm_release_result(struct evm_result const* result)
 {
 }
 
-EXPORT struct evm_interface examplevm_get_interface()
+struct evm_interface examplevm_get_interface()
 {
     struct evm_interface intf;
     memset(&intf, 0, sizeof(struct evm_result));
