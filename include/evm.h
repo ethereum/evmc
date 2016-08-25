@@ -227,8 +227,8 @@ enum evm_call_kind {
     EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
 
-/// This is used as a result code with evm_call_fn.
-#define EVM_CALL_FAILURE INT64_MIN  ///< The execution ended with a failure.
+/// The flag indicating call failure in evm_call_fn().
+static const int64_t EVM_CALL_FAILURE = INT64_MIN;
 
 /// Pointer to the callback function supporting EVM calls.
 ///
