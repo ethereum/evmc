@@ -18,15 +18,12 @@
 #include <stdint.h>    // Definition of int64_t, uint64_t.
 #include <stddef.h>    // Definition of size_t.
 
-/// Allow implementation to inject some additional information about function
-/// linkage and/or symbol visibility in the output library.
-#ifndef EXPORT
-#define EXPORT
-#endif
-
 #if __cplusplus
 extern "C" {
 #endif
+
+/// The EVM-C ABI version number matching the interface declared in this file.
+static const uint32_t EVM_ABI_VERSION = 0;
 
 /// Host-endian 256-bit integer.
 ///
@@ -263,21 +260,6 @@ typedef int64_t (*evm_call_fn)(
     size_t output_size);
 
 
-/// A piece of information about the EVM implementation.
-enum evm_info_key {
-    EVM_NAME  = 0,   ///< The name of the EVM implementation. ASCII encoded.
-    EVM_VERSION = 1  ///< The software version of the EVM.
-};
-
-/// Request information about the EVM implementation.
-/// FIXME: I don't think we need this, as we don't go towards fully dynamic
-///        solution (DLLs, dlopen()). User should know a priori what he is
-///        integrating with.
-///
-/// @param key  What do you want to know?
-/// @return     Requested information as a c-string. Nonnull.
-EXPORT char const* evm_get_info(enum evm_info_key key);
-
 /// Opaque type representing a EVM instance.
 struct evm_instance;
 
@@ -398,6 +380,12 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
 ///
 /// Defines the implementation of EVM-C interface for a VM.
 struct evm_interface {
+    /// EVM-C ABI version implemented by the VM.
+    ///
+    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// represented by this file is in ::EVM_ABI_VERSION.
+    uint32_t abi_version;
+
     /// Pointer to function creating a VM's instance.
     evm_create_fn create;
 

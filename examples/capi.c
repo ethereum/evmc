@@ -63,8 +63,6 @@ int64_t call(
 
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
-    printf("Using VM: %s (%s)\n", evm_get_info(EVM_NAME), evm_get_info(EVM_VERSION));
-
     struct evm_interface intf = examplevm_get_interface();
     struct evm_instance* jit = intf.create(query, update, call);
 
