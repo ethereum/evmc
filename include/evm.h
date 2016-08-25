@@ -60,43 +60,45 @@ struct evm_hash256 {
 };
 
 /// The outcome of an execution.
-enum evm_result_outcome {
-    EVM_SUCCESS = 1,
+enum evm_result_error_code {
+    EVM_SUCCESS = 0,
+    EVM_FAILURE = 1,
     EVM_OUT_OF_GAS = 2,
     EVM_BAD_INSTRUCTION = 3,
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
-    EVM_EXCEPTION = 7
 };
 
-/// Complex struct representing execution result.
+/// The EVM code execution result.
 struct evm_result {
-    /// The outcome of the execution.
-    enum evm_result_outcome outcome;
+    /// The result error code.
+    enum evm_result_error_code error_code;
 
-    /// Optional reason why the execution didn't succeed.
-    /// @see outcome.
-    const char *outcome_reason;
-
-    /// The last program counter position
-    /// It can be optionally present when certain conditions are hit.
-    /// @see outcome.
-    int32_t last_pc;
-
-    /// Gas left after execution.
+    /// The amount of gas left after the execution.
+    ///
+    /// The value is valid only if error_code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    /// Rerefence to output data. The memory containing the output data
-    /// is owned by EVM and is freed with evm_destroy_result().
+    /// The rerefence to output data. The memory containing the output data
+    /// is owned by EVM and is freed with evm_release_result().
     uint8_t const* output_data;
 
-    /// Size of the output data.
+    /// The size of the output data.
     size_t output_size;
 
-    /// Pointer to EVM-owned memory.
+    /// @defgroup Optional
+    /// The optional information that EVM is not required to provide.
+    /// @{
+
+    /// The pointer to EVM-owned memory. For EVM internal use.
     /// @see output_data.
     void* internal_memory;
+
+    /// The error message explaining the error_code.
+    char const* error_message;
+
+    /// @}
 };
 
 /// The query callback key.
