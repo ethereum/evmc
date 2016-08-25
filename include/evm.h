@@ -22,6 +22,9 @@
 extern "C" {
 #endif
 
+/// The EVM-C ABI version number matching the interface declared in this file.
+static const uint32_t EVM_ABI_VERSION = 0;
+
 /// Host-endian 256-bit integer.
 ///
 /// 32 bytes of data representing host-endian (that means little-endian almost
@@ -377,6 +380,12 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
 ///
 /// Defines the implementation of EVM-C interface for a VM.
 struct evm_interface {
+    /// EVM-C ABI version implemented by the VM.
+    ///
+    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// represented by this file is in ::EVM_ABI_VERSION.
+    uint32_t abi_version;
+
     /// Pointer to function creating a VM's instance.
     evm_create_fn create;
 

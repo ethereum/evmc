@@ -71,6 +71,7 @@ struct evm_interface examplevm_get_interface()
 {
     struct evm_interface intf;
     memset(&intf, 0, sizeof(struct evm_result));
+    intf.abi_version = EVM_ABI_VERSION;
     intf.create = evm_create;
     intf.destroy = evm_destroy;
     intf.execute = evm_execute;
