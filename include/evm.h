@@ -371,9 +371,9 @@ typedef enum evm_code_status
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     enum evm_mode mode,
+                                    struct evm_hash256 code_hash,
                                     uint8_t const* code,
-                                    size_t code_size,
-                                    struct evm_hash256 code_hash);
+                                    size_t code_size);
 
 /// VM interface.
 ///
