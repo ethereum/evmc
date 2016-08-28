@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
     char const code[] = "exec()";
     const size_t code_size = sizeof(code);
-    struct evm_hash256 code_hash = {.words = {1, 2, 3}};
+    struct evm_hash256 code_hash = {.bytes = {1, 2, 3,}};
     char const input[] = "Hello World!";
     struct evm_uint256 value = {{1, 0, 0, 0}};
 
