@@ -48,12 +48,11 @@ struct evm_hash160 {
 /// 32 bytes of data. For EVM that means big-endian 256-bit integer. Values of
 /// this type are converted to host-endian values inside EVM.
 struct evm_hash256 {
-    union {
-        /// The 32 bytes of the integer/hash. Memory aligned to 8 bytes.
-        uint8_t bytes[32];
-        /// Additional access by uint64 words to enforce 8 bytes alignment.
-        uint64_t words[4];
-    };
+    /// The 32 bytes of the integer/hash.
+    ///
+    /// The memory is expected be aligned to 8 bytes, but there is no portable
+    /// way to express that.
+    uint8_t bytes[32];
 };
 
 /// The execution result code.
@@ -200,17 +199,23 @@ enum evm_update_key {
 /// @param env  Pointer to execution environment managed by the host
 ///             application.
 /// @param key  The kind of the update. See evm_update_key and details below.
-/// @param arg1 Additional argument to the update. It has defined value only for
-///             the subset of update keys.
-/// @param arg1 Additional argument to the update. It has defined value only for
-///             the subset of update keys.
 ///
-/// ## Types of updates
-/// Key                   | Arg1                 | Arg2
-/// ----------------------| -------------------- | --------------------
-/// ::EVM_SSTORE          | evm_variant::uint256 | evm_variant::uint256
-/// ::EVM_LOG             | evm_variant::data    | evm_variant::data
-/// ::EVM_SELFDESTRUCT    | evm_variant::address | n/a
+/// ## Kinds of updates
+///
+/// - ::EVM_SSTORE
+///   @param arg1 evm_variant::uint256  The index of the storage entry.
+///   @param arg2 evm_variant::uint256  The value to be stored.
+///
+/// - ::EVM_LOG
+///   @param arg1 evm_variant::data  The log unindexed data.
+///   @param arg2 evm_variant::data  The log topics. The referenced data is an
+///                                  array of evm_hash256[] of possible length
+///                                  from 0 to 4. So the valid
+///                                  evm_variant::data_size values are 0, 32, 64
+///                                  92 and 128.
+///
+/// - ::EVM_SELFDESTRUCT
+///   @param arg1 evm_variant::address  The beneficiary address.
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
@@ -372,9 +377,9 @@ typedef enum evm_code_status
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     enum evm_mode mode,
+                                    struct evm_hash256 code_hash,
                                     uint8_t const* code,
-                                    size_t code_size,
-                                    struct evm_hash256 code_hash);
+                                    size_t code_size);
 
 /// VM interface.
 ///
@@ -420,7 +425,7 @@ struct evm_interface {
 /// VM's interface. The function has to be named as `<vm-name>_get_interface()`.
 ///
 /// @return  VM interface
-struct evm_interface examplevm_get_interface();
+struct evm_interface examplevm_get_interface(void);
 
 
 #if __cplusplus
