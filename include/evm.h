@@ -425,7 +425,7 @@ struct evm_interface {
 /// VM's interface. The function has to be named as `<vm-name>_get_interface()`.
 ///
 /// @return  VM interface
-struct evm_interface examplevm_get_interface();
+struct evm_interface examplevm_get_interface(void);
 
 
 #if __cplusplus
