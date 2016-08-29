@@ -199,17 +199,23 @@ enum evm_update_key {
 /// @param env  Pointer to execution environment managed by the host
 ///             application.
 /// @param key  The kind of the update. See evm_update_key and details below.
-/// @param arg1 Additional argument to the update. It has defined value only for
-///             the subset of update keys.
-/// @param arg1 Additional argument to the update. It has defined value only for
-///             the subset of update keys.
 ///
-/// ## Types of updates
-/// Key                   | Arg1                 | Arg2
-/// ----------------------| -------------------- | --------------------
-/// ::EVM_SSTORE          | evm_variant::uint256 | evm_variant::uint256
-/// ::EVM_LOG             | evm_variant::data    | evm_variant::data
-/// ::EVM_SELFDESTRUCT    | evm_variant::address | n/a
+/// ## Kinds of updates
+///
+/// - ::EVM_SSTORE
+///   @param arg1 evm_variant::uint256  The index of the storage entry.
+///   @param arg2 evm_variant::uint256  The value to be stored.
+///
+/// - ::EVM_LOG
+///   @param arg1 evm_variant::data  The log unindexed data.
+///   @param arg2 evm_variant::data  The log topics. The referenced data is an
+///                                  array of evm_hash256[] of possible length
+///                                  from 0 to 4. So the valid
+///                                  evm_variant::data_size values are 0, 32, 64
+///                                  92 and 128.
+///
+/// - ::EVM_SELFDESTRUCT
+///   @param arg1 evm_variant::address  The beneficiary address.
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
