@@ -50,8 +50,8 @@ struct evm_hash160 {
 struct evm_hash256 {
     /// The 32 bytes of the integer/hash.
     ///
-    /// The memory is expected be aligned to 8 bytes, but there no protable way
-    /// to express that.
+    /// The memory is expected be aligned to 8 bytes, but there is no portable
+    /// way to express that.
     uint8_t bytes[32];
 };
 
