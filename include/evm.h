@@ -284,8 +284,8 @@ typedef void (*evm_destroy_fn)(struct evm_instance* evm);
 /// - optimizations,
 ///
 /// @param evm    The EVM instance to be configured.
-/// @param name   The option name. Cannot be null.
-/// @param value  The new option value. Cannot be null.
+/// @param name   The option name. NULL-terminated string. Cannot be NULL.
+/// @param value  The new option value. NULL-terminated string. Cannot be NULL.
 /// @return       1 if the option set successfully, 0 otherwise.
 typedef int (*evm_set_option_fn)(struct evm_instance* evm,
                                  char const* name,
@@ -409,7 +409,8 @@ struct evm_interface {
 /// Example of a function exporting an interface for an example VM.
 ///
 /// Each VM implementation is obligates to provided a function returning
-/// VM's interface. The function has to be named as `<vm-name>_get_interface()`.
+/// VM's interface.
+/// The function has to be named as `<vm-name>_get_interface(void)`.
 ///
 /// @return  VM interface
 struct evm_interface examplevm_get_interface(void);
