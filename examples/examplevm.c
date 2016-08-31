@@ -43,13 +43,13 @@ int evm_set_option(struct evm_instance* evm,
 static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_env* env,
                                      enum evm_mode mode,
-                                     struct evm_hash256 code_hash,
+                                     struct evm_uint256be code_hash,
                                      uint8_t const* code,
                                      size_t code_size,
                                      int64_t gas,
                                      uint8_t const* input,
                                      size_t input_size,
-                                     struct evm_uint256 value)
+                                     struct evm_uint256be value)
 {
     struct evm_result ret;
 

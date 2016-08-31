@@ -4,15 +4,15 @@
 #include "evm.h"
 
 
-struct evm_uint256 balance(struct evm_env* env, struct evm_hash160 address)
+struct evm_uint256be balance(struct evm_env* env, struct evm_uint160be address)
 {
-    struct evm_uint256 ret = { .words = { 1 } };
+    struct evm_uint256be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
 }
 
-struct evm_hash160 address(struct evm_env* env)
+struct evm_uint160be address(struct evm_env* env)
 {
-    struct evm_hash160 ret = { .bytes = { 1, 2, 3, 4 } };
+    struct evm_uint160be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
 }
 
@@ -25,7 +25,7 @@ union evm_variant query(struct evm_env* env,
     case EVM_GAS_LIMIT: result.int64 = 314; break;
 
     case EVM_BALANCE:
-        result.uint256 = balance(env, arg.address);
+        result.uint256be = balance(env, arg.address);
         break;
 
     case EVM_ADDRESS:
@@ -49,8 +49,8 @@ int64_t call(
     struct evm_env* _opaqueEnv,
     enum evm_call_kind _kind,
     int64_t _gas,
-    struct evm_hash160 _address,
-    struct evm_uint256 _value,
+    struct evm_uint160be _address,
+    struct evm_uint256be _value,
     uint8_t const* _inputData,
     size_t _inputSize,
     uint8_t* _outputData,
@@ -68,9 +68,9 @@ int main(int argc, char *argv[]) {
 
     char const code[] = "exec()";
     const size_t code_size = sizeof(code);
-    struct evm_hash256 code_hash = {.bytes = {1, 2, 3,}};
+    struct evm_uint256be code_hash = {.bytes = {1, 2, 3,}};
     char const input[] = "Hello World!";
-    struct evm_uint256 value = {{1, 0, 0, 0}};
+    struct evm_uint256be value = {{1, 0, 0, 0}};
 
     int64_t gas = 200000;
     struct evm_result result =

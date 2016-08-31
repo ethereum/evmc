@@ -25,34 +25,24 @@ extern "C" {
 /// The EVM-C ABI version number matching the interface declared in this file.
 static const uint32_t EVM_ABI_VERSION = 0;
 
-/// Host-endian 256-bit integer.
+/// Big-endian 256-bit integer.
 ///
-/// 32 bytes of data representing host-endian (that means little-endian almost
-/// all the time) 256-bit integer. This applies to the words[] order as well.
-/// words[0] contains the 64 lowest precision bits, words[3] constains the 64
-/// highest precision bits.
-struct evm_uint256 {
-    /// The 4 64-bit words of the integer. Memory aligned to 8 bytes.
-    uint64_t words[4];
-};
-
-/// Big-endian 160-bit hash suitable for keeping an Ethereum address.
-struct evm_hash160 {
-    /// The 20 bytes of the hash.
-    uint8_t bytes[20];
-};
-
-
-/// Big-endian 256-bit integer/hash.
-///
-/// 32 bytes of data. For EVM that means big-endian 256-bit integer. Values of
-/// this type are converted to host-endian values inside EVM.
-struct evm_hash256 {
-    /// The 32 bytes of the integer/hash.
+/// 32 bytes of data representing big-endian 256-bit integer. I.e. bytes[0] is
+/// the most significant byte, bytes[31] is the least significant byte.
+/// This type is used to transfer to/from the VM values interpreted by the user
+/// as both 256-bit integers and 256-bit hashes.
+struct evm_uint256be {
+    /// The 32 bytes of the big-endian integer or hash.
     ///
     /// The memory is expected be aligned to 8 bytes, but there is no portable
     /// way to express that.
     uint8_t bytes[32];
+};
+
+/// Big-endian 160-bit hash suitable for keeping an Ethereum address.
+struct evm_uint160be {
+    /// The 20 bytes of the hash.
+    uint8_t bytes[20];
 };
 
 /// The execution result code.
@@ -128,11 +118,8 @@ union evm_variant {
     /// A host-endian 64-bit integer.
     int64_t int64;
 
-    /// A host-endian 256-bit integer.
-    struct evm_uint256 uint256;
-
-    /// A big-endian 256-bit integer/hash.
-    struct evm_hash256 hash256;
+    /// A big-endian 256-bit integer or hash.
+    struct evm_uint256be uint256be;
 
     struct {
         /// Additional padding to align the evm_variant::address with lower
@@ -140,7 +127,7 @@ union evm_variant {
         uint8_t address_padding[12];
 
         /// An Ethereum address.
-        struct evm_hash160 address;
+        struct evm_uint160be address;
     };
 
     /// A memory reference.
@@ -166,19 +153,19 @@ union evm_variant {
 /// ## Types of queries
 /// Key                   | Arg                  | Expected result
 /// ----------------------| -------------------- | ----------------------------
-/// ::EVM_GAS_PRICE       |                      | evm_variant::uint256
+/// ::EVM_GAS_PRICE       |                      | evm_variant::uint256be
 /// ::EVM_ADDRESS         |                      | evm_variant::address
 /// ::EVM_CALLER          |                      | evm_variant::address
 /// ::EVM_ORIGIN          |                      | evm_variant::address
 /// ::EVM_COINBASE        |                      | evm_variant::address
-/// ::EVM_DIFFICULTY      |                      | evm_variant::uint256
-/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256
+/// ::EVM_DIFFICULTY      |                      | evm_variant::uint256be
+/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256be
 /// ::EVM_NUMBER          |                      | evm_variant::int64?
 /// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
 /// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::data
-/// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256
-/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::hash256
-/// ::EVM_SLOAD           | evm_variant::uint256 | evm_variant::uint256?
+/// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256be
+/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256be
+/// ::EVM_SLOAD           | evm_variant::uint256be | evm_variant::uint256be
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
                                           union evm_variant arg);
@@ -203,13 +190,13 @@ enum evm_update_key {
 /// ## Kinds of updates
 ///
 /// - ::EVM_SSTORE
-///   @param arg1 evm_variant::uint256  The index of the storage entry.
-///   @param arg2 evm_variant::uint256  The value to be stored.
+///   @param arg1 evm_variant::uint256be  The index of the storage entry.
+///   @param arg2 evm_variant::uint256be  The value to be stored.
 ///
 /// - ::EVM_LOG
 ///   @param arg1 evm_variant::data  The log unindexed data.
 ///   @param arg2 evm_variant::data  The log topics. The referenced data is an
-///                                  array of evm_hash256[] of possible length
+///                                  array of evm_uint256be[] of possible length
 ///                                  from 0 to 4. So the valid
 ///                                  evm_variant::data_size values are 0, 32, 64
 ///                                  92 and 128.
@@ -257,8 +244,8 @@ typedef int64_t (*evm_call_fn)(
     struct evm_env* env,
     enum evm_call_kind kind,
     int64_t gas,
-    struct evm_hash160 address,
-    struct evm_uint256 value,
+    struct evm_uint160be address,
+    struct evm_uint256be value,
     uint8_t const* input,
     size_t input_size,
     uint8_t* output,
@@ -335,13 +322,13 @@ enum evm_mode {
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_env* env,
                                             enum evm_mode mode,
-                                            struct evm_hash256 code_hash,
+                                            struct evm_uint256be code_hash,
                                             uint8_t const* code,
                                             size_t code_size,
                                             int64_t gas,
                                             uint8_t const* input,
                                             size_t input_size,
-                                            struct evm_uint256 value);
+                                            struct evm_uint256be value);
 
 /// Releases resources assigned to an execution result.
 ///
@@ -370,14 +357,14 @@ enum evm_code_status {
 typedef enum evm_code_status
 (*evm_get_code_status_fn)(struct evm_instance* instance,
                           enum evm_mode mode,
-                          struct evm_hash256 code_hash);
+                          struct evm_uint256be code_hash);
 
 /// Request preparation of the code for faster execution. It is not required
 /// to execute the code but allows compilation of the code ahead of time in
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     enum evm_mode mode,
-                                    struct evm_hash256 code_hash,
+                                    struct evm_uint256be code_hash,
                                     uint8_t const* code,
                                     size_t code_size);
 
