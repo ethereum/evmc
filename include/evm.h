@@ -22,6 +22,8 @@
 extern "C" {
 #endif
 
+// BEGIN Python CFFI declarations
+
 /// The EVM-C ABI version number matching the interface declared in this file.
 static const uint32_t EVM_ABI_VERSION = 0;
 
@@ -405,6 +407,8 @@ struct evm_interface {
     /// If the VM does not support this feature the pointer can be NULL.
     evm_set_option_fn set_option;
 };
+
+// END Python CFFI declarations
 
 /// Example of a function exporting an interface for an example VM.
 ///
