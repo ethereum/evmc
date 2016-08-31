@@ -35,9 +35,6 @@ static const uint32_t EVM_ABI_VERSION = 0;
 /// as both 256-bit integers and 256-bit hashes.
 struct evm_uint256be {
     /// The 32 bytes of the big-endian integer or hash.
-    ///
-    /// The memory is expected be aligned to 8 bytes, but there is no portable
-    /// way to express that.
     uint8_t bytes[32];
 };
 
