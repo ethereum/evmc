@@ -150,21 +150,59 @@ union evm_variant {
 ///             the subset of query keys.
 ///
 /// ## Types of queries
-/// Key                   | Arg                  | Expected result
-/// ----------------------| -------------------- | ----------------------------
-/// ::EVM_GAS_PRICE       |                      | evm_variant::uint256be
-/// ::EVM_ADDRESS         |                      | evm_variant::address
-/// ::EVM_CALLER          |                      | evm_variant::address
-/// ::EVM_ORIGIN          |                      | evm_variant::address
-/// ::EVM_COINBASE        |                      | evm_variant::address
-/// ::EVM_DIFFICULTY      |                      | evm_variant::uint256be
-/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256be
-/// ::EVM_NUMBER          |                      | evm_variant::int64?
-/// ::EVM_TIMESTAMP       |                      | evm_variant::int64?
-/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::data
-/// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256be
-/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::uint256be
-/// ::EVM_SLOAD           | evm_variant::uint256be | evm_variant::uint256be
+///
+/// - ::EVM_GAS_PRICE
+///   @param arg n/a
+///   @result evm_variant::uint256be  The transaction gas price.
+///
+/// - ::EVM_ADDRESS
+///   @param arg n/a
+///   @result evm_variant::address  The address of the current contract.
+///
+/// - ::EVM_CALLER
+///   @param arg n/a
+///   @result evm_variant::address  The address of the caller.
+///
+/// - ::EVM_ORIGIN
+///   @param arg n/a
+///   @result evm_variant::address  The address of the transaction initiator.
+///
+/// - ::EVM_COINBASE
+///   @param arg n/a
+///   @result evm_variant::address  The address of the beneficiary of the block fees.
+///
+/// - ::EVM_DIFFICULTY
+///   @param arg n/a
+///   @result evm_variant::uint256be  The block difficulty.
+///
+/// - ::EVM_GAS_LIMIT
+///   @param arg n/a
+///   @result evm_variant::uint256be  The block gas limit.
+///
+/// - ::EVM_NUMBER
+///   @param arg n/a
+///   @result evm_variant::int64  The block number.
+///
+/// - ::EVM_TIMESTAMP
+///   @param arg n/a
+///   @result evm_variant::int64  The block timestamp.
+///
+/// - ::EVM_CODE_BY_ADDRESS
+///   @param arg evm_variant::address  The address to look up.
+///   @result evm_variant::data  The appropriate code for the given address or NULL if not found.
+///
+/// - ::EVM_BALANCE
+///   @param arg evm_variant::address  The address to look up.
+///   @result evm_variant::data  The appropriate balance for the given address or 0 if not found.
+///
+/// - ::EVM_BLOCKHASH
+///   @param arg evm_variant::int64  The block number to look up.
+///   @result evm_variant::uint256be  The hash of the requested block or 0 if not found.
+///
+/// - ::EVM_SLOAD
+///   @param arg evm_variant::uint256be  The index of the storage entry.
+///   @result evm_variant::uint256be  The current value of the storage entry.
+///
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
                                           union evm_variant arg);
@@ -202,6 +240,7 @@ enum evm_update_key {
 ///
 /// - ::EVM_SELFDESTRUCT
 ///   @param arg1 evm_variant::address  The beneficiary address.
+///   @param arg2 n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
