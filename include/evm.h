@@ -150,20 +150,20 @@ union evm_variant {
 ///             the subset of query keys.
 ///
 /// ## Types of queries
-/// Key                   | Arg                  | Expected result
-/// ----------------------| -------------------- | ----------------------------
-/// ::EVM_GAS_PRICE       |                      | evm_variant::uint256be
-/// ::EVM_ADDRESS         |                      | evm_variant::address
-/// ::EVM_CALLER          |                      | evm_variant::address
-/// ::EVM_ORIGIN          |                      | evm_variant::address
-/// ::EVM_COINBASE        |                      | evm_variant::address
-/// ::EVM_DIFFICULTY      |                      | evm_variant::uint256be
-/// ::EVM_GAS_LIMIT       |                      | evm_variant::uint256be
-/// ::EVM_NUMBER          |                      | evm_variant::int64
-/// ::EVM_TIMESTAMP       |                      | evm_variant::int64
-/// ::EVM_CODE_BY_ADDRESS | evm_variant::address | evm_variant::data
-/// ::EVM_BALANCE         | evm_variant::address | evm_variant::uint256be
-/// ::EVM_BLOCKHASH       | evm_variant::int64   | evm_variant::hash256be
+/// Key                   | Arg                    | Expected result
+/// ----------------------| ---------------------- | ----------------------------
+/// ::EVM_GAS_PRICE       | n/a                    | evm_variant::uint256be
+/// ::EVM_ADDRESS         | n/a                    | evm_variant::address
+/// ::EVM_CALLER          | n/a                    | evm_variant::address
+/// ::EVM_ORIGIN          | n/a                    | evm_variant::address
+/// ::EVM_COINBASE        | n/a                    | evm_variant::address
+/// ::EVM_DIFFICULTY      | n/a                    | evm_variant::uint256be
+/// ::EVM_GAS_LIMIT       | n/a                    | evm_variant::uint256be
+/// ::EVM_NUMBER          | n/a                    | evm_variant::int64
+/// ::EVM_TIMESTAMP       | n/a                    | evm_variant::int64
+/// ::EVM_CODE_BY_ADDRESS | evm_variant::address   | evm_variant::data
+/// ::EVM_BALANCE         | evm_variant::address   | evm_variant::uint256be
+/// ::EVM_BLOCKHASH       | evm_variant::int64     | evm_variant::hash256be
 /// ::EVM_SLOAD           | evm_variant::uint256be | evm_variant::uint256be
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
@@ -202,6 +202,7 @@ enum evm_update_key {
 ///
 /// - ::EVM_SELFDESTRUCT
 ///   @param arg1 evm_variant::address  The beneficiary address.
+///   @param arg2 n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
                               union evm_variant arg1,
