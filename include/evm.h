@@ -101,7 +101,8 @@ enum evm_query_key {
     EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODE/SIZE.
     EVM_BALANCE = 11,         ///< Balance of a given address for BALANCE.
     EVM_BLOCKHASH = 12,       ///< Block hash of by block number for BLOCKHASH.
-    EVM_ACCOUNT_EXISTS = 13
+    EVM_ACCOUNT_EXISTS = 13,  ///< Check if an account exists.
+    EVM_CALL_DEPTH = 14,      ///< Current call depth.
 };
 
 
