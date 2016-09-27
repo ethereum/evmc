@@ -93,6 +93,6 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
 
-    intf.release_result(&result);
+    result.release(&result);
     intf.destroy(jit);
 }

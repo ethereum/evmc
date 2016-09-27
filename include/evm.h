@@ -55,6 +55,18 @@ enum evm_result_code {
     EVM_STACK_UNDERFLOW = 6,
 };
 
+struct evm_result;
+
+/// Releases resources assigned to an execution result.
+///
+/// This function releases memory (and other resources, if any) assigned to the
+/// specified execution result making the result object invalid.
+///
+/// @param result  The execution result which resource are to be released. The
+///                result itself it not modified by this function, but becomes
+///                invalid and user should discard it as well.
+typedef void (*evm_release_result_fn)(struct evm_result const* result);
+
 /// The EVM code execution result.
 struct evm_result {
     /// The execution result code.
@@ -82,6 +94,13 @@ struct evm_result {
 
     /// The error message explaining the result code.
     char const* error_message;
+
+    /// The pointer to the result release implementation.
+    ///
+    /// This function pointer must be set by the VM implementation and works
+    /// similary to C++ virtual destructor. Attaching the releaser to the result
+    /// itself allows VM composition.
+    evm_release_result_fn release;
 
     /// @}
 };
@@ -370,15 +389,6 @@ typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             size_t input_size,
                                             struct evm_uint256be value);
 
-/// Releases resources assigned to an execution result.
-///
-/// This function releases memory (and other resources, if any) assigned to the
-/// specified execution result making the result object invalid.
-///
-/// @param result  The execution result which resource are to be released. The
-///                result itself it not modified by this function, but becomes
-///                invalid and user should discard it as well.
-typedef void (*evm_release_result_fn)(struct evm_result const* result);
 
 /// Status of a code in VM. Useful for JIT-like implementations.
 enum evm_code_status {
@@ -426,9 +436,6 @@ struct evm_interface {
 
     /// Pointer to function execuing a code in a VM.
     evm_execute_fn execute;
-
-    /// Pointer to function releasing an execution result.
-    evm_release_result_fn release_result;
 
     /// Optional pointer to function returning a status of a code.
     ///
