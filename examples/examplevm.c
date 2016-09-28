@@ -55,9 +55,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
                                      size_t input_size,
                                      struct evm_uint256be value)
 {
-    struct evm_result ret;
-
-    memset(&ret, 0, sizeof(struct evm_result));
+    struct evm_result ret = {};
 
     // Execute code and refer to callbacks: instance->query_fn()
 
@@ -70,8 +68,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 
 struct evm_interface examplevm_get_interface()
 {
-    struct evm_interface intf;
-    memset(&intf, 0, sizeof(struct evm_result));
+    struct evm_interface intf = {};
     intf.abi_version = EVM_ABI_VERSION;
     intf.create = evm_create;
     intf.destroy = evm_destroy;
