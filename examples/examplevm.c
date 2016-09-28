@@ -40,6 +40,10 @@ int evm_set_option(struct evm_instance* evm,
     return 0;
 }
 
+static void evm_release_result(struct evm_result const* result)
+{
+}
+
 static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_env* env,
                                      enum evm_mode mode,
@@ -57,14 +61,11 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 
     // Execute code and refer to callbacks: instance->query_fn()
 
+    ret.release = evm_release_result;
     ret.code = EVM_FAILURE;
     ret.gas_left = 0;
 
     return ret;
-}
-
-static void evm_release_result(struct evm_result const* result)
-{
 }
 
 struct evm_interface examplevm_get_interface()
@@ -75,7 +76,6 @@ struct evm_interface examplevm_get_interface()
     intf.create = evm_create;
     intf.destroy = evm_destroy;
     intf.execute = evm_execute;
-    intf.release_result = evm_release_result;
     intf.set_option = evm_set_option;
     return intf;
 }

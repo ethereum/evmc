@@ -55,6 +55,18 @@ enum evm_result_code {
     EVM_STACK_UNDERFLOW = 6,
 };
 
+struct evm_result;
+
+/// Releases resources assigned to an execution result.
+///
+/// This function releases memory (and other resources, if any) assigned to the
+/// specified execution result making the result object invalid.
+///
+/// @param result  The execution result which resource are to be released. The
+///                result itself it not modified by this function, but becomes
+///                invalid and user should discard it as well.
+typedef void (*evm_release_result_fn)(struct evm_result const* result);
+
 /// The EVM code execution result.
 struct evm_result {
     /// The execution result code.
@@ -65,23 +77,43 @@ struct evm_result {
     /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    /// The reference to output data. The memory containing the output data
-    /// is owned by EVM and is freed with evm_release_result_fn().
-    uint8_t const* output_data;
+    union
+    {
+        struct
+        {
+            /// The reference to output data. The memory containing the output
+            /// data is owned by EVM and is freed with evm_result::release().
+            uint8_t const* output_data;
 
-    /// The size of the output data.
-    size_t output_size;
+            /// The size of the output data.
+            size_t output_size;
+        };
+
+        /// The address of the successfully created contract.
+        ///
+        /// This field has valid value only if the evm_result comes from a
+        /// successful CREATE opcode execution
+        /// (i.e. evm_call_fn(..., EVM_CREATE, ...)).
+        struct evm_uint160be create_address;
+    };
+
+    /// The pointer to the result release implementation.
+    ///
+    /// This function pointer must be set by the VM implementation and works
+    /// similary to C++ virtual destructor. Attaching the releaser to the result
+    /// itself allows VM composition.
+    evm_release_result_fn release;
 
     /// @name Optional
     /// The optional information that EVM is not required to provide.
     /// @{
 
+    /// The error message explaining the result code.
+    char const* error_message;
+
     /// The pointer to EVM-owned memory. For EVM internal use.
     /// @see output_data.
     void* internal_memory;
-
-    /// The error message explaining the result code.
-    char const* error_message;
 
     /// @}
 };
@@ -370,15 +402,6 @@ typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             size_t input_size,
                                             struct evm_uint256be value);
 
-/// Releases resources assigned to an execution result.
-///
-/// This function releases memory (and other resources, if any) assigned to the
-/// specified execution result making the result object invalid.
-///
-/// @param result  The execution result which resource are to be released. The
-///                result itself it not modified by this function, but becomes
-///                invalid and user should discard it as well.
-typedef void (*evm_release_result_fn)(struct evm_result const* result);
 
 /// Status of a code in VM. Useful for JIT-like implementations.
 enum evm_code_status {
@@ -426,9 +449,6 @@ struct evm_interface {
 
     /// Pointer to function execuing a code in a VM.
     evm_execute_fn execute;
-
-    /// Pointer to function releasing an execution result.
-    evm_release_result_fn release_result;
 
     /// Optional pointer to function returning a status of a code.
     ///
