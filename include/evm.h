@@ -77,23 +77,25 @@ struct evm_result {
     /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    /// The reference to output data. The memory containing the output data
-    /// is owned by EVM and is freed with evm_release_result_fn().
-    uint8_t const* output_data;
+    union
+    {
+        struct
+        {
+            /// The reference to output data. The memory containing the output
+            /// data is owned by EVM and is freed with evm_result::release().
+            uint8_t const* output_data;
 
-    /// The size of the output data.
-    size_t output_size;
+            /// The size of the output data.
+            size_t output_size;
+        };
 
-    /// @name Optional
-    /// The optional information that EVM is not required to provide.
-    /// @{
-
-    /// The pointer to EVM-owned memory. For EVM internal use.
-    /// @see output_data.
-    void* internal_memory;
-
-    /// The error message explaining the result code.
-    char const* error_message;
+        /// The address of the successfully created contract.
+        ///
+        /// This field has valid value only if the evm_result comes from a
+        /// successful CREATE opcode execution
+        /// (i.e. evm_call_fn(..., EVM_CREATE, ...)).
+        struct evm_uint160be create_address;
+    };
 
     /// The pointer to the result release implementation.
     ///
@@ -101,6 +103,17 @@ struct evm_result {
     /// similary to C++ virtual destructor. Attaching the releaser to the result
     /// itself allows VM composition.
     evm_release_result_fn release;
+
+    /// @name Optional
+    /// The optional information that EVM is not required to provide.
+    /// @{
+
+    /// The error message explaining the result code.
+    char const* error_message;
+
+    /// The pointer to EVM-owned memory. For EVM internal use.
+    /// @see output_data.
+    void* internal_memory;
 
     /// @}
 };
