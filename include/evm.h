@@ -365,10 +365,12 @@ typedef int (*evm_set_option_fn)(struct evm_instance* evm,
 
 
 /// EVM compatibility mode aka chain mode.
-/// TODO: Can you suggest better name?
+/// The names for the last two hard forks come from Python implementation.
 enum evm_mode {
     EVM_FRONTIER = 0,
-    EVM_HOMESTEAD = 1
+    EVM_HOMESTEAD = 1,
+    EVM_ANTI_DOS = 2,
+    EVM_CLEARING = 3
 };
 
 
