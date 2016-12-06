@@ -130,11 +130,12 @@ enum evm_query_key {
     EVM_GAS_LIMIT = 7,        ///< Current block gas limit for GASLIMIT.
     EVM_NUMBER = 8,           ///< Current block number for NUMBER.
     EVM_TIMESTAMP = 9,        ///< Current block timestamp for TIMESTAMP.
-    EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODE/SIZE.
-    EVM_BALANCE = 11,         ///< Balance of a given address for BALANCE.
-    EVM_BLOCKHASH = 12,       ///< Block hash of by block number for BLOCKHASH.
-    EVM_ACCOUNT_EXISTS = 13,  ///< Check if an account exists.
-    EVM_CALL_DEPTH = 14,      ///< Current call depth.
+    EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
+    EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
+    EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
+    EVM_BLOCKHASH = 13,       ///< Block hash of by block number for BLOCKHASH.
+    EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
+    EVM_CALL_DEPTH = 15,      ///< Current call depth.
 };
 
 
@@ -224,6 +225,10 @@ union evm_variant {
 /// - ::EVM_CODE_BY_ADDRESS
 ///   @param arg evm_variant::address  The address to look up.
 ///   @result evm_variant::data  The appropriate code for the given address or NULL if not found.
+///
+/// - ::EVM_CODE_SIZE
+///   @param arg evm_variant::address  The address to look up.
+///   @result evm_variant::data  The appropriate code size for the given address or 0 if not found.
 ///
 /// - ::EVM_BALANCE
 ///   @param arg evm_variant::address  The address to look up.
