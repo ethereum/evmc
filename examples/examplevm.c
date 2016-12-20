@@ -2,26 +2,14 @@
 #include <string.h>
 #include "evm.h"
 
-struct evm_instance {
+
+struct examplevm
+{
+    struct evm_instance instance;
     evm_query_fn query_fn;
     evm_update_fn update_fn;
     evm_call_fn call_fn;
 };
-
-static struct evm_instance* evm_create(evm_query_fn query_fn,
-                                       evm_update_fn update_fn,
-                                       evm_call_fn call_fn)
-{
-    struct evm_instance *ret = calloc(1, sizeof(struct evm_instance));
-
-    if (ret) {
-      ret->query_fn = query_fn;
-      ret->update_fn = update_fn;
-      ret->call_fn = call_fn;
-    }
-
-    return ret;
-}
 
 static void evm_destroy(struct evm_instance* evm)
 {
@@ -66,13 +54,23 @@ static struct evm_result evm_execute(struct evm_instance* instance,
     return ret;
 }
 
-struct evm_interface examplevm_get_interface()
+static struct evm_instance* evm_create(evm_query_fn query_fn,
+                                       evm_update_fn update_fn,
+                                       evm_call_fn call_fn)
 {
-    struct evm_interface intf = {};
-    intf.abi_version = EVM_ABI_VERSION;
-    intf.create = evm_create;
-    intf.destroy = evm_destroy;
-    intf.execute = evm_execute;
-    intf.set_option = evm_set_option;
-    return intf;
+    struct examplevm* vm = calloc(1, sizeof(struct examplevm));
+    struct evm_instance* interface = &vm->instance;
+    interface->destroy = evm_destroy;
+    interface->execute = evm_execute;
+    interface->set_option = evm_set_option;
+    vm->query_fn = query_fn;
+    vm->update_fn = update_fn;
+    vm->call_fn = call_fn;
+    return interface;
+}
+
+struct evm_factory examplevm_get_factory()
+{
+    struct evm_factory factory = {EVM_ABI_VERSION, evm_create};
+    return factory;
 }
