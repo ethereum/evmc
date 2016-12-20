@@ -77,25 +77,12 @@ struct evm_result {
     /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    union
-    {
-        struct
-        {
-            /// The reference to output data. The memory containing the output
-            /// data is owned by EVM and is freed with evm_result::release().
-            uint8_t const* output_data;
+    /// The reference to output data. The memory containing the output
+    /// data is owned by EVM and is freed with evm_result::release().
+    uint8_t const* output_data;
 
-            /// The size of the output data.
-            size_t output_size;
-        };
-
-        /// The address of the successfully created contract.
-        ///
-        /// This field has valid value only if the evm_result comes from a
-        /// successful CREATE opcode execution
-        /// (i.e. evm_call_fn(..., EVM_CREATE, ...)).
-        struct evm_uint160be create_address;
-    };
+    /// The size of the output data.
+    size_t output_size;
 
     /// The pointer to the result release implementation.
     ///
