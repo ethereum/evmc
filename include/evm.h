@@ -231,7 +231,7 @@ union evm_variant {
 ///
 typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
                                           enum evm_query_key key,
-                                          union evm_variant arg);
+                                          const union evm_variant* arg);
 
 /// The update callback key.
 enum evm_update_key {
@@ -269,8 +269,8 @@ enum evm_update_key {
 ///   @param arg2 n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
-                              union evm_variant arg1,
-                              union evm_variant arg2);
+                              const union evm_variant* arg1,
+                              const union evm_variant* arg2);
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
@@ -308,8 +308,8 @@ typedef int64_t (*evm_call_fn)(
     struct evm_env* env,
     enum evm_call_kind kind,
     int64_t gas,
-    struct evm_uint160be address,
-    struct evm_uint256be value,
+    const struct evm_uint160be* address,
+    const struct evm_uint256be* value,
     uint8_t const* input,
     size_t input_size,
     uint8_t* output,

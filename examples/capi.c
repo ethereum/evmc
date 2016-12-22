@@ -16,16 +16,16 @@ struct evm_uint160be address(struct evm_env* env)
     return ret;
 }
 
-union evm_variant query(struct evm_env* env,
-                        enum evm_query_key key,
-                        union evm_variant arg) {
+static union evm_variant query(struct evm_env* env,
+                               enum evm_query_key key,
+                               const union evm_variant* arg) {
     union evm_variant result;
     printf("EVM-C: QUERY %d\n", key);
     switch (key) {
     case EVM_GAS_LIMIT: result.int64 = 314; break;
 
     case EVM_BALANCE:
-        result.uint256be = balance(env, arg.address);
+        result.uint256be = balance(env, arg->address);
         break;
 
     case EVM_ADDRESS:
@@ -37,20 +37,20 @@ union evm_variant query(struct evm_env* env,
     return result;
 }
 
-void update(struct evm_env* env,
-            enum evm_update_key key,
-            union evm_variant arg1,
-            union evm_variant arg2)
+static void update(struct evm_env* env,
+                   enum evm_update_key key,
+                   const union evm_variant* arg1,
+                   const union evm_variant* arg2)
 {
     printf("EVM-C: UPDATE %d\n", key);
 }
 
-int64_t call(
+static int64_t call(
     struct evm_env* _opaqueEnv,
     enum evm_call_kind _kind,
     int64_t _gas,
-    struct evm_uint160be _address,
-    struct evm_uint256be _value,
+    const struct evm_uint160be* _address,
+    const struct evm_uint256be* _value,
     uint8_t const* _inputData,
     size_t _inputSize,
     uint8_t* _outputData,
