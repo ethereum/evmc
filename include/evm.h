@@ -25,7 +25,7 @@ extern "C" {
 // BEGIN Python CFFI declarations
 
 /// The EVM-C ABI version number matching the interface declared in this file.
-static const uint32_t EVM_ABI_VERSION = 0;
+enum { EVM_ABI_VERSION = 0 };
 
 /// Big-endian 256-bit integer.
 ///
@@ -282,7 +282,7 @@ enum evm_call_kind {
 };
 
 /// The flag indicating call failure in evm_call_fn().
-static const int64_t EVM_CALL_FAILURE = INT64_MIN;
+enum { EVM_CALL_FAILURE = INT64_MIN };
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -457,7 +457,7 @@ struct evm_factory {
     ///
     /// For future use to detect ABI incompatibilities. The EVM-C ABI version
     /// represented by this file is in ::EVM_ABI_VERSION.
-    uint32_t abi_version;
+    int abi_version;
 
     /// Pointer to function creating and initializing the EVM instance.
     evm_create_fn create;
