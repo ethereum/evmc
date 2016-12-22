@@ -229,9 +229,10 @@ union evm_variant {
 ///   @param arg evm_variant::uint256be  The index of the storage entry.
 ///   @result evm_variant::uint256be  The current value of the storage entry.
 ///
-typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
-                                          enum evm_query_key key,
-                                          const union evm_variant* arg);
+typedef void (*evm_query_fn)(union evm_variant* result,
+                             struct evm_env* env,
+                             enum evm_query_key key,
+                             const union evm_variant* arg);
 
 /// The update callback key.
 enum evm_update_key {
