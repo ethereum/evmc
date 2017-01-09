@@ -281,8 +281,8 @@ enum evm_call_kind {
     EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
 
-/// The flag indicating call failure in evm_call_fn().
-enum { EVM_CALL_FAILURE = INT64_MIN };
+/// The flag indicating call failure in evm_call_fn() -- highest bit set.
+static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 
 /// Pointer to the callback function supporting EVM calls.
 ///
