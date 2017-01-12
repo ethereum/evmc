@@ -46,6 +46,16 @@ struct evm_uint160be {
     uint8_t bytes[20];
 };
 
+struct evm_message {
+    struct evm_uint160be address;
+    struct evm_uint160be sender;
+    struct evm_uint256be value;
+    const uint8_t* input;
+    size_t input_size;
+    int64_t gas;
+    int32_t depth;
+};
+
 /// The execution result code.
 enum evm_result_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
@@ -420,10 +430,7 @@ typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_uint256be code_hash,
                                             uint8_t const* code,
                                             size_t code_size,
-                                            int64_t gas,
-                                            uint8_t const* input,
-                                            size_t input_size,
-                                            struct evm_uint256be value);
+                                            struct evm_message message);
 
 
 /// Status of a code in VM. Useful for JIT-like implementations.

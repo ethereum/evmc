@@ -76,11 +76,13 @@ int main(int argc, char *argv[]) {
     struct evm_uint256be code_hash = {.bytes = {1, 2, 3,}};
     uint8_t const input[] = "Hello World!";
     struct evm_uint256be value = {{1, 0, 0, 0}};
-
+    struct evm_uint160be addr = {{0, 1, 2,}};
     int64_t gas = 200000;
+
+    struct evm_message msg = {addr, addr, value, input, sizeof(input), gas, 0};
+
     struct evm_result result =
-        jit->execute(jit, NULL, EVM_HOMESTEAD, code_hash, code, code_size, gas,
-                     input, sizeof(input), value);
+        jit->execute(jit, NULL, EVM_HOMESTEAD, code_hash, code, code_size, msg);
 
     printf("Execution result:\n");
     if (result.code != EVM_SUCCESS) {

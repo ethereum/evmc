@@ -43,10 +43,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
                                      struct evm_uint256be code_hash,
                                      uint8_t const* code,
                                      size_t code_size,
-                                     int64_t gas,
-                                     uint8_t const* input,
-                                     size_t input_size,
-                                     struct evm_uint256be value)
+                                     struct evm_message message)
 {
     struct evm_result ret = {};
     if (code_size == 0) {
@@ -78,7 +75,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
             ret.code = EVM_INTERNAL_ERROR;
             return ret;
         }
-        memcpy(output_data, &query_result.address, address_size);
+        memcpy(output_data, &message.address, address_size);
         ret.code = EVM_SUCCESS;
         ret.output_data = output_data;
         ret.output_size = address_size;
