@@ -148,8 +148,6 @@ struct evm_result {
 /// The query callback key.
 enum evm_query_key {
     EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
-    EVM_ADDRESS = 1,          ///< Address of the contract for ADDRESS.
-    EVM_CALLER = 2,           ///< Message sender address for CALLER.
     EVM_ORIGIN = 3,           ///< Transaction origin address for ORIGIN.
     EVM_GAS_PRICE = 4,        ///< Transaction gas price for GASPRICE.
     EVM_COINBASE = 5,         ///< Current block miner address for COINBASE.
@@ -162,7 +160,6 @@ enum evm_query_key {
     EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
     EVM_BLOCKHASH = 13,       ///< Block hash of by block number for BLOCKHASH.
     EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
-    EVM_CALL_DEPTH = 15,      ///< Current call depth.
 };
 
 
