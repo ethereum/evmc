@@ -56,6 +56,16 @@ struct evm_message {
     int32_t depth;
 };
 
+struct evm_tx_context {
+    struct evm_uint256be tx_gas_price;
+    struct evm_uint160be tx_origin;
+    struct evm_uint160be block_coinbase;
+    int64_t block_number;
+    int64_t block_timestamp;
+    int64_t block_gas_limit;
+    struct evm_uint256be block_difficulty;
+};
+
 /// The execution result code.
 enum evm_result_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
