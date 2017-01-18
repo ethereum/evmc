@@ -9,6 +9,7 @@ struct examplevm
     evm_query_fn query_fn;
     evm_update_fn update_fn;
     evm_call_fn call_fn;
+    evm_get_tx_context_fn get_tx_context_fn;
 };
 
 static void evm_destroy(struct evm_instance* evm)
@@ -93,7 +94,8 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 
 static struct evm_instance* evm_create(evm_query_fn query_fn,
                                        evm_update_fn update_fn,
-                                       evm_call_fn call_fn)
+                                       evm_call_fn call_fn,
+                                       evm_get_tx_context_fn get_tx_context_fn)
 {
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evm_instance* interface = &vm->instance;
@@ -103,6 +105,7 @@ static struct evm_instance* evm_create(evm_query_fn query_fn,
     vm->query_fn = query_fn;
     vm->update_fn = update_fn;
     vm->call_fn = call_fn;
+    vm->get_tx_context_fn = get_tx_context_fn;
     return interface;
 }
 

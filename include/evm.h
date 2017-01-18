@@ -29,6 +29,10 @@ enum {
     EVM_ABI_VERSION = 0
 };
 
+/// Opaque struct representing execution enviroment managed by the host
+/// application.
+struct evm_env;
+
 /// Big-endian 256-bit integer.
 ///
 /// 32 bytes of data representing big-endian 256-bit integer. I.e. bytes[0] is
@@ -168,10 +172,6 @@ enum evm_query_key {
     EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
 };
 
-
-/// Opaque struct representing execution enviroment managed by the host
-/// application.
-struct evm_env;
 
 /// Variant type to represent possible types of values used in EVM.
 ///
