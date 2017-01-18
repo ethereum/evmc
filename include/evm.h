@@ -161,13 +161,6 @@ struct evm_result {
 /// The query callback key.
 enum evm_query_key {
     EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
-    EVM_ORIGIN = 3,           ///< Transaction origin address for ORIGIN.
-    EVM_GAS_PRICE = 4,        ///< Transaction gas price for GASPRICE.
-    EVM_COINBASE = 5,         ///< Current block miner address for COINBASE.
-    EVM_DIFFICULTY = 6,       ///< Current block difficulty for DIFFICULTY.
-    EVM_GAS_LIMIT = 7,        ///< Current block gas limit for GASLIMIT.
-    EVM_NUMBER = 8,           ///< Current block number for NUMBER.
-    EVM_TIMESTAMP = 9,        ///< Current block timestamp for TIMESTAMP.
     EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
     EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
     EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
