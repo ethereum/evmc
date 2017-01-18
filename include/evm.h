@@ -66,6 +66,9 @@ struct evm_tx_context {
     struct evm_uint256be block_difficulty;
 };
 
+typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
+                                      struct evm_env* env);
+
 /// The execution result code.
 enum evm_result_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
@@ -377,7 +380,8 @@ struct evm_instance;  ///< Forward declaration.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_fn query_fn,
                                               evm_update_fn update_fn,
-                                              evm_call_fn call_fn);
+                                              evm_call_fn call_fn,
+                                              evm_get_tx_context_fn);
 
 /// Destroys the EVM instance.
 ///
