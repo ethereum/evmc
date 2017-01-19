@@ -73,6 +73,10 @@ struct evm_tx_context {
 typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
                                       struct evm_env* env);
 
+typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
+                                      struct evm_env* env,
+                                      int64_t number);
+
 /// The execution result code.
 enum evm_result_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
@@ -168,7 +172,6 @@ enum evm_query_key {
     EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
     EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
     EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
-    EVM_BLOCKHASH = 13,       ///< Block hash of by block number for BLOCKHASH.
     EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
 };
 
@@ -374,7 +377,8 @@ struct evm_instance;  ///< Forward declaration.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_fn query_fn,
                                               evm_update_fn update_fn,
                                               evm_call_fn call_fn,
-                                              evm_get_tx_context_fn);
+                                              evm_get_tx_context_fn,
+                                              evm_get_block_hash_fn);
 
 /// Destroys the EVM instance.
 ///

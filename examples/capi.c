@@ -69,6 +69,12 @@ static void get_tx_context(struct evm_tx_context* result, struct evm_env* env)
 
 }
 
+static void get_block_hash(struct evm_uint256be* result, struct evm_env* env,
+                           int64_t number)
+{
+
+}
+
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
     struct evm_factory factory = examplevm_get_factory();
@@ -76,7 +82,7 @@ int main(int argc, char *argv[]) {
         return 1;  // Incompatible ABI version.
 
     struct evm_instance* jit = factory.create(query, update, call,
-                                              get_tx_context);
+                                              get_tx_context, get_block_hash);
 
     uint8_t const code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);
