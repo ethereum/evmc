@@ -275,10 +275,11 @@ union evm_variant {
 ///   @param arg evm_variant::uint256be  The index of the storage entry.
 ///   @result evm_variant::uint256be  The current value of the storage entry.
 ///
-typedef void (*evm_query_fn)(union evm_variant* result,
-                             struct evm_env* env,
-                             enum evm_query_key key,
-                             const union evm_variant* arg);
+typedef void (*evm_query_state_fn)(union evm_variant* result,
+                                   struct evm_env* env,
+                                   enum evm_query_key key,
+                                   const struct evm_uint160be* address,
+                                   const struct evm_uint256be* storage_key);
 
 /// The update callback key.
 enum evm_update_key {
@@ -374,7 +375,7 @@ struct evm_instance;  ///< Forward declaration.
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)(evm_query_fn query_fn,
+typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
                                               evm_update_fn update_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn,

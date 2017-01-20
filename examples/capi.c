@@ -4,7 +4,8 @@
 #include "evm.h"
 
 
-struct evm_uint256be balance(struct evm_env* env, struct evm_uint160be address)
+struct evm_uint256be balance(struct evm_env* env,
+                             const struct evm_uint160be* address)
 {
     struct evm_uint256be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
@@ -19,7 +20,8 @@ struct evm_uint160be address(struct evm_env* env)
 static void query(union evm_variant* result,
                   struct evm_env* env,
                   enum evm_query_key key,
-                  const union evm_variant* arg) {
+                  const struct evm_uint160be* address,
+                  const struct evm_uint256be* storage_key) {
     printf("EVM-C: QUERY %d\n", key);
     switch (key) {
     case EVM_CODE_BY_ADDRESS:
@@ -28,7 +30,7 @@ static void query(union evm_variant* result,
         break;
 
     case EVM_BALANCE:
-        result->uint256be = balance(env, arg->address);
+        result->uint256be = balance(env, address);
         break;
 
     case EVM_ACCOUNT_EXISTS:
