@@ -25,7 +25,7 @@ extern "C" {
 // BEGIN Python CFFI declarations
 
 /// The EVM-C ABI version number matching the interface declared in this file.
-static const uint32_t EVM_ABI_VERSION = 0;
+enum { EVM_ABI_VERSION = 0 };
 
 /// Big-endian 256-bit integer.
 ///
@@ -55,7 +55,7 @@ enum evm_result_code {
     EVM_STACK_UNDERFLOW = 6,
 };
 
-struct evm_result;
+struct evm_result;  ///< Forward declaration.
 
 /// Releases resources assigned to an execution result.
 ///
@@ -77,25 +77,12 @@ struct evm_result {
     /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
     int64_t gas_left;
 
-    union
-    {
-        struct
-        {
-            /// The reference to output data. The memory containing the output
-            /// data is owned by EVM and is freed with evm_result::release().
-            uint8_t const* output_data;
+    /// The reference to output data. The memory containing the output
+    /// data is owned by EVM and is freed with evm_result::release().
+    uint8_t const* output_data;
 
-            /// The size of the output data.
-            size_t output_size;
-        };
-
-        /// The address of the successfully created contract.
-        ///
-        /// This field has valid value only if the evm_result comes from a
-        /// successful CREATE opcode execution
-        /// (i.e. evm_call_fn(..., EVM_CREATE, ...)).
-        struct evm_uint160be create_address;
-    };
+    /// The size of the output data.
+    size_t output_size;
 
     /// The pointer to the result release implementation.
     ///
@@ -242,9 +229,10 @@ union evm_variant {
 ///   @param arg evm_variant::uint256be  The index of the storage entry.
 ///   @result evm_variant::uint256be  The current value of the storage entry.
 ///
-typedef union evm_variant (*evm_query_fn)(struct evm_env* env,
-                                          enum evm_query_key key,
-                                          union evm_variant arg);
+typedef void (*evm_query_fn)(union evm_variant* result,
+                             struct evm_env* env,
+                             enum evm_query_key key,
+                             const union evm_variant* arg);
 
 /// The update callback key.
 enum evm_update_key {
@@ -282,8 +270,8 @@ enum evm_update_key {
 ///   @param arg2 n/a
 typedef void (*evm_update_fn)(struct evm_env* env,
                               enum evm_update_key key,
-                              union evm_variant arg1,
-                              union evm_variant arg2);
+                              const union evm_variant* arg1,
+                              const union evm_variant* arg2);
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
@@ -293,8 +281,8 @@ enum evm_call_kind {
     EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
 };
 
-/// The flag indicating call failure in evm_call_fn().
-static const int64_t EVM_CALL_FAILURE = INT64_MIN;
+/// The flag indicating call failure in evm_call_fn() -- highest bit set.
+static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -321,23 +309,20 @@ typedef int64_t (*evm_call_fn)(
     struct evm_env* env,
     enum evm_call_kind kind,
     int64_t gas,
-    struct evm_uint160be address,
-    struct evm_uint256be value,
+    const struct evm_uint160be* address,
+    const struct evm_uint256be* value,
     uint8_t const* input,
     size_t input_size,
     uint8_t* output,
     size_t output_size);
 
 
-/// Opaque type representing a EVM instance.
-struct evm_instance;
+struct evm_instance;  ///< Forward declaration.
 
-/// Creates new EVM instance.
+/// Creates the EVM instance.
 ///
-/// Creates new EVM instance. The instance must be destroyed in evm_destroy().
-/// Single instance is thread-safe and can be shared by many threads. Having
-/// **multiple instances is safe but discouraged** as it has not benefits over
-/// having the singleton.
+/// Creates and initializes an EVM instance by providing the information
+/// about runtime callback functions.
 ///
 /// @param query_fn   Pointer to query callback function. Nonnull.
 /// @param update_fn  Pointer to update callback function. Nonnull.
@@ -438,23 +423,14 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     uint8_t const* code,
                                     size_t code_size);
 
-/// VM interface.
+/// The EVM instance.
 ///
-/// Defines the implementation of EVM-C interface for a VM.
-struct evm_interface {
-    /// EVM-C ABI version implemented by the VM.
-    ///
-    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
-    /// represented by this file is in ::EVM_ABI_VERSION.
-    uint32_t abi_version;
-
-    /// Pointer to function creating a VM's instance.
-    evm_create_fn create;
-
-    /// Pointer to function destroying a VM's instance.
+/// Defines the base struct of the EVM implementation.
+struct evm_instance {
+    /// Pointer to function destroying the EVM instance.
     evm_destroy_fn destroy;
 
-    /// Pointer to function execuing a code in a VM.
+    /// Pointer to function executing a code by the EVM instance.
     evm_execute_fn execute;
 
     /// Optional pointer to function returning a status of a code.
@@ -473,16 +449,30 @@ struct evm_interface {
     evm_set_option_fn set_option;
 };
 
+/// The EVM instance factory.
+///
+/// Provides ABI protection and method to create an EVM instance.
+struct evm_factory {
+    /// EVM-C ABI version implemented by the EVM factory and instance.
+    ///
+    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// represented by this file is in ::EVM_ABI_VERSION.
+    int abi_version;
+
+    /// Pointer to function creating and initializing the EVM instance.
+    evm_create_fn create;
+};
+
 // END Python CFFI declarations
 
-/// Example of a function exporting an interface for an example VM.
+/// Example of a function creating uninitialized instance of an example VM.
 ///
-/// Each VM implementation is obligates to provided a function returning
-/// VM's interface.
-/// The function has to be named as `<vm-name>_get_interface(void)`.
+/// Each EVM implementation is obligated to provided a function returning
+/// an EVM instance.
+/// The function has to be named as `<vm-name>_get_factory(void)`.
 ///
-/// @return  VM interface
-struct evm_interface examplevm_get_interface(void);
+/// @return  EVM instance.
+struct evm_factory examplevm_get_factory(void);
 
 
 #if __cplusplus
