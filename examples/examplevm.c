@@ -7,7 +7,7 @@ struct examplevm
 {
     struct evm_instance instance;
     evm_query_state_fn query_fn;
-    evm_update_fn update_fn;
+    evm_update_state_fn update_fn;
     evm_call_fn call_fn;
     evm_get_tx_context_fn get_tx_context_fn;
     evm_get_block_hash_fn get_block_hash_fn;
@@ -94,7 +94,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 }
 
 static struct evm_instance* evm_create(evm_query_state_fn query_fn,
-                                       evm_update_fn update_fn,
+                                       evm_update_state_fn update_fn,
                                        evm_call_fn call_fn,
                                        evm_get_tx_context_fn get_tx_context_fn,
                                        evm_get_block_hash_fn get_block_hash_fn)

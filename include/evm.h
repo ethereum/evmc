@@ -315,10 +315,11 @@ enum evm_update_key {
 /// - ::EVM_SELFDESTRUCT
 ///   @param arg1 evm_variant::address  The beneficiary address.
 ///   @param arg2 n/a
-typedef void (*evm_update_fn)(struct evm_env* env,
-                              enum evm_update_key key,
-                              const union evm_variant* arg1,
-                              const union evm_variant* arg2);
+typedef void (*evm_update_state_fn)(struct evm_env* env,
+                                    enum evm_update_key key,
+                                    const struct evm_uint160be* address,
+                                    const union evm_variant* arg1,
+                                    const union evm_variant* arg2);
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
@@ -376,7 +377,7 @@ struct evm_instance;  ///< Forward declaration.
 /// @param call_fn    Pointer to call callback function. Nonnull.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
-                                              evm_update_fn update_fn,
+                                              evm_update_state_fn update_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn,
                                               evm_get_block_hash_fn);

@@ -44,6 +44,7 @@ static void query(union evm_variant* result,
 
 static void update(struct evm_env* env,
                    enum evm_update_key key,
+                   const struct evm_uint160be* addr,
                    const union evm_variant* arg1,
                    const union evm_variant* arg2)
 {
