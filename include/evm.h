@@ -45,6 +45,7 @@ struct evm_uint256be {
 };
 
 /// Big-endian 160-bit hash suitable for keeping an Ethereum address.
+/// TODO: Rename to "address".
 struct evm_uint160be {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
@@ -56,6 +57,7 @@ struct evm_message {
     struct evm_uint256be value;
     const uint8_t* input;
     size_t input_size;
+    struct evm_uint256be code_hash;
     int64_t gas;
     int32_t depth;
 };
@@ -437,10 +439,9 @@ enum evm_mode {
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_env* env,
                                             enum evm_mode mode,
-                                            struct evm_uint256be code_hash,
+                                            const struct evm_message* msg,
                                             uint8_t const* code,
-                                            size_t code_size,
-                                            struct evm_message message);
+                                            size_t code_size);
 
 
 /// Status of a code in VM. Useful for JIT-like implementations.

@@ -39,21 +39,20 @@ static void free_result_output_data(struct evm_result const* result)
     free((uint8_t*)result->output_data);
 }
 
-static struct evm_result evm_execute(struct evm_instance* instance,
-                                     struct evm_env* env,
-                                     enum evm_mode mode,
-                                     struct evm_uint256be code_hash,
-                                     uint8_t const* code,
-                                     size_t code_size,
-                                     struct evm_message message)
+static struct evm_result execute(struct evm_instance* instance,
+                                 struct evm_env* env,
+                                 enum evm_mode mode,
+                                 const struct evm_message* msg,
+                                 const uint8_t* code,
+                                 size_t code_size)
 {
     struct evm_result ret = {};
     if (code_size == 0) {
         // In case of empty code return a fancy error message.
-        const char* msg = mode == EVM_METROPOLIS ?
-                          "Welcome to Metropolis!" : "Hello Ethereum!";
-        ret.output_data = (const uint8_t*)msg;
-        ret.output_size = strlen(msg);
+        const char* error = mode == EVM_METROPOLIS ?
+                            "Welcome to Metropolis!" : "Hello Ethereum!";
+        ret.output_data = (const uint8_t*)error;
+        ret.output_size = strlen(error);
         ret.code = EVM_FAILURE;
         ret.release = NULL;  // We don't need to release the constant messages.
         return ret;
@@ -77,7 +76,7 @@ static struct evm_result evm_execute(struct evm_instance* instance,
             ret.code = EVM_INTERNAL_ERROR;
             return ret;
         }
-        memcpy(output_data, &message.address, address_size);
+        memcpy(output_data, &msg->address, address_size);
         ret.code = EVM_SUCCESS;
         ret.output_data = output_data;
         ret.output_size = address_size;
@@ -102,7 +101,7 @@ static struct evm_instance* evm_create(evm_query_state_fn query_fn,
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evm_instance* interface = &vm->instance;
     interface->destroy = evm_destroy;
-    interface->execute = evm_execute;
+    interface->execute = execute;
     interface->set_option = evm_set_option;
     vm->query_fn = query_fn;
     vm->update_fn = update_fn;
