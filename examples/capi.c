@@ -53,17 +53,12 @@ static void update(struct evm_env* env,
 
 static int64_t call(
     struct evm_env* _opaqueEnv,
-    enum evm_call_kind _kind,
-    int64_t _gas,
-    const struct evm_uint160be* _address,
-    const struct evm_uint256be* _value,
-    uint8_t const* _inputData,
-    size_t _inputSize,
+    const struct evm_message* _msg,
     uint8_t* _outputData,
     size_t _outputSize
 )
 {
-    printf("EVM-C: CALL %d\n", _kind);
+    printf("EVM-C: CALL (depth: %d)\n", _msg->depth);
     return EVM_CALL_FAILURE;
 }
 

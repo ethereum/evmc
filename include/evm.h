@@ -51,6 +51,14 @@ struct evm_uint160be {
     uint8_t bytes[20];
 };
 
+/// The kind of call-like instruction.
+enum evm_call_kind {
+	EVM_CALL = 0,         ///< Request CALL.
+	EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+	EVM_CALLCODE = 2,     ///< Request CALLCODE.
+	EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
+};
+
 struct evm_message {
     struct evm_uint160be address;
     struct evm_uint160be sender;
@@ -60,6 +68,7 @@ struct evm_message {
     struct evm_uint256be code_hash;
     int64_t gas;
     int32_t depth;
+    enum evm_call_kind kind;
 };
 
 struct evm_tx_context {
@@ -323,14 +332,6 @@ typedef void (*evm_update_state_fn)(struct evm_env* env,
                                     const union evm_variant* arg1,
                                     const union evm_variant* arg2);
 
-/// The kind of call-like instruction.
-enum evm_call_kind {
-    EVM_CALL = 0,         ///< Request CALL.
-    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
-    EVM_CALLCODE = 2,     ///< Request CALLCODE.
-    EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
-};
-
 /// The flag indicating call failure in evm_call_fn() -- highest bit set.
 static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 
@@ -357,12 +358,7 @@ static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 ///              There is no need to set 0 address in the output in this case.
 typedef int64_t (*evm_call_fn)(
     struct evm_env* env,
-    enum evm_call_kind kind,
-    int64_t gas,
-    const struct evm_uint160be* address,
-    const struct evm_uint256be* value,
-    uint8_t const* input,
-    size_t input_size,
+    const struct evm_message* msg,
     uint8_t* output,
     size_t output_size);
 
