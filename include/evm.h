@@ -360,7 +360,8 @@ enum evm_mode {
     EVM_FRONTIER = 0,
     EVM_HOMESTEAD = 1,
     EVM_ANTI_DOS = 2,
-    EVM_CLEARING = 3
+    EVM_CLEARING = 3,
+    EVM_METROPOLIS = 4,
 };
 
 
