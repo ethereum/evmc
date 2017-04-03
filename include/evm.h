@@ -53,6 +53,7 @@ enum evm_result_code {
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
+    EVM_REVERT = 7,
 };
 
 struct evm_result;  ///< Forward declaration.
