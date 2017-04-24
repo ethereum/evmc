@@ -98,6 +98,7 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
 
-    result.release(&result);
+    if (result.release)
+        result.release(&result);
     jit->destroy(jit);
 }

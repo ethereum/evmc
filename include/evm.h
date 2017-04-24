@@ -99,9 +99,13 @@ struct evm_result {
 
     /// The pointer to the result release implementation.
     ///
-    /// This function pointer must be set by the EVM implementation and works
-    /// similarly to C++ virtual destructor. Attaching the releaser to the
-    /// result itself allows EVM composition.
+    /// This function pointer may be set by the EVM implementation and must be
+    /// used by the user to release memory associated with the result object.
+    /// In case it is NULL the user does not have to release any resources.
+    ///
+    /// @note
+    /// It works similarly to C++ virtual destructor. Attaching the release
+    /// function to the result itself allows EVM composition.
     evm_release_result_fn release;
 
     /// The pointer to EVM-owned memory. For EVM internal use.
