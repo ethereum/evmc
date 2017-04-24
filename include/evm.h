@@ -86,9 +86,12 @@ struct evm_result {
     ///
     /// The output contains data coming from RETURN opcode (iff evm_result::code
     /// field is ::EVM_SUCCESS) or from REVERT opcode (iff evm_result::code
-    /// field is ::EVM_REVERT). In case the evm_result::code field signals
-    /// a failure the output can contain optional explanation of the failure
-    /// for debugging or tracing purposes.
+    /// field is ::EVM_REVERT).
+    ///
+    /// In case the evm_result::code field signals
+    /// a failure the output MAY contain optional explanation of the failure
+    /// for debugging or tracing purposes. In case the explanation is provided
+    /// and contains human-readable text the UTF-8 encoding SHOULD be used.
     ///
     /// The memory containing the output data is owned by EVM and has to be
     /// freed with evm_result::release().
