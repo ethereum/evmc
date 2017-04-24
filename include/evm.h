@@ -24,8 +24,10 @@ extern "C" {
 
 // BEGIN Python CFFI declarations
 
-/// The EVM-C ABI version number matching the interface declared in this file.
-enum { EVM_ABI_VERSION = 0 };
+enum {
+    /// The EVM-C ABI version number of the interface declared in this file.
+    EVM_ABI_VERSION = 0
+};
 
 /// Big-endian 256-bit integer.
 ///
@@ -53,7 +55,7 @@ enum evm_result_code {
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
-    EVM_REVERT = 7,
+    EVM_REVERT = 7,  ///< Execution terminated with REVERT opcode.
 };
 
 struct evm_result;  ///< Forward declaration.
@@ -75,11 +77,21 @@ struct evm_result {
 
     /// The amount of gas left after the execution.
     ///
-    /// The value is valid only if evm_result::code == ::EVM_SUCCESS.
+    /// The value is valid only if evm_result::code is ::EVM_SUCCESS
+    /// or ::EVM_REVERT. In other cases all provided gas is assumed to have been
+    /// used.
     int64_t gas_left;
 
-    /// The reference to output data. The memory containing the output
-    /// data is owned by EVM and is freed with evm_result::release().
+    /// The reference to output data.
+    ///
+    /// The output contains data coming from RETURN opcode (iff evm_result::code
+    /// field is ::EVM_SUCCESS) or from REVERT opcode (iff evm_result::code
+    /// field is ::EVM_REVERT). In case the evm_result::code field signals
+    /// a failure the output can contain optional explanation of the failure
+    /// for debugging or tracing purposes.
+    ///
+    /// The memory containing the output data is owned by EVM and has to be
+    /// freed with evm_result::release().
     uint8_t const* output_data;
 
     /// The size of the output data.
@@ -87,23 +99,14 @@ struct evm_result {
 
     /// The pointer to the result release implementation.
     ///
-    /// This function pointer must be set by the VM implementation and works
-    /// similary to C++ virtual destructor. Attaching the releaser to the result
-    /// itself allows VM composition.
+    /// This function pointer must be set by the EVM implementation and works
+    /// similarly to C++ virtual destructor. Attaching the releaser to the
+    /// result itself allows EVM composition.
     evm_release_result_fn release;
-
-    /// @name Optional
-    /// The optional information that EVM is not required to provide.
-    /// @{
-
-    /// The error message explaining the result code.
-    char const* error_message;
 
     /// The pointer to EVM-owned memory. For EVM internal use.
     /// @see output_data.
     void* internal_memory;
-
-    /// @}
 };
 
 /// The query callback key.
