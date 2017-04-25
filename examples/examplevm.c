@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "evm.h"
 
 
@@ -11,6 +12,8 @@ struct examplevm
     evm_call_fn call_fn;
     evm_get_tx_context_fn get_tx_context_fn;
     evm_get_block_hash_fn get_block_hash_fn;
+
+    int example_option;
 };
 
 static void evm_destroy(struct evm_instance* evm)
@@ -21,12 +24,19 @@ static void evm_destroy(struct evm_instance* evm)
 /// Example options.
 ///
 /// VMs are allowed to omit this function implementation.
-int evm_set_option(struct evm_instance* evm,
+int evm_set_option(struct evm_instance* instance,
                    char const* name,
                    char const* value)
 {
-    if (strcmp(name, "example-option") == 0)
+    struct examplevm* vm = (struct examplevm*)instance;
+    if (strcmp(name, "example-option") == 0) {
+        long int v = strtol(value, NULL, 0);
+        if (v > INT_MAX || v < INT_MIN)
+            return 0;
+        vm->example_option = (int)v;
         return 1;
+    }
+
     return 0;
 }
 
@@ -64,12 +74,14 @@ static struct evm_result execute(struct evm_instance* instance,
     // Solidity inline assembly is used in the examples instead of EVM bytecode.
 
     // Assembly: `{ mstore(0, address()) return(0, msize()) }`.
-    const char return_by_address[] = "30600052596000f3";
-    if (code_size == strlen(return_by_address) &&
-        strncmp((const char*)code, return_by_address, code_size)) {
-        union evm_variant query_result;
-        vm->query_fn(&query_result, env, EVM_ADDRESS, NULL);
-        static const size_t address_size = sizeof(query_result.address);
+    const char return_address[] = "30600052596000f3";
+
+    // Assembly: `{ sstore(0, add(sload(0), 1)) }`
+    const char counter[] = "600160005401600055";
+
+    if (code_size == strlen(return_address) &&
+        strncmp((const char*)code, return_address, code_size)) {
+        static const size_t address_size = sizeof(msg->address);
         uint8_t* output_data = (uint8_t*)malloc(address_size);
         if (!output_data) {
             // malloc failed, report internal error.
@@ -82,6 +94,18 @@ static struct evm_result execute(struct evm_instance* instance,
         ret.output_size = address_size;
         ret.release = &free_result_output_data;
         ret.context = NULL; // We don't need another pointer.
+        return ret;
+    }
+    else if (code_size == strlen(counter) &&
+        strncmp((const char*)code, counter, code_size)) {
+        union evm_variant value;
+        const struct evm_uint256be index = {0, 0, 0, 0};
+        vm->query_fn(&value, env, EVM_SLOAD, &msg->address, &index);
+        value.uint256be.bytes[31] += 1;
+        union evm_variant arg;
+        arg.uint256be = index;
+        vm->update_fn(env, EVM_SSTORE, &msg->address, &arg, &value);
+        ret.code = EVM_SUCCESS;
         return ret;
     }
 
