@@ -62,15 +62,22 @@ static struct evm_result evm_execute(struct evm_instance* instance,
 
     struct examplevm* vm = (struct examplevm*)instance;
 
-    // Simulate executing the answering some questions from the code.
+    // Simulate executing by checking for some code patterns.
+    // Solidity inline assembly is used in the examples instead of EVM bytecode.
 
-    const char my_address_question[] = "What is my address?";
-    if (code_size == strlen(my_address_question) &&
-        strncmp((const char*)code, my_address_question, code_size)) {
+    // Assembly: `{ mstore(0, address()) return(0, msize()) }`.
+    const char return_by_address[] = "30600052596000f3";
+    if (code_size == strlen(return_by_address) &&
+        strncmp((const char*)code, return_by_address, code_size)) {
         union evm_variant query_result;
         vm->query_fn(&query_result, env, EVM_ADDRESS, NULL);
         static const size_t address_size = sizeof(query_result.address);
         uint8_t* output_data = (uint8_t*)malloc(address_size);
+        if (!output_data) {
+            // malloc failed, report internal error.
+            ret.code = EVM_INTERNAL_ERROR;
+            return ret;
+        }
         memcpy(output_data, &query_result.address, address_size);
         ret.code = EVM_SUCCESS;
         ret.output_data = output_data;

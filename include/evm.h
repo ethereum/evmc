@@ -56,6 +56,12 @@ enum evm_result_code {
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,  ///< Execution terminated with REVERT opcode.
+
+    /// EVM implementation internal error.
+    ///
+    /// FIXME: We should rethink reporting internal errors. One of the options
+    /// it to allow using any negative value to represent internal errors.
+    EVM_INTERNAL_ERROR = -1,
 };
 
 struct evm_result;  ///< Forward declaration.
