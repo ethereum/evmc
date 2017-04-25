@@ -106,20 +106,33 @@ struct evm_result {
     /// The size of the output data.
     size_t output_size;
 
-    /// The pointer to the result release implementation.
+    /// The pointer to a function releasing all resources associated with
+    /// the result object.
     ///
-    /// This function pointer may be set by the EVM implementation and must be
-    /// used by the user to release memory associated with the result object.
-    /// In case it is NULL the user does not have to release any resources.
+    /// This function pointer is optional (MAY be NULL) and MAY be set by
+    /// the EVM implementation. If set it MUST be used by the user to
+    /// release memory and other resources associated with the result object.
+    /// After the result resources are released the result object
+    /// MUST NOT be used any more.
+    ///
+    /// The suggested code pattern for releasing EVM results:
+    /// @code
+    /// struct evm_result result = ...;
+    /// if (result.release)
+    ///     result.release(&result);
+    /// @endcode
     ///
     /// @note
     /// It works similarly to C++ virtual destructor. Attaching the release
     /// function to the result itself allows EVM composition.
     evm_release_result_fn release;
 
-    /// The pointer to EVM-owned memory. For EVM internal use.
-    /// @see output_data.
-    void* internal_memory;
+    /// The optional pointer to an internal EVM context.
+    ///
+    /// This field MAY be used by _EVM implementations_ to store additional
+    /// result context (e.g. memory buffers). The pointer value MUST NOT
+    /// be accessed nor changed by EVM users.
+    void* context;
 };
 
 /// The query callback key.
