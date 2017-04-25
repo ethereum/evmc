@@ -97,7 +97,7 @@ struct evm_result {
     /// In case the evm_result::code field signals
     /// a failure the output MAY contain optional explanation of the failure
     /// for debugging or tracing purposes. In case the explanation is provided
-    /// and contains human-readable text the UTF-8 encoding SHOULD be used.
+    /// and contains human-readable text then UTF-8 encoding SHOULD be used.
     ///
     /// The memory containing the output data is owned by EVM and has to be
     /// freed with evm_result::release().
