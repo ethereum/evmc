@@ -169,12 +169,12 @@ struct evm_result {
     /// function to the result itself allows EVM composition.
     evm_release_result_fn release;
 
-    /// The optional pointer to an internal EVM context.
-    ///
-    /// This field MAY be used by _EVM implementations_ to store additional
-    /// result context (e.g. memory buffers). The pointer value MUST NOT
-    /// be accessed nor changed by EVM users.
-    void* context;
+    /// Reserved data to be optionally used by implementations.
+    union {
+        uint8_t bytes[24];
+        struct evm_uint160be address;
+        void* pointer;
+    } payload;
 };
 
 /// The query callback key.
