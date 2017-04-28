@@ -121,6 +121,7 @@ typedef void (*evm_release_result_fn)(struct evm_result const* result);
 /// The EVM code execution result.
 struct evm_result {
     /// The execution result code.
+    /// FIXME: Rename to 'status' or 'status_code'.
     enum evm_result_code code;
 
     /// The amount of gas left after the execution.
@@ -305,28 +306,16 @@ typedef void (*evm_update_state_fn)(struct evm_env* env,
                                     const union evm_variant* arg1,
                                     const union evm_variant* arg2);
 
-/// The flag indicating call failure in evm_call_fn() -- highest bit set.
-static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
-
 /// Pointer to the callback function supporting EVM calls.
 ///
-/// @param env          Pointer to execution environment managed by the host
+/// @param[out] result  Call result.
+/// @param      env     Pointer to execution environment managed by the host
 ///                     application.
-/// @param msg          Call parameters.
-/// @param output       The reference to the memory where the call output is to
-///                     be copied. In case of CREATE, the memory is guaranteed
-///                     to be at least 20 bytes to hold the address of the
-///                     created contract.
-/// @param output_data  The size of the output data. In case of CREATE, expected
-///                     value is 20.
-/// @return      If non-negative - the amount of gas left,
-///              If negative - an exception occurred during the call/create.
-///              There is no need to set 0 address in the output in this case.
-typedef int64_t (*evm_call_fn)(
+/// @param      msg     Call parameters.
+typedef void (*evm_call_fn)(
+    struct evm_result* result,
     struct evm_env* env,
-    const struct evm_message* msg,
-    uint8_t* output,
-    size_t output_size);
+    const struct evm_message* msg);
 
 
 struct evm_instance;  ///< Forward declaration.

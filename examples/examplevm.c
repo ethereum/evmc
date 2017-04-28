@@ -2,7 +2,6 @@
 #include <string.h>
 #include <limits.h>
 #include <evm.h>
-#include "evm.h"
 
 
 struct examplevm
@@ -43,6 +42,7 @@ int evm_set_option(struct evm_instance* instance,
 
 static void evm_release_result(struct evm_result const* result)
 {
+    (void)result;
 }
 
 static void free_result_output_data(struct evm_result const* result)
