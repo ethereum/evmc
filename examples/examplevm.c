@@ -99,7 +99,7 @@ static struct evm_result execute(struct evm_instance* instance,
     else if (code_size == strlen(counter) &&
         strncmp((const char*)code, counter, code_size)) {
         union evm_variant value;
-        const struct evm_uint256be index = {0, 0, 0, 0};
+        const struct evm_uint256be index = {{0,}};
         vm->query_fn(&value, env, EVM_SLOAD, &msg->address, &index);
         value.uint256be.bytes[31] += 1;
         union evm_variant arg;
