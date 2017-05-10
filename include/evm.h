@@ -29,6 +29,10 @@ enum {
     EVM_ABI_VERSION = 0
 };
 
+/// Opaque struct representing execution environment managed by the host
+/// application.
+struct evm_env;
+
 /// Big-endian 256-bit integer.
 ///
 /// 32 bytes of data representing big-endian 256-bit integer. I.e. bytes[0] is
@@ -41,10 +45,48 @@ struct evm_uint256be {
 };
 
 /// Big-endian 160-bit hash suitable for keeping an Ethereum address.
+/// TODO: Rename to "address".
 struct evm_uint160be {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
 };
+
+/// The kind of call-like instruction.
+enum evm_call_kind {
+	EVM_CALL = 0,         ///< Request CALL.
+	EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+	EVM_CALLCODE = 2,     ///< Request CALLCODE.
+	EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
+};
+
+struct evm_message {
+    struct evm_uint160be address;
+    struct evm_uint160be sender;
+    struct evm_uint256be value;
+    const uint8_t* input;
+    size_t input_size;
+    struct evm_uint256be code_hash;
+    int64_t gas;
+    int32_t depth;
+    enum evm_call_kind kind;
+};
+
+struct evm_tx_context {
+    struct evm_uint256be tx_gas_price;
+    struct evm_uint160be tx_origin;
+    struct evm_uint160be block_coinbase;
+    int64_t block_number;
+    int64_t block_timestamp;
+    int64_t block_gas_limit;
+    struct evm_uint256be block_difficulty;
+};
+
+typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
+                                      struct evm_env* env);
+
+typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
+                                      struct evm_env* env,
+                                      int64_t number);
 
 /// The execution result code.
 enum evm_result_code {
@@ -138,27 +180,12 @@ struct evm_result {
 /// The query callback key.
 enum evm_query_key {
     EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
-    EVM_ADDRESS = 1,          ///< Address of the contract for ADDRESS.
-    EVM_CALLER = 2,           ///< Message sender address for CALLER.
-    EVM_ORIGIN = 3,           ///< Transaction origin address for ORIGIN.
-    EVM_GAS_PRICE = 4,        ///< Transaction gas price for GASPRICE.
-    EVM_COINBASE = 5,         ///< Current block miner address for COINBASE.
-    EVM_DIFFICULTY = 6,       ///< Current block difficulty for DIFFICULTY.
-    EVM_GAS_LIMIT = 7,        ///< Current block gas limit for GASLIMIT.
-    EVM_NUMBER = 8,           ///< Current block number for NUMBER.
-    EVM_TIMESTAMP = 9,        ///< Current block timestamp for TIMESTAMP.
     EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
     EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
     EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
-    EVM_BLOCKHASH = 13,       ///< Block hash of by block number for BLOCKHASH.
     EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
-    EVM_CALL_DEPTH = 15,      ///< Current call depth.
 };
 
-
-/// Opaque struct representing execution enviroment managed by the host
-/// application.
-struct evm_env;
 
 /// Variant type to represent possible types of values used in EVM.
 ///
@@ -194,75 +221,46 @@ union evm_variant {
 /// Query callback function.
 ///
 /// This callback function is used by the EVM to query the host application
-/// about additional data required to execute EVM code.
-/// @param env  Pointer to execution environment managed by the host
-///             application.
-/// @param key  The kind of the query. See evm_query_key and details below.
-/// @param arg  Additional argument to the query. It has defined value only for
-///             the subset of query keys.
+/// about additional information about accounts in the state required to
+/// execute EVM code.
+/// @param[out] result  The result of the query.
+/// @param      env     Pointer to execution environment managed by the host
+///                     application.
+/// @param      key     The kind of the query. See evm_query_key
+///                     and details below.
+/// @param      address  The address of the account the query is about.
+/// @param      storage_key  Optional argument to provide storage key. Used
+///                          only in ::EVM_SLOAD queries.
 ///
 /// ## Types of queries
 ///
-/// - ::EVM_GAS_PRICE
-///   @param arg n/a
-///   @result evm_variant::uint256be  The transaction gas price.
-///
-/// - ::EVM_ADDRESS
-///   @param arg n/a
-///   @result evm_variant::address  The address of the current contract.
-///
-/// - ::EVM_CALLER
-///   @param arg n/a
-///   @result evm_variant::address  The address of the caller.
-///
-/// - ::EVM_ORIGIN
-///   @param arg n/a
-///   @result evm_variant::address  The address of the transaction initiator.
-///
-/// - ::EVM_COINBASE
-///   @param arg n/a
-///   @result evm_variant::address  The address of the beneficiary of the block fees.
-///
-/// - ::EVM_DIFFICULTY
-///   @param arg n/a
-///   @result evm_variant::uint256be  The block difficulty.
-///
-/// - ::EVM_GAS_LIMIT
-///   @param arg n/a
-///   @result evm_variant::uint256be  The block gas limit.
-///
-/// - ::EVM_NUMBER
-///   @param arg n/a
-///   @result evm_variant::int64  The block number.
-///
-/// - ::EVM_TIMESTAMP
-///   @param arg n/a
-///   @result evm_variant::int64  The block timestamp.
-///
-/// - ::EVM_CODE_BY_ADDRESS
-///   @param arg evm_variant::address  The address to look up.
-///   @result evm_variant::data  The appropriate code for the given address or NULL if not found.
-///
-/// - ::EVM_CODE_SIZE
-///   @param arg evm_variant::address  The address to look up.
-///   @result evm_variant::data  The appropriate code size for the given address or 0 if not found.
-///
-/// - ::EVM_BALANCE
-///   @param arg evm_variant::address  The address to look up.
-///   @result evm_variant::data  The appropriate balance for the given address or 0 if not found.
-///
-/// - ::EVM_BLOCKHASH
-///   @param arg evm_variant::int64  The block number to look up.
-///   @result evm_variant::uint256be  The hash of the requested block or 0 if not found.
-///
 /// - ::EVM_SLOAD
-///   @param arg evm_variant::uint256be  The index of the storage entry.
+///   @param storage_key              The index of the storage entry.
 ///   @result evm_variant::uint256be  The current value of the storage entry.
 ///
-typedef void (*evm_query_fn)(union evm_variant* result,
-                             struct evm_env* env,
-                             enum evm_query_key key,
-                             const union evm_variant* arg);
+/// - ::EVM_CODE_BY_ADDRESS
+///   @result evm_variant::data       The appropriate code for the given address or NULL if not found.
+///
+/// - ::EVM_CODE_SIZE
+///   @result evm_variant::data       The appropriate code size for the given address or 0 if not found.
+///
+/// - ::EVM_BALANCE
+///   @result evm_variant::uint256be  The appropriate balance for the given address or 0 if not found.
+///
+/// - ::EVM_ACCOUNT_EXISTS
+///   @result evm_variant::uint256be  The hash of the requested block or 0 if not found.
+///
+///
+/// @todo
+/// - Consider swapping key and address arguments,
+///   e.g. `query(result, env, addr, EVM_SLOAD, k)`.
+/// - Consider renaming key argument to something else. Key is confusing
+///   especially for SSTORE and SLOAD. Maybe "kind"?
+typedef void (*evm_query_state_fn)(union evm_variant* result,
+                                   struct evm_env* env,
+                                   enum evm_query_key key,
+                                   const struct evm_uint160be* address,
+                                   const struct evm_uint256be* storage_key);
 
 /// The update callback key.
 enum evm_update_key {
@@ -298,18 +296,14 @@ enum evm_update_key {
 /// - ::EVM_SELFDESTRUCT
 ///   @param arg1 evm_variant::address  The beneficiary address.
 ///   @param arg2 n/a
-typedef void (*evm_update_fn)(struct evm_env* env,
-                              enum evm_update_key key,
-                              const union evm_variant* arg1,
-                              const union evm_variant* arg2);
-
-/// The kind of call-like instruction.
-enum evm_call_kind {
-    EVM_CALL = 0,         ///< Request CALL.
-    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
-    EVM_CALLCODE = 2,     ///< Request CALLCODE.
-    EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
-};
+///
+/// @todo
+/// - Move LOG to separated callback function.
+typedef void (*evm_update_state_fn)(struct evm_env* env,
+                                    enum evm_update_key key,
+                                    const struct evm_uint160be* address,
+                                    const union evm_variant* arg1,
+                                    const union evm_variant* arg2);
 
 /// The flag indicating call failure in evm_call_fn() -- highest bit set.
 static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
@@ -318,14 +312,7 @@ static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 ///
 /// @param env          Pointer to execution environment managed by the host
 ///                     application.
-/// @param kind         The kind of call-like opcode requested.
-/// @param gas          The amount of gas for the call.
-/// @param address      The address of a contract to be called. Ignored in case
-///                     of CREATE.
-/// @param value        The value sent to the callee. The endowment in case of
-///                     CREATE.
-/// @param input        The call input data or the CREATE init code.
-/// @param input_size   The size of the input data.
+/// @param msg          Call parameters.
 /// @param output       The reference to the memory where the call output is to
 ///                     be copied. In case of CREATE, the memory is guaranteed
 ///                     to be at least 20 bytes to hold the address of the
@@ -337,12 +324,7 @@ static const int64_t EVM_CALL_FAILURE = 0x8000000000000000;
 ///              There is no need to set 0 address in the output in this case.
 typedef int64_t (*evm_call_fn)(
     struct evm_env* env,
-    enum evm_call_kind kind,
-    int64_t gas,
-    const struct evm_uint160be* address,
-    const struct evm_uint256be* value,
-    uint8_t const* input,
-    size_t input_size,
+    const struct evm_message* msg,
     uint8_t* output,
     size_t output_size);
 
@@ -357,10 +339,14 @@ struct evm_instance;  ///< Forward declaration.
 /// @param query_fn   Pointer to query callback function. Nonnull.
 /// @param update_fn  Pointer to update callback function. Nonnull.
 /// @param call_fn    Pointer to call callback function. Nonnull.
+/// @param get_tx_context_fn  Pointer to get tx context function. Nonnull.
+/// @param get_block_hash_fn  Pointer to get block hash function. Nonnull.
 /// @return           Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)(evm_query_fn query_fn,
-                                              evm_update_fn update_fn,
-                                              evm_call_fn call_fn);
+typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
+                                              evm_update_state_fn update_fn,
+                                              evm_call_fn call_fn,
+                                              evm_get_tx_context_fn get_tx_context_fn,
+                                              evm_get_block_hash_fn get_block_hash_fn);
 
 /// Destroys the EVM instance.
 ///
@@ -417,13 +403,9 @@ enum evm_mode {
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_env* env,
                                             enum evm_mode mode,
-                                            struct evm_uint256be code_hash,
+                                            const struct evm_message* msg,
                                             uint8_t const* code,
-                                            size_t code_size,
-                                            int64_t gas,
-                                            uint8_t const* input,
-                                            size_t input_size,
-                                            struct evm_uint256be value);
+                                            size_t code_size);
 
 
 /// Status of a code in VM. Useful for JIT-like implementations.
