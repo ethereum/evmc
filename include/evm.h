@@ -170,12 +170,19 @@ struct evm_result {
     /// function to the result itself allows EVM composition.
     evm_release_result_fn release;
 
-    /// Reserved data to be optionally used by implementations.
-    union {
-        uint8_t bytes[24];
-        struct evm_uint160be address;
-        void* pointer;
-    } payload;
+    /// Reserved data that MAY be used by a evm_result object creator.
+    ///
+    /// This reserved 24 bytes extends the size of the evm_result to 64 bytes
+    /// (full cache line).
+    /// An EVM implementation MAY use this memory to keep additional data
+    /// when returning result from ::evm_execute_fn.
+    /// The host application MAY use this memory to keep additional data
+    /// when returning result of performed calls from ::evm_call_fn.
+    union
+    {
+        void* context;     ///< A pointer for storing external objects.
+        uint8_t data[24];  ///< 24 bytes of reserved data.
+    } reserved;
 };
 
 /// The query callback key.

@@ -94,7 +94,6 @@ static struct evm_result execute(struct evm_instance* instance,
         ret.output_data = output_data;
         ret.output_size = address_size;
         ret.release = &free_result_output_data;
-        ret.payload.pointer = NULL; // We don't need another pointer.
         return ret;
     }
     else if (code_size == strlen(counter) &&
