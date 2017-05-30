@@ -120,7 +120,8 @@ static struct evm_instance* evm_create(evm_query_state_fn query_fn,
                                        evm_update_state_fn update_fn,
                                        evm_call_fn call_fn,
                                        evm_get_tx_context_fn get_tx_context_fn,
-                                       evm_get_block_hash_fn get_block_hash_fn)
+                                       evm_get_block_hash_fn get_block_hash_fn,
+                                       evm_log_fn log_fn)
 {
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evm_instance* interface = &vm->instance;

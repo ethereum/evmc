@@ -77,7 +77,8 @@ int main(int argc, char *argv[]) {
         return 1;  // Incompatible ABI version.
 
     struct evm_instance* jit = factory.create(query, update, call,
-                                              get_tx_context, get_block_hash);
+                                              get_tx_context, get_block_hash,
+                                              NULL);
 
     uint8_t const code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);

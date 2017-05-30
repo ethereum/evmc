@@ -273,7 +273,6 @@ typedef void (*evm_query_state_fn)(union evm_variant* result,
 /// The update callback key.
 enum evm_update_key {
     EVM_SSTORE = 0,        ///< Update storage entry
-    EVM_LOG = 1,           ///< Log.
     EVM_SELFDESTRUCT = 2,  ///< Mark contract as selfdestructed and set
                            ///  beneficiary address.
 };
@@ -293,14 +292,6 @@ enum evm_update_key {
 ///   @param arg1 evm_variant::uint256be  The index of the storage entry.
 ///   @param arg2 evm_variant::uint256be  The value to be stored.
 ///
-/// - ::EVM_LOG
-///   @param arg1 evm_variant::data  The log unindexed data.
-///   @param arg2 evm_variant::data  The log topics. The referenced data is an
-///                                  array of evm_uint256be[] of possible length
-///                                  from 0 to 4. So the valid
-///                                  evm_variant::data_size values are 0, 32, 64
-///                                  92 and 128.
-///
 /// - ::EVM_SELFDESTRUCT
 ///   @param arg1 evm_variant::address  The beneficiary address.
 ///   @param arg2 n/a
@@ -312,6 +303,24 @@ typedef void (*evm_update_state_fn)(struct evm_env* env,
                                     const struct evm_uint160be* address,
                                     const union evm_variant* arg1,
                                     const union evm_variant* arg2);
+
+/// Log callback function.
+///
+/// This callback function is used by an EVM to inform about a LOG that happened
+/// during an EVM bytecode execution.
+/// @param env         The pointer to execution environment managed by the host
+///                    application.
+/// @param address     The address of the contract that generated the log.
+/// @param data        The pointer to unindexed data attached to the log.
+/// @param data_size   The length of the data.
+/// @param topics      The pointer to the array of topics attached to the log.
+/// @param topics_num  The number of the topics. Valid values 0 - 4.
+typedef void (*evm_log_fn)(struct evm_env* env,
+                           const struct evm_uint160be* address,
+                           const uint8_t* data,
+                           size_t data_size,
+                           struct evm_uint256be topics[],
+                           size_t topics_num);
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -342,7 +351,8 @@ typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
                                               evm_update_state_fn update_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn get_tx_context_fn,
-                                              evm_get_block_hash_fn get_block_hash_fn);
+                                              evm_get_block_hash_fn get_block_hash_fn,
+                                              evm_log_fn log_fn);
 
 /// Destroys the EVM instance.
 ///
