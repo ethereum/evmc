@@ -51,15 +51,12 @@ static void update(struct evm_env* env,
     printf("EVM-C: UPDATE %d\n", key);
 }
 
-static int64_t call(
-    struct evm_env* _opaqueEnv,
-    const struct evm_message* _msg,
-    uint8_t* _outputData,
-    size_t _outputSize
-)
+static void call(struct evm_result* result,
+                 struct evm_env* env,
+                 const struct evm_message* msg)
 {
-    printf("EVM-C: CALL (depth: %d)\n", _msg->depth);
-    return EVM_CALL_FAILURE;
+    printf("EVM-C: CALL (depth: %d)\n", msg->depth);
+    result->code = EVM_FAILURE;
 }
 
 static void get_tx_context(struct evm_tx_context* result, struct evm_env* env)

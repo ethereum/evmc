@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include "evm.h"
+#include <evm.h>
 
 
 struct examplevm
@@ -42,6 +42,7 @@ int evm_set_option(struct evm_instance* instance,
 
 static void evm_release_result(struct evm_result const* result)
 {
+    (void)result;
 }
 
 static void free_result_output_data(struct evm_result const* result)
@@ -93,7 +94,6 @@ static struct evm_result execute(struct evm_instance* instance,
         ret.output_data = output_data;
         ret.output_size = address_size;
         ret.release = &free_result_output_data;
-        ret.context = NULL; // We don't need another pointer.
         return ret;
     }
     else if (code_size == strlen(counter) &&
