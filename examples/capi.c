@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     if (factory.abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(query, update, call,
+    struct evm_instance* jit = factory.create(query, update, NULL, call,
                                               get_tx_context, get_block_hash,
                                               NULL);
 

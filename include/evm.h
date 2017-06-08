@@ -273,8 +273,6 @@ typedef void (*evm_query_state_fn)(union evm_variant* result,
 /// The update callback key.
 enum evm_update_key {
     EVM_SSTORE = 0,        ///< Update storage entry
-    EVM_SELFDESTRUCT = 2,  ///< Mark contract as selfdestructed and set
-                           ///  beneficiary address.
 };
 
 
@@ -291,18 +289,23 @@ enum evm_update_key {
 /// - ::EVM_SSTORE
 ///   @param arg1 evm_variant::uint256be  The index of the storage entry.
 ///   @param arg2 evm_variant::uint256be  The value to be stored.
-///
-/// - ::EVM_SELFDESTRUCT
-///   @param arg1 evm_variant::address  The beneficiary address.
-///   @param arg2 n/a
-///
-/// @todo
-/// - Move LOG to separated callback function.
 typedef void (*evm_update_state_fn)(struct evm_env* env,
                                     enum evm_update_key key,
                                     const struct evm_uint160be* address,
                                     const union evm_variant* arg1,
                                     const union evm_variant* arg2);
+
+/// Selfdestruct callback function.
+///
+/// This callback function is used by an EVM to SELFDESTRUCT given contract.
+/// @param env          The pointer to the execution environment managed by
+///                     the host application.
+/// @param address      The address of the contract to be selfdestructed.
+/// @param beneficiary  The address where the remaining ETH is going to be
+///                     transfer.
+typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
+                                    const struct evm_uint160be* address,
+                                    const struct evm_uint160be* beneficiary);
 
 /// Log callback function.
 ///
@@ -349,6 +352,7 @@ struct evm_instance;  ///< Forward declaration.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
                                               evm_update_state_fn update_fn,
+                                              evm_selfdestruct_fn selfdestruct_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn get_tx_context_fn,
                                               evm_get_block_hash_fn get_block_hash_fn,
