@@ -207,15 +207,6 @@ union evm_variant {
     /// A big-endian 256-bit integer or hash.
     struct evm_uint256be uint256be;
 
-    struct {
-        /// Additional padding to align the evm_variant::address with lower
-        /// bytes of a full 256-bit hash.
-        uint8_t address_padding[12];
-
-        /// An Ethereum address.
-        struct evm_uint160be address;
-    };
-
     /// A memory reference.
     struct {
         /// Pointer to the data.
@@ -250,13 +241,13 @@ union evm_variant {
 ///   @result evm_variant::data       The appropriate code for the given address or NULL if not found.
 ///
 /// - ::EVM_CODE_SIZE
-///   @result evm_variant::data       The appropriate code size for the given address or 0 if not found.
+///   @result evm_variant::int64      The appropriate code size for the given address or 0 if not found.
 ///
 /// - ::EVM_BALANCE
 ///   @result evm_variant::uint256be  The appropriate balance for the given address or 0 if not found.
 ///
 /// - ::EVM_ACCOUNT_EXISTS
-///   @result evm_variant::uint256be  The hash of the requested block or 0 if not found.
+///   @result evm_variant::int64      1 if exists, 0 if not.
 ///
 ///
 /// @todo
