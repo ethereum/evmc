@@ -42,13 +42,12 @@ static void query(union evm_variant* result,
     }
 }
 
-static void update(struct evm_env* env,
-                   enum evm_update_key key,
-                   const struct evm_uint160be* addr,
-                   const union evm_variant* arg1,
-                   const union evm_variant* arg2)
+static void set_storage(struct evm_env* env,
+                        const struct evm_uint160be* addr,
+                        const struct evm_uint256be* key,
+                        const struct evm_uint256be* value)
 {
-    printf("EVM-C: UPDATE %d\n", key);
+    printf("EVM-C: SSTORE");
 }
 
 static void call(struct evm_result* result,
@@ -76,7 +75,7 @@ int main(int argc, char *argv[]) {
     if (factory.abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(query, update, NULL, call,
+    struct evm_instance* jit = factory.create(query, set_storage, NULL, call,
                                               get_tx_context, get_block_hash,
                                               NULL);
 
