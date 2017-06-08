@@ -207,15 +207,6 @@ union evm_variant {
     /// A big-endian 256-bit integer or hash.
     struct evm_uint256be uint256be;
 
-    struct {
-        /// Additional padding to align the evm_variant::address with lower
-        /// bytes of a full 256-bit hash.
-        uint8_t address_padding[12];
-
-        /// An Ethereum address.
-        struct evm_uint160be address;
-    };
-
     /// A memory reference.
     struct {
         /// Pointer to the data.
@@ -250,13 +241,13 @@ union evm_variant {
 ///   @result evm_variant::data       The appropriate code for the given address or NULL if not found.
 ///
 /// - ::EVM_CODE_SIZE
-///   @result evm_variant::data       The appropriate code size for the given address or 0 if not found.
+///   @result evm_variant::int64      The appropriate code size for the given address or 0 if not found.
 ///
 /// - ::EVM_BALANCE
 ///   @result evm_variant::uint256be  The appropriate balance for the given address or 0 if not found.
 ///
 /// - ::EVM_ACCOUNT_EXISTS
-///   @result evm_variant::uint256be  The hash of the requested block or 0 if not found.
+///   @result evm_variant::int64      1 if exists, 0 if not.
 ///
 ///
 /// @todo
@@ -270,48 +261,50 @@ typedef void (*evm_query_state_fn)(union evm_variant* result,
                                    const struct evm_uint160be* address,
                                    const struct evm_uint256be* storage_key);
 
-/// The update callback key.
-enum evm_update_key {
-    EVM_SSTORE = 0,        ///< Update storage entry
-    EVM_LOG = 1,           ///< Log.
-    EVM_SELFDESTRUCT = 2,  ///< Mark contract as selfdestructed and set
-                           ///  beneficiary address.
-};
+/// Set storage callback function.
+///
+/// This callback function is used by an EVM to update the given contract
+/// storage entry
+/// @param env      Pointer to execution environment managed by the host
+///                 application.
+/// @param address  The address of the contract.
+/// @param key      The index of the storage entry.
+/// @param value    The value to be stored.
+typedef void (*evm_set_storage_fn)(struct evm_env* env,
+                                   const struct evm_uint160be* address,
+                                   const struct evm_uint256be* key,
+                                   const struct evm_uint256be* value);
 
-
-/// Update callback function.
+/// Selfdestruct callback function.
 ///
-/// This callback function is used by the EVM to modify contract state in the
-/// host application.
-/// @param env  Pointer to execution environment managed by the host
-///             application.
-/// @param key  The kind of the update. See evm_update_key and details below.
-///
-/// ## Kinds of updates
-///
-/// - ::EVM_SSTORE
-///   @param arg1 evm_variant::uint256be  The index of the storage entry.
-///   @param arg2 evm_variant::uint256be  The value to be stored.
-///
-/// - ::EVM_LOG
-///   @param arg1 evm_variant::data  The log unindexed data.
-///   @param arg2 evm_variant::data  The log topics. The referenced data is an
-///                                  array of evm_uint256be[] of possible length
-///                                  from 0 to 4. So the valid
-///                                  evm_variant::data_size values are 0, 32, 64
-///                                  92 and 128.
-///
-/// - ::EVM_SELFDESTRUCT
-///   @param arg1 evm_variant::address  The beneficiary address.
-///   @param arg2 n/a
-///
-/// @todo
-/// - Move LOG to separated callback function.
-typedef void (*evm_update_state_fn)(struct evm_env* env,
-                                    enum evm_update_key key,
+/// This callback function is used by an EVM to SELFDESTRUCT given contract.
+/// @param env          The pointer to the execution environment managed by
+///                     the host application.
+/// @param address      The address of the contract to be selfdestructed.
+/// @param beneficiary  The address where the remaining ETH is going to be
+///                     transferred.
+typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
                                     const struct evm_uint160be* address,
-                                    const union evm_variant* arg1,
-                                    const union evm_variant* arg2);
+                                    const struct evm_uint160be* beneficiary);
+
+/// Log callback function.
+///
+/// This callback function is used by an EVM to inform about a LOG that happened
+/// during an EVM bytecode execution.
+/// @param env           The pointer to execution environment managed by
+///                      the host application.
+/// @param address       The address of the contract that generated the log.
+/// @param data          The pointer to unindexed data attached to the log.
+/// @param data_size     The length of the data.
+/// @param topics        The pointer to the array of topics attached to the log.
+/// @param topics_count  The number of the topics. Valid values are between
+///                      0 and 4 inclusively.
+typedef void (*evm_log_fn)(struct evm_env* env,
+                           const struct evm_uint160be* address,
+                           const uint8_t* data,
+                           size_t data_size,
+                           const struct evm_uint256be topics[],
+                           size_t topics_count);
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -339,10 +332,12 @@ struct evm_instance;  ///< Forward declaration.
 /// @param get_block_hash_fn  Pointer to get block hash function. Nonnull.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
-                                              evm_update_state_fn update_fn,
+                                              evm_set_storage_fn set_storage_fn,
+                                              evm_selfdestruct_fn selfdestruct_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn get_tx_context_fn,
-                                              evm_get_block_hash_fn get_block_hash_fn);
+                                              evm_get_block_hash_fn get_block_hash_fn,
+                                              evm_log_fn log_fn);
 
 /// Destroys the EVM instance.
 ///

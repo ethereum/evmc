@@ -8,10 +8,12 @@ struct examplevm
 {
     struct evm_instance instance;
     evm_query_state_fn query_fn;
-    evm_update_state_fn update_fn;
+    evm_set_storage_fn set_storage_fn;
+    evm_selfdestruct_fn selfdestruct_fn;
     evm_call_fn call_fn;
     evm_get_tx_context_fn get_tx_context_fn;
     evm_get_block_hash_fn get_block_hash_fn;
+    evm_log_fn log_fn;
 
     int example_option;
 };
@@ -102,9 +104,7 @@ static struct evm_result execute(struct evm_instance* instance,
         const struct evm_uint256be index = {{0,}};
         vm->query_fn(&value, env, EVM_SLOAD, &msg->address, &index);
         value.uint256be.bytes[31] += 1;
-        union evm_variant arg;
-        arg.uint256be = index;
-        vm->update_fn(env, EVM_SSTORE, &msg->address, &arg, &value);
+        vm->set_storage_fn(env, &msg->address, &index, &value.uint256be);
         ret.code = EVM_SUCCESS;
         return ret;
     }
@@ -117,10 +117,12 @@ static struct evm_result execute(struct evm_instance* instance,
 }
 
 static struct evm_instance* evm_create(evm_query_state_fn query_fn,
-                                       evm_update_state_fn update_fn,
+                                       evm_set_storage_fn set_storage_fn,
+                                       evm_selfdestruct_fn selfdestruct_fn,
                                        evm_call_fn call_fn,
                                        evm_get_tx_context_fn get_tx_context_fn,
-                                       evm_get_block_hash_fn get_block_hash_fn)
+                                       evm_get_block_hash_fn get_block_hash_fn,
+                                       evm_log_fn log_fn)
 {
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evm_instance* interface = &vm->instance;
@@ -128,10 +130,12 @@ static struct evm_instance* evm_create(evm_query_state_fn query_fn,
     interface->execute = execute;
     interface->set_option = evm_set_option;
     vm->query_fn = query_fn;
-    vm->update_fn = update_fn;
+    vm->set_storage_fn = set_storage_fn;
+    vm->selfdestruct_fn = selfdestruct_fn;
     vm->call_fn = call_fn;
     vm->get_tx_context_fn = get_tx_context_fn;
     vm->get_block_hash_fn = get_block_hash_fn;
+    vm->log_fn = log_fn;
     return interface;
 }
 
