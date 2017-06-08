@@ -17,6 +17,13 @@ struct evm_uint160be address(struct evm_env* env)
     return ret;
 }
 
+static void print_address(const struct evm_uint160be* address)
+{
+    int i = 0;
+    for (i = 0; i < sizeof(address->bytes); ++i)
+        printf("%x", address->bytes[i] & 0xff);
+}
+
 static void query(union evm_variant* result,
                   struct evm_env* env,
                   enum evm_query_key key,
@@ -43,11 +50,24 @@ static void query(union evm_variant* result,
 }
 
 static void set_storage(struct evm_env* env,
-                        const struct evm_uint160be* addr,
+                        const struct evm_uint160be* address,
                         const struct evm_uint256be* key,
                         const struct evm_uint256be* value)
 {
-    printf("EVM-C: SSTORE");
+    printf("EVM-C: SSTORE @");
+    print_address(address);
+    printf("\n");
+}
+
+static void selfdestruct(struct evm_env* env,
+                         const struct evm_uint160be* address,
+                         const struct evm_uint160be* beneficiary)
+{
+    printf("EVM-C: SELFDESTRUCT ");
+    print_address(address);
+    printf(" -> ");
+    print_address(beneficiary);
+    printf("\n");
 }
 
 static void call(struct evm_result* result,
@@ -69,15 +89,26 @@ static void get_block_hash(struct evm_uint256be* result, struct evm_env* env,
 
 }
 
+/// EVM log callback.
+///
+/// @note The `evm_log` name is used to avoid conflict with `log()` C function.
+static void evm_log(struct evm_env* env, const struct evm_uint160be* address,
+                    const uint8_t* data, size_t data_size,
+                    const struct evm_uint256be topics[], size_t topics_count)
+{
+    printf("EVM-C: LOG%d\n", (int)topics_count);
+}
+
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
     struct evm_factory factory = examplevm_get_factory();
     if (factory.abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(query, set_storage, NULL, call,
+    struct evm_instance* jit = factory.create(query, set_storage, selfdestruct,
+                                              call,
                                               get_tx_context, get_block_hash,
-                                              NULL);
+                                              evm_log);
 
     uint8_t const code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);

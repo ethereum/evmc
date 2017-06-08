@@ -282,7 +282,7 @@ typedef void (*evm_set_storage_fn)(struct evm_env* env,
 ///                     the host application.
 /// @param address      The address of the contract to be selfdestructed.
 /// @param beneficiary  The address where the remaining ETH is going to be
-///                     transfer.
+///                     transferred.
 typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
                                     const struct evm_uint160be* address,
                                     const struct evm_uint160be* beneficiary);
@@ -291,19 +291,20 @@ typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
 ///
 /// This callback function is used by an EVM to inform about a LOG that happened
 /// during an EVM bytecode execution.
-/// @param env         The pointer to execution environment managed by the host
-///                    application.
-/// @param address     The address of the contract that generated the log.
-/// @param data        The pointer to unindexed data attached to the log.
-/// @param data_size   The length of the data.
-/// @param topics      The pointer to the array of topics attached to the log.
-/// @param topics_num  The number of the topics. Valid values 0 - 4.
+/// @param env           The pointer to execution environment managed by
+///                      the host application.
+/// @param address       The address of the contract that generated the log.
+/// @param data          The pointer to unindexed data attached to the log.
+/// @param data_size     The length of the data.
+/// @param topics        The pointer to the array of topics attached to the log.
+/// @param topics_count  The number of the topics. Valid values are between
+///                      0 and 4 inclusively.
 typedef void (*evm_log_fn)(struct evm_env* env,
                            const struct evm_uint160be* address,
                            const uint8_t* data,
                            size_t data_size,
-                           struct evm_uint256be topics[],
-                           size_t topics_num);
+                           const struct evm_uint256be topics[],
+                           size_t topics_count);
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -331,7 +332,7 @@ struct evm_instance;  ///< Forward declaration.
 /// @param get_block_hash_fn  Pointer to get block hash function. Nonnull.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
-                                              evm_set_storage_fn update_fn,
+                                              evm_set_storage_fn set_storage_fn,
                                               evm_selfdestruct_fn selfdestruct_fn,
                                               evm_call_fn call_fn,
                                               evm_get_tx_context_fn get_tx_context_fn,
