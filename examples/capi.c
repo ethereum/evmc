@@ -27,8 +27,7 @@ static void print_address(const struct evm_uint160be* address)
 static void query(union evm_variant* result,
                   struct evm_env* env,
                   enum evm_query_key key,
-                  const struct evm_uint160be* address,
-                  const struct evm_uint256be* storage_key) {
+                  const struct evm_uint160be* address) {
     printf("EVM-C: QUERY %d\n", key);
     switch (key) {
     case EVM_CODE_BY_ADDRESS:
@@ -47,6 +46,16 @@ static void query(union evm_variant* result,
     default:
         result->int64 = 0;
     }
+}
+
+static void get_storage(struct evm_uint256be* result,
+                        struct evm_env* env,
+                        const struct evm_uint160be* address,
+                        const struct evm_uint256be* key)
+{
+    printf("EVM-C: SLOAD @");
+    print_address(address);
+    printf("\n");
 }
 
 static void set_storage(struct evm_env* env,
@@ -105,7 +114,10 @@ int main(int argc, char *argv[]) {
     if (factory.abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(query, set_storage, selfdestruct,
+    struct evm_instance* jit = factory.create(query,
+                                              get_storage,
+                                              set_storage,
+                                              selfdestruct,
                                               call,
                                               get_tx_context, get_block_hash,
                                               evm_log);
