@@ -187,7 +187,6 @@ struct evm_result {
 
 /// The query callback key.
 enum evm_query_key {
-    EVM_SLOAD = 0,            ///< Storage value of a given key for SLOAD.
     EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
     EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
     EVM_BALANCE = 12,         ///< Balance of a given address for BALANCE.
@@ -228,14 +227,8 @@ union evm_variant {
 /// @param      key     The kind of the query. See evm_query_key
 ///                     and details below.
 /// @param      address  The address of the account the query is about.
-/// @param      storage_key  Optional argument to provide storage key. Used
-///                          only in ::EVM_SLOAD queries.
 ///
 /// ## Types of queries
-///
-/// - ::EVM_SLOAD
-///   @param storage_key              The index of the storage entry.
-///   @result evm_variant::uint256be  The current value of the storage entry.
 ///
 /// - ::EVM_CODE_BY_ADDRESS
 ///   @result evm_variant::data       The appropriate code for the given address or NULL if not found.
@@ -258,13 +251,26 @@ union evm_variant {
 typedef void (*evm_query_state_fn)(union evm_variant* result,
                                    struct evm_env* env,
                                    enum evm_query_key key,
+                                   const struct evm_uint160be* address);
+
+/// Get storage callback function.
+///
+/// This callback function is used by an EVM to query the given contract
+/// storage entry.
+/// @param[out] result   The returned storage value.
+/// @param      env      Pointer to execution environment managed by the host
+///                      application.
+/// @param      address  The address of the contract.
+/// @param      key      The index of the storage entry.
+typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
+                                   struct evm_env* env,
                                    const struct evm_uint160be* address,
-                                   const struct evm_uint256be* storage_key);
+                                   const struct evm_uint256be* key);
 
 /// Set storage callback function.
 ///
 /// This callback function is used by an EVM to update the given contract
-/// storage entry
+/// storage entry.
 /// @param env      Pointer to execution environment managed by the host
 ///                 application.
 /// @param address  The address of the contract.
@@ -332,6 +338,7 @@ struct evm_instance;  ///< Forward declaration.
 /// @param get_block_hash_fn  Pointer to get block hash function. Nonnull.
 /// @return           Pointer to the created EVM instance.
 typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
+                                              evm_get_storage_fn get_storage_fn,
                                               evm_set_storage_fn set_storage_fn,
                                               evm_selfdestruct_fn selfdestruct_fn,
                                               evm_call_fn call_fn,

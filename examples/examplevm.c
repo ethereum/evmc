@@ -8,6 +8,7 @@ struct examplevm
 {
     struct evm_instance instance;
     evm_query_state_fn query_fn;
+    evm_get_storage_fn get_storage_fn;
     evm_set_storage_fn set_storage_fn;
     evm_selfdestruct_fn selfdestruct_fn;
     evm_call_fn call_fn;
@@ -100,11 +101,11 @@ static struct evm_result execute(struct evm_instance* instance,
     }
     else if (code_size == strlen(counter) &&
         strncmp((const char*)code, counter, code_size)) {
-        union evm_variant value;
+        struct evm_uint256be value;
         const struct evm_uint256be index = {{0,}};
-        vm->query_fn(&value, env, EVM_SLOAD, &msg->address, &index);
-        value.uint256be.bytes[31] += 1;
-        vm->set_storage_fn(env, &msg->address, &index, &value.uint256be);
+        vm->get_storage_fn(&value, env, &msg->address, &index);
+        value.bytes[31] += 1;
+        vm->set_storage_fn(env, &msg->address, &index, &value);
         ret.code = EVM_SUCCESS;
         return ret;
     }
@@ -117,6 +118,7 @@ static struct evm_result execute(struct evm_instance* instance,
 }
 
 static struct evm_instance* evm_create(evm_query_state_fn query_fn,
+                                       evm_get_storage_fn get_storage_fn,
                                        evm_set_storage_fn set_storage_fn,
                                        evm_selfdestruct_fn selfdestruct_fn,
                                        evm_call_fn call_fn,
@@ -130,6 +132,7 @@ static struct evm_instance* evm_create(evm_query_state_fn query_fn,
     interface->execute = execute;
     interface->set_option = evm_set_option;
     vm->query_fn = query_fn;
+    vm->get_storage_fn = get_storage_fn;
     vm->set_storage_fn = set_storage_fn;
     vm->selfdestruct_fn = selfdestruct_fn;
     vm->call_fn = call_fn;
