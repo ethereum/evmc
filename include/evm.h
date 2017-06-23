@@ -53,14 +53,14 @@ struct evm_uint160be {
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
-	EVM_CALL = 0,         ///< Request CALL.
-	EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
-	EVM_CALLCODE = 2,     ///< Request CALLCODE.
-	EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
+    EVM_CALL = 0,         ///< Request CALL.
+    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+    EVM_CALLCODE = 2,     ///< Request CALLCODE.
+    EVM_CREATE = 3,       ///< Request CREATE. Semantic of some params changes.
 };
 
 enum evm_flags {
-	EVM_STATIC = 1
+    EVM_STATIC = 1
 };
 
 struct evm_message {
