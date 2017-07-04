@@ -53,10 +53,14 @@ struct evm_uint160be {
 
 /// The kind of call-like instruction.
 enum evm_call_kind {
-	EVM_CALL = 0,         ///< Request CALL.
-	EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
-	EVM_CALLCODE = 2,     ///< Request CALLCODE.
-	EVM_CREATE = 3        ///< Request CREATE. Semantic of some params changes.
+    EVM_CALL = 0,         ///< Request CALL.
+    EVM_DELEGATECALL = 1, ///< Request DELEGATECALL. The value param ignored.
+    EVM_CALLCODE = 2,     ///< Request CALLCODE.
+    EVM_CREATE = 3,       ///< Request CREATE. Semantic of some params changes.
+};
+
+enum evm_flags {
+    EVM_STATIC = 1
 };
 
 struct evm_message {
@@ -69,6 +73,7 @@ struct evm_message {
     int64_t gas;
     int32_t depth;
     enum evm_call_kind kind;
+    uint32_t flags;
 };
 
 struct evm_tx_context {
@@ -423,6 +428,7 @@ enum evm_code_status {
 typedef enum evm_code_status
 (*evm_get_code_status_fn)(struct evm_instance* instance,
                           enum evm_mode mode,
+                          uint32_t flags,
                           struct evm_uint256be code_hash);
 
 /// Request preparation of the code for faster execution. It is not required
@@ -430,6 +436,7 @@ typedef enum evm_code_status
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
                                     enum evm_mode mode,
+                                    uint32_t flags,
                                     struct evm_uint256be code_hash,
                                     uint8_t const* code,
                                     size_t code_size);
