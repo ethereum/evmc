@@ -56,8 +56,8 @@ static struct evm_result execute(struct evm_instance* instance,
     struct evm_result ret = {};
     if (code_size == 0) {
         // In case of empty code return a fancy error message.
-        const char* error = mode == EVM_METROPOLIS ?
-                            "Welcome to Metropolis!" : "Hello Ethereum!";
+        const char* error = mode == EVM_BYZANTIUM ?
+                            "Welcome to Byzantium!" : "Hello Ethereum!";
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
         ret.code = EVM_FAILURE;
