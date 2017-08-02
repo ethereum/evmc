@@ -328,6 +328,23 @@ typedef void (*evm_call_fn)(
     struct evm_env* env,
     const struct evm_message* msg);
 
+/// EVM Host interface.
+///
+/// The set of all callback functions expected by EVM instances. This is C
+/// realisation of OOP interface (only virtual methods, no data).
+/// Host implementations SHOULD create constant singletons of this (similar
+/// to vtables) to lower the maintenance and memory management cost.
+struct evm_host {
+    evm_query_state_fn query;
+    evm_get_storage_fn get_storage;
+    evm_set_storage_fn set_storage;
+    evm_selfdestruct_fn selfdestruct;
+    evm_call_fn call;
+    evm_get_tx_context_fn get_tx_context;
+    evm_get_block_hash_fn get_block_hash;
+    evm_log_fn log;
+};
+
 
 struct evm_instance;  ///< Forward declaration.
 
@@ -336,20 +353,10 @@ struct evm_instance;  ///< Forward declaration.
 /// Creates and initializes an EVM instance by providing the information
 /// about runtime callback functions.
 ///
-/// @param query_fn   Pointer to query callback function. Nonnull.
-/// @param update_fn  Pointer to update callback function. Nonnull.
-/// @param call_fn    Pointer to call callback function. Nonnull.
-/// @param get_tx_context_fn  Pointer to get tx context function. Nonnull.
-/// @param get_block_hash_fn  Pointer to get block hash function. Nonnull.
-/// @return           Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)(evm_query_state_fn query_fn,
-                                              evm_get_storage_fn get_storage_fn,
-                                              evm_set_storage_fn set_storage_fn,
-                                              evm_selfdestruct_fn selfdestruct_fn,
-                                              evm_call_fn call_fn,
-                                              evm_get_tx_context_fn get_tx_context_fn,
-                                              evm_get_block_hash_fn get_block_hash_fn,
-                                              evm_log_fn log_fn);
+/// @param host  Pointer to an EVM Host controlling the created EVM
+///              instance. MUST NOT be null.
+/// @return      Pointer to the created EVM instance.
+typedef struct evm_instance* (*evm_create_fn)(const struct evm_host* host);
 
 /// Destroys the EVM instance.
 ///

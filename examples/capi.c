@@ -108,19 +108,24 @@ static void evm_log(struct evm_env* env, const struct evm_uint160be* address,
     printf("EVM-C: LOG%d\n", (int)topics_count);
 }
 
+static const struct evm_host example_host = {
+    query,
+    get_storage,
+    set_storage,
+    selfdestruct,
+    call,
+    get_tx_context,
+    get_block_hash,
+    evm_log
+};
+
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
     struct evm_factory factory = examplevm_get_factory();
     if (factory.abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(query,
-                                              get_storage,
-                                              set_storage,
-                                              selfdestruct,
-                                              call,
-                                              get_tx_context, get_block_hash,
-                                              evm_log);
+    struct evm_instance* jit = factory.create(&example_host);
 
     uint8_t const code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);
