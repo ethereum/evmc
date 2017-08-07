@@ -192,8 +192,6 @@ struct evm_result {
 
 /// The query callback key.
 enum evm_query_key {
-    EVM_CODE_BY_ADDRESS = 10, ///< Code by an address for EXTCODECOPY.
-    EVM_CODE_SIZE = 11,       ///< Code size by an address for EXTCODESIZE.
     EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
 };
 
@@ -233,12 +231,6 @@ union evm_variant {
 /// @param      address  The address of the account the query is about.
 ///
 /// ## Types of queries
-///
-/// - ::EVM_CODE_BY_ADDRESS
-///   @result evm_variant::data       The appropriate code for the given address or NULL if not found.
-///
-/// - ::EVM_CODE_SIZE
-///   @result evm_variant::int64      The appropriate code size for the given address or 0 if not found.
 ///
 /// - ::EVM_ACCOUNT_EXISTS
 ///   @result evm_variant::int64      1 if exists, 0 if not.
@@ -293,6 +285,21 @@ typedef void (*evm_set_storage_fn)(struct evm_env* env,
 typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
                                    struct evm_env* env,
                                    const struct evm_uint160be* address);
+
+/// Get code callback function.
+///
+/// This callback function is used by an EVM to get the code of a contract of
+/// given address.
+/// @param[out] result   The pointer to the contract code. This argument is
+///                      optional. If NULL is provided, the host MUST only
+///                      return the code size.
+/// @param      env      Pointer to execution environment managed by the host
+///                      application.
+/// @param      address  The address of the contract.
+/// @return              The size of the code.
+typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
+                                  struct evm_env* env,
+                                  const struct evm_uint160be* address);
 
 /// Selfdestruct callback function.
 ///
@@ -349,6 +356,7 @@ struct evm_host {
     evm_get_storage_fn get_storage;
     evm_set_storage_fn set_storage;
     evm_get_balance_fn get_balance;
+    evm_get_code_fn get_code;
     evm_selfdestruct_fn selfdestruct;
     evm_call_fn call;
     evm_get_tx_context_fn get_tx_context;
