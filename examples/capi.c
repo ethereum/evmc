@@ -35,10 +35,6 @@ static void query(union evm_variant* result,
         result->data_size = 0;
         break;
 
-    case EVM_BALANCE:
-        result->uint256be = balance(env, address);
-        break;
-
     case EVM_ACCOUNT_EXISTS:
         result->int64 = 0;
         break;
@@ -64,6 +60,15 @@ static void set_storage(struct evm_env* env,
                         const struct evm_uint256be* value)
 {
     printf("EVM-C: SSTORE @");
+    print_address(address);
+    printf("\n");
+}
+
+static void get_balance(struct evm_uint256be* result,
+                        struct evm_env* env,
+                        const struct evm_uint160be* address)
+{
+    printf("EVM-C: BALANCE @");
     print_address(address);
     printf("\n");
 }
@@ -112,6 +117,7 @@ static const struct evm_host example_host = {
     query,
     get_storage,
     set_storage,
+    get_balance,
     selfdestruct,
     call,
     get_tx_context,
