@@ -131,21 +131,14 @@ struct evm_result {
 
     /// The amount of gas left after the execution.
     ///
-    /// The value is valid only if evm_result::code is ::EVM_SUCCESS
-    /// or ::EVM_REVERT. In other cases all provided gas is assumed to have been
-    /// used.
+    /// If evm_result::code is not ::EVM_SUCCESS nor ::EVM_REVERT
+    /// the value MUST be 0.
     int64_t gas_left;
 
     /// The reference to output data.
     ///
     /// The output contains data coming from RETURN opcode (iff evm_result::code
-    /// field is ::EVM_SUCCESS) or from REVERT opcode (iff evm_result::code
-    /// field is ::EVM_REVERT).
-    ///
-    /// In case the evm_result::code field signals
-    /// a failure the output MAY contain optional explanation of the failure
-    /// for debugging or tracing purposes. In case the explanation is provided
-    /// and contains human-readable text then UTF-8 encoding SHOULD be used.
+    /// field is ::EVM_SUCCESS) or from REVERT opcode.
     ///
     /// The memory containing the output data is owned by EVM and has to be
     /// freed with evm_result::release().
