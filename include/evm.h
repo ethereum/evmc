@@ -190,61 +190,16 @@ struct evm_result {
     } reserved;
 };
 
-/// The query callback key.
-enum evm_query_key {
-    EVM_ACCOUNT_EXISTS = 14,  ///< Check if an account exists.
-};
-
-
-/// Variant type to represent possible types of values used in EVM.
+/// Check account existence callback function
 ///
-/// Type-safety is lost around the code that uses this type. We should have
-/// complete set of unit tests covering all possible cases.
-/// The size of the type is 64 bytes and should fit in single cache line.
-union evm_variant {
-    /// A host-endian 64-bit integer.
-    int64_t int64;
-
-    /// A big-endian 256-bit integer or hash.
-    struct evm_uint256be uint256be;
-
-    /// A memory reference.
-    struct {
-        /// Pointer to the data.
-        uint8_t const* data;
-
-        /// Size of the referenced memory/data.
-        size_t data_size;
-    };
-};
-
-/// Query callback function.
-///
-/// This callback function is used by the EVM to query the host application
-/// about additional information about accounts in the state required to
-/// execute EVM code.
-/// @param[out] result  The result of the query.
-/// @param      env     Pointer to execution environment managed by the host
-///                     application.
-/// @param      key     The kind of the query. See evm_query_key
-///                     and details below.
+/// This callback function is used by the EVM to check if
+/// there exists an account at given address.
+/// @param      env      Pointer to execution environment managed by the host
+///                      application.
 /// @param      address  The address of the account the query is about.
-///
-/// ## Types of queries
-///
-/// - ::EVM_ACCOUNT_EXISTS
-///   @result evm_variant::int64      1 if exists, 0 if not.
-///
-///
-/// @todo
-/// - Consider swapping key and address arguments,
-///   e.g. `query(result, env, addr, EVM_SLOAD, k)`.
-/// - Consider renaming key argument to something else. Key is confusing
-///   especially for SSTORE and SLOAD. Maybe "kind"?
-typedef void (*evm_query_state_fn)(union evm_variant* result,
-                                   struct evm_env* env,
-                                   enum evm_query_key key,
-                                   const struct evm_uint160be* address);
+/// @return              1 if exists, 0 otherwise.
+typedef int (*evm_account_exists_fn)(struct evm_env* env,
+                                     const struct evm_uint160be* address);
 
 /// Get storage callback function.
 ///
@@ -352,7 +307,7 @@ typedef void (*evm_call_fn)(
 ///
 /// @todo Merge evm_host with evm_env?
 struct evm_host {
-    evm_query_state_fn query;
+    evm_account_exists_fn account_exists;
     evm_get_storage_fn get_storage;
     evm_set_storage_fn set_storage;
     evm_get_balance_fn get_balance;

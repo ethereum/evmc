@@ -24,19 +24,12 @@ static void print_address(const struct evm_uint160be* address)
         printf("%x", address->bytes[i] & 0xff);
 }
 
-static void query(union evm_variant* result,
-                  struct evm_env* env,
-                  enum evm_query_key key,
-                  const struct evm_uint160be* address) {
-    printf("EVM-C: QUERY %d\n", key);
-    switch (key) {
-    case EVM_ACCOUNT_EXISTS:
-        result->int64 = 0;
-        break;
-
-    default:
-        result->int64 = 0;
-    }
+static int account_exists(struct evm_env* env,
+                           const struct evm_uint160be* address) {
+    printf("EVM-C: EXISTS @");
+    print_address(address);
+    printf("\n");
+    return 0;
 }
 
 static void get_storage(struct evm_uint256be* result,
@@ -119,7 +112,7 @@ static void evm_log(struct evm_env* env, const struct evm_uint160be* address,
 }
 
 static const struct evm_host example_host = {
-    query,
+    account_exists,
     get_storage,
     set_storage,
     get_balance,
