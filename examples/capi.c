@@ -24,28 +24,12 @@ static void print_address(const struct evm_uint160be* address)
         printf("%x", address->bytes[i] & 0xff);
 }
 
-static void query(union evm_variant* result,
-                  struct evm_env* env,
-                  enum evm_query_key key,
-                  const struct evm_uint160be* address) {
-    printf("EVM-C: QUERY %d\n", key);
-    switch (key) {
-    case EVM_CODE_BY_ADDRESS:
-        result->data = NULL;
-        result->data_size = 0;
-        break;
-
-    case EVM_BALANCE:
-        result->uint256be = balance(env, address);
-        break;
-
-    case EVM_ACCOUNT_EXISTS:
-        result->int64 = 0;
-        break;
-
-    default:
-        result->int64 = 0;
-    }
+static int account_exists(struct evm_env* env,
+                           const struct evm_uint160be* address) {
+    printf("EVM-C: EXISTS @");
+    print_address(address);
+    printf("\n");
+    return 0;
 }
 
 static void get_storage(struct evm_uint256be* result,
@@ -66,6 +50,26 @@ static void set_storage(struct evm_env* env,
     printf("EVM-C: SSTORE @");
     print_address(address);
     printf("\n");
+}
+
+static void get_balance(struct evm_uint256be* result,
+                        struct evm_env* env,
+                        const struct evm_uint160be* address)
+{
+    printf("EVM-C: BALANCE @");
+    print_address(address);
+    printf("\n");
+    *result = balance(env, address);
+}
+
+static size_t get_code(const uint8_t** code,
+                       struct evm_env* env,
+                       const struct evm_uint160be* address)
+{
+    printf("EVM-C: CODE @");
+    print_address(address);
+    printf("\n");
+    return 0;
 }
 
 static void selfdestruct(struct evm_env* env,
@@ -109,9 +113,11 @@ static void evm_log(struct evm_env* env, const struct evm_uint160be* address,
 }
 
 static const struct evm_host example_host = {
-    query,
+    account_exists,
     get_storage,
     set_storage,
+    get_balance,
+    get_code,
     selfdestruct,
     call,
     get_tx_context,
