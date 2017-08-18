@@ -48,7 +48,7 @@ static void free_result_output_data(struct evm_result const* result)
 
 static struct evm_result execute(struct evm_instance* instance,
                                  struct evm_context* context,
-                                 enum evm_mode mode,
+                                 enum evm_revision mode,
                                  const struct evm_message* msg,
                                  const uint8_t* code,
                                  size_t code_size)

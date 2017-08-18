@@ -356,7 +356,7 @@ typedef int (*evm_set_option_fn)(struct evm_instance* evm,
 
 /// EVM compatibility mode aka chain mode.
 /// The names for the last two hard forks come from Python implementation.
-enum evm_mode {
+enum evm_revision {
     EVM_FRONTIER = 0,
     EVM_HOMESTEAD = 1,
     EVM_ANTI_DOS = 2,
@@ -387,7 +387,7 @@ enum evm_mode {
 /// @return            All execution results.
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_context* context,
-                                            enum evm_mode mode,
+                                            enum evm_revision mode,
                                             const struct evm_message* msg,
                                             uint8_t const* code,
                                             size_t code_size);
@@ -409,7 +409,7 @@ enum evm_code_status {
 /// Get information the status of the code in the VM.
 typedef enum evm_code_status
 (*evm_get_code_status_fn)(struct evm_instance* instance,
-                          enum evm_mode mode,
+                          enum evm_revision mode,
                           uint32_t flags,
                           struct evm_uint256be code_hash);
 
@@ -417,7 +417,7 @@ typedef enum evm_code_status
 /// to execute the code but allows compilation of the code ahead of time in
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
-                                    enum evm_mode mode,
+                                    enum evm_revision mode,
                                     uint32_t flags,
                                     struct evm_uint256be code_hash,
                                     uint8_t const* code,
