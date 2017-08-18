@@ -59,6 +59,7 @@ static void get_balance(struct evm_uint256be* result,
     printf("EVM-C: BALANCE @");
     print_address(address);
     printf("\n");
+    *result = balance(env, address);
 }
 
 static size_t get_code(const uint8_t** code,
