@@ -359,8 +359,8 @@ typedef int (*evm_set_option_fn)(struct evm_instance* evm,
 enum evm_revision {
     EVM_FRONTIER = 0,
     EVM_HOMESTEAD = 1,
-    EVM_ANTI_DOS = 2,
-    EVM_CLEARING = 3,
+    EVM_TANGERINE_WHISTLE = 2,
+    EVM_SPURIOUS_DRAGON = 3,
     EVM_BYZANTIUM = 4,
     EVM_CONSTANTINOPLE = 5,
 };
