@@ -245,13 +245,12 @@ typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
 ///
 /// This callback function is used by an EVM to get the code of a contract of
 /// given address.
-/// @param[out] result   The pointer to the contract code. This argument is
-///                      optional. If NULL is provided, the host MUST only
-///                      return the code size.
-/// @param      env      Pointer to execution environment managed by the host
-///                      application.
-/// @param      address  The address of the contract.
-/// @return              The size of the code.
+/// @param[out] result_code  The pointer to the contract code. This argument is
+///                          optional. If NULL is provided, the host MUST only
+///                          return the code size.
+/// @param      env          Pointer to execution context managed by the Host.
+/// @param      address      The address of the contract.
+/// @return                  The size of the code.
 typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
                                   struct evm_env* env,
                                   const struct evm_uint160be* address);
