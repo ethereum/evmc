@@ -48,7 +48,7 @@ static void free_result_output_data(struct evm_result const* result)
 
 static struct evm_result execute(struct evm_instance* instance,
                                  struct evm_context* context,
-                                 enum evm_revision mode,
+                                 enum evm_revision rev,
                                  const struct evm_message* msg,
                                  const uint8_t* code,
                                  size_t code_size)
@@ -56,7 +56,7 @@ static struct evm_result execute(struct evm_instance* instance,
     struct evm_result ret = {};
     if (code_size == 0) {
         // In case of empty code return a fancy error message.
-        const char* error = mode == EVM_BYZANTIUM ?
+        const char* error = rev == EVM_BYZANTIUM ?
                             "Welcome to Byzantium!" : "Hello Ethereum!";
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
