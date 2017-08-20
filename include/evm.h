@@ -354,8 +354,10 @@ typedef int (*evm_set_option_fn)(struct evm_instance* evm,
                                  char const* value);
 
 
-/// EVM compatibility mode aka chain mode.
-/// The names for the last two hard forks come from Python implementation.
+/// EVM revision.
+///
+/// The revision of the EVM specification based on the Ethereum
+/// upgrade / hard fork codenames.
 enum evm_revision {
     EVM_FRONTIER = 0,
     EVM_HOMESTEAD = 1,
@@ -373,7 +375,7 @@ enum evm_revision {
 /// @param instance    A EVM instance.
 /// @param context     The pointer to the Host execution context to be passed
 ///                    to callback functions. @see ::evm_context.
-/// @param mode        EVM compatibility mode.
+/// @param rev         Requested EVM specification revision.
 /// @param code_hash   A hash of the bytecode, usually Keccak. The EVM uses it
 ///                    as the code identifier. A EVM implementation is able to
 ///                    hash the code itself if it requires it, but the host
@@ -387,7 +389,7 @@ enum evm_revision {
 /// @return            All execution results.
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             struct evm_context* context,
-                                            enum evm_revision mode,
+                                            enum evm_revision rev,
                                             const struct evm_message* msg,
                                             uint8_t const* code,
                                             size_t code_size);
@@ -409,7 +411,7 @@ enum evm_code_status {
 /// Get information the status of the code in the VM.
 typedef enum evm_code_status
 (*evm_get_code_status_fn)(struct evm_instance* instance,
-                          enum evm_revision mode,
+                          enum evm_revision rev,
                           uint32_t flags,
                           struct evm_uint256be code_hash);
 
@@ -417,7 +419,7 @@ typedef enum evm_code_status
 /// to execute the code but allows compilation of the code ahead of time in
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
-                                    enum evm_revision mode,
+                                    enum evm_revision rev,
                                     uint32_t flags,
                                     struct evm_uint256be code_hash,
                                     uint8_t const* code,
