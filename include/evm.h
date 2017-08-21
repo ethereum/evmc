@@ -1,6 +1,7 @@
 /// EVM-C -- C interface to Ethereum Virtual Machine
 ///
 /// ## High level design rules
+///
 /// 1. Pass function arguments and results by value.
 ///    This rule comes from modern C++ and tries to avoid costly alias analysis
 ///    needed for optimization. As the result we have a lots of complex structs
@@ -9,6 +10,12 @@
 ///    On the other hand, LLVM can generate good code for byte swaping.
 ///    The interface also tries to match host application "natural" endianess.
 ///    I would like to know what endianess you use and where.
+///
+/// ## Terms
+///
+/// 1. EVM  -- an Ethereum Virtual Machine instance/implementation.
+/// 2. Host -- an entity controlling the EVM. The Host requests code execution
+///            and responses to EVM queries by callback functions.
 ///
 /// @defgroup EVMC EVM-C
 /// @{
@@ -29,9 +36,12 @@ enum {
     EVM_ABI_VERSION = 0
 };
 
-/// Opaque struct representing execution environment managed by the host
-/// application.
-struct evm_env;
+/// Opaque structure representing execution context managed by the Host.
+///
+/// The Host MAY pass the pointer to the Host execution context to
+/// ::evm_execute_fn. The EVM MUST pass the same pointer back to the Host in
+/// every callback function.
+struct evm_context {};
 
 /// Big-endian 256-bit integer.
 ///
@@ -87,10 +97,10 @@ struct evm_tx_context {
 };
 
 typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
-                                      struct evm_env* env);
+                                      struct evm_context* context);
 
 typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
-                                      struct evm_env* env,
+                                      struct evm_context* context,
                                       int64_t number);
 
 /// The execution result code.
@@ -187,11 +197,11 @@ struct evm_result {
 ///
 /// This callback function is used by the EVM to check if
 /// there exists an account at given address.
-/// @param      env      Pointer to execution environment managed by the host
-///                      application.
+/// @param      context  The pointer to the Host execution context.
+///                      @see ::evm_context.
 /// @param      address  The address of the account the query is about.
 /// @return              1 if exists, 0 otherwise.
-typedef int (*evm_account_exists_fn)(struct evm_env* env,
+typedef int (*evm_account_exists_fn)(struct evm_context* context,
                                      const struct evm_uint160be* address);
 
 /// Get storage callback function.
@@ -199,12 +209,12 @@ typedef int (*evm_account_exists_fn)(struct evm_env* env,
 /// This callback function is used by an EVM to query the given contract
 /// storage entry.
 /// @param[out] result   The returned storage value.
-/// @param      env      Pointer to execution environment managed by the host
-///                      application.
+/// @param      context  The pointer to the Host execution context.
+///                      @see ::evm_context.
 /// @param      address  The address of the contract.
 /// @param      key      The index of the storage entry.
 typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
-                                   struct evm_env* env,
+                                   struct evm_context* context,
                                    const struct evm_uint160be* address,
                                    const struct evm_uint256be* key);
 
@@ -212,12 +222,12 @@ typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
 ///
 /// This callback function is used by an EVM to update the given contract
 /// storage entry.
-/// @param env      Pointer to execution environment managed by the host
-///                 application.
+/// @param context  The pointer to the Host execution context.
+///                 @see ::evm_context.
 /// @param address  The address of the contract.
 /// @param key      The index of the storage entry.
 /// @param value    The value to be stored.
-typedef void (*evm_set_storage_fn)(struct evm_env* env,
+typedef void (*evm_set_storage_fn)(struct evm_context* context,
                                    const struct evm_uint160be* address,
                                    const struct evm_uint256be* key,
                                    const struct evm_uint256be* value);
@@ -227,11 +237,11 @@ typedef void (*evm_set_storage_fn)(struct evm_env* env,
 /// This callback function is used by an EVM to query the balance of the given
 /// address.
 /// @param[out] result   The returned balance value.
-/// @param      env      Pointer to execution environment managed by the host
-///                      application.
+/// @param      context  The pointer to the Host execution context.
+///                      @see ::evm_context.
 /// @param      address  The address.
 typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
-                                   struct evm_env* env,
+                                   struct evm_context* context,
                                    const struct evm_uint160be* address);
 
 /// Get code callback function.
@@ -241,22 +251,23 @@ typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
 /// @param[out] result_code  The pointer to the contract code. This argument is
 ///                          optional. If NULL is provided, the host MUST only
 ///                          return the code size.
-/// @param      env          Pointer to execution context managed by the Host.
+/// @param      context      The pointer to the Host execution context.
+///                          @see ::evm_context.
 /// @param      address      The address of the contract.
 /// @return                  The size of the code.
 typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
-                                  struct evm_env* env,
+                                  struct evm_context* context,
                                   const struct evm_uint160be* address);
 
 /// Selfdestruct callback function.
 ///
 /// This callback function is used by an EVM to SELFDESTRUCT given contract.
-/// @param env          The pointer to the execution environment managed by
-///                     the host application.
+/// @param context      The pointer to the Host execution context.
+///                     @see ::evm_context.
 /// @param address      The address of the contract to be selfdestructed.
 /// @param beneficiary  The address where the remaining ETH is going to be
 ///                     transferred.
-typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
+typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
                                     const struct evm_uint160be* address,
                                     const struct evm_uint160be* beneficiary);
 
@@ -264,15 +275,15 @@ typedef void (*evm_selfdestruct_fn)(struct evm_env* env,
 ///
 /// This callback function is used by an EVM to inform about a LOG that happened
 /// during an EVM bytecode execution.
-/// @param env           The pointer to execution environment managed by
-///                      the host application.
+/// @param context       The pointer to the Host execution context.
+///                      @see ::evm_context.
 /// @param address       The address of the contract that generated the log.
 /// @param data          The pointer to unindexed data attached to the log.
 /// @param data_size     The length of the data.
 /// @param topics        The pointer to the array of topics attached to the log.
 /// @param topics_count  The number of the topics. Valid values are between
 ///                      0 and 4 inclusively.
-typedef void (*evm_log_fn)(struct evm_env* env,
+typedef void (*evm_log_fn)(struct evm_context* context,
                            const struct evm_uint160be* address,
                            const uint8_t* data,
                            size_t data_size,
@@ -282,22 +293,19 @@ typedef void (*evm_log_fn)(struct evm_env* env,
 /// Pointer to the callback function supporting EVM calls.
 ///
 /// @param[out] result  Call result.
-/// @param      env     Pointer to execution environment managed by the host
-///                     application.
+/// @param      context The pointer to the Host execution context.
+///                     @see ::evm_context.
 /// @param      msg     Call parameters.
-typedef void (*evm_call_fn)(
-    struct evm_result* result,
-    struct evm_env* env,
-    const struct evm_message* msg);
+typedef void (*evm_call_fn)(struct evm_result* result,
+                            struct evm_context* context,
+                            const struct evm_message* msg);
 
-/// EVM Host interface.
+/// The Host interface.
 ///
 /// The set of all callback functions expected by EVM instances. This is C
 /// realisation of OOP interface (only virtual methods, no data).
-/// Host implementations SHOULD create constant singletons of this (similar
+/// Host implementations SHOULD create constant singletons of this (similarly
 /// to vtables) to lower the maintenance and memory management cost.
-///
-/// @todo Merge evm_host with evm_env?
 struct evm_host {
     evm_account_exists_fn account_exists;
     evm_get_storage_fn get_storage;
@@ -346,13 +354,15 @@ typedef int (*evm_set_option_fn)(struct evm_instance* evm,
                                  char const* value);
 
 
-/// EVM compatibility mode aka chain mode.
-/// The names for the last two hard forks come from Python implementation.
-enum evm_mode {
+/// EVM revision.
+///
+/// The revision of the EVM specification based on the Ethereum
+/// upgrade / hard fork codenames.
+enum evm_revision {
     EVM_FRONTIER = 0,
     EVM_HOMESTEAD = 1,
-    EVM_ANTI_DOS = 2,
-    EVM_CLEARING = 3,
+    EVM_TANGERINE_WHISTLE = 2,
+    EVM_SPURIOUS_DRAGON = 3,
     EVM_BYZANTIUM = 4,
     EVM_CONSTANTINOPLE = 5,
 };
@@ -363,9 +373,9 @@ enum evm_mode {
 /// All the fun is here. This function actually does something useful.
 ///
 /// @param instance    A EVM instance.
-/// @param env         A pointer to the execution environment provided by the
-///                    user and passed to callback functions.
-/// @param mode        EVM compatibility mode.
+/// @param context     The pointer to the Host execution context to be passed
+///                    to callback functions. @see ::evm_context.
+/// @param rev         Requested EVM specification revision.
 /// @param code_hash   A hash of the bytecode, usually Keccak. The EVM uses it
 ///                    as the code identifier. A EVM implementation is able to
 ///                    hash the code itself if it requires it, but the host
@@ -378,8 +388,8 @@ enum evm_mode {
 /// @param value       Call value.
 /// @return            All execution results.
 typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
-                                            struct evm_env* env,
-                                            enum evm_mode mode,
+                                            struct evm_context* context,
+                                            enum evm_revision rev,
                                             const struct evm_message* msg,
                                             uint8_t const* code,
                                             size_t code_size);
@@ -401,7 +411,7 @@ enum evm_code_status {
 /// Get information the status of the code in the VM.
 typedef enum evm_code_status
 (*evm_get_code_status_fn)(struct evm_instance* instance,
-                          enum evm_mode mode,
+                          enum evm_revision rev,
                           uint32_t flags,
                           struct evm_uint256be code_hash);
 
@@ -409,7 +419,7 @@ typedef enum evm_code_status
 /// to execute the code but allows compilation of the code ahead of time in
 /// JIT-like VMs.
 typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
-                                    enum evm_mode mode,
+                                    enum evm_revision rev,
                                     uint32_t flags,
                                     struct evm_uint256be code_hash,
                                     uint8_t const* code,

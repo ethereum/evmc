@@ -47,8 +47,8 @@ static void free_result_output_data(struct evm_result const* result)
 }
 
 static struct evm_result execute(struct evm_instance* instance,
-                                 struct evm_env* env,
-                                 enum evm_mode mode,
+                                 struct evm_context* context,
+                                 enum evm_revision rev,
                                  const struct evm_message* msg,
                                  const uint8_t* code,
                                  size_t code_size)
@@ -56,7 +56,7 @@ static struct evm_result execute(struct evm_instance* instance,
     struct evm_result ret = {};
     if (code_size == 0) {
         // In case of empty code return a fancy error message.
-        const char* error = mode == EVM_BYZANTIUM ?
+        const char* error = rev == EVM_BYZANTIUM ?
                             "Welcome to Byzantium!" : "Hello Ethereum!";
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
@@ -96,9 +96,9 @@ static struct evm_result execute(struct evm_instance* instance,
         strncmp((const char*)code, counter, code_size)) {
         struct evm_uint256be value;
         const struct evm_uint256be index = {{0,}};
-        vm->host->get_storage(&value, env, &msg->address, &index);
+        vm->host->get_storage(&value, context, &msg->address, &index);
         value.bytes[31] += 1;
-        vm->host->set_storage(env, &msg->address, &index, &value);
+        vm->host->set_storage(context, &msg->address, &index, &value);
         ret.code = EVM_SUCCESS;
         return ret;
     }

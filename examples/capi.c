@@ -4,14 +4,14 @@
 #include "evm.h"
 
 
-struct evm_uint256be balance(struct evm_env* env,
+struct evm_uint256be balance(struct evm_context* context,
                              const struct evm_uint160be* address)
 {
     struct evm_uint256be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
 }
 
-struct evm_uint160be address(struct evm_env* env)
+struct evm_uint160be address(struct evm_context* context)
 {
     struct evm_uint160be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
@@ -24,7 +24,7 @@ static void print_address(const struct evm_uint160be* address)
         printf("%x", address->bytes[i] & 0xff);
 }
 
-static int account_exists(struct evm_env* env,
+static int account_exists(struct evm_context* context,
                            const struct evm_uint160be* address) {
     printf("EVM-C: EXISTS @");
     print_address(address);
@@ -33,7 +33,7 @@ static int account_exists(struct evm_env* env,
 }
 
 static void get_storage(struct evm_uint256be* result,
-                        struct evm_env* env,
+                        struct evm_context* context,
                         const struct evm_uint160be* address,
                         const struct evm_uint256be* key)
 {
@@ -42,7 +42,7 @@ static void get_storage(struct evm_uint256be* result,
     printf("\n");
 }
 
-static void set_storage(struct evm_env* env,
+static void set_storage(struct evm_context* context,
                         const struct evm_uint160be* address,
                         const struct evm_uint256be* key,
                         const struct evm_uint256be* value)
@@ -53,17 +53,17 @@ static void set_storage(struct evm_env* env,
 }
 
 static void get_balance(struct evm_uint256be* result,
-                        struct evm_env* env,
+                        struct evm_context* context,
                         const struct evm_uint160be* address)
 {
     printf("EVM-C: BALANCE @");
     print_address(address);
     printf("\n");
-    *result = balance(env, address);
+    *result = balance(context, address);
 }
 
 static size_t get_code(const uint8_t** code,
-                       struct evm_env* env,
+                       struct evm_context* context,
                        const struct evm_uint160be* address)
 {
     printf("EVM-C: CODE @");
@@ -72,7 +72,7 @@ static size_t get_code(const uint8_t** code,
     return 0;
 }
 
-static void selfdestruct(struct evm_env* env,
+static void selfdestruct(struct evm_context* context,
                          const struct evm_uint160be* address,
                          const struct evm_uint160be* beneficiary)
 {
@@ -84,19 +84,19 @@ static void selfdestruct(struct evm_env* env,
 }
 
 static void call(struct evm_result* result,
-                 struct evm_env* env,
+                 struct evm_context* context,
                  const struct evm_message* msg)
 {
     printf("EVM-C: CALL (depth: %d)\n", msg->depth);
     result->code = EVM_FAILURE;
 }
 
-static void get_tx_context(struct evm_tx_context* result, struct evm_env* env)
+static void get_tx_context(struct evm_tx_context* result, struct evm_context* context)
 {
 
 }
 
-static void get_block_hash(struct evm_uint256be* result, struct evm_env* env,
+static void get_block_hash(struct evm_uint256be* result, struct evm_context* context,
                            int64_t number)
 {
 
@@ -105,7 +105,7 @@ static void get_block_hash(struct evm_uint256be* result, struct evm_env* env,
 /// EVM log callback.
 ///
 /// @note The `evm_log` name is used to avoid conflict with `log()` C function.
-static void evm_log(struct evm_env* env, const struct evm_uint160be* address,
+static void evm_log(struct evm_context* context, const struct evm_uint160be* address,
                     const uint8_t* data, size_t data_size,
                     const struct evm_uint256be topics[], size_t topics_count)
 {
