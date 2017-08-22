@@ -41,7 +41,12 @@ enum {
 /// The Host MAY pass the pointer to the Host execution context to
 /// ::evm_execute_fn. The EVM MUST pass the same pointer back to the Host in
 /// every callback function.
-struct evm_context {};
+struct evm_context {
+
+    /// @todo Move evm_host here. We need it now, because structs cannot be
+    ///       empty in C.
+    void* future_fn_table;
+};
 
 /// Big-endian 256-bit integer.
 ///
