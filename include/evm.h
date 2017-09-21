@@ -36,18 +36,6 @@ enum {
     EVM_ABI_VERSION = 0
 };
 
-/// Opaque structure representing execution context managed by the Host.
-///
-/// The Host MAY pass the pointer to the Host execution context to
-/// ::evm_execute_fn. The EVM MUST pass the same pointer back to the Host in
-/// every callback function.
-struct evm_context {
-
-    /// @todo Move evm_host here. We need it now, because structs cannot be
-    ///       empty in C.
-    void* future_fn_table;
-};
-
 /// Big-endian 256-bit integer.
 ///
 /// 32 bytes of data representing big-endian 256-bit integer. I.e. bytes[0] is
@@ -100,6 +88,8 @@ struct evm_tx_context {
     int64_t block_gas_limit;
     struct evm_uint256be block_difficulty;
 };
+
+struct evm_context;
 
 typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
                                       struct evm_context* context);
@@ -325,6 +315,21 @@ struct evm_host {
 };
 
 
+/// Execution context managed by the Host.
+///
+/// The Host MUST pass the pointer to the execution context to
+/// ::evm_execute_fn. The EVM MUST pass the same pointer back to the Host in
+/// every callback function.
+/// The context MUST contain at least the function table defining the context
+/// callback interface.
+/// Optionally, The Host MAY include in the context additional data.
+struct evm_context {
+
+    /// Function table defining the context interface.
+    const struct evm_host* fn_table;
+};
+
+
 struct evm_instance;  ///< Forward declaration.
 
 /// Creates the EVM instance.
@@ -332,10 +337,8 @@ struct evm_instance;  ///< Forward declaration.
 /// Creates and initializes an EVM instance by providing the information
 /// about runtime callback functions.
 ///
-/// @param host  Pointer to an EVM Host controlling the created EVM
-///              instance. MUST NOT be null.
 /// @return      Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)(const struct evm_host* host);
+typedef struct evm_instance* (*evm_create_fn)();
 
 /// Destroys the EVM instance.
 ///
