@@ -128,10 +128,10 @@ static const struct evm_host example_host = {
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
     struct evm_factory factory = examplevm_get_factory();
-    if (factory.abi_version != EVM_ABI_VERSION)
-        return 1;  // Incompatible ABI version.
 
-    struct evm_instance* jit = factory.create(&example_host);
+    struct evm_instance* jit = factory.create();
+    if (jit->abi_version != EVM_ABI_VERSION)
+        return 1;  // Incompatible ABI version.
 
     uint8_t const code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);

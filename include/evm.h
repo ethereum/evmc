@@ -437,6 +437,13 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
 ///
 /// Defines the base struct of the EVM implementation.
 struct evm_instance {
+
+    /// EVM-C ABI version implemented by the EVM instance.
+    ///
+    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// represented by this file is in ::EVM_ABI_VERSION.
+    const int abi_version;
+
     /// Pointer to function destroying the EVM instance.
     evm_destroy_fn destroy;
 
@@ -463,11 +470,6 @@ struct evm_instance {
 ///
 /// Provides ABI protection and method to create an EVM instance.
 struct evm_factory {
-    /// EVM-C ABI version implemented by the EVM factory and instance.
-    ///
-    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
-    /// represented by this file is in ::EVM_ABI_VERSION.
-    int abi_version;
 
     /// Pointer to function creating and initializing the EVM instance.
     evm_create_fn create;

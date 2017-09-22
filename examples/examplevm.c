@@ -112,17 +112,21 @@ static struct evm_result execute(struct evm_instance* instance,
 
 static struct evm_instance* evm_create(const struct evm_host* host)
 {
+    struct evm_instance init = {
+        .abi_version = EVM_ABI_VERSION,
+        .destroy = evm_destroy,
+        .execute = execute,
+        .set_option = evm_set_option
+    };
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evm_instance* interface = &vm->instance;
-    interface->destroy = evm_destroy;
-    interface->execute = execute;
-    interface->set_option = evm_set_option;
+    memcpy(interface, &init, sizeof(init));
     vm->host = host;
     return interface;
 }
 
 struct evm_factory examplevm_get_factory()
 {
-    struct evm_factory factory = {EVM_ABI_VERSION, evm_create};
+    struct evm_factory factory = {evm_create};
     return factory;
 }
