@@ -332,14 +332,6 @@ struct evm_context {
 
 struct evm_instance;  ///< Forward declaration.
 
-/// Creates the EVM instance.
-///
-/// Creates and initializes an EVM instance by providing the information
-/// about runtime callback functions.
-///
-/// @return      Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)();
-
 /// Destroys the EVM instance.
 ///
 /// @param evm  The EVM instance to be destroyed.
@@ -466,25 +458,17 @@ struct evm_instance {
     evm_set_option_fn set_option;
 };
 
-/// The EVM instance factory.
-///
-/// Provides ABI protection and method to create an EVM instance.
-struct evm_factory {
-
-    /// Pointer to function creating and initializing the EVM instance.
-    evm_create_fn create;
-};
-
 // END Python CFFI declarations
 
-/// Example of a function creating uninitialized instance of an example VM.
+/// Example of a function creating an instance of an example EVM implementation.
 ///
-/// Each EVM implementation is obligated to provided a function returning
-/// an EVM instance.
-/// The function has to be named as `<vm-name>_get_factory(void)`.
+/// Each EVM implementation MUST provide a function returning an EVM instance.
+/// The function SHOULD be named `<vm-name>_create(void)`.
 ///
 /// @return  EVM instance.
-struct evm_factory examplevm_get_factory(void);
+/// @todo Specify if this function can return null pointer to indicate error.
+/// @todo Can we return const pointer?
+struct evm_instance* examplevm_create(void);
 
 
 #if __cplusplus

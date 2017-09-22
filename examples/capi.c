@@ -127,9 +127,7 @@ static const struct evm_host example_host = {
 
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
-    struct evm_factory factory = examplevm_get_factory();
-
-    struct evm_instance* jit = factory.create();
+    struct evm_instance* jit = examplevm_create();
     if (jit->abi_version != EVM_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
