@@ -98,8 +98,8 @@ typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
                                       struct evm_context* context,
                                       int64_t number);
 
-/// The execution result code.
-enum evm_result_code {
+/// The execution status code.
+enum evm_status_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
     EVM_FAILURE = 1,               ///< Generic execution failure.
     EVM_OUT_OF_GAS = 2,
@@ -107,7 +107,7 @@ enum evm_result_code {
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
-    EVM_REVERT = 7,  ///< Execution terminated with REVERT opcode.
+    EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
     /// EVM implementation internal error.
     ///
@@ -132,7 +132,7 @@ typedef void (*evm_release_result_fn)(struct evm_result const* result);
 struct evm_result {
     /// The execution result code.
     /// FIXME: Rename to 'status' or 'status_code'.
-    enum evm_result_code code;
+    enum evm_status_code code;
 
     /// The amount of gas left after the execution.
     ///
@@ -295,13 +295,13 @@ typedef void (*evm_call_fn)(struct evm_result* result,
                             struct evm_context* context,
                             const struct evm_message* msg);
 
-/// The Host interface.
+/// The context interface.
 ///
 /// The set of all callback functions expected by EVM instances. This is C
-/// realisation of OOP interface (only virtual methods, no data).
+/// realisation of vtable for OOP interface (only virtual methods, no data).
 /// Host implementations SHOULD create constant singletons of this (similarly
 /// to vtables) to lower the maintenance and memory management cost.
-struct evm_host {
+struct evm_context_fn_table {
     evm_account_exists_fn account_exists;
     evm_get_storage_fn get_storage;
     evm_set_storage_fn set_storage;
@@ -325,8 +325,8 @@ struct evm_host {
 /// Optionally, The Host MAY include in the context additional data.
 struct evm_context {
 
-    /// Function table defining the context interface.
-    const struct evm_host* fn_table;
+    /// Function table defining the context interface (vtable).
+    const struct evm_context_fn_table* fn_table;
 };
 
 
@@ -434,6 +434,8 @@ struct evm_instance {
     ///
     /// For future use to detect ABI incompatibilities. The EVM-C ABI version
     /// represented by this file is in ::EVM_ABI_VERSION.
+    ///
+    /// @todo Consider removing this field.
     const int abi_version;
 
     /// Pointer to function destroying the EVM instance.
@@ -467,7 +469,6 @@ struct evm_instance {
 ///
 /// @return  EVM instance.
 /// @todo Specify if this function can return null pointer to indicate error.
-/// @todo Can we return const pointer?
 struct evm_instance* examplevm_create(void);
 
 

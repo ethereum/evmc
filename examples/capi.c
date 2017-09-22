@@ -112,7 +112,7 @@ static void evm_log(struct evm_context* context, const struct evm_uint160be* add
     printf("EVM-C: LOG%d\n", (int)topics_count);
 }
 
-static const struct evm_host example_host = {
+static const struct evm_context_fn_table ctx_fn_table = {
     account_exists,
     get_storage,
     set_storage,
@@ -139,11 +139,13 @@ int main(int argc, char *argv[]) {
     struct evm_uint160be addr = {{0, 1, 2,}};
     int64_t gas = 200000;
 
+    struct evm_context ctx = {&ctx_fn_table};
+
     struct evm_message msg = {addr, addr, value, input, sizeof(input),
                               code_hash, gas, 0};
 
     struct evm_result result =
-        jit->execute(jit, NULL, EVM_HOMESTEAD, &msg, code, code_size);
+        jit->execute(jit, &ctx, EVM_HOMESTEAD, &msg, code, code_size);
 
     printf("Execution result:\n");
     if (result.code != EVM_SUCCESS) {
