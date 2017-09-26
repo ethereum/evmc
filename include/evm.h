@@ -49,7 +49,7 @@ struct evm_uint256be {
 
 /// Big-endian 160-bit hash suitable for keeping an Ethereum address.
 /// TODO: Rename to "address".
-struct evm_uint160be {
+struct evm_address {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
 };
@@ -67,8 +67,8 @@ enum evm_flags {
 };
 
 struct evm_message {
-    struct evm_uint160be address;
-    struct evm_uint160be sender;
+    struct evm_address address;
+    struct evm_address sender;
     struct evm_uint256be value;
     const uint8_t* input;
     size_t input_size;
@@ -81,8 +81,8 @@ struct evm_message {
 
 struct evm_tx_context {
     struct evm_uint256be tx_gas_price;
-    struct evm_uint160be tx_origin;
-    struct evm_uint160be block_coinbase;
+    struct evm_address tx_origin;
+    struct evm_address block_coinbase;
     int64_t block_number;
     int64_t block_timestamp;
     int64_t block_gas_limit;
@@ -196,7 +196,7 @@ struct evm_result {
 /// @param      address  The address of the account the query is about.
 /// @return              1 if exists, 0 otherwise.
 typedef int (*evm_account_exists_fn)(struct evm_context* context,
-                                     const struct evm_uint160be* address);
+                                     const struct evm_address* address);
 
 /// Get storage callback function.
 ///
@@ -209,7 +209,7 @@ typedef int (*evm_account_exists_fn)(struct evm_context* context,
 /// @param      key      The index of the storage entry.
 typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
                                    struct evm_context* context,
-                                   const struct evm_uint160be* address,
+                                   const struct evm_address* address,
                                    const struct evm_uint256be* key);
 
 /// Set storage callback function.
@@ -222,7 +222,7 @@ typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
 /// @param key      The index of the storage entry.
 /// @param value    The value to be stored.
 typedef void (*evm_set_storage_fn)(struct evm_context* context,
-                                   const struct evm_uint160be* address,
+                                   const struct evm_address* address,
                                    const struct evm_uint256be* key,
                                    const struct evm_uint256be* value);
 
@@ -236,7 +236,7 @@ typedef void (*evm_set_storage_fn)(struct evm_context* context,
 /// @param      address  The address.
 typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
                                    struct evm_context* context,
-                                   const struct evm_uint160be* address);
+                                   const struct evm_address* address);
 
 /// Get code callback function.
 ///
@@ -251,7 +251,7 @@ typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
 /// @return                  The size of the code.
 typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
                                   struct evm_context* context,
-                                  const struct evm_uint160be* address);
+                                  const struct evm_address* address);
 
 /// Selfdestruct callback function.
 ///
@@ -262,8 +262,8 @@ typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
 /// @param beneficiary  The address where the remaining ETH is going to be
 ///                     transferred.
 typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
-                                    const struct evm_uint160be* address,
-                                    const struct evm_uint160be* beneficiary);
+                                    const struct evm_address* address,
+                                    const struct evm_address* beneficiary);
 
 /// Log callback function.
 ///
@@ -278,7 +278,7 @@ typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
 /// @param topics_count  The number of the topics. Valid values are between
 ///                      0 and 4 inclusively.
 typedef void (*evm_log_fn)(struct evm_context* context,
-                           const struct evm_uint160be* address,
+                           const struct evm_address* address,
                            const uint8_t* data,
                            size_t data_size,
                            const struct evm_uint256be topics[],
