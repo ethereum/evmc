@@ -88,7 +88,7 @@ static void call(struct evm_result* result,
                  const struct evm_message* msg)
 {
     printf("EVM-C: CALL (depth: %d)\n", msg->depth);
-    result->code = EVM_FAILURE;
+    result->status_code = EVM_FAILURE;
 }
 
 static void get_tx_context(struct evm_tx_context* result, struct evm_context* context)
@@ -148,8 +148,8 @@ int main(int argc, char *argv[]) {
         jit->execute(jit, &ctx, EVM_HOMESTEAD, &msg, code, code_size);
 
     printf("Execution result:\n");
-    if (result.code != EVM_SUCCESS) {
-      printf("  EVM execution failure: %d\n", result.code);
+    if (result.status_code != EVM_SUCCESS) {
+      printf("  EVM execution failure: %d\n", result.status_code);
     } else {
         printf("  Gas used: %ld\n", gas - result.gas_left);
         printf("  Gas left: %ld\n", result.gas_left);

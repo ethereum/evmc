@@ -60,7 +60,7 @@ static struct evm_result execute(struct evm_instance* instance,
                             "Welcome to Byzantium!" : "Hello Ethereum!";
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
-        ret.code = EVM_FAILURE;
+        ret.status_code = EVM_FAILURE;
         ret.release = NULL;  // We don't need to release the constant messages.
         return ret;
     }
@@ -82,11 +82,11 @@ static struct evm_result execute(struct evm_instance* instance,
         uint8_t* output_data = (uint8_t*)malloc(address_size);
         if (!output_data) {
             // malloc failed, report internal error.
-            ret.code = EVM_INTERNAL_ERROR;
+            ret.status_code = EVM_INTERNAL_ERROR;
             return ret;
         }
         memcpy(output_data, &msg->address, address_size);
-        ret.code = EVM_SUCCESS;
+        ret.status_code = EVM_SUCCESS;
         ret.output_data = output_data;
         ret.output_size = address_size;
         ret.release = &free_result_output_data;
@@ -99,12 +99,12 @@ static struct evm_result execute(struct evm_instance* instance,
         context->fn_table->get_storage(&value, context, &msg->address, &index);
         value.bytes[31] += 1;
         context->fn_table->set_storage(context, &msg->address, &index, &value);
-        ret.code = EVM_SUCCESS;
+        ret.status_code = EVM_SUCCESS;
         return ret;
     }
 
     ret.release = evm_release_result;
-    ret.code = EVM_FAILURE;
+    ret.status_code = EVM_FAILURE;
     ret.gas_left = 0;
 
     if (vm->verbose)

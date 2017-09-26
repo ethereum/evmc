@@ -111,8 +111,8 @@ enum evm_status_code {
 
     /// EVM implementation internal error.
     ///
-    /// FIXME: We should rethink reporting internal errors. One of the options
-    /// it to allow using any negative value to represent internal errors.
+    /// @todo We should rethink reporting internal errors. One of the options
+    ///       it to allow using any negative value to represent internal errors.
     EVM_INTERNAL_ERROR = -1,
 };
 
@@ -130,9 +130,8 @@ typedef void (*evm_release_result_fn)(struct evm_result const* result);
 
 /// The EVM code execution result.
 struct evm_result {
-    /// The execution result code.
-    /// FIXME: Rename to 'status' or 'status_code'.
-    enum evm_status_code code;
+    /// The execution status code.
+    enum evm_status_code status_code;
 
     /// The amount of gas left after the execution.
     ///
