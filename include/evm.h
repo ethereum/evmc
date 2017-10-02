@@ -48,7 +48,6 @@ struct evm_uint256be {
 };
 
 /// Big-endian 160-bit hash suitable for keeping an Ethereum address.
-/// TODO: Rename to "address".
 struct evm_address {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
