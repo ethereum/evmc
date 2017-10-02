@@ -466,8 +466,7 @@ struct evm_instance {
 /// Each EVM implementation MUST provide a function returning an EVM instance.
 /// The function SHOULD be named `<vm-name>_create(void)`.
 ///
-/// @return  EVM instance.
-/// @todo Specify if this function can return null pointer to indicate error.
+/// @return  EVM instance or NULL indicating instance creation failure.
 struct evm_instance* examplevm_create(void);
 
 
