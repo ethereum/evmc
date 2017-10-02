@@ -49,7 +49,7 @@ struct evm_uint256be {
 
 /// Big-endian 160-bit hash suitable for keeping an Ethereum address.
 /// TODO: Rename to "address".
-struct evm_uint160be {
+struct evm_address {
     /// The 20 bytes of the hash.
     uint8_t bytes[20];
 };
@@ -67,8 +67,8 @@ enum evm_flags {
 };
 
 struct evm_message {
-    struct evm_uint160be address;
-    struct evm_uint160be sender;
+    struct evm_address address;
+    struct evm_address sender;
     struct evm_uint256be value;
     const uint8_t* input;
     size_t input_size;
@@ -81,8 +81,8 @@ struct evm_message {
 
 struct evm_tx_context {
     struct evm_uint256be tx_gas_price;
-    struct evm_uint160be tx_origin;
-    struct evm_uint160be block_coinbase;
+    struct evm_address tx_origin;
+    struct evm_address block_coinbase;
     int64_t block_number;
     int64_t block_timestamp;
     int64_t block_gas_limit;
@@ -98,8 +98,8 @@ typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
                                       struct evm_context* context,
                                       int64_t number);
 
-/// The execution result code.
-enum evm_result_code {
+/// The execution status code.
+enum evm_status_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
     EVM_FAILURE = 1,               ///< Generic execution failure.
     EVM_OUT_OF_GAS = 2,
@@ -107,12 +107,12 @@ enum evm_result_code {
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
-    EVM_REVERT = 7,  ///< Execution terminated with REVERT opcode.
+    EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
     /// EVM implementation internal error.
     ///
-    /// FIXME: We should rethink reporting internal errors. One of the options
-    /// it to allow using any negative value to represent internal errors.
+    /// @todo We should rethink reporting internal errors. One of the options
+    ///       it to allow using any negative value to represent internal errors.
     EVM_INTERNAL_ERROR = -1,
 };
 
@@ -130,9 +130,8 @@ typedef void (*evm_release_result_fn)(struct evm_result const* result);
 
 /// The EVM code execution result.
 struct evm_result {
-    /// The execution result code.
-    /// FIXME: Rename to 'status' or 'status_code'.
-    enum evm_result_code code;
+    /// The execution status code.
+    enum evm_status_code status_code;
 
     /// The amount of gas left after the execution.
     ///
@@ -197,7 +196,7 @@ struct evm_result {
 /// @param      address  The address of the account the query is about.
 /// @return              1 if exists, 0 otherwise.
 typedef int (*evm_account_exists_fn)(struct evm_context* context,
-                                     const struct evm_uint160be* address);
+                                     const struct evm_address* address);
 
 /// Get storage callback function.
 ///
@@ -210,7 +209,7 @@ typedef int (*evm_account_exists_fn)(struct evm_context* context,
 /// @param      key      The index of the storage entry.
 typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
                                    struct evm_context* context,
-                                   const struct evm_uint160be* address,
+                                   const struct evm_address* address,
                                    const struct evm_uint256be* key);
 
 /// Set storage callback function.
@@ -223,7 +222,7 @@ typedef void (*evm_get_storage_fn)(struct evm_uint256be* result,
 /// @param key      The index of the storage entry.
 /// @param value    The value to be stored.
 typedef void (*evm_set_storage_fn)(struct evm_context* context,
-                                   const struct evm_uint160be* address,
+                                   const struct evm_address* address,
                                    const struct evm_uint256be* key,
                                    const struct evm_uint256be* value);
 
@@ -237,7 +236,7 @@ typedef void (*evm_set_storage_fn)(struct evm_context* context,
 /// @param      address  The address.
 typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
                                    struct evm_context* context,
-                                   const struct evm_uint160be* address);
+                                   const struct evm_address* address);
 
 /// Get code callback function.
 ///
@@ -252,7 +251,7 @@ typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
 /// @return                  The size of the code.
 typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
                                   struct evm_context* context,
-                                  const struct evm_uint160be* address);
+                                  const struct evm_address* address);
 
 /// Selfdestruct callback function.
 ///
@@ -263,8 +262,8 @@ typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
 /// @param beneficiary  The address where the remaining ETH is going to be
 ///                     transferred.
 typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
-                                    const struct evm_uint160be* address,
-                                    const struct evm_uint160be* beneficiary);
+                                    const struct evm_address* address,
+                                    const struct evm_address* beneficiary);
 
 /// Log callback function.
 ///
@@ -279,7 +278,7 @@ typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
 /// @param topics_count  The number of the topics. Valid values are between
 ///                      0 and 4 inclusively.
 typedef void (*evm_log_fn)(struct evm_context* context,
-                           const struct evm_uint160be* address,
+                           const struct evm_address* address,
                            const uint8_t* data,
                            size_t data_size,
                            const struct evm_uint256be topics[],
@@ -295,13 +294,13 @@ typedef void (*evm_call_fn)(struct evm_result* result,
                             struct evm_context* context,
                             const struct evm_message* msg);
 
-/// The Host interface.
+/// The context interface.
 ///
 /// The set of all callback functions expected by EVM instances. This is C
-/// realisation of OOP interface (only virtual methods, no data).
+/// realisation of vtable for OOP interface (only virtual methods, no data).
 /// Host implementations SHOULD create constant singletons of this (similarly
 /// to vtables) to lower the maintenance and memory management cost.
-struct evm_host {
+struct evm_context_fn_table {
     evm_account_exists_fn account_exists;
     evm_get_storage_fn get_storage;
     evm_set_storage_fn set_storage;
@@ -325,20 +324,12 @@ struct evm_host {
 /// Optionally, The Host MAY include in the context additional data.
 struct evm_context {
 
-    /// Function table defining the context interface.
-    const struct evm_host* fn_table;
+    /// Function table defining the context interface (vtable).
+    const struct evm_context_fn_table* fn_table;
 };
 
 
 struct evm_instance;  ///< Forward declaration.
-
-/// Creates the EVM instance.
-///
-/// Creates and initializes an EVM instance by providing the information
-/// about runtime callback functions.
-///
-/// @return      Pointer to the created EVM instance.
-typedef struct evm_instance* (*evm_create_fn)();
 
 /// Destroys the EVM instance.
 ///
@@ -437,6 +428,15 @@ typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
 ///
 /// Defines the base struct of the EVM implementation.
 struct evm_instance {
+
+    /// EVM-C ABI version implemented by the EVM instance.
+    ///
+    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// represented by this file is in ::EVM_ABI_VERSION.
+    ///
+    /// @todo Consider removing this field.
+    const int abi_version;
+
     /// Pointer to function destroying the EVM instance.
     evm_destroy_fn destroy;
 
@@ -459,30 +459,15 @@ struct evm_instance {
     evm_set_option_fn set_option;
 };
 
-/// The EVM instance factory.
-///
-/// Provides ABI protection and method to create an EVM instance.
-struct evm_factory {
-    /// EVM-C ABI version implemented by the EVM factory and instance.
-    ///
-    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
-    /// represented by this file is in ::EVM_ABI_VERSION.
-    int abi_version;
-
-    /// Pointer to function creating and initializing the EVM instance.
-    evm_create_fn create;
-};
-
 // END Python CFFI declarations
 
-/// Example of a function creating uninitialized instance of an example VM.
+/// Example of a function creating an instance of an example EVM implementation.
 ///
-/// Each EVM implementation is obligated to provided a function returning
-/// an EVM instance.
-/// The function has to be named as `<vm-name>_get_factory(void)`.
+/// Each EVM implementation MUST provide a function returning an EVM instance.
+/// The function SHOULD be named `<vm-name>_create(void)`.
 ///
-/// @return  EVM instance.
-struct evm_factory examplevm_get_factory(void);
+/// @return  EVM instance or NULL indicating instance creation failure.
+struct evm_instance* examplevm_create(void);
 
 
 #if __cplusplus
