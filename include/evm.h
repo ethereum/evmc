@@ -171,20 +171,57 @@ struct evm_result {
     /// function to the result itself allows EVM composition.
     evm_release_result_fn release;
 
+    /// The address of the contract created by CREATE opcode.
+    ///
+    /// This field has valid value only if the result describes successful
+    /// CREATE (evm_result::status_code is ::EVM_SUCCESS).
+    struct evm_address create_address;
+
     /// Reserved data that MAY be used by a evm_result object creator.
     ///
-    /// This reserved 24 bytes extends the size of the evm_result to 64 bytes
-    /// (full cache line).
-    /// An EVM implementation MAY use this memory to keep additional data
-    /// when returning result from ::evm_execute_fn.
-    /// The host application MAY use this memory to keep additional data
-    /// when returning result of performed calls from ::evm_call_fn.
-    union
-    {
-        void* context;     ///< A pointer for storing external objects.
-        uint8_t data[24];  ///< 24 bytes of reserved data.
-    } reserved;
+    /// This reserved 4 bytes together with 20 bytes from create_address form
+    /// 24 bytes of memory called "optional data" within evm_result struct
+    /// to be optionally used by the evm_result object creator.
+    ///
+    /// @see evm_result_optional_data, evm_get_optional_data().
+    ///
+    /// Also extends the size of the evm_result to 64 bytes (full cache line).
+    uint8_t padding[4];
 };
+
+
+/// The union representing evm_result "optional data".
+///
+/// The evm_result struct contains 24 bytes of optional data that can be
+/// reused by the obejct creator if the object does not contain
+/// evm_result::create_address.
+///
+/// An EVM implementation MAY use this memory to keep additional data
+/// when returning result from ::evm_execute_fn.
+/// The host application MAY use this memory to keep additional data
+/// when returning result of performed calls from ::evm_call_fn.
+///
+/// @see evm_get_optional_data(), evm_get_const_optional_data().
+union evm_result_optional_data
+{
+    uint8_t bytes[24];
+    void* pointer;
+};
+
+/// Provides read-write access to evm_result "optional data".
+static inline union evm_result_optional_data* evm_get_optional_data(
+    struct evm_result* result)
+{
+    return (union evm_result_optional_data*) &result->create_address;
+}
+
+/// Provides read-only access to evm_result "optional data".
+static inline const union evm_result_optional_data* evm_get_const_optional_data(
+    const struct evm_result* result)
+{
+    return (const union evm_result_optional_data*) &result->create_address;
+}
+
 
 /// Check account existence callback function
 ///
