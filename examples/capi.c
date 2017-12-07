@@ -166,4 +166,6 @@ int main(int argc, char *argv[]) {
     if (result.release)
         result.release(&result);
     jit->destroy(jit);
+
+    return 0;
 }
