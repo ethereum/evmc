@@ -125,7 +125,7 @@ struct evm_result;  ///< Forward declaration.
 /// @param result  The execution result which resource are to be released. The
 ///                result itself it not modified by this function, but becomes
 ///                invalid and user should discard it as well.
-typedef void (*evm_release_result_fn)(struct evm_result const* result);
+typedef void (*evm_release_result_fn)(const struct evm_result* result);
 
 /// The EVM code execution result.
 struct evm_result {
@@ -322,7 +322,9 @@ typedef void (*evm_log_fn)(struct evm_context* context,
 
 /// Pointer to the callback function supporting EVM calls.
 ///
-/// @param[out] result  Call result.
+/// @param[out] result  The result of the call. The result object is not
+///                     initialized by the EVM, the Client MUST correctly
+///                     initialize all expected fields of the structure.
 /// @param      context The pointer to the Host execution context.
 ///                     @see ::evm_context.
 /// @param      msg     Call parameters.
