@@ -145,6 +145,8 @@ struct evm_result {
     ///
     /// The memory containing the output data is owned by EVM and has to be
     /// freed with evm_result::release().
+    ///
+    /// @todo Inconsistent name: output_data vs msg.input.
     uint8_t const* output_data;
 
     /// The size of the output data.
