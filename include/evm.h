@@ -61,31 +61,48 @@ enum evm_call_kind {
     EVM_CREATE = 3,       ///< Request CREATE. Semantic of some params changes.
 };
 
+/// The flags for ::evm_message.
 enum evm_flags {
-    EVM_STATIC = 1
+    EVM_STATIC = 1        ///< Static call mode.
 };
 
+/// The message describing an EVM call,
+/// including a zero-depth calls from a transaction origin.
 struct evm_message {
-    struct evm_address address;
-    struct evm_address sender;
+    struct evm_address address;  ///< The destination of the message.
+    struct evm_address sender;   ///< The sender of the message.
+
+    /// The amount of Ether transferred with the message.
     struct evm_uint256be value;
-    const uint8_t* input;
-    size_t input_size;
+
+    const uint8_t* input;        ///< The message input data.
+    size_t input_size;           ///< The size of the message input data.
+
+    /// The optional hash of the code of the destination account.
+    /// The null hash MUST be used when not specified.
     struct evm_uint256be code_hash;
-    int64_t gas;
-    int32_t depth;
+
+    int64_t gas;                 ///< The amount of gas for message execution.
+    int32_t depth;               ///< The call depth.
+
+    /// The kind of the call. For zero-depth calls ::EVM_CALL SHOULD be used.
     enum evm_call_kind kind;
+
+    ///< Additional flags modifying the call execution behavior.
+    ///< In the current version the only valid values are ::EVM_STATIC or 0.
     uint32_t flags;
 };
 
+
+/// The transaction and block data for execution.
 struct evm_tx_context {
-    struct evm_uint256be tx_gas_price;
-    struct evm_address tx_origin;
-    struct evm_address block_coinbase;
-    int64_t block_number;
-    int64_t block_timestamp;
-    int64_t block_gas_limit;
-    struct evm_uint256be block_difficulty;
+    struct evm_uint256be tx_gas_price;      ///< The transaction gas price.
+    struct evm_address tx_origin;           ///< The transaction origin account.
+    struct evm_address block_coinbase;      ///< The miner of the block.
+    int64_t block_number;                   ///< The block number.
+    int64_t block_timestamp;                ///< The block timestamp.
+    int64_t block_gas_limit;                ///< The block gas limit.
+    struct evm_uint256be block_difficulty;  ///< The block difficulty.
 };
 
 struct evm_context;
