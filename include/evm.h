@@ -125,11 +125,22 @@ enum evm_status_code {
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
+    /// The given type of executable code is not supported by the EVM.
+    ///
+    /// This error SHOULD be used to signal that the EVM is not able to execute
+    /// given code type. If an EVM implementing _higher_ revision of the EVM
+    /// specification returns the ::EVM_UNSUPPORTED_CODE_TYPE status code,
+    /// the Client MAY try to fallback to other EVM implementing a _lower_
+    /// revision of the EVM specification.
+    /// For example, the Client tries running a code in the EVM 1.5. If the
+    /// code is not supported there, the execution fallbacks to the EVM 1.0.
+    EVM_UNSUPPORTED_CODE_TYPE = -1,
+
     /// EVM implementation internal error.
     ///
     /// @todo We should rethink reporting internal errors. One of the options
     ///       it to allow using any negative value to represent internal errors.
-    EVM_INTERNAL_ERROR = -1,
+    EVM_INTERNAL_ERROR = -2,
 };
 
 struct evm_result;  ///< Forward declaration.
