@@ -322,6 +322,8 @@ typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
 /// Selfdestruct callback function.
 ///
 /// This callback function is used by an EVM to SELFDESTRUCT given contract.
+/// The execution of the contract will not be stopped, that is up to the EVM.
+///
 /// @param context      The pointer to the Host execution context.
 ///                     @see ::evm_context.
 /// @param address      The address of the contract to be selfdestructed.
