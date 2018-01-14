@@ -107,9 +107,27 @@ struct evm_tx_context {
 
 struct evm_context;
 
+/// Get transaction context callback function.
+///
+/// This callback function is used by an EVM to retrieve the transaction and
+/// block context.
+///
+/// @param[out] result   The returned transaction context.
+///                      @see ::evm_tx_context.
+/// @param      context  The pointer to the Host execution context.
+///                      @see ::evm_context.
 typedef void (*evm_get_tx_context_fn)(struct evm_tx_context* result,
                                       struct evm_context* context);
 
+/// Get block hash callback function..
+///
+/// This callback function is used by an EVM to query the block hash of
+/// a given block.
+///
+/// @param[out] result   The returned block hash value.
+/// @param      context  The pointer to the Host execution context.
+/// @param      number   The block number. Must be a value between
+//                       (and including) 0 and 255.
 typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
                                       struct evm_context* context,
                                       int64_t number);
@@ -308,9 +326,10 @@ typedef void (*evm_get_balance_fn)(struct evm_uint256be* result,
 ///
 /// This callback function is used by an EVM to get the code of a contract of
 /// given address.
+///
 /// @param[out] result_code  The pointer to the contract code. This argument is
 ///                          optional. If NULL is provided, the host MUST only
-///                          return the code size.
+///                          return the code size. It will be freed by the Client.
 /// @param      context      The pointer to the Host execution context.
 ///                          @see ::evm_context.
 /// @param      address      The address of the contract.
@@ -322,6 +341,8 @@ typedef size_t (*evm_get_code_fn)(const uint8_t** result_code,
 /// Selfdestruct callback function.
 ///
 /// This callback function is used by an EVM to SELFDESTRUCT given contract.
+/// The execution of the contract will not be stopped, that is up to the EVM.
+///
 /// @param context      The pointer to the Host execution context.
 ///                     @see ::evm_context.
 /// @param address      The address of the contract to be selfdestructed.
