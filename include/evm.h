@@ -143,16 +143,15 @@ enum evm_status_code {
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
-    /// The given type of executable code is not supported by the EVM.
+    /// The EVM rejected the execution of the given code or message.
     ///
-    /// This error SHOULD be used to signal that the EVM is not able to execute
-    /// given code type. If an EVM implementing _higher_ revision of the EVM
-    /// specification returns the ::EVM_UNSUPPORTED_CODE_TYPE status code,
-    /// the Client MAY try to fallback to other EVM implementing a _lower_
-    /// revision of the EVM specification.
+    /// This error SHOULD be used to signal that the EVM is not able to or
+    /// willing to execute the given code type or message.
+    /// If an EVM returns the ::EVM_REJECTED status code,
+    /// the Client MAY try to execute it in other EVM implementation.
     /// For example, the Client tries running a code in the EVM 1.5. If the
-    /// code is not supported there, the execution fallbacks to the EVM 1.0.
-    EVM_UNSUPPORTED_CODE_TYPE = -1,
+    /// code is not supported there, the execution falls back to the EVM 1.0.
+    EVM_REJECTED = -1,
 
     /// EVM implementation internal error.
     ///
