@@ -69,8 +69,8 @@ enum evm_flags {
 /// The message describing an EVM call,
 /// including a zero-depth calls from a transaction origin.
 struct evm_message {
-    struct evm_address address;  ///< The destination of the message.
-    struct evm_address sender;   ///< The sender of the message.
+    struct evm_address destination;  ///< The destination of the message.
+    struct evm_address sender;       ///< The sender of the message.
 
     /// The amount of Ether transferred with the message.
     struct evm_uint256be value;
