@@ -75,8 +75,14 @@ struct evm_message {
     /// The amount of Ether transferred with the message.
     struct evm_uint256be value;
 
-    const uint8_t* input;        ///< The message input data.
-    size_t input_size;           ///< The size of the message input data.
+    /// The message input data.
+    ///
+    /// This MAY be NULL.
+    const uint8_t* input;
+    /// The size of the message input data.
+    ///
+    /// If input is NULL this MUST be 0.
+    size_t input_size;
 
     /// The optional hash of the code of the destination account.
     /// The null hash MUST be used when not specified.
