@@ -493,36 +493,6 @@ typedef struct evm_result (*evm_execute_fn)(struct evm_instance* instance,
                                             size_t code_size);
 
 
-/// Status of a code in VM. Useful for JIT-like implementations.
-enum evm_code_status {
-    /// The code is uknown to the VM.
-    EVM_UNKNOWN,
-
-    /// The code has been compiled and is available in memory.
-    EVM_READY,
-
-    /// The compiled version of the code is available in on-disk cache.
-    EVM_CACHED,
-};
-
-
-/// Get information the status of the code in the VM.
-typedef enum evm_code_status
-(*evm_get_code_status_fn)(struct evm_instance* instance,
-                          enum evm_revision rev,
-                          uint32_t flags,
-                          struct evm_uint256be code_hash);
-
-/// Request preparation of the code for faster execution. It is not required
-/// to execute the code but allows compilation of the code ahead of time in
-/// JIT-like VMs.
-typedef void (*evm_prepare_code_fn)(struct evm_instance* instance,
-                                    enum evm_revision rev,
-                                    uint32_t flags,
-                                    struct evm_uint256be code_hash,
-                                    uint8_t const* code,
-                                    size_t code_size);
-
 /// The EVM instance.
 ///
 /// Defines the base struct of the EVM implementation.
@@ -541,16 +511,6 @@ struct evm_instance {
 
     /// Pointer to function executing a code by the EVM instance.
     evm_execute_fn execute;
-
-    /// Optional pointer to function returning a status of a code.
-    ///
-    /// If the VM does not support this feature the pointer can be NULL.
-    evm_get_code_status_fn get_code_status;
-
-    /// Optional pointer to function compiling  a code.
-    ///
-    /// If the VM does not support this feature the pointer can be NULL.
-    evm_prepare_code_fn prepare_code;
 
     /// Optional pointer to function modifying VM's options.
     ///
