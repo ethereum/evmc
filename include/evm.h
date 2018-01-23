@@ -148,6 +148,8 @@ enum evm_status_code {
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
+    /// Tried to execute an operation which is restricted in static mode.
+    EVM_STATIC_MODE_ERROR = 8,
 
     /// The EVM rejected the execution of the given code or message.
     ///
