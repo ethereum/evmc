@@ -78,14 +78,14 @@ static struct evm_result execute(struct evm_instance* instance,
 
     if (code_size == strlen(return_address) &&
         strncmp((const char*)code, return_address, code_size) == 0) {
-        static const size_t address_size = sizeof(msg->address);
+        static const size_t address_size = sizeof(msg->destination);
         uint8_t* output_data = (uint8_t*)malloc(address_size);
         if (!output_data) {
             // malloc failed, report internal error.
             ret.status_code = EVM_INTERNAL_ERROR;
             return ret;
         }
-        memcpy(output_data, &msg->address, address_size);
+        memcpy(output_data, &msg->destination, address_size);
         ret.status_code = EVM_SUCCESS;
         ret.output_data = output_data;
         ret.output_size = address_size;
@@ -96,9 +96,9 @@ static struct evm_result execute(struct evm_instance* instance,
         strncmp((const char*)code, counter, code_size) == 0) {
         struct evm_uint256be value;
         const struct evm_uint256be index = {{0,}};
-        context->fn_table->get_storage(&value, context, &msg->address, &index);
+        context->fn_table->get_storage(&value, context, &msg->destination, &index);
         value.bytes[31] += 1;
-        context->fn_table->set_storage(context, &msg->address, &index, &value);
+        context->fn_table->set_storage(context, &msg->destination, &index, &value);
         ret.status_code = EVM_SUCCESS;
         return ret;
     }
