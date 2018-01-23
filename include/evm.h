@@ -373,12 +373,12 @@ typedef void (*evm_selfdestruct_fn)(struct evm_context* context,
 /// @param topics        The pointer to the array of topics attached to the log.
 /// @param topics_count  The number of the topics. Valid values are between
 ///                      0 and 4 inclusively.
-typedef void (*evm_log_fn)(struct evm_context* context,
-                           const struct evm_address* address,
-                           const uint8_t* data,
-                           size_t data_size,
-                           const struct evm_uint256be topics[],
-                           size_t topics_count);
+typedef void (*evm_emit_log_fn)(struct evm_context* context,
+                                const struct evm_address* address,
+                                const uint8_t* data,
+                                size_t data_size,
+                                const struct evm_uint256be topics[],
+                                size_t topics_count);
 
 /// Pointer to the callback function supporting EVM calls.
 ///
@@ -408,7 +408,7 @@ struct evm_context_fn_table {
     evm_call_fn call;
     evm_get_tx_context_fn get_tx_context;
     evm_get_block_hash_fn get_block_hash;
-    evm_log_fn log;
+    evm_emit_log_fn emit_log;
 };
 
 
