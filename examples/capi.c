@@ -1,9 +1,12 @@
+#include <evm.h>
+
 #include <inttypes.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "evm.h"
 
+/// Prototype from examplevm.c
+struct evm_instance* examplevm_create(void);
 
 struct evm_uint256be balance(struct evm_context* context,
                              const struct evm_address* address)
