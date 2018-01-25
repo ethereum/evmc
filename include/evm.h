@@ -519,7 +519,8 @@ struct evm_instance {
 /// The function SHOULD be named `<vm-name>_create(void)`.
 ///
 /// @return  EVM instance or NULL indicating instance creation failure.
-struct evm_instance* examplevm_create(void);
+///
+/// struct evm_instance* examplevm_create(void);
 
 
 #if __cplusplus

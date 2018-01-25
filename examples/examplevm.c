@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 struct examplevm
 {
     struct evm_instance instance;
