@@ -140,6 +140,8 @@ typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
                                       int64_t number);
 
 /// The execution status code.
+///
+/// @todo: Add status code for out-of-buffer access.
 enum evm_status_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
     EVM_FAILURE = 1,               ///< Generic execution failure.
@@ -150,6 +152,8 @@ enum evm_status_code {
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
     /// Tried to execute an operation which is restricted in static mode.
+
+    /// @todo Avoid _ERROR suffix that suggests fatal error.
     EVM_STATIC_MODE_ERROR = 8,
 
     /// The EVM rejected the execution of the given code or message.
