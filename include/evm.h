@@ -157,6 +157,9 @@ enum evm_status_code {
     /// @todo Avoid _ERROR suffix that suggests fatal error.
     EVM_STATIC_MODE_ERROR = 8,
 
+    /// The dedicated INVALID instruction was hit.
+    EVM_INVALID_INSTRUCTION = 9,
+
     /// The EVM rejected the execution of the given code or message.
     ///
     /// This error SHOULD be used to signal that the EVM is not able to or
