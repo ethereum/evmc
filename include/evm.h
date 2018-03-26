@@ -140,8 +140,6 @@ typedef void (*evm_get_block_hash_fn)(struct evm_uint256be* result,
                                       int64_t number);
 
 /// The execution status code.
-///
-/// @todo: Add status code for out-of-buffer access.
 enum evm_status_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
     EVM_FAILURE = 1,               ///< Generic execution failure.
@@ -159,6 +157,11 @@ enum evm_status_code {
 
     /// The dedicated INVALID instruction was hit.
     EVM_INVALID_INSTRUCTION = 9,
+
+    /// Tried to read outside memory bounds.
+    ///
+    /// An example is RETURNDATACOPY reading past the available buffer.
+    EVM_INVALID_MEMORY_ACCESS = 10,
 
     /// The EVM rejected the execution of the given code or message.
     ///
