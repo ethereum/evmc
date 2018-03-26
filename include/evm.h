@@ -146,13 +146,14 @@ enum evm_status_code {
     EVM_SUCCESS = 0,               ///< Execution finished with success.
     EVM_FAILURE = 1,               ///< Generic execution failure.
     EVM_OUT_OF_GAS = 2,
-    EVM_BAD_INSTRUCTION = 3,
+    EVM_UNDEFINED_INSTRUCTION = 3, ///< Unknown instruction encountered by the VM.
     EVM_BAD_JUMP_DESTINATION = 4,
     EVM_STACK_OVERFLOW = 5,
     EVM_STACK_UNDERFLOW = 6,
     EVM_REVERT = 7,                ///< Execution terminated with REVERT opcode.
-    /// Tried to execute an operation which is restricted in static mode.
 
+    /// Tried to execute an operation which is restricted in static mode.
+    ///
     /// @todo Avoid _ERROR suffix that suggests fatal error.
     EVM_STATIC_MODE_ERROR = 8,
 
