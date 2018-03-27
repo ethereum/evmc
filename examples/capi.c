@@ -74,11 +74,10 @@ static size_t get_code_size(struct evm_context* context, const struct evm_addres
     return 0;
 }
 
-static size_t get_code(const uint8_t** code,
-                       struct evm_context* context,
-                       const struct evm_address* address)
+static size_t copy_code(struct evm_context* context, const struct evm_address* address,
+    size_t code_offset, uint8_t* buffer_data, size_t buffer_size)
 {
-    printf("EVM-C: CODE @");
+    printf("EVM-C: COPYCODE @");
     print_address(address);
     printf("\n");
     return 0;
@@ -130,7 +129,7 @@ static const struct evm_context_fn_table ctx_fn_table = {
     set_storage,
     get_balance,
     get_code_size,
-    get_code,
+    copy_code,
     selfdestruct,
     call,
     get_tx_context,
