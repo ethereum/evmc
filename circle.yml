@@ -1,0 +1,21 @@
+version: 2
+jobs:
+
+  build:
+    docker:
+      - image: ethereum/cpp-build-env
+    steps:
+      - checkout
+      - run:
+          name: "Configure"
+          working_directory: ~/build
+          command: cmake ../project
+      - run:
+          name: "Build"
+          command: cmake --build ~/build
+
+workflows:
+  version: 2
+  evmc:
+    jobs:
+      - build
