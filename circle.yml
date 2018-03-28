@@ -22,7 +22,7 @@ jobs:
       - run:
           name: "Test documentation"
           command: |
-            doxygen docs/Doxyfile > doxygen.log 2> doxygen.warnings
+            doxygen Doxyfile > doxygen.log 2> doxygen.warnings
             if [ -s doxygen.warnings ]; then
               printf '\n\nDoxygen warnings:\n\n'
               cat doxygen.warnings
@@ -37,13 +37,13 @@ jobs:
       - checkout
       - run:
           name: "Generate documentation"
-          command: doxygen docs/Doxyfile
+          command: doxygen Doxyfile
       - run:
           name: "Upload documentation"
           command: |
             git config user.email "docs-bot@ethereum.org"
             git config user.name "Documentation Bot"
-            git add docs
+            git add --all
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
