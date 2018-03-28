@@ -14,8 +14,25 @@ jobs:
           name: "Build"
           command: cmake --build ~/build
 
+  generate-docs:
+    docker:
+      - image: ethereum/cpp-build-env
+    steps:
+      - checkout
+      - run:
+          name: "Generate documentation"
+          command: |
+            doxygen docs/Doxyfile > doxygen.log 2> doxygen.warnings
+            if [ -s doxygen.warnings ]; then
+              printf '\n\nDoxygen warnings:\n\n'
+              cat doxygen.warnings
+              exit 1
+            fi
+            cat doxygen.log
+
 workflows:
   version: 2
   evmc:
     jobs:
       - build
+      - generate-docs
