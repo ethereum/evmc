@@ -14,13 +14,13 @@ jobs:
           name: "Build"
           command: cmake --build ~/build
 
-  generate-docs:
+  test-docs:
     docker:
       - image: ethereum/cpp-build-env
     steps:
       - checkout
       - run:
-          name: "Generate documentation"
+          name: "Test documentation"
           command: |
             doxygen docs/Doxyfile > doxygen.log 2> doxygen.warnings
             if [ -s doxygen.warnings ]; then
@@ -30,9 +30,34 @@ jobs:
             fi
             cat doxygen.log
 
+  upload-docs:
+    docker:
+      - image: ethereum/cpp-build-env
+    steps:
+      - checkout
+      - run:
+          name: "Generate documentation"
+          command: doxygen docs/Doxyfile
+      - run:
+          name: "Upload documentation"
+          command: |
+            git config user.email "docs-bot@ethereum.org"
+            git config user.name "Documentation Bot"
+            git add docs
+            git commit -m "Update docs"
+            git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
+
 workflows:
   version: 2
   evmc:
     jobs:
       - build
-      - generate-docs
+      - test-docs
+      - upload-docs:
+          requires:
+            - test-docs
+          filters:
+            branches:
+              only:
+                - master
+                - docs
