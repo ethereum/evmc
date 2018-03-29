@@ -1,4 +1,4 @@
-/// EVM-C -- C interface to Ethereum Virtual Machine
+/// EVMC -- Ethereum Client-VM Connector API
 ///
 /// ## High level design rules
 ///
@@ -17,7 +17,7 @@
 /// 2. Host -- an entity controlling the EVM. The Host requests code execution
 ///            and responses to EVM queries by callback functions.
 ///
-/// @defgroup EVMC EVM-C
+/// @defgroup EVMC EVMC
 /// @{
 #ifndef EVMC_H
 #define EVMC_H
@@ -32,7 +32,7 @@ extern "C" {
 // BEGIN Python CFFI declarations
 
 enum {
-    /// The EVM-C ABI version number of the interface declared in this file.
+    /// The EVMC ABI version number of the interface declared in this file.
     EVMC_ABI_VERSION = 0
 };
 
@@ -126,7 +126,7 @@ struct evmc_context;
 typedef void (*evmc_get_tx_context_fn)(struct evmc_tx_context* result,
                                        struct evmc_context* context);
 
-/// Get block hash callback function..
+/// Get block hash callback function.
 ///
 /// This callback function is used by an EVM to query the block hash of
 /// a given block.
@@ -262,7 +262,7 @@ struct evmc_result {
 /// The union representing evmc_result "optional data".
 ///
 /// The evmc_result struct contains 24 bytes of optional data that can be
-/// reused by the obejct creator if the object does not contain
+/// reused by the object creator if the object does not contain
 /// evmc_result::create_address.
 ///
 /// An EVM implementation MAY use this memory to keep additional data
@@ -273,8 +273,8 @@ struct evmc_result {
 /// @see evmc_get_optional_data(), evmc_get_const_optional_data().
 union evmc_result_optional_data
 {
-    uint8_t bytes[24];
-    void* pointer;
+    uint8_t bytes[24];  ///< 24 bytes of optional data.
+    void* pointer;      ///< Optional pointer.
 };
 
 /// Provides read-write access to evmc_result "optional data".
@@ -425,16 +425,38 @@ typedef void (*evmc_call_fn)(struct evmc_result* result,
 /// Host implementations SHOULD create constant singletons of this (similarly
 /// to vtables) to lower the maintenance and memory management cost.
 struct evmc_context_fn_table {
+
+    /// Check account existence callback function.
     evmc_account_exists_fn account_exists;
+
+    /// Get storage callback function.
     evmc_get_storage_fn get_storage;
+
+    /// Set storage callback function.
     evmc_set_storage_fn set_storage;
+
+    /// Get balance callback function.
     evmc_get_balance_fn get_balance;
+
+    /// Get code size callback function.
     evmc_get_code_size_fn get_code_size;
+
+    /// Copy code callback function.
     evmc_copy_code_fn copy_code;
+
+    /// Selfdestruct callback function.
     evmc_selfdestruct_fn selfdestruct;
+
+    /// Call callback function.
     evmc_call_fn call;
+
+    /// Get transaction context callback function.
     evmc_get_tx_context_fn get_tx_context;
+
+    /// Get block hash callback function.
     evmc_get_block_hash_fn get_block_hash;
+
+    /// Emit log callback function.
     evmc_emit_log_fn emit_log;
 };
 
@@ -517,9 +539,9 @@ typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
 /// Defines the base struct of the EVM implementation.
 struct evmc_instance {
 
-    /// EVM-C ABI version implemented by the EVM instance.
+    /// EVMC ABI version implemented by the EVM instance.
     ///
-    /// For future use to detect ABI incompatibilities. The EVM-C ABI version
+    /// For future use to detect ABI incompatibilities. The EVMC ABI version
     /// represented by this file is in ::EVMC_ABI_VERSION.
     ///
     /// @todo Consider removing this field.
