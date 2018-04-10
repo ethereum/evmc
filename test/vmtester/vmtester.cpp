@@ -2,20 +2,28 @@
 // Copyright 2018 Pawel Bylica.
 // Licensed under the MIT License. See the LICENSE file.
 
+#include "vmtester.hpp"
+
 #include <evmc.h>
+
+#include <gtest/gtest.h>
 
 #include <boost/dll.hpp>
 #include <boost/dll/library_info.hpp>
-#include <boost/dll/shared_library.hpp>
+#include <boost/function.hpp>
 
 #include <iostream>
+#include <memory>
+
+namespace fs = boost::filesystem;
+namespace dll = boost::dll;
 
 extern "C" using evmc_create_fn = evmc_instance*();
 
-namespace dll = boost::dll;
-
 namespace
 {
+boost::function<evmc_create_fn> create_fn;
+
 bool ends_with(const std::string& str, const std::string& ending)
 {
     if (str.size() < ending.size())
@@ -23,38 +31,39 @@ bool ends_with(const std::string& str, const std::string& ending)
 
     return std::equal(ending.rbegin(), ending.rend(), str.rbegin());
 }
+
+std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
+{
+    auto vm = create_fn();
+    return {vm, vm->destroy};
+}
 }
 
-std::string find_evmc_create_function(const boost::filesystem::path& plugin_path)
+evmc_instance* get_vm_instance()
 {
-    std::cout << "Loading " << plugin_path << '\n';
-    dll::library_info info(plugin_path);
 
-    for (auto& symbol : info.symbols())
-    {
-        if (ends_with(symbol, "_create"))
-        {
-            std::cout << "Found `" << symbol << "`\n";
-
-            return symbol;
-        }
-    }
+    static auto vm = create_vm();
+    return vm.get();
 }
 
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
-    if (argc > 1)
-    {
-        boost::filesystem::path plugin_path{argv[1]};
-        auto fn_name = find_evmc_create_function(plugin_path);
+    ::testing::InitGoogleTest(&argc, argv);
 
-        auto fn = dll::import<evmc_create_fn>(plugin_path, fn_name);
+    if (argc < 2)
+        return 1;
 
-        auto vm = fn();
+    boost::filesystem::path plugin_path{argv[1]};
 
-        std::cout << "ABI: " << vm->abi_version << "\n";
+    auto symbols = dll::library_info{plugin_path}.symbols();
+    auto it = std::find_if(symbols.begin(), symbols.end(),
+        [](const std::string& symbol) { return ends_with(symbol, "_create"); });
+    if (it == symbols.end())
+        return 2;
 
-        vm->destroy(vm);
-    }
-    return 0;
+    std::cout << "Testing\n  " << argv[1] << "\n  " << *it << "()\n\n";
+
+    create_fn = dll::import<evmc_create_fn>(plugin_path, *it);
+
+    return RUN_ALL_TESTS();
 }

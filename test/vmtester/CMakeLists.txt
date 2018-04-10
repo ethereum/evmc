@@ -5,5 +5,8 @@
 hunter_add_package(Boost COMPONENTS filesystem system)
 find_package(Boost CONFIG REQUIRED filesystem system)
 
-add_executable(vmtester vmtester.cpp)
-target_link_libraries(vmtester PRIVATE evmc Boost::filesystem Boost::system ${CMAKE_DL_LIBS})
+hunter_add_package(GTest)
+find_package(GTest CONFIG REQUIRED)
+
+add_executable(vmtester vmtester.hpp vmtester.cpp tests.cpp)
+target_link_libraries(vmtester PRIVATE evmc GTest::gtest Boost::filesystem Boost::system ${CMAKE_DL_LIBS})
