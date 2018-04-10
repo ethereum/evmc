@@ -1,5 +1,7 @@
 # EVMC
 
+[![Join the chat at https://gitter.im/ethereum/evmc](https://badges.gitter.im/ethereum/evmc.svg)](https://gitter.im/ethereum/evmc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![readme style standard](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 > Ethereum Client-VM Connector API
