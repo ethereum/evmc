@@ -28,6 +28,7 @@ target_include_directories(evmc INTERFACE include)
 
 option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
 if(EVMC_BUILD_TESTS)
+    enable_testing()
     add_subdirectory(test)
 endif()
 
