@@ -8,10 +8,10 @@ find_package(Boost CONFIG REQUIRED program_options filesystem system)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
-add_executable(vmtester vmtester.hpp vmtester.cpp tests.cpp)
+add_executable(evmc-vmtester vmtester.hpp vmtester.cpp tests.cpp)
 
 target_link_libraries(
-    vmtester
+    evmc-vmtester
     PRIVATE
     evmc
     GTest::gtest
@@ -22,14 +22,14 @@ target_link_libraries(
 )
 
 add_test(NAME vmtester-help
-    COMMAND vmtester --help
+    COMMAND evmc-vmtester --help
 )
 set_tests_properties(vmtester-help PROPERTIES
     PASS_REGULAR_EXPRESSION "Options:"
 )
 
 add_test(NAME vmtester-nonexistingvm
-    COMMAND vmtester nonexistingvm
+    COMMAND evmc-vmtester nonexistingvm
 )
 set_tests_properties(vmtester-nonexistingvm PROPERTIES
     WILL_FAIL TRUE
@@ -37,11 +37,11 @@ set_tests_properties(vmtester-nonexistingvm PROPERTIES
 )
 
 add_test(NAME vmtester-novm
-    COMMAND vmtester
+    COMMAND evmc-vmtester
 )
 set_tests_properties(vmtester-novm PROPERTIES
     WILL_FAIL TRUE
     FAIL_REGULAR_EXPRESSION "required but missing"
 )
 
-# TODO: Add test for `vmtester examplevm.so`
+# TODO: Add test for `evmc-vmtester examplevm.so`
