@@ -47,5 +47,3 @@ set_tests_properties(vmtester-novm PROPERTIES
     WILL_FAIL TRUE
     FAIL_REGULAR_EXPRESSION "required but missing"
 )
-
-# TODO: Add test for `evmc-vmtester examplevm.so`

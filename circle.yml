@@ -9,13 +9,19 @@ jobs:
       - run:
           name: "Configure"
           working_directory: ~/build
-          command: cmake ../project -DEVMC_BUILD_EXAMPLES=ON -DEVMC_BUILD_TESTS=ON
+          command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DBUILD_SHARED_LIBS=ON -DEVMC_BUILD_EXAMPLES=ON -DEVMC_BUILD_TESTS=ON
       - run:
           name: "Build"
           command: cmake --build ~/build
       - run:
           name: "Test"
           command: cmake --build ~/build --target test
+      - run:
+          name: "Install"
+          command: cmake --build ~/build --target install
+      - run:
+          name: "Run evmc-vmtester libevmc-examplevm.so"
+          command: ~/install/bin/evmc-vmtester ~/install/lib/libevmc-examplevm.so
 
   test-docs:
     docker:
