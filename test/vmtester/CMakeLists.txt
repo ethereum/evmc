@@ -2,6 +2,8 @@
 # Copyright 2018 Pawel Bylica.
 # Licensed under the MIT License. See the LICENSE file.
 
+include(GNUInstallDirs)
+
 hunter_add_package(Boost COMPONENTS program_options filesystem system)
 find_package(Boost CONFIG REQUIRED program_options filesystem system)
 
@@ -20,6 +22,8 @@ target_link_libraries(
     Boost::system
     ${CMAKE_DL_LIBS}
 )
+
+install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_test(NAME vmtester-help
     COMMAND evmc-vmtester --help
