@@ -26,7 +26,12 @@ project(evmc)
 add_library(evmc INTERFACE)
 target_include_directories(evmc INTERFACE include)
 
-option(EVMC_BUILD_EXAMPLES "Build EVMC examples" ON)
+option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
+if(EVMC_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
+
+option(EVMC_BUILD_EXAMPLES "Build EVMC examples" OFF)
 if(EVMC_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
