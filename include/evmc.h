@@ -151,9 +151,7 @@ enum evmc_status_code {
     EVMC_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
     /// Tried to execute an operation which is restricted in static mode.
-    ///
-    /// @todo Avoid _ERROR suffix that suggests fatal error.
-    EVMC_STATIC_MODE_ERROR = 8,
+    EVMC_STATIC_MODE_VIOLATION = 8,
 
     /// The dedicated INVALID instruction was hit.
     EVMC_INVALID_INSTRUCTION = 9,
@@ -162,6 +160,11 @@ enum evmc_status_code {
     ///
     /// An example is RETURNDATACOPY reading past the available buffer.
     EVMC_INVALID_MEMORY_ACCESS = 10,
+
+    /// Exceptions produced by precompiles/system contracts
+    ///
+    /// An example: elliptic curve functions handed invalid EC points
+    EVMC_PRECOMPILE_FAILURE = 11,
 
     /// The EVM rejected the execution of the given code or message.
     ///
