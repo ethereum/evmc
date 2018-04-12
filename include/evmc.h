@@ -151,9 +151,7 @@ enum evmc_status_code {
     EVMC_REVERT = 7,                ///< Execution terminated with REVERT opcode.
 
     /// Tried to execute an operation which is restricted in static mode.
-    ///
-    /// @todo Avoid _ERROR suffix that suggests fatal error.
-    EVMC_STATIC_MODE_ERROR = 8,
+    EVMC_STATIC_MODE_VIOLATION = 8,
 
     /// The dedicated INVALID instruction was hit.
     EVMC_INVALID_INSTRUCTION = 9,
