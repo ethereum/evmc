@@ -163,6 +163,11 @@ enum evmc_status_code {
     /// An example is RETURNDATACOPY reading past the available buffer.
     EVMC_INVALID_MEMORY_ACCESS = 10,
 
+    /// Exceptions produced by precompiles/system contracts
+    ///
+    /// An example: elliptic curve functions handed invalid EC points
+    EVMC_PRECOMPILE_FAILURE = 11,
+
     /// The EVM rejected the execution of the given code or message.
     ///
     /// This error SHOULD be used to signal that the EVM is not able to or
