@@ -10,6 +10,7 @@ if(TARGET evmc)
 endif()
 
 include(cmake/cable/bootstrap.cmake)
+include(CableCompilerSettings)
 include(HunterGate)
 include(defaults/HunterCacheServers)
 
@@ -22,6 +23,8 @@ HunterGate(
 )
 
 project(evmc)
+
+cable_configure_compiler()
 
 add_library(evmc INTERFACE)
 target_include_directories(evmc INTERFACE include)

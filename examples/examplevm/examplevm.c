@@ -19,12 +19,11 @@ static void evmc_destroy(struct evmc_instance* evm)
 /// Example options.
 ///
 /// VMs are allowed to omit this function implementation.
-int evmc_set_option(struct evmc_instance* instance,
-                    char const* name,
-                    char const* value)
+int evmc_set_option(struct evmc_instance* instance, char const* name, char const* value)
 {
     struct examplevm* vm = (struct examplevm*)instance;
-    if (strcmp(name, "verbose") == 0) {
+    if (strcmp(name, "verbose") == 0)
+    {
         long int v = strtol(value, NULL, 0);
         if (v > INT_MAX || v < INT_MIN)
             return 0;
@@ -45,18 +44,14 @@ static void free_result_output_data(struct evmc_result const* result)
     free((uint8_t*)result->output_data);
 }
 
-static struct evmc_result execute(struct evmc_instance* instance,
-                                  struct evmc_context* context,
-                                  enum evmc_revision rev,
-                                  const struct evmc_message* msg,
-                                  const uint8_t* code,
-                                  size_t code_size)
+static struct evmc_result execute(struct evmc_instance* instance, struct evmc_context* context,
+    enum evmc_revision rev, const struct evmc_message* msg, const uint8_t* code, size_t code_size)
 {
-    struct evmc_result ret = {};
-    if (code_size == 0) {
+    struct evmc_result ret = {.status_code = EVMC_INTERNAL_ERROR};
+    if (code_size == 0)
+    {
         // In case of empty code return a fancy error message.
-        const char* error = rev == EVMC_BYZANTIUM ?
-                            "Welcome to Byzantium!" : "Hello Ethereum!";
+        const char* error = rev == EVMC_BYZANTIUM ? "Welcome to Byzantium!" : "Hello Ethereum!";
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
         ret.status_code = EVMC_FAILURE;
@@ -76,10 +71,12 @@ static struct evmc_result execute(struct evmc_instance* instance,
     const char counter[] = "600160005401600055";
 
     if (code_size == strlen(return_address) &&
-        strncmp((const char*)code, return_address, code_size) == 0) {
+        strncmp((const char*)code, return_address, code_size) == 0)
+    {
         static const size_t address_size = sizeof(msg->destination);
         uint8_t* output_data = (uint8_t*)malloc(address_size);
-        if (!output_data) {
+        if (!output_data)
+        {
             // malloc failed, report internal error.
             ret.status_code = EVMC_INTERNAL_ERROR;
             return ret;
@@ -91,10 +88,10 @@ static struct evmc_result execute(struct evmc_instance* instance,
         ret.release = &free_result_output_data;
         return ret;
     }
-    else if (code_size == strlen(counter) &&
-        strncmp((const char*)code, counter, code_size) == 0) {
+    else if (code_size == strlen(counter) && strncmp((const char*)code, counter, code_size) == 0)
+    {
         struct evmc_uint256be value;
-        const struct evmc_uint256be index = {{0,}};
+        const struct evmc_uint256be index = {{0}};
         context->fn_table->get_storage(&value, context, &msg->destination, &index);
         value.bytes[31] += 1;
         context->fn_table->set_storage(context, &msg->destination, &index, &value);
@@ -118,7 +115,7 @@ struct evmc_instance* examplevm_create()
         .abi_version = EVMC_ABI_VERSION,
         .destroy = evmc_destroy,
         .execute = execute,
-        .set_option = evmc_set_option
+        .set_option = evmc_set_option,
     };
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evmc_instance* interface = &vm->instance;
