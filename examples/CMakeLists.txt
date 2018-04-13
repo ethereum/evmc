@@ -1,11 +1,8 @@
-add_library(example-vm STATIC examplevm.c)
-target_link_libraries(example-vm PRIVATE evmc)
-if(NOT MSVC)
-    target_compile_options(example-vm PRIVATE -Wno-extra)
-endif()
+
+add_subdirectory(examplevm)
 
 add_executable(example-capi capi.c)
-target_link_libraries(example-capi PRIVATE evmc example-vm)
+target_link_libraries(example-capi PRIVATE evmc evmc-examplevm)
 if(NOT MSVC)
     target_compile_options(example-capi PRIVATE -Wno-extra)
 endif()
