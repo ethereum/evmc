@@ -31,9 +31,10 @@ extern "C" {
 
 // BEGIN Python CFFI declarations
 
-enum {
+enum
+{
     /// The EVMC ABI version number of the interface declared in this file.
-    EVMC_ABI_VERSION = 0
+    EVMC_ABI_VERSION = 1
 };
 
 /// Big-endian 256-bit integer.
@@ -540,14 +541,12 @@ typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
 /// The EVM instance.
 ///
 /// Defines the base struct of the EVM implementation.
-struct evmc_instance {
-
+struct evmc_instance
+{
     /// EVMC ABI version implemented by the EVM instance.
     ///
-    /// For future use to detect ABI incompatibilities. The EVMC ABI version
+    /// Used to detect ABI incompatibilities. The EVMC ABI version
     /// represented by this file is in ::EVMC_ABI_VERSION.
-    ///
-    /// @todo Consider removing this field.
     const int abi_version;
 
     /// Pointer to function destroying the EVM instance.
