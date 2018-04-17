@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// Prototype from examplevm.c
-struct evmc_instance* examplevm_create(void);
+#include "examplevm/examplevm.h"
+
 
 struct evmc_uint256be balance(struct evmc_context* context,
                               const struct evmc_address* address)
@@ -139,7 +139,7 @@ static const struct evmc_context_fn_table ctx_fn_table = {
 
 /// Example how the API is supposed to be used.
 int main(int argc, char *argv[]) {
-    struct evmc_instance* jit = examplevm_create();
+    struct evmc_instance* jit = evmc_create_examplevm();
     if (jit->abi_version != EVMC_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 

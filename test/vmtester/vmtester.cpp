@@ -26,12 +26,12 @@ namespace
 {
 boost::function<evmc_create_fn> create_fn;
 
-bool ends_with(const std::string& str, const std::string& ending)
+bool starts_with(const std::string& str, const std::string& prefix)
 {
-    if (str.size() < ending.size())
+    if (str.size() < prefix.size())
         return false;
 
-    return std::equal(ending.rbegin(), ending.rend(), str.rbegin());
+    return std::equal(prefix.begin(), prefix.end(), str.begin());
 }
 
 std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
@@ -79,10 +79,10 @@ int main(int argc, char* argv[])
 
         auto symbols = dll::library_info{vm_path}.symbols();
         auto it = std::find_if(symbols.begin(), symbols.end(),
-            [](const std::string& symbol) { return ends_with(symbol, "_create"); });
+            [](const std::string& symbol) { return starts_with(symbol, "evmc_create_"); });
         if (it == symbols.end())
         {
-            std::cerr << "EVMC create function not found it " << vm_path.string() << "\n";
+            std::cerr << "EVMC create function not found in " << vm_path.string() << "\n";
             return 2;
         }
         const std::string& create_fn_name = *it;
