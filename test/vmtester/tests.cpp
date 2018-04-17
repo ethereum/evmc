@@ -4,6 +4,8 @@
 
 #include "vmtester.hpp"
 
+#include <cstring>
+
 TEST_F(evmc_vm_test, abi_version_match)
 {
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
@@ -27,4 +29,16 @@ TEST_F(evmc_vm_test, set_option_empty_value)
         int r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
         EXPECT_EQ(r, 0);
     }
+}
+
+TEST_F(evmc_vm_test, name)
+{
+    ASSERT_NE(vm->name, nullptr);
+    EXPECT_GT(std::strlen(vm->name), 0) << "VM name cannot be empty";
+}
+
+TEST_F(evmc_vm_test, version)
+{
+    ASSERT_NE(vm->version, nullptr);
+    EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
 }

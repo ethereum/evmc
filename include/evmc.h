@@ -549,6 +549,16 @@ struct evmc_instance
     /// represented by this file is in ::EVMC_ABI_VERSION.
     const int abi_version;
 
+    /// The name of the EVMC VM implementation.
+    ///
+    /// It MUST be a NULL-terminated not empty string.
+    const char* name;
+
+    /// The version of the EVMC VM implementation, e.g. "1.2.3b4".
+    ///
+    /// It MUST be a NULL-terminated not empty string.
+    const char* version;
+
     /// Pointer to function destroying the EVM instance.
     evmc_destroy_fn destroy;
 

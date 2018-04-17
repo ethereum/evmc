@@ -113,6 +113,8 @@ struct evmc_instance* examplevm_create()
 {
     struct evmc_instance init = {
         .abi_version = EVMC_ABI_VERSION,
+        .name = "examplevm",
+        .version = "0.0.0",
         .destroy = evmc_destroy,
         .execute = execute,
         .set_option = evmc_set_option,
