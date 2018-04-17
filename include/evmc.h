@@ -576,11 +576,11 @@ struct evmc_instance
 /// Example of a function creating an instance of an example EVM implementation.
 ///
 /// Each EVM implementation MUST provide a function returning an EVM instance.
-/// The function SHOULD be named `<vm-name>_create(void)`.
+/// The function SHOULD be named `evmc_create_<vm-name>(void)`.
 ///
 /// @return  EVM instance or NULL indicating instance creation failure.
 ///
-/// struct evmc_instance* examplevm_create(void);
+/// struct evmc_instance* evmc_create_examplevm(void);
 
 
 #if __cplusplus

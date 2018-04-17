@@ -1,4 +1,4 @@
-#include <evmc.h>
+#include "examplevm.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -109,7 +109,7 @@ static struct evmc_result execute(struct evmc_instance* instance, struct evmc_co
     return ret;
 }
 
-struct evmc_instance* examplevm_create()
+struct evmc_instance* evmc_create_examplevm()
 {
     struct evmc_instance init = {
         .abi_version = EVMC_ABI_VERSION,
