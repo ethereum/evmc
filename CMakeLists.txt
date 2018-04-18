@@ -24,6 +24,7 @@ HunterGate(
 )
 
 project(evmc)
+set(PROJECT_VERSION "0.1.0.dev0")
 
 cable_configure_compiler()
 
