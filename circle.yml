@@ -20,6 +20,15 @@ jobs:
           name: "Install"
           command: cmake --build ~/build --target install
       - run:
+          name: "Package"
+          command: |
+            cmake --build ~/build --target package
+            mkdir ~/package
+            mv ~/build/evmc-*.tar.gz ~/package
+      - store_artifacts:
+          path: ~/package
+          destination: package
+      - run:
           name: "Run evmc-vmtester libevmc-examplevm.so"
           command: ~/install/bin/evmc-vmtester ~/install/lib/libevmc-examplevm.so
 
