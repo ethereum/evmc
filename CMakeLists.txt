@@ -12,6 +12,7 @@ endif()
 include(cmake/cable/bootstrap.cmake)
 include(CableCompilerSettings)
 include(HunterGate)
+include(GNUInstallDirs)
 include(defaults/HunterCacheServers)
 
 # Setup Hunter.
@@ -28,6 +29,8 @@ cable_configure_compiler()
 
 add_library(evmc INTERFACE)
 target_include_directories(evmc INTERFACE include)
+
+install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
 if(EVMC_BUILD_TESTS)
