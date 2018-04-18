@@ -167,6 +167,9 @@ enum evmc_status_code {
     /// An example: elliptic curve functions handed invalid EC points
     EVMC_PRECOMPILE_FAILURE = 11,
 
+    /// Call depth exceded (if there is a call depth limit)
+    EVMC_CALL_DEPTH_EXCEDED = 12,
+
     /// The EVM rejected the execution of the given code or message.
     ///
     /// This error SHOULD be used to signal that the EVM is not able to or
