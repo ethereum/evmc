@@ -170,6 +170,10 @@ enum evmc_status_code {
     /// Call depth exceded (if there is a call depth limit)
     EVMC_CALL_DEPTH_EXCEDED = 12,
 
+    /// Contract validation has failed (e.g. due to EVM 1.5 jump validity,
+    /// Casper's purity checker or ewasm contract rules).
+    EVMC_CONTRACT_VALIDATION_FAILURE = 13,
+
     /// The EVM rejected the execution of the given code or message.
     ///
     /// This error SHOULD be used to signal that the EVM is not able to or
