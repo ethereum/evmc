@@ -1,8 +1,11 @@
-// EVMC -- Ethereum Client-VM Connector API
+// EVMC: Ethereum Client-VM Connector API
 // Copyright 2018 Pawel Bylica.
 // Licensed under the MIT License. See the LICENSE file.
 
-#include <evmc.h>
+#pragma once
+
+#include <evmc/evmc.h>
+
 #include <gtest/gtest.h>
 
 evmc_instance* get_vm_instance();

@@ -1,4 +1,4 @@
-#include <evmc.h>
+#include <evmc/evmc.h>
 
 #include <inttypes.h>
 #include <string.h>

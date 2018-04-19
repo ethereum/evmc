@@ -12,6 +12,7 @@ endif()
 include(cmake/cable/bootstrap.cmake)
 include(CableCompilerSettings)
 include(HunterGate)
+include(GNUInstallDirs)
 include(defaults/HunterCacheServers)
 
 # Setup Hunter.
@@ -23,11 +24,14 @@ HunterGate(
 )
 
 project(evmc)
+set(PROJECT_VERSION "0.1.0.dev0")
 
 cable_configure_compiler()
 
 add_library(evmc INTERFACE)
 target_include_directories(evmc INTERFACE include)
+
+install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
 if(EVMC_BUILD_TESTS)
@@ -39,3 +43,15 @@ option(EVMC_BUILD_EXAMPLES "Build EVMC examples" OFF)
 if(EVMC_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
+
+
+if(WIN32)
+    set(CPACK_GENERATOR ZIP)
+else()
+    set(CPACK_GENERATOR TGZ)
+endif()
+string(TOLOWER ${CMAKE_SYSTEM_NAME} system_name)
+set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-${PROJECT_VERSION}-${system_name})
+set(CPACK_PACKAGE_CHECKSUM SHA256)
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY FALSE)
+include(CPack)
