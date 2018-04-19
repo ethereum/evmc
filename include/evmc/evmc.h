@@ -167,8 +167,8 @@ enum evmc_status_code {
     /// An example: elliptic curve functions handed invalid EC points
     EVMC_PRECOMPILE_FAILURE = 11,
 
-    /// Call depth exceded (if there is a call depth limit)
-    EVMC_CALL_DEPTH_EXCEDED = 12,
+    /// Call depth exceeded (if there is a call depth limit)
+    EVMC_CALL_DEPTH_EXCEEDED = 12,
 
     /// Contract validation has failed (e.g. due to EVM 1.5 jump validity,
     /// Casper's purity checker or ewasm contract rules).
