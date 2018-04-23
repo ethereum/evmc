@@ -1,4 +1,4 @@
-# EVMC -- Ethereum Client-VM Connector API
+# EVMC: Ethereum Client-VM Connector API.
 # Copyright 2018 Pawel Bylica.
 # Licensed under the MIT License. See the LICENSE file.
 
@@ -8,6 +8,10 @@ if(TARGET evmc)
     # The evmc library has been already created (probably by other submodule).
     return()
 endif()
+
+option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
+option(EVMC_BUILD_EXAMPLES "Build EVMC examples" OFF)
+option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_BUILD_TESTS}")
 
 include(cmake/cable/bootstrap.cmake)
 include(CableCompilerSettings)
@@ -33,13 +37,11 @@ target_include_directories(evmc INTERFACE include)
 
 install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
 if(EVMC_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
 endif()
 
-option(EVMC_BUILD_EXAMPLES "Build EVMC examples" OFF)
 if(EVMC_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
