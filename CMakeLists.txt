@@ -30,7 +30,7 @@ HunterGate(
 project(evmc)
 set(PROJECT_VERSION "0.1.0.dev0")
 
-cable_configure_compiler()
+cable_configure_compiler(NO_STACK_PROTECTION)
 
 add_library(evmc INTERFACE)
 target_include_directories(evmc INTERFACE include)

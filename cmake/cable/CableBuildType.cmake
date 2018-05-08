@@ -26,7 +26,7 @@ macro(cable_set_build_type)
                     FORCE
                 )
             endif()
-            message(STATUS "[cable] Configurations: ${CMAKE_CONFIGURATION_TYPES}")
+            cable_log("Configurations: ${CMAKE_CONFIGURATION_TYPES}")
         else()
             if(build_type_DEFAULT AND NOT CMAKE_BUILD_TYPE)
                 set(
@@ -37,7 +37,7 @@ macro(cable_set_build_type)
                     FORCE
                 )
             endif()
-            message(STATUS "[cable] Build type: ${CMAKE_BUILD_TYPE}")
+            cable_log("Build type: ${CMAKE_BUILD_TYPE}")
         endif()
     endif()
 endmacro()

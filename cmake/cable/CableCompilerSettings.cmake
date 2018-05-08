@@ -1,3 +1,6 @@
+# Cable: CMake Bootstrap Library
+# Copyright 2018 Pawel Bylica.
+# Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
 include(CheckCXXCompilerFlag)
 
@@ -29,6 +32,12 @@ macro(cable_configure_compiler)
     if(NOT PROJECT_IS_NESTED)
         # Do this configuration only in the top project.
 
+        cmake_parse_arguments(cable "NO_STACK_PROTECTION" "" "" ${ARGN})
+
+        if(cable_UNPARSED_ARGUMENTS)
+            message(FATAL_ERROR "cable_configure_compiler: Uknown options: ${cable_UNPARSED_ARGUMENTS}")
+        endif()
+
         # Set helper variables recognizing C++ compilers.
         if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
             set(CABLE_COMPILER_GNU TRUE)
@@ -59,9 +68,21 @@ macro(cable_configure_compiler)
 
         endif()
 
-        cable_add_cxx_compiler_flag_if_supported(-fstack-protector-strong have_stack_protector_strong_support)
-        if(NOT have_stack_protector_strong_support)
-            cable_add_cxx_compiler_flag_if_supported(-fstack-protector)
+        check_cxx_compiler_flag(-fstack-protector fstack-protector)
+        if(fstack-protector)
+            # The compiler supports stack protection options.
+            if(cable_NO_STACK_PROTECTION)
+                # Stack protection explicitly disabled.
+                # Add "no" flag, because in some configuration the compiler has it enabled by default.
+                add_compile_options(-fno-stack-protector)
+            else()
+                # Try enabling the "strong" variant.
+                cable_add_cxx_compiler_flag_if_supported(-fstack-protector-strong have_stack_protector_strong_support)
+                if(NOT have_stack_protector_strong_support)
+                    # Fallback to standard variant of "strong" not available.
+                    add_compile_options(-fstack-protector)
+                endif()
+            endif()
         endif()
 
         cable_add_cxx_compiler_flag_if_supported(-Wimplicit-fallthrough)
