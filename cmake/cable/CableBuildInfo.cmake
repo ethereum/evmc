@@ -1,3 +1,4 @@
+# Cable: CMake Bootstrap Library.
 # Copyright 2018 Pawel Bylica.
 # Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
@@ -45,6 +46,7 @@ function(cable_add_buildinfo_library)
         -DSOURCE_DIR=${PROJECT_SOURCE_DIR}
         -DBINARY_DIR=${binary_dir}
         -P ${cable_buildinfo_template_dir}/gitinfo.cmake
+        BYPRODUCTS ${binary_dir}/gitinfo.txt
     )
 
     add_custom_command(
@@ -60,7 +62,6 @@ function(cable_add_buildinfo_library)
         -DCOMPILER_ID=${CMAKE_CXX_COMPILER_ID}
         -DCOMPILER_VERSION=${CMAKE_CXX_COMPILER_VERSION}
         -DBUILD_TYPE=${build_type}
-        -DCABLE_DEBUG=${CABLE_DEBUG}
         -P ${cable_buildinfo_template_dir}/buildinfo.cmake
         DEPENDS
         ${cable_buildinfo_template_dir}/buildinfo.cmake
