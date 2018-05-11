@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
         auto add_option = desc.add_options();
         add_option("help", "Show help message");
         add_option("vm", opts::value(&vm_path)->value_name("path")->required(),
-            "Path to the VM shared library to be tested");
+                   "Path to the VM shared library to be tested");
 
         opts::positional_options_description positional;
         positional.add("vm", 1);
@@ -66,8 +66,9 @@ int main(int argc, char* argv[])
         opts::notify(variables_map);
 
         auto symbols = dll::library_info{vm_path}.symbols();
-        auto it = std::find_if(symbols.begin(), symbols.end(),
-            [](const std::string& symbol) { return symbol.find("evmc_create_") == 0; });
+        auto it = std::find_if(symbols.begin(), symbols.end(), [](const std::string& symbol) {
+            return symbol.find("evmc_create_") == 0;
+        });
         if (it == symbols.end())
         {
             std::cerr << "EVMC create function not found in " << vm_path.string() << "\n";

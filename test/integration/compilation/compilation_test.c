@@ -4,4 +4,3 @@
  */
 
 #include <evmc/evmc.h>
-
