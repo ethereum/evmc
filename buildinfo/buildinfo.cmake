@@ -29,13 +29,6 @@ else()
     set(GIT_DIRTY FALSE)
 endif()
 
-cable_debug("gitinfo: parsing '${GIT_INFO}':")
-cable_debug("  version:  ${GIT_LATEST_PROJECT_VERSION}")
-cable_debug("  distance: ${GIT_LATEST_PROJECT_VERSION_DISTANCE}")
-cable_debug("  commit:   ${GIT_COMMIT_HASH}")
-cable_debug("  dirty:    ${GIT_DIRTY}")
-
-
 if(GIT_COMMIT_HASH)
     string(SUBSTRING ${GIT_COMMIT_HASH} 0 8 abbrev)
     set(version_commit "+commit.${abbrev}")

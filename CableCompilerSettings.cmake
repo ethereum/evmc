@@ -32,7 +32,7 @@ macro(cable_configure_compiler)
     if(NOT PROJECT_IS_NESTED)
         # Do this configuration only in the top project.
 
-        cmake_parse_arguments(cable "NO_STACK_PROTECTION" "" "" ${ARGN})
+        cmake_parse_arguments(cable "NO_CONVERSION_WARNINGS;NO_STACK_PROTECTION" "" "" ${ARGN})
 
         if(cable_UNPARSED_ARGUMENTS)
             message(FATAL_ERROR "cable_configure_compiler: Uknown options: ${cable_UNPARSED_ARGUMENTS}")
@@ -53,7 +53,12 @@ macro(cable_configure_compiler)
         if(CABLE_COMPILER_GNULIKE)
 
             # Enable basing warnings set and treat them as errors.
-            add_compile_options(-Wall -Wextra -Werror -pedantic)
+            add_compile_options(-pedantic -Werror -Wall -Wextra)
+
+            if(NOT cable_NO_CONVERSION_WARNINGS)
+                # Enable conversion warnings if not explicitly disabled.
+                add_compile_options(-Wconversion -Wsign-conversion)
+            endif()
 
             # Allow unknown pragmas, we don't want to wrap them with #ifdefs.
             add_compile_options(-Wno-unknown-pragmas)
