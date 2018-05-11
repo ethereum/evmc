@@ -696,6 +696,64 @@ typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
                                               size_t code_size);
 
 
+/** The opaque type representing a Client-side tracer object. */
+struct evmc_tracer_context;
+
+/**
+ * The callback to trace instructions execution in an EVM.
+ *
+ * This function informs the Client what instruction has been executed in the EVM implementation
+ * and what are the results of the execution this particular instruction.
+ * The message level information (like call depth, destination address, etc.) are not provided here.
+ * This piece of information can be acquired by inspecting messages being sent to the EVM in
+ * ::evmc_execute_fn and the results of the messages execution.
+ *
+ * @param context                The pointer to the Client-side tracing context. This allows to
+ *                               implement the tracer in OOP manner.
+ * @param step                   The instruction counter for the current message.
+ * @param code_offset            The instruction possition in the code.
+ * @param status_code            The status code of the instruction execution.
+ * @param gas_left               The amount of the gas left after the instruction execution.
+ * @param stack_num_items        The current EVM stack height.
+ * @param pushed_stack_item      The top EVM stack item pushed as the result of the instruction
+ *                               execution. This value is null when the instruction does not push
+ *                               anything to the stack.
+ * @param memory_size            The current size of the EVM memory.
+ * @param changed_memory_offset  The beginning of the memory area modified as the result of
+ *                               the instruction execution.
+ * @param changed_memory_size    The size of the memory area modified as the result of
+ *                               the instruction execution.
+ * @param changed_memory         The pointer to the memory area modified as the result of
+ *                               the instruction execution.
+ */
+typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
+                                    int step,
+                                    size_t code_offset,
+                                    enum evmc_status_code status_code,
+                                    int64_t gas_left,
+                                    size_t stack_num_items,
+                                    const struct evmc_uint256be* pushed_stack_item,
+                                    size_t memory_size,
+                                    size_t changed_memory_offset,
+                                    size_t changed_memory_size,
+                                    const uint8_t* changed_memory);
+
+/**
+ * Sets the EVM instruction tracer.
+ *
+ * When the tracer is set in the EVM instance, the EVM SHOULD callback the tracer with information
+ * about instructions execution in the EVM.
+ * @see ::evmc_trace_callback.
+ *
+ * @param instance    The EVM instance.
+ * @param callback    The tracer callback function.
+ * @param context     The Client-side tracer context.
+ */
+typedef void (*evmc_set_tracer_fn)(struct evmc_instance* instance,
+                                   evmc_trace_callback callback,
+                                   struct evmc_tracer_context* context);
+
+
 /**
  * The EVM instance.
  *
@@ -730,6 +788,9 @@ struct evmc_instance
 
     /** Pointer to function executing a code by the EVM instance. */
     evmc_execute_fn execute;
+
+    /** Pointer to function setting the EVM instruction tracer. */
+    evmc_set_tracer_fn set_tracer;
 
     /**
      * Optional pointer to function modifying VM's options.
