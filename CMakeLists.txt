@@ -32,11 +32,15 @@ set(PROJECT_VERSION "0.1.0.dev0")
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 
+set(include_dir ${PROJECT_SOURCE_DIR}/include)
+
 add_library(evmc INTERFACE)
 add_library(evmc::evmc ALIAS evmc)
-target_include_directories(evmc INTERFACE include)
+target_include_directories(evmc INTERFACE ${include_dir})
 
 install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+add_subdirectory(lib)
 
 if(EVMC_BUILD_TESTS)
     enable_testing()

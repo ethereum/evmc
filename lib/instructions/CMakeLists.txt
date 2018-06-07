@@ -1,0 +1,9 @@
+# EVMC: Ethereum Client-VM Connector API.
+# Copyright 2018 Pawel Bylica.
+# Licensed under the MIT License. See the LICENSE file.
+
+add_library(instructions ${include_dir}/evmc/instructions.h instructions.c)
+add_library(evmc::instructions ALIAS instructions)
+target_include_directories(instructions PUBLIC ${include_dir})
+
+install(TARGETS instructions EXPORT evmcTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
