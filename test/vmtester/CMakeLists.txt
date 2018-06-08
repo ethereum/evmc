@@ -7,9 +7,6 @@ include(GNUInstallDirs)
 hunter_add_package(Boost COMPONENTS program_options filesystem system)
 find_package(Boost CONFIG REQUIRED program_options filesystem system)
 
-hunter_add_package(GTest)
-find_package(GTest CONFIG REQUIRED)
-
 add_executable(evmc-vmtester vmtester.hpp vmtester.cpp tests.cpp)
 
 target_link_libraries(
