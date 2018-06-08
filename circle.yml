@@ -9,7 +9,7 @@ jobs:
       - run:
           name: "Configure"
           working_directory: ~/build
-          command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DBUILD_SHARED_LIBS=ON -DEVMC_BUILD_EXAMPLES=ON -DEVMC_BUILD_TESTS=ON
+          command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DBUILD_SHARED_LIBS=ON -DEVMC_EXAMPLES=ON -DEVMC_TESTING=ON
       - run:
           name: "Build"
           command: cmake --build ~/build
