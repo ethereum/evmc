@@ -8,3 +8,4 @@ add_executable(
 )
 
 target_link_libraries(evmc-test PRIVATE instructions GTest::gtest GTest::main)
+set_target_properties(evmc-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
