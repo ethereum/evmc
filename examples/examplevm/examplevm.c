@@ -93,7 +93,7 @@ static struct evmc_result execute(struct evmc_instance* instance, struct evmc_co
         struct evmc_uint256be value;
         const struct evmc_uint256be index = {{0}};
         context->fn_table->get_storage(&value, context, &msg->destination, &index);
-        value.bytes[31] += 1;
+        value.bytes[31]++;
         context->fn_table->set_storage(context, &msg->destination, &index, &value);
         ret.status_code = EVMC_SUCCESS;
         return ret;
