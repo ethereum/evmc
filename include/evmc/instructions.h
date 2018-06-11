@@ -188,7 +188,8 @@ struct evmc_instruction_metrics
  * Get the table of the EVM 1 instructions metrics.
  *
  * @param revision  The EVM revision.
- * @return          The pointer to the array of 256 instruction metrics.
+ * @return          The pointer to the array of 256 instruction metrics. Null pointer in case
+ *                  an invalid EVM revision provided.
  */
 const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
     enum evmc_revision revision);
@@ -196,15 +197,13 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
 /**
  * Get the table of the EVM 1 instruction names.
  *
- * This table is EVM revision independent and contains the superset of the names of the instructions
- * from all EVM revisions. Use evmc_get_instruction_metrics_table() to know if an instruction
- * is present in the given EVM revision.
- *
  * The entries for undefined instructions contain null pointers.
  *
- * @return  The pointer to the array of 256 instruction names.
+ * @param revision  The EVM revision.
+ * @return          The pointer to the array of 256 instruction names. Null pointer in case
+ *                  an invalid EVM revision provided.
  */
-const char* const* evmc_get_instruction_name_table();
+const char* const* evmc_get_instruction_names_table(enum evmc_revision revision);
 
 #if __cplusplus
 }
