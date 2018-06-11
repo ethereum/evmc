@@ -2,7 +2,12 @@
 # Copyright 2018 Pawel Bylica.
 # Licensed under the MIT License. See the LICENSE file.
 
-add_library(instructions ${include_dir}/evmc/instructions.h instructions.c)
+add_library(
+    instructions
+    ${include_dir}/evmc/instructions.h
+    instruction_metrics.c
+)
+
 add_library(evmc::instructions ALIAS instructions)
 target_include_directories(instructions PUBLIC ${include_dir})
 
