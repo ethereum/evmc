@@ -6,6 +6,7 @@ add_library(
     instructions
     ${include_dir}/evmc/instructions.h
     instruction_metrics.c
+    instruction_names.c
 )
 
 add_library(evmc::instructions ALIAS instructions)
