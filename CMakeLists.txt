@@ -9,9 +9,9 @@ if(TARGET evmc)
     return()
 endif()
 
-option(EVMC_BUILD_TESTS "Build EVMC tests and test tools" OFF)
-option(EVMC_BUILD_EXAMPLES "Build EVMC examples" OFF)
-option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_BUILD_TESTS}")
+option(EVMC_TESTING "Build EVMC tests and test tools" OFF)
+option(EVMC_EXAMPLES "Build EVMC examples" OFF)
+option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_TESTING}")
 
 include(cmake/cable/bootstrap.cmake)
 include(CableCompilerSettings)
@@ -32,17 +32,22 @@ set(PROJECT_VERSION "0.1.0.dev0")
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 
+set(include_dir ${PROJECT_SOURCE_DIR}/include)
+
 add_library(evmc INTERFACE)
-target_include_directories(evmc INTERFACE include)
+add_library(evmc::evmc ALIAS evmc)
+target_include_directories(evmc INTERFACE ${include_dir})
 
 install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(EVMC_BUILD_TESTS)
+add_subdirectory(lib)
+
+if(EVMC_TESTING)
     enable_testing()
     add_subdirectory(test)
 endif()
 
-if(EVMC_BUILD_EXAMPLES)
+if(EVMC_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
