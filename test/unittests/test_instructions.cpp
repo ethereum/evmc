@@ -6,6 +6,15 @@
 
 #include <gtest/gtest.h>
 
+TEST(instructions, homestead_hard_fork)
+{
+    const auto f = evmc_get_instruction_metrics_table(EVMC_FRONTIER);
+    const auto h = evmc_get_instruction_metrics_table(EVMC_HOMESTEAD);
+
+    EXPECT_EQ(f[OP_DELEGATECALL].gas_cost, -1);
+    EXPECT_EQ(h[OP_DELEGATECALL].gas_cost, 40);
+}
+
 TEST(instructions, tangerine_whistle_hard_fork)
 {
     const auto h = evmc_get_instruction_metrics_table(EVMC_HOMESTEAD);
@@ -34,4 +43,33 @@ TEST(instructions, tangerine_whistle_hard_fork)
 
     EXPECT_EQ(h[OP_SELFDESTRUCT].gas_cost, 0);
     EXPECT_EQ(tw[OP_SELFDESTRUCT].gas_cost, 5000);
+}
+
+TEST(instructions, spurious_dragon_hard_fork)
+{
+    const auto sd = evmc_get_instruction_metrics_table(EVMC_SPURIOUS_DRAGON);
+    const auto tw = evmc_get_instruction_metrics_table(EVMC_TANGERINE_WHISTLE);
+
+    EXPECT_EQ(sd[OP_EXP].gas_cost, 10);
+    EXPECT_EQ(tw[OP_EXP].gas_cost, 10);
+}
+
+TEST(instructions, byzantium_hard_fork)
+{
+    const auto b = evmc_get_instruction_metrics_table(EVMC_BYZANTIUM);
+    const auto sd = evmc_get_instruction_metrics_table(EVMC_SPURIOUS_DRAGON);
+
+    EXPECT_EQ(b[OP_REVERT].gas_cost, 0);
+    EXPECT_EQ(b[OP_REVERT].num_stack_arguments, 2);
+    EXPECT_EQ(b[OP_REVERT].num_stack_returned_items, 0);
+    EXPECT_EQ(sd[OP_REVERT].gas_cost, -1);
+
+    EXPECT_EQ(b[OP_RETURNDATACOPY].gas_cost, 3);
+    EXPECT_EQ(sd[OP_RETURNDATACOPY].gas_cost, -1);
+
+    EXPECT_EQ(b[OP_RETURNDATASIZE].gas_cost, 2);
+    EXPECT_EQ(sd[OP_RETURNDATASIZE].gas_cost, -1);
+
+    EXPECT_EQ(b[OP_STATICCALL].gas_cost, 700);
+    EXPECT_EQ(sd[OP_STATICCALL].gas_cost, -1);
 }

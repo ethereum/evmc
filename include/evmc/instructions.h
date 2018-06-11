@@ -174,7 +174,7 @@ enum evmc_opcode
  */
 struct evmc_instruction_metrics
 {
-    /** The instruction gas cost. Value -1 indicates undefined instruction. */
+    /** The instruction gas cost. Value -1 indicates an undefined instruction. */
     int16_t gas_cost;
 
     /** The number of items the instruction pops from the EVM stack before execution. */
