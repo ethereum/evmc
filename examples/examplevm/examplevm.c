@@ -44,8 +44,12 @@ static void free_result_output_data(struct evmc_result const* result)
     free((uint8_t*)result->output_data);
 }
 
-static struct evmc_result execute(struct evmc_instance* instance, struct evmc_context* context,
-    enum evmc_revision rev, const struct evmc_message* msg, const uint8_t* code, size_t code_size)
+static struct evmc_result execute(struct evmc_instance* instance,
+                                  struct evmc_context* context,
+                                  enum evmc_revision rev,
+                                  const struct evmc_message* msg,
+                                  const uint8_t* code,
+                                  size_t code_size)
 {
     struct evmc_result ret = {.status_code = EVMC_INTERNAL_ERROR};
     if (code_size == 0)
