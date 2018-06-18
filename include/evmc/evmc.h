@@ -789,7 +789,11 @@ struct evmc_instance
     /** Pointer to function executing a code by the EVM instance. */
     evmc_execute_fn execute;
 
-    /** Pointer to function setting the EVM instruction tracer. */
+    /**
+     * Optional pointer to function setting the EVM instruction tracer.
+     *
+     * If the EVM does not support this feature the pointer can be NULL.
+     */
     evmc_set_tracer_fn set_tracer;
 
     /**
