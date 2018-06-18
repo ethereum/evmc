@@ -9,6 +9,8 @@ struct examplevm
 {
     struct evmc_instance instance;
     int verbose;
+    evmc_trace_callback trace_callback;
+    struct evmc_tracer_context* tracer_context;
 };
 
 static void destroy(struct evmc_instance* evm)
@@ -113,6 +115,15 @@ static struct evmc_result execute(struct evmc_instance* instance,
     return ret;
 }
 
+static void set_tracer(struct evmc_instance* instance,
+                       evmc_trace_callback callback,
+                       struct evmc_tracer_context* context)
+{
+    struct examplevm* vm = (struct examplevm*)instance;
+    vm->trace_callback = callback;
+    vm->tracer_context = context;
+}
+
 struct evmc_instance* evmc_create_examplevm()
 {
     struct evmc_instance init = {
@@ -122,6 +133,7 @@ struct evmc_instance* evmc_create_examplevm()
         .destroy = destroy,
         .execute = execute,
         .set_option = set_option,
+        .set_tracer = set_tracer,
     };
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evmc_instance* interface = &vm->instance;
