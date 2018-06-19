@@ -10,6 +10,6 @@ add_library(
 )
 
 add_library(evmc::instructions ALIAS instructions)
-target_include_directories(instructions PUBLIC ${include_dir})
+target_include_directories(instructions PUBLIC $<BUILD_INTERFACE:${include_dir}>$<INSTALL_INTERFACE:include>)
 
 install(TARGETS instructions EXPORT evmcTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
