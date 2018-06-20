@@ -14,7 +14,9 @@ option(EVMC_EXAMPLES "Build EVMC examples" OFF)
 option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_TESTING}")
 
 include(cmake/cable/bootstrap.cmake)
+include(CableBuildType)
 include(CableCompilerSettings)
+include(CMakePackageConfigHelpers)
 include(HunterGate)
 include(GNUInstallDirs)
 include(defaults/HunterCacheServers)
@@ -30,13 +32,16 @@ HunterGate(
 project(evmc)
 set(PROJECT_VERSION "0.1.0.dev0")
 
+cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
+
 cable_configure_compiler(NO_STACK_PROTECTION)
 
 set(include_dir ${PROJECT_SOURCE_DIR}/include)
 
 add_library(evmc INTERFACE)
 add_library(evmc::evmc ALIAS evmc)
-target_include_directories(evmc INTERFACE ${include_dir})
+target_include_directories(evmc INTERFACE $<BUILD_INTERFACE:${include_dir}>$<INSTALL_INTERFACE:include>)
+install(TARGETS evmc EXPORT evmcTargets)
 
 install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
@@ -51,6 +56,25 @@ if(EVMC_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+write_basic_package_version_file(evmcConfigVersion.cmake COMPATIBILITY ExactVersion)
+
+configure_package_config_file(
+    cmake/Config.cmake.in
+    evmcConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
+)
+
+install(
+    EXPORT evmcTargets
+    NAMESPACE evmc::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
+)
+install(
+    FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/evmcConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/evmcConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
+)
 
 if(WIN32)
     set(CPACK_GENERATOR ZIP)

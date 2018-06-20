@@ -32,6 +32,16 @@ jobs:
           path: ~/package
           destination: package
       - run:
+          name: "Test CMake package config"
+          command: |
+            mkdir ~/build-example-evmc && cd ~/build-example-evmc
+            cmake ~/project/examples/use_evmc_in_cmake -DCMAKE_PREFIX_PATH=~/install
+            cmake --build .
+
+            mkdir ~/build-example-instructions && cd ~/build-example-instructions
+            cmake ~/project/examples/use_instructions_in_cmake -DCMAKE_PREFIX_PATH=~/install
+            cmake --build .
+      - run:
           name: "Run evmc-vmtester libevmc-examplevm.so"
           command: ~/install/bin/evmc-vmtester ~/install/lib/libevmc-examplevm.so
 
