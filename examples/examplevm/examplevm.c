@@ -11,7 +11,7 @@ struct examplevm
     int verbose;
 };
 
-static void evmc_destroy(struct evmc_instance* evm)
+static void destroy(struct evmc_instance* evm)
 {
     free(evm);
 }
@@ -19,7 +19,7 @@ static void evmc_destroy(struct evmc_instance* evm)
 /// Example options.
 ///
 /// VMs are allowed to omit this function implementation.
-int evmc_set_option(struct evmc_instance* instance, char const* name, char const* value)
+static int set_option(struct evmc_instance* instance, char const* name, char const* value)
 {
     struct examplevm* vm = (struct examplevm*)instance;
     if (strcmp(name, "verbose") == 0)
@@ -34,7 +34,7 @@ int evmc_set_option(struct evmc_instance* instance, char const* name, char const
     return 0;
 }
 
-static void evmc_release_result(struct evmc_result const* result)
+static void release_result(struct evmc_result const* result)
 {
     (void)result;
 }
@@ -103,7 +103,7 @@ static struct evmc_result execute(struct evmc_instance* instance,
         return ret;
     }
 
-    ret.release = evmc_release_result;
+    ret.release = release_result;
     ret.status_code = EVMC_FAILURE;
     ret.gas_left = 0;
 
@@ -119,9 +119,9 @@ struct evmc_instance* evmc_create_examplevm()
         .abi_version = EVMC_ABI_VERSION,
         .name = "examplevm",
         .version = "0.0.0",
-        .destroy = evmc_destroy,
+        .destroy = destroy,
         .execute = execute,
-        .set_option = evmc_set_option,
+        .set_option = set_option,
     };
     struct examplevm* vm = calloc(1, sizeof(struct examplevm));
     struct evmc_instance* interface = &vm->instance;
