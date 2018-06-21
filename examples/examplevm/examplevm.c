@@ -1,5 +1,7 @@
 #include "examplevm.h"
 
+#include <evmc/utils.h>
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -128,3 +130,5 @@ struct evmc_instance* evmc_create_examplevm()
     memcpy(interface, &init, sizeof(init));
     return interface;
 }
+
+EVMC_ENTRYPOINT(evmc_create_examplevm)
