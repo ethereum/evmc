@@ -65,22 +65,37 @@ int main(int argc, char* argv[])
 
         opts::notify(variables_map);
 
-        auto symbols = dll::library_info{vm_path}.symbols();
-        auto it = std::find_if(symbols.begin(), symbols.end(), [](const std::string& symbol) {
-            return symbol.find("evmc_create_") == 0;
-        });
-        if (it == symbols.end())
+        std::string entrypoint_name{"evmc_create"};
+        try
         {
-            std::cerr << "EVMC create function not found in " << vm_path.string() << "\n";
-            return 2;
+            // Try the default entrypoint alias.
+            create_fn = dll::import<evmc_create_fn>(vm_path, entrypoint_name);
         }
-        const std::string& create_fn_name = *it;
+        catch (boost::system::system_error& err)
+        {
+            if (err.code() != boost::system::errc::invalid_seek)
+                throw;  // Error other than "symbol not found".
+        }
 
-        std::cout << "Testing " << vm_path.filename().string() << "\n  "
-                  << "Path: " << vm_path.string() << "\n  "
-                  << "Create function: " << create_fn_name << "()\n\n";
+        if (!create_fn)
+        {
+            auto symbols = dll::library_info{vm_path}.symbols();
+            auto it = std::find_if(symbols.begin(), symbols.end(), [](const std::string& symbol) {
+                return symbol.find("evmc_create_") == 0;
+            });
+            if (it == symbols.end())
+            {
+                std::cerr << "EVMC create function not found in " << vm_path.string() << "\n";
+                return 2;
+            }
+            entrypoint_name = *it;
+            create_fn = dll::import<evmc_create_fn>(vm_path, entrypoint_name);
+        }
 
-        create_fn = dll::import<evmc_create_fn>(vm_path, create_fn_name);
+        std::cout << "Testing " << vm_path.filename().string() << "\n"
+                  << "  Path:       " << vm_path.string() << "\n"
+                  << "  Entrypoint: " << entrypoint_name << "\n\n";
+
 
         return RUN_ALL_TESTS();
     }
