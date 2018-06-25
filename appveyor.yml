@@ -16,6 +16,8 @@ environment:
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       GENERATOR: "Visual Studio 14 2015 Win64"
+cache:
+  - C:\.hunter\_Base\Cache -> cmake\HunterConfig.cmake
 
 before_build: |
   if not exist build mkdir build
