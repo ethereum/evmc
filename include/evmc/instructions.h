@@ -6,6 +6,7 @@
 #pragma once
 
 #include <evmc/evmc.h>
+#include <evmc/utils.h>
 
 #include <stdint.h>
 
@@ -191,7 +192,7 @@ struct evmc_instruction_metrics
  * @return          The pointer to the array of 256 instruction metrics. Null pointer in case
  *                  an invalid EVM revision provided.
  */
-const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
+EVMC_EXPORT const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
     enum evmc_revision revision);
 
 /**
@@ -203,7 +204,7 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
  * @return          The pointer to the array of 256 instruction names. Null pointer in case
  *                  an invalid EVM revision provided.
  */
-const char* const* evmc_get_instruction_names_table(enum evmc_revision revision);
+EVMC_EXPORT const char* const* evmc_get_instruction_names_table(enum evmc_revision revision);
 
 #if __cplusplus
 }
