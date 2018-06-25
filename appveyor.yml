@@ -11,9 +11,6 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       GENERATOR: "Visual Studio 15 2017 Win64"
 
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      GENERATOR: "Visual Studio 15 2017"
-
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       GENERATOR: "Visual Studio 14 2015 Win64"
 cache:
@@ -22,12 +19,11 @@ cache:
 before_build: |
   if not exist build mkdir build
   cd build
-  cmake -G "%GENERATOR%" .. -DEVMC_TESTING=ON -DEVMC_EXAMPLES=ON
+  cmake -G "%GENERATOR%" .. -DBUILD_SHARED_LIBS=ON -DEVMC_EXAMPLES=ON -DEVMC_TESTING=ON -DCMAKE_INSTALL_PREFIX=C:\install
 
-build:
-  project: c:/projects/evmc/build/evmc.sln
-  parallel: true
-  verbosity: minimal
+build_script: |
+  cmake --build . --config %CONFIGURATION% --target install
 
 after_build: |
   C:\projects\evmc\build\test\Release\evmc-test.exe
+  C:\install\bin\evmc-vmtester.exe C:\install\bin\evmc-examplevm.dll
