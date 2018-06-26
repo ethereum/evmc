@@ -732,16 +732,24 @@ struct evmc_instance
 
 /* END Python CFFI declarations */
 
+#if EVMC_DOCUMENTATION
 /**
  * Example of a function creating an instance of an example EVM implementation.
  *
- *  Each EVM implementation MUST provide a function returning an EVM instance.
- *  The function SHOULD be named `evmc_create_<vm-name>(void)`.
+ * Each EVM implementation MUST provide a function returning an EVM instance.
+ * The function SHOULD be named `evmc_create_<vm-name>(void)`. If the VM name contains hyphens
+ * replaces them with underscores in the function names.
  *
- *  @return  EVM instance or NULL indicating instance creation failure.
+ * @par Binaries naming convention
+ * For VMs distributed as shared libraries, the name of the library SHOULD match the VM name.
+ * The convetional library filename prefixes and extensions SHOULD be ignored by the Client.
+ * For example, the shared library with the "beta-interpreter" implementation may be named
+ * `libbeta-interpreter.so`.
  *
- *  struct evmc_instance* evmc_create_examplevm(void);
+ * @return  EVM instance or NULL indicating instance creation failure.
  */
+struct evmc_instance* evmc_create_examplevm(void);
+#endif
 
 #if __cplusplus
 }
