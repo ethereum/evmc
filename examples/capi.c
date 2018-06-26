@@ -10,12 +10,15 @@
 
 struct evmc_uint256be balance(struct evmc_context* context, const struct evmc_address* address)
 {
+    (void)context;
+    (void)address;
     struct evmc_uint256be ret = {.bytes = {1, 2, 3, 4}};
     return ret;
 }
 
 struct evmc_address address(struct evmc_context* context)
 {
+    (void)context;
     struct evmc_address ret = {.bytes = {1, 2, 3, 4}};
     return ret;
 }
@@ -29,6 +32,7 @@ static void print_address(const struct evmc_address* address)
 
 static int account_exists(struct evmc_context* context, const struct evmc_address* address)
 {
+    (void)context;
     printf("EVM-C: EXISTS @");
     print_address(address);
     printf("\n");
@@ -40,6 +44,9 @@ static void get_storage(struct evmc_uint256be* result,
                         const struct evmc_address* address,
                         const struct evmc_uint256be* key)
 {
+    (void)result;
+    (void)context;
+    (void)key;
     printf("EVM-C: SLOAD @");
     print_address(address);
     printf("\n");
@@ -50,6 +57,9 @@ static void set_storage(struct evmc_context* context,
                         const struct evmc_uint256be* key,
                         const struct evmc_uint256be* value)
 {
+    (void)context;
+    (void)key;
+    (void)value;
     printf("EVM-C: SSTORE @");
     print_address(address);
     printf("\n");
@@ -67,6 +77,7 @@ static void get_balance(struct evmc_uint256be* result,
 
 static size_t get_code_size(struct evmc_context* context, const struct evmc_address* address)
 {
+    (void)context;
     printf("EVM-C: CODESIZE @");
     print_address(address);
     printf("\n");
@@ -79,6 +90,10 @@ static size_t copy_code(struct evmc_context* context,
                         uint8_t* buffer_data,
                         size_t buffer_size)
 {
+    (void)context;
+    (void)code_offset;
+    (void)buffer_data;
+    (void)buffer_size;
     printf("EVM-C: COPYCODE @");
     print_address(address);
     printf("\n");
@@ -89,6 +104,7 @@ static void selfdestruct(struct evmc_context* context,
                          const struct evmc_address* address,
                          const struct evmc_address* beneficiary)
 {
+    (void)context;
     printf("EVM-C: SELFDESTRUCT ");
     print_address(address);
     printf(" -> ");
@@ -100,16 +116,25 @@ static void call(struct evmc_result* result,
                  struct evmc_context* context,
                  const struct evmc_message* msg)
 {
+    (void)context;
     printf("EVM-C: CALL (depth: %d)\n", msg->depth);
     result->status_code = EVMC_FAILURE;
 }
 
-static void get_tx_context(struct evmc_tx_context* result, struct evmc_context* context) {}
+static void get_tx_context(struct evmc_tx_context* result, struct evmc_context* context)
+{
+    (void)result;
+    (void)context;
+}
 
 static void get_block_hash(struct evmc_uint256be* result,
                            struct evmc_context* context,
                            int64_t number)
-{}
+{
+    (void)result;
+    (void)context;
+    (void)number;
+}
 
 /// EVM log callback.
 ///
@@ -121,6 +146,11 @@ static void evm_log(struct evmc_context* context,
                     const struct evmc_uint256be topics[],
                     size_t topics_count)
 {
+    (void)context;
+    (void)address;
+    (void)data;
+    (void)data_size;
+    (void)topics;
     printf("EVM-C: LOG%d\n", (int)topics_count);
 }
 
@@ -130,23 +160,31 @@ static const struct evmc_context_fn_table ctx_fn_table = {
 };
 
 /// Example how the API is supposed to be used.
-int main(int argc, char* argv[])
+int main()
 {
     struct evmc_instance* jit = evmc_create_examplevm();
     if (jit->abi_version != EVMC_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
-    uint8_t const code[] = "Place some EVM bytecode here";
+    const uint8_t code[] = "Place some EVM bytecode here";
     const size_t code_size = sizeof(code);
-    struct evmc_uint256be code_hash = {.bytes = {1, 2, 3}};
-    uint8_t const input[] = "Hello World!";
-    struct evmc_uint256be value = {{1, 0}};
-    struct evmc_address addr = {{0, 1, 2}};
-    int64_t gas = 200000;
+    const struct evmc_uint256be code_hash = {.bytes = {1, 2, 3}};
+    const uint8_t input[] = "Hello World!";
+    const struct evmc_uint256be value = {{1, 0}};
+    const struct evmc_address addr = {{0, 1, 2}};
+    const int64_t gas = 200000;
 
     struct evmc_context ctx = {&ctx_fn_table};
 
-    struct evmc_message msg = {addr, addr, value, input, sizeof(input), code_hash, gas, 0};
+    struct evmc_message msg;
+    msg.sender = addr;
+    msg.destination = addr;
+    msg.value = value;
+    msg.input_data = input;
+    msg.input_size = sizeof(input);
+    msg.code_hash = code_hash;
+    msg.gas = gas;
+    msg.depth = 0;
 
     struct evmc_result result = jit->execute(jit, &ctx, EVMC_HOMESTEAD, &msg, code, code_size);
 

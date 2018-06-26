@@ -21,13 +21,7 @@ include(HunterGate)
 include(GNUInstallDirs)
 include(defaults/HunterCacheServers)
 
-# Setup Hunter.
-# Hunter is going to be initialized only if building with tests,
-# where it is needed to get dependencies.
-HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.20.37.tar.gz"
-    SHA1 "51886d10428c924cc21756abc17623bcf4986386"
-)
+include(HunterConfig)
 
 project(evmc)
 set(PROJECT_VERSION "0.1.0.dev0")

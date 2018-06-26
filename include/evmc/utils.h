@@ -5,10 +5,8 @@
 
 #pragma once
 
-#include <evmc/evmc.h>
-#include <evmc/utils.h>
-
-/**
- * Creates EVMC Example VM.
- */
-EVMC_EXPORT struct evmc_instance* evmc_create_examplevm(void);
+#ifdef _MSC_VER
+#define EVMC_EXPORT __declspec(dllexport)
+#else
+#define EVMC_EXPORT __attribute__ ((visibility ("default")))
+#endif
