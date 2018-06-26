@@ -18,16 +18,17 @@ Please visit the [documentation].
 
 ### EVMs
 
+- [aleth-interpreter]
 - [evmjit]
 - [Hera]
-- "[interpreter]"
 
 ### Clients
 
-- [cpp-ethereum]
-- [nim-evmjit]
+- [aleth]
+- [nim-evmc]
 - [go-ethereum] (in progress)
 - [pyevm] (in progress)
+- [pyethereum] (abandoned)
 
 ## Contribute
 
@@ -52,11 +53,12 @@ Licensed under the [MIT License](LICENSE.md).
 [evmjit]: https://github.com/ethereum/evmjit
 [Hera]: https://github.com/ewasm/hera
 [Gitter]: https://gitter.im/ethereum/evmc
-[interpreter]: https://github.com/ethereum/cpp-ethereum/blob/develop/libevm/VM.cpp
-[cpp-ethereum]: https://github.com/ethereum/cpp-ethereum
-[nim-evmjit]: https://github.com/status-im/nim-evmjit
-[go-ethereum]: https://github.com/ethereum/go-ethereum
-[pyevm]: https://github.com/ethereum/cpp-ethereum
+[aleth-interpreter]: https://github.com/ethereum/cpp-ethereum/tree/develop/libaleth-interpreter
+[aleth]: https://github.com/ethereum/cpp-ethereum
+[nim-evmc]: https://github.com/status-im/nim-evmc
+[go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17050
+[pyevm]: https://github.com/ethereum/py-evm
+[pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg?style=flat-square
