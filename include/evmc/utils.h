@@ -8,5 +8,5 @@
 #ifdef _MSC_VER
 #define EVMC_EXPORT __declspec(dllexport)
 #else
-#define EVMC_EXPORT __attribute__ ((visibility ("default")))
+#define EVMC_EXPORT __attribute__((visibility("default")))
 #endif
