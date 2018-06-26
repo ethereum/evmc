@@ -10,14 +10,13 @@
 #
 # This is internal variable automaticaly updated with external tools.
 # Use CABLE_VERSION variable if you need this information.
-set(version 0.2.2)
+set(version 0.2.3)
 
 # For conveniance, add the project CMake module dir to module path.
 set(module_dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if(EXISTS ${module_dir})
     list(APPEND CMAKE_MODULE_PATH ${module_dir})
 endif()
-
 
 if(CABLE_VERSION)
     # Some other instance of Cable was initialized in the top project.
@@ -45,7 +44,7 @@ if(CABLE_VERSION)
 
     message(
         ${severity}
-        "[cable ] Parent Cable ${CABLE_VERSION} (${comment}) initialized in `${cable_top_project_name}` project"
+        "[cable ] Cable ${CABLE_VERSION} (${comment}) initialized in the `${cable_top_project_name}` parent project"
     )
     cable_debug("Project CMake modules directory: ${module_dir}")
 
