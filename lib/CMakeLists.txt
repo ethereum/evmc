@@ -3,3 +3,4 @@
 # Licensed under the MIT License. See the LICENSE file.
 
 add_subdirectory(instructions)
+add_subdirectory(loader)
