@@ -6,12 +6,10 @@
 
 #include <evmc/loader.h>
 
-#include <boost/program_options.hpp>
+#include <CLI/CLI.hpp>
 
 #include <iostream>
 #include <memory>
-
-namespace opts = boost::program_options;
 
 namespace
 {
@@ -36,29 +34,10 @@ int main(int argc, char* argv[])
     {
         std::string vm_path;
 
-        opts::options_description desc("EVMC VM Tester Options");
-        auto add_option = desc.add_options();
-        add_option("help", "Show help message");
-        add_option("vm", opts::value(&vm_path)->value_name("path")->required(),
-                   "Path to the VM shared library to be tested");
-
-        opts::positional_options_description positional;
-        positional.add("vm", 1);
-
+        CLI::App app{"EVMC VM Tester"};
+        app.add_option("vm", vm_path, "Path to the VM shared library to be tested");
         testing::InitGoogleTest(&argc, argv);
-
-        opts::variables_map variables_map;
-        opts::store(
-            opts::command_line_parser(argc, argv).options(desc).positional(positional).run(),
-            variables_map);
-
-        if (variables_map.count("help"))
-        {
-            std::cout << "\n" << desc << "\n";
-            return 0;
-        }
-
-        opts::notify(variables_map);
+        CLI11_PARSE(app, argc, argv);
 
         std::cout << "Testing " << vm_path << "\n";
         evmc_loader_error_code ec;

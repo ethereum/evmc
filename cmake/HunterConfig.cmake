@@ -6,6 +6,6 @@
 # Hunter is going to be initialized only if building with tests,
 # where it is needed to get dependencies.
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.20.37.tar.gz"
-    SHA1 "51886d10428c924cc21756abc17623bcf4986386"
+    URL "https://github.com/ruslo/hunter/archive/v0.22.23.tar.gz"
+    SHA1 "16c562a69489ff9c1b5266a12d5e903084de693a"
 )
