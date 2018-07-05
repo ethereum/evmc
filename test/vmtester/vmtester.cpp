@@ -4,23 +4,18 @@
 
 #include "vmtester.hpp"
 
-#include <boost/dll.hpp>
-#include <boost/dll/alias.hpp>
-#include <boost/function.hpp>
+#include <evmc/loader.h>
+
 #include <boost/program_options.hpp>
 
 #include <iostream>
 #include <memory>
 
-namespace fs = boost::filesystem;
-namespace dll = boost::dll;
 namespace opts = boost::program_options;
-
-extern "C" using evmc_create_fn = evmc_instance * ();
 
 namespace
 {
-boost::function<evmc_create_fn> create_fn;
+evmc_create_fn create_fn;
 
 std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
 {
@@ -35,43 +30,11 @@ evmc_instance* get_vm_instance()
     return vm.get();
 }
 
-std::vector<std::string> get_vm_names(const fs::path path)
-{
-    std::vector<std::string> names;
-
-    // Get the filename without extension.
-    auto name = path.stem().string();
-
-    // Skip the optional library name prefix.
-    const std::string lib_name_prefix{"lib"};
-    if (name.find(lib_name_prefix) == 0)
-        name = name.substr(lib_name_prefix.size());
-
-    size_t hyphen_pos = 0;
-    const std::string hyphen{"-"};
-    if ((hyphen_pos = name.find(hyphen)) != std::string::npos)
-    {
-        // Replace the hyphen with underscore.
-        name.replace(hyphen_pos, hyphen.size(), "_");
-        names.emplace_back(name);
-
-        // Also add the  name without the hyphen-separated prefix.
-        names.emplace_back(name.substr(hyphen_pos + hyphen.size()));
-    }
-    else
-    {
-        // Add the filename as the name.
-        names.emplace_back(std::move(name));
-    }
-
-    return names;
-}
-
 int main(int argc, char* argv[])
 {
     try
     {
-        fs::path vm_path;
+        std::string vm_path;
 
         opts::options_description desc("EVMC VM Tester Options");
         auto add_option = desc.add_options();
@@ -97,34 +60,22 @@ int main(int argc, char* argv[])
 
         opts::notify(variables_map);
 
-        std::cout << "Testing " << vm_path.filename().string() << "\n"
-                  << "Path: " << vm_path.string() << "\n";
-
-        for (auto&& name : get_vm_names(vm_path))
+        std::cout << "Testing " << vm_path << "\n";
+        evmc_loader_error_code ec;
+        create_fn = evmc_load(vm_path.c_str(), &ec);
+        switch (ec)
         {
-            try
-            {
-                const std::string create_fn_name = "evmc_create_" + name;
-                std::cout << "Seeking `" << create_fn_name << "`... ";
-                create_fn = dll::import<evmc_create_fn>(vm_path, create_fn_name);
-                std::cout << "found.\n";
-                break;
-            }
-            catch (boost::system::system_error& err)
-            {
-                using namespace boost::system;
-                const error_code windows_error{127, system_category()};
-                constexpr auto posix_error = errc::invalid_seek;
-                if (err.code() != posix_error && err.code() != windows_error)
-                    throw;  // Error other than "symbol not found".
-                std::cout << "not found.\n";
-            }
-        }
-
-        if (!create_fn)
-        {
-            std::cerr << "EVMC create function not found in " << vm_path.string() << "\n";
-            return 2;
+        case EVMC_LOADER_SUCCESS:
+            break;
+        case EVMC_LOADER_CANNOT_OPEN:
+            std::cerr << "Cannot open " << vm_path << "\n";
+            return static_cast<int>(ec);
+        case EVMC_LOADER_SYMBOL_NOT_FOUND:
+            std::cerr << "EVMC create function not found in " << vm_path << "\n";
+            return static_cast<int>(ec);
+        default:
+            std::cerr << "Unexpected error in evmc_load(): " << ec << "\n";
+            return static_cast<int>(ec);
         }
 
         std::cout << std::endl;

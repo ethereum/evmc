@@ -4,8 +4,8 @@
 
 include(GNUInstallDirs)
 
-hunter_add_package(Boost COMPONENTS program_options filesystem system)
-find_package(Boost CONFIG REQUIRED program_options filesystem system)
+hunter_add_package(Boost COMPONENTS program_options)
+find_package(Boost CONFIG REQUIRED program_options)
 
 add_executable(evmc-vmtester vmtester.hpp vmtester.cpp tests.cpp)
 set_target_properties(evmc-vmtester PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
@@ -14,11 +14,9 @@ target_link_libraries(
     evmc-vmtester
     PRIVATE
     evmc
+    loader
     GTest::gtest
     Boost::program_options
-    Boost::filesystem
-    Boost::system
-    ${CMAKE_DL_LIBS}
 )
 
 install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
