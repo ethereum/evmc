@@ -71,12 +71,14 @@ TEST(loader, aaa)
     auto path = "unittests/libaaa.so";
 
     evmc_loader_error_code ec;
-    auto x = (uintptr_t)evmc_load(path, &ec);
+    auto fn = evmc_load(path, &ec);
+    ASSERT_NE(fn, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ(x, 0xaaa);
+    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
 
-    x = (uintptr_t)evmc_load(path, nullptr);
-    EXPECT_EQ(x, 0xaaa);
+    fn = evmc_load(path, nullptr);
+    ASSERT_NE(fn, nullptr);
+    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
 }
 
 TEST(loader, prefix_aaa)
@@ -86,12 +88,10 @@ TEST(loader, prefix_aaa)
     for (auto& path : paths)
     {
         evmc_loader_error_code ec;
-        auto x = (uintptr_t)evmc_load(path, &ec);
+        auto fn = evmc_load(path, &ec);
+        ASSERT_NE(fn, nullptr);
         EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-        EXPECT_EQ(x, 0xaaa);
-
-        x = (uintptr_t)evmc_load(path, nullptr);
-        EXPECT_EQ(x, 0xaaa);
+        EXPECT_EQ((uintptr_t)fn(), 0xaaa);
     }
 }
 
@@ -100,12 +100,10 @@ TEST(loader, eee_bbb)
     auto path = "unittests/eee-bbb.dll";
 
     evmc_loader_error_code ec;
-    auto x = (uintptr_t)evmc_load(path, &ec);
+    auto fn = evmc_load(path, &ec);
+    ASSERT_NE(fn, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ(x, 0xeeebbb);
-
-    x = (uintptr_t)evmc_load(path, nullptr);
-    EXPECT_EQ(x, 0xeeebbb);
+    EXPECT_EQ((uintptr_t)fn(), 0xeeebbb);
 }
 
 #if _WIN32
@@ -116,12 +114,10 @@ TEST(loader, nextto)
     auto path = "aaa.evm";
 
     evmc_loader_error_code ec;
-    auto x = (uintptr_t)evmc_load(path, &ec);
+    auto fn = evmc_load(path, &ec);
+    ASSERT_NE(fn, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ(x, 0xaaa);
-
-    x = (uintptr_t)evmc_load(path, nullptr);
-    EXPECT_EQ(x, 0xaaa);
+    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
 }
 #endif
 
@@ -167,7 +163,7 @@ TEST(loader, eee3)
 #if !_WIN32
 TEST(loader, eee4)
 {
-	// Windows is not loading DLLs without extensions.
+    // Windows is not loading DLLs without extensions.
     auto path = "unittests/eee4";
 
     evmc_loader_error_code ec;

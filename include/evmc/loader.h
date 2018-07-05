@@ -9,6 +9,9 @@
 extern "C" {
 #endif
 
+/** The function pointer type for EVMC create functions. */
+typedef struct evmc_instance* (*evmc_create_fn)(void);
+
 /** Error codes for the EVMC loader. */
 enum evmc_loader_error_code
 {
@@ -44,7 +47,7 @@ enum evmc_loader_error_code
  * - the name "evmc_create_" + _short name_ is checked in the library:
  *   "evmc_create_interpreter".
  *
- * If the create function is found in the library, the EVM instance is create and returned.
+ * If the create function is found in the library, the pointer to the function is returned.
  * Otherwise, the ::EVMC_ERRC_SYMBOL_NOT_FOUND error code is signaled and NULL is returned.
  *
  * @param filename    The null terminated path (absolute or relative) to the shared library
@@ -53,9 +56,9 @@ enum evmc_loader_error_code
  *                    signaled.
  * @param error_code  The pointer to the error code. If not NULL the value is set to
  *                    ::EVMC_ERRC_SUCCESS on success or any other error code as described above.
- * @return            The pointer to EVM instance if loaded successfully or NULL.
+ * @return            The pointer to the EVM create function or NULL.
  */
-struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_code* error_code);
+evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* error_code);
 
 #if __cplusplus
 }

@@ -37,12 +37,11 @@ static void strcpy_s(char* dest, size_t destsz, const char* src)
 }
 #endif
 
-typedef struct evmc_instance* (*evmc_create_fn)();
 
-struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_code* error_code)
+evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* error_code)
 {
     enum evmc_loader_error_code ec = EVMC_LOADER_SUCCESS;
-    struct evmc_instance* instance = NULL;
+    evmc_create_fn create_fn = NULL;
 
     if (!filename)
     {
@@ -93,7 +92,7 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
         *dash_pos++ = '_';
 
     // Search for the "full name" based function name.
-    evmc_create_fn create_fn = DLL_GET_CREATE_FN(handle, name);
+    create_fn = DLL_GET_CREATE_FN(handle, name);
     if (!create_fn)
     {
         // Try the "short name" based function name.
@@ -106,11 +105,7 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
         }
     }
 
-    if (create_fn)
-    {
-        instance = create_fn();
-    }
-    else
+    if (!create_fn)
     {
         DLL_CLOSE(handle);
         ec = EVMC_LOADER_SYMBOL_NOT_FOUND;
@@ -119,5 +114,5 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
 exit:
     if (error_code)
         *error_code = ec;
-    return instance;
+    return create_fn;
 }
