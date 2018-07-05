@@ -3,12 +3,14 @@
  * Licensed under the MIT License. See the LICENSE file.
  */
 
-void* evmc_create_aaa()
+#include <evmc/utils.h>
+
+EVMC_EXPORT void* evmc_create_aaa()
 {
     return (void*)0xaaa;
 }
 
-void* evmc_create_eee_bbb()
+EVMC_EXPORT void* evmc_create_eee_bbb()
 {
     return (void*)0xeeebbb;
 }

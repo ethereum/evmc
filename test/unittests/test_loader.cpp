@@ -108,9 +108,10 @@ TEST(loader, eee_bbb)
     EXPECT_EQ(x, 0xeeebbb);
 }
 
-TEST(loader, DISABLED_nextto)
+#if _WIN32
+TEST(loader, nextto)
 {
-    // FIXME: Does not work because dlopen searches only system paths.
+    // On Unix dlopen searches for system libs when the path does not contain "/".
 
     auto path = "aaa.evm";
 
@@ -122,6 +123,7 @@ TEST(loader, DISABLED_nextto)
     x = (uintptr_t)evmc_load(path, nullptr);
     EXPECT_EQ(x, 0xaaa);
 }
+#endif
 
 TEST(loader, eee1)
 {
@@ -151,7 +153,7 @@ TEST(loader, eee2)
 
 TEST(loader, eee3)
 {
-    auto path = "unittests/libeee3";
+    auto path = "unittests/libeee3.x";
 
     evmc_loader_error_code ec;
     auto x = evmc_load(path, &ec);
@@ -162,8 +164,10 @@ TEST(loader, eee3)
     EXPECT_EQ(x, nullptr);
 }
 
+#if !_WIN32
 TEST(loader, eee4)
 {
+	// Windows is not loading DLLs without extensions.
     auto path = "unittests/eee4";
 
     evmc_loader_error_code ec;
@@ -174,3 +178,4 @@ TEST(loader, eee4)
     x = evmc_load(path, nullptr);
     EXPECT_EQ(x, nullptr);
 }
+#endif

@@ -25,5 +25,6 @@ build_script: |
   cmake --build . --config %CONFIGURATION% --target install
 
 after_build: |
-  C:\projects\evmc\build\test\Release\evmc-test.exe
+  cd C:\projects\evmc\build\test
+  Release\evmc-test.exe
   C:\install\bin\evmc-vmtester.exe C:\install\bin\evmc-examplevm.dll

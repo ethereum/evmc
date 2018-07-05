@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See the LICENSE file.
 
 add_library(vm-mock SHARED vm_mock.c)
+target_link_libraries(vm-mock PRIVATE evmc)
 
 if(UNIX)
     set(cmd create_symlink)
@@ -12,14 +13,14 @@ endif()
 
 add_custom_command(
     TARGET vm-mock POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> ${CMAKE_SHARED_LIBRARY_PREFIX}aaa${CMAKE_SHARED_LIBRARY_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> double_prefix_aaa.evm
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> double-prefix-aaa.evm
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> eee-bbb.dll
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> ${CMAKE_SHARED_LIBRARY_PREFIX}eee1${CMAKE_SHARED_LIBRARY_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> eee2${CMAKE_SHARED_LIBRARY_SUFFIX}
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> ${CMAKE_SHARED_LIBRARY_PREFIX}eee3
-    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE_NAME:vm-mock> eee4
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> libaaa.so
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> double_prefix_aaa.evm
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> double-prefix-aaa.evm
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> eee-bbb.dll
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> libeee1.so
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> eee2.so
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> libeee3.x
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> eee4
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> ../aaa.evm
     COMMAND ${CMAKE_COMMAND} -E touch empty.file
 )

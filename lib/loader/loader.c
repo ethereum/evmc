@@ -8,11 +8,34 @@
 #include <stdint.h>
 #include <string.h>
 
+#if _WIN32
+#include <Windows.h>
+#define DLL_HANDLE HMODULE
+#define DLL_OPEN(filename) LoadLibrary(filename)
+#define DLL_CLOSE(handle) FreeLibrary(handle)
+#define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn) GetProcAddress(handle, name)
+#define HAVE_STRCPY_S 1
+#else
 #include <dlfcn.h>
+#define DLL_HANDLE void*
+#define DLL_OPEN(filename) dlopen(filename, RTLD_LAZY)
+#define DLL_CLOSE(handle) dlclose(handle)
+#define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) dlsym(handle, name)
+#define HAVE_STRCPY_S 0
+#endif
 
 #define PATH_MAX_LENGTH 4096
 
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#if !HAVE_STRCPY_S
+static void strcpy_s(char* dest, size_t destsz, const char* src)
+{
+    size_t len = strlen(src);
+    if (len > destsz - 1)
+        len = destsz - 1;
+    memcpy(dest, src, len);
+    dest[len] = 0;
+}
+#endif
 
 typedef struct evmc_instance* (*evmc_create_fn)();
 
@@ -34,7 +57,7 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
         goto exit;
     }
 
-    void* handle = dlopen(filename, RTLD_LAZY);
+    DLL_HANDLE handle = DLL_OPEN(filename);
     if (!handle)
     {
         ec = EVMC_LOADER_CANNOT_OPEN;
@@ -44,7 +67,7 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
     const char prefix[] = "evmc_create_";
     const size_t prefix_length = strlen(prefix);
     char name[sizeof(prefix) + PATH_MAX_LENGTH];
-    strcpy(name, prefix);
+    strcpy_s(name, sizeof(name), prefix);
 
     const char* sep_pos = strrchr(filename, '/');
     const char* name_pos = sep_pos ? sep_pos + 1 : filename;
@@ -54,7 +77,7 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
     if (strncmp(name_pos, lib_prefix, lib_prefix_length) == 0)
         name_pos += lib_prefix_length;
 
-    strncpy(name + prefix_length, name_pos, PATH_MAX_LENGTH);
+    strcpy_s(name + prefix_length, PATH_MAX_LENGTH, name_pos);
 
     char* ext_pos = strrchr(name, '.');
     if (ext_pos)
@@ -64,26 +87,25 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
     while ((dash_pos = strchr(dash_pos, '-')) != NULL)
         *dash_pos++ = '_';
 
-    const void* symbol = dlsym(handle, name);
-    if (!symbol)
+    evmc_create_fn create_fn = DLL_GET_CREATE_FN(handle, name);
+    if (!create_fn)
     {
         const char* short_name_pos = strrchr(name, '_');
         if (short_name_pos)
         {
             short_name_pos += 1;
             memmove(name + prefix_length, short_name_pos, strlen(short_name_pos) + 1);
-            symbol = dlsym(handle, name);
+            create_fn = DLL_GET_CREATE_FN(handle, name);
         }
     }
 
-    if (symbol)
+    if (create_fn)
     {
-        evmc_create_fn create_fn = (evmc_create_fn)(uintptr_t)symbol;
         instance = create_fn();
     }
     else
     {
-        dlclose(handle);
+        DLL_CLOSE(handle);
         ec = EVMC_LOADER_SYMBOL_NOT_FOUND;
     }
 
