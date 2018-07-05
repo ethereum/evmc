@@ -64,14 +64,17 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
         goto exit;
     }
 
+    // Create name buffer with the prefix.
     const char prefix[] = "evmc_create_";
     const size_t prefix_length = strlen(prefix);
     char name[sizeof(prefix) + PATH_MAX_LENGTH];
     strcpy_s(name, sizeof(name), prefix);
 
+    // Find filename in the path.
     const char* sep_pos = strrchr(filename, '/');
     const char* name_pos = sep_pos ? sep_pos + 1 : filename;
 
+    // Skip "lib" prefix if present.
     const char lib_prefix[] = "lib";
     const size_t lib_prefix_length = strlen(lib_prefix);
     if (strncmp(name_pos, lib_prefix, lib_prefix_length) == 0)
@@ -79,17 +82,21 @@ struct evmc_instance* evmc_load(const char* filename, enum evmc_loader_error_cod
 
     strcpy_s(name + prefix_length, PATH_MAX_LENGTH, name_pos);
 
+    // Trim the file extension.
     char* ext_pos = strrchr(name, '.');
     if (ext_pos)
         *ext_pos = 0;
 
+    // Replace all "-" with "_".
     char* dash_pos = name;
     while ((dash_pos = strchr(dash_pos, '-')) != NULL)
         *dash_pos++ = '_';
 
+    // Search for the "full name" based function name.
     evmc_create_fn create_fn = DLL_GET_CREATE_FN(handle, name);
     if (!create_fn)
     {
+        // Try the "short name" based function name.
         const char* short_name_pos = strrchr(name, '_');
         if (short_name_pos)
         {
