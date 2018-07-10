@@ -6,6 +6,14 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
+#if _WIN32
+static constexpr bool is_windows = true;
+#else
+static constexpr bool is_windows = false;
+#endif
+
 TEST(loader, nonexistent)
 {
     evmc_loader_error_code ec;
@@ -121,6 +129,39 @@ TEST(loader, nextto)
 }
 #endif
 
+TEST(loader, windows_path)
+{
+    auto paths = {
+        "./aaa.evm",
+        ".\\aaa.evm",
+        "./unittests/eee-bbb.dll",
+        "./unittests\\eee-bbb.dll",
+        ".\\unittests\\eee-bbb.dll",
+        ".\\unittests/eee-bbb.dll",
+        "unittests\\eee-bbb.dll",
+    };
+
+    for (auto& path : paths)
+    {
+        bool is_windows_path = std::strchr(path, '\\') != nullptr;
+
+        if (is_windows_path && !is_windows)
+        {
+            evmc_loader_error_code ec;
+            auto fn = evmc_load(path, &ec);
+            EXPECT_EQ(fn, nullptr);
+            EXPECT_EQ(ec, EVMC_LOADER_CANNOT_OPEN);
+        }
+        else
+        {
+            evmc_loader_error_code ec;
+            auto fn = evmc_load(path, &ec);
+            EXPECT_NE(fn, nullptr);
+            EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
+        }
+    }
+}
+
 TEST(loader, eee1)
 {
     auto path = "unittests/libeee1.so";
@@ -174,4 +215,32 @@ TEST(loader, eee4)
     x = evmc_load(path, nullptr);
     EXPECT_EQ(x, nullptr);
 }
+
+TEST(loader, _)
+{
+    // Windows is not loading DLLs without extensions.
+    auto path = "unittests/_";
+
+    evmc_loader_error_code ec;
+    auto x = evmc_load(path, &ec);
+    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
+    EXPECT_EQ(x, nullptr);
+
+    x = evmc_load(path, nullptr);
+    EXPECT_EQ(x, nullptr);
+}
 #endif
+
+TEST(loader, lib_)
+{
+    // Windows is not loading DLLs without extensions.
+    auto path = "unittests/lib_.so";
+
+    evmc_loader_error_code ec;
+    auto x = evmc_load(path, &ec);
+    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
+    EXPECT_EQ(x, nullptr);
+
+    x = evmc_load(path, nullptr);
+    EXPECT_EQ(x, nullptr);
+}

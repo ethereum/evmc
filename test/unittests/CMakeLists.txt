@@ -21,6 +21,8 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> eee2.so
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> libeee3.x
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> eee4
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> _
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> lib_.so
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> ../aaa.evm
     COMMAND ${CMAKE_COMMAND} -E touch empty.file
 )

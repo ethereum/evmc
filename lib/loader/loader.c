@@ -71,6 +71,11 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
 
     // Find filename in the path.
     const char* sep_pos = strrchr(filename, '/');
+#if _WIN32
+    // On Windows check also Windows classic path separator.
+    const char* sep_pos_windows = strrchr(filename, '\\');
+    sep_pos = sep_pos_windows > sep_pos ? sep_pos_windows : sep_pos;
+#endif
     const char* name_pos = sep_pos ? sep_pos + 1 : filename;
 
     // Skip "lib" prefix if present.
