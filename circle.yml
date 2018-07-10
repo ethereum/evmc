@@ -15,7 +15,8 @@ jobs:
           command: cmake --build ~/build
       - run:
           name: "Unit tests"
-          command: ~/build/test/evmc-test
+          working_directory: ~/build/test
+          command: ./evmc-test
       - run:
           name: "Test"
           command: cmake --build ~/build --target test
