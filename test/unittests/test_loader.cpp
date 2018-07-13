@@ -244,3 +244,19 @@ TEST(loader, lib_)
     x = evmc_load(path, nullptr);
     EXPECT_EQ(x, nullptr);
 }
+
+TEST(loader, load_and_create_failure)
+{
+    evmc_loader_error_code ec;
+    auto vm = evmc_load_and_create("unittests/failure.vm", &ec);
+    EXPECT_EQ(vm, nullptr);
+    EXPECT_EQ(ec, EVMC_LOADER_INSTANCE_CREATION_FAILURE);
+}
+
+TEST(loader, load_and_create_abi_mismatch)
+{
+    evmc_loader_error_code ec;
+    auto vm = evmc_load_and_create("unittests/abi42.vm", &ec);
+    EXPECT_EQ(vm, nullptr);
+    EXPECT_EQ(ec, EVMC_LOADER_ABI_VERSION_MISMATCH);
+}

@@ -3,6 +3,15 @@
  * Licensed under the MIT License. See the LICENSE file.
  */
 
+/**
+ * EVMC Loader Library
+ *
+ * The EVMC Loader Library supports loading VMs implemented as Dynamically Loaded Libraries
+ * (DLLs, shared objects).
+ *
+ * @defgroup loader EVMC Loader
+ * @{
+ */
 #pragma once
 
 #if __cplusplus
@@ -15,10 +24,23 @@ typedef struct evmc_instance* (*evmc_create_fn)(void);
 /** Error codes for the EVMC loader. */
 enum evmc_loader_error_code
 {
+    /** The loader succeeded. */
     EVMC_LOADER_SUCCESS = 0,
-    EVMC_LOADER_CANNOT_OPEN,
-    EVMC_LOADER_SYMBOL_NOT_FOUND,
-    EVMC_LOADER_INVALID_ARGUMENT,
+
+    /** The loader cannot open the given file name. */
+    EVMC_LOADER_CANNOT_OPEN = 1,
+
+    /** The VM create function not found. */
+    EVMC_LOADER_SYMBOL_NOT_FOUND = 2,
+
+    /** The invalid argument value provided. */
+    EVMC_LOADER_INVALID_ARGUMENT = 3,
+
+    /** The creation of a VM instance has failed. */
+    EVMC_LOADER_INSTANCE_CREATION_FAILURE = 4,
+
+    /** The ABI version of the VM instance has mismatched. */
+    EVMC_LOADER_ABI_VERSION_MISMATCH = 5,
 };
 
 /**
@@ -27,7 +49,7 @@ enum evmc_loader_error_code
  * This function tries to open a DLL at the given `filename`. On UNIX-like systems dlopen() function
  * is used. On Windows LoadLibrary() function is used.
  *
- * If the file does not exist or is not a valid shared library the ::EVMC_ERRC_CANNOT_OPEN error
+ * If the file does not exist or is not a valid shared library the ::EVMC_LOADER_CANNOT_OPEN error
  * code is signaled and NULL is returned.
  *
  * After the DLL is successfully loaded the function tries to find the EVM create function in the
@@ -48,18 +70,38 @@ enum evmc_loader_error_code
  *   "evmc_create_interpreter".
  *
  * If the create function is found in the library, the pointer to the function is returned.
- * Otherwise, the ::EVMC_ERRC_SYMBOL_NOT_FOUND error code is signaled and NULL is returned.
+ * Otherwise, the ::EVMC_LOADER_SYMBOL_NOT_FOUND error code is signaled and NULL is returned.
+ *
+ * It is safe to call this function with the same filename argument multiple times
+ * (the DLL is not going to be loaded multiple times).
  *
  * @param filename    The null terminated path (absolute or relative) to the shared library
  *                    containing the EVM implementation. If the value is NULL, an empty C-string
- *                    or longer than the path maximum length the ::EVMC_ERRC_INVALID_ARGUMENT is
+ *                    or longer than the path maximum length the ::EVMC_LOADER_INVALID_ARGUMENT is
  *                    signaled.
  * @param error_code  The pointer to the error code. If not NULL the value is set to
- *                    ::EVMC_ERRC_SUCCESS on success or any other error code as described above.
+ *                    ::EVMC_LOADER_SUCCESS on success or any other error code as described above.
  * @return            The pointer to the EVM create function or NULL.
  */
 evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* error_code);
 
+/**
+ * Dynamically loads the VM DLL and creates the VM instance.
+ *
+ * This is a macro for creating the VM instance with the function returned from evmc_load().
+ * The function signals the same errors as evmc_load() and additionally:
+ *  - ::EVMC_LOADER_INSTANCE_CREATION_FAILURE when the create function returns NULL,
+ *  - ::EVMC_LOADER_ABI_VERSION_MISMATCH when the created VM instance has ABI version different
+ *  from the ABI version of this library (::EVMC_ABI_VERSION).
+ *
+ * It is safe to call this function with the same filename argument multiple times:
+ * the DLL is not going to be loaded multiple times, but the function will return new VM instance
+ * each time.
+ */
+struct evmc_instance* evmc_load_and_create(const char* filename, enum evmc_loader_error_code* error_code);
+
 #if __cplusplus
 }
 #endif
+
+/** @} */
