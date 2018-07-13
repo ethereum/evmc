@@ -3,12 +3,18 @@
  * Licensed under the MIT License. See the LICENSE file.
  */
 
+/**
+ * EVM Instruction Tables
+ *
+ * A collection of metrics for EVM1 instruction set.
+ *
+ * @defgroup instructions EVM Instructions
+ * @{
+ */
 #pragma once
 
 #include <evmc/evmc.h>
 #include <evmc/utils.h>
-
-#include <stdint.h>
 
 #if __cplusplus
 extern "C" {
@@ -209,3 +215,5 @@ EVMC_EXPORT const char* const* evmc_get_instruction_names_table(enum evmc_revisi
 #if __cplusplus
 }
 #endif
+
+/** @} */
