@@ -12,5 +12,8 @@ add_library(evmc::loader ALIAS loader)
 set_target_properties(loader PROPERTIES OUTPUT_NAME evmc-loader)
 target_include_directories(loader PUBLIC $<BUILD_INTERFACE:${include_dir}>$<INSTALL_INTERFACE:include>)
 target_link_libraries(loader INTERFACE ${CMAKE_DL_LIBS})
+if(BUILD_SHARED_LIBS)
+    set_target_properties(loader PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+endif()
 
 install(TARGETS loader EXPORT evmcTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
