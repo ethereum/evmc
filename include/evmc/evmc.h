@@ -710,9 +710,6 @@ struct evmc_tracer_context;
  *
  * @param context                The pointer to the Client-side tracing context. This allows to
  *                               implement the tracer in OOP manner.
- * @param step                   The instruction counter: number of instructions executed.
- *                               This counter starts from 0 for every message passed to
- *                               ::evmc_execute_fn.
  * @param code_offset            The current instruction position in the code.
  * @param status_code            The status code of the instruction execution.
  * @param gas_left               The amount of the gas left after the instruction execution.
@@ -729,7 +726,6 @@ struct evmc_tracer_context;
  *                               the instruction execution.
  */
 typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
-                                    int step,
                                     size_t code_offset,
                                     enum evmc_status_code status_code,
                                     int64_t gas_left,

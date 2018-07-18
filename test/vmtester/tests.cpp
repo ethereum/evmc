@@ -63,7 +63,7 @@ TEST_F(evmc_vm_test, version)
 
 TEST_F(evmc_vm_test, set_tracer)
 {
-    static constexpr auto tracer_callback = [](evmc_tracer_context*, int, size_t, evmc_status_code,
+    static constexpr auto tracer_callback = [](evmc_tracer_context*, size_t, evmc_status_code,
                                                int64_t, size_t, const evmc_uint256be*, size_t,
                                                size_t, size_t, const uint8_t*) noexcept {};
     if (vm->set_tracer)
