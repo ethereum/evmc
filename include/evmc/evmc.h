@@ -70,7 +70,8 @@ enum evmc_call_kind
     EVMC_CALL = 0,         /**< Request CALL. */
     EVMC_DELEGATECALL = 1, /**< Request DELEGATECALL. The value param ignored. */
     EVMC_CALLCODE = 2,     /**< Request CALLCODE. */
-    EVMC_CREATE = 3        /**< Request CREATE. Semantic of some params changes. */
+    EVMC_CREATE = 3,       /**< Request CREATE. Semantic of some params changes. */
+    EVMC_CREATE2 = 4       /**< Request CREATE2. Semantic of some params changes. */
 };
 
 /** The flags for ::evmc_message. */
