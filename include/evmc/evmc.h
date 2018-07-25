@@ -40,7 +40,7 @@ extern "C" {
 enum
 {
     /** The EVMC ABI version number of the interface declared in this file. */
-    EVMC_ABI_VERSION = 2
+    EVMC_ABI_VERSION = 3
 };
 
 /**
