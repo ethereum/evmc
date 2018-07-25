@@ -40,7 +40,7 @@ extern "C" {
 enum
 {
     /** The EVMC ABI version number of the interface declared in this file. */
-    EVMC_ABI_VERSION = 1
+    EVMC_ABI_VERSION = 2
 };
 
 /**
@@ -68,10 +68,11 @@ struct evmc_address
 enum evmc_call_kind
 {
     EVMC_CALL = 0,         /**< Request CALL. */
-    EVMC_DELEGATECALL = 1, /**< Request DELEGATECALL. The value param ignored. */
+    EVMC_DELEGATECALL = 1, /**< Request DELEGATECALL. Valid since Homestead.
+                                The value param ignored. */
     EVMC_CALLCODE = 2,     /**< Request CALLCODE. */
-    EVMC_CREATE = 3,       /**< Request CREATE. Semantic of some params changes. */
-    EVMC_CREATE2 = 4       /**< Request CREATE2. Semantic of some params changes. */
+    EVMC_CREATE = 3,       /**< Request CREATE. */
+    EVMC_CREATE2 = 4       /**< Request CREATE2. Valid since Constantinople.*/
 };
 
 /** The flags for ::evmc_message. */
@@ -116,6 +117,13 @@ struct evmc_message
      *  The null hash MUST be used when not specified.
      */
     struct evmc_uint256be code_hash;
+
+    /**
+     * The optional value used in new contract address construction.
+     *
+     *  Ignored unless kind is EVMC_CREATE2.
+     */
+    struct evmc_uint256be create2_salt;
 
     /** The amount of gas for message execution. */
     int64_t gas;
