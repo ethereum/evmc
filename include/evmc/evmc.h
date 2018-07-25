@@ -718,12 +718,22 @@ struct evmc_tracer_context;
  *                               execution. This value is null when the instruction does not push
  *                               anything to the stack.
  * @param memory_size            The size of the EVM memory after the instruction execution.
- * @param changed_memory_offset  The beginning of the memory area modified as the result of
- *                               the instruction execution.
+ * @param changed_memory_offset  The offset in number of bytes of the beginning of the memory area
+ *                               modified as the result of the instruction execution.
+ *                               The Client MAY use this information together with
+ *                               @p changed_memory_size and @p changed_memory to incrementally
+ *                               update the copy of the full VM's memory.
  * @param changed_memory_size    The size of the memory area modified as the result of
  *                               the instruction execution.
  * @param changed_memory         The pointer to the memory area modified as the result of
  *                               the instruction execution.
+ *                               The Client MAY access the pointed memory area
+ *                               (limited by the @p changed_memory_size) only during the current
+ *                               execution of the evmc_trace_callback().
+ *                               The pointer MUST NOT be stored by the Client.
+ *                               The Client MUST NOT assume that
+ *                               `changed_memory - changed_memory_offset` is a valid base pointer
+ *                               of the VM memory.
  */
 typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
                                     size_t code_offset,
