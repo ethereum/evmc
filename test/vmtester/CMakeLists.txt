@@ -19,6 +19,8 @@ target_link_libraries(
     CLI11::CLI11
 )
 
+set_target_properties(evmc-vmtester PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
+
 install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_test(NAME vmtester-help
