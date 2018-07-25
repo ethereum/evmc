@@ -251,7 +251,7 @@ static const char* constantinople_names[256] = {
     /* 0xf2 */ "CALLCODE",
     /* 0xf3 */ "RETURN",
     /* 0xf4 */ "DELEGATECALL",
-    /* 0xf5 */ NULL,
+    /* 0xf5 */ "CREATE2",
     /* 0xf6 */ NULL,
     /* 0xf7 */ NULL,
     /* 0xf8 */ NULL,
