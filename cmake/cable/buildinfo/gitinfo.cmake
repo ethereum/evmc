@@ -18,7 +18,7 @@ if(error)
     message(WARNING "Git ${error}")
 endif()
 
-set(gitinfo_file ${BINARY_DIR}/gitinfo.txt)
+set(gitinfo_file ${OUTPUT_DIR}/gitinfo.txt)
 
 if(EXISTS ${gitinfo_file})
     file(READ ${gitinfo_file} prev_gitinfo)

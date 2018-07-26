@@ -12,18 +12,19 @@ set(cable_buildinfo_template_dir ${CMAKE_CURRENT_LIST_DIR}/buildinfo)
 
 function(cable_add_buildinfo_library)
 
-    cmake_parse_arguments("" "" PREFIX "" ${ARGN})
+    cmake_parse_arguments("" "" PROJECT_NAME "" ${ARGN})
 
-    # Come up with the target and C function name.
-    if(_PREFIX)
-        set(NAME ${_PREFIX}-buildinfo)
-        set(FUNCTION_NAME ${_PREFIX}_get_buildinfo)
-    else()
-        set(NAME buildinfo)
-        set(FUNCTION_NAME get_buildinfo)
+    if(NOT _PROJECT_NAME)
+        message(FATAL_ERROR "The PROJECT_NAME argument missing")
     endif()
 
-    set(binary_dir ${CMAKE_CURRENT_BINARY_DIR})
+    # Come up with the target and the C function names.
+    set(name ${_PROJECT_NAME}-buildinfo)
+    set(FUNCTION_NAME ${_PROJECT_NAME}_get_buildinfo)
+
+    set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/${_PROJECT_NAME})
+    set(header_file ${output_dir}/buildinfo.h)
+    set(source_file ${output_dir}/buildinfo.c)
 
     if(CMAKE_CONFIGURATION_TYPES)
         set(build_type ${CMAKE_CFG_INTDIR})
@@ -40,21 +41,21 @@ function(cable_add_buildinfo_library)
     # The executed script gitinfo.cmake check git status and updates files
     # containing git information if anything has changed.
     add_custom_target(
-        ${NAME}-git
+        ${name}-git
         COMMAND ${CMAKE_COMMAND}
         -DGIT=${GIT_EXECUTABLE}
         -DSOURCE_DIR=${PROJECT_SOURCE_DIR}
-        -DBINARY_DIR=${binary_dir}
+        -DOUTPUT_DIR=${output_dir}
         -P ${cable_buildinfo_template_dir}/gitinfo.cmake
-        BYPRODUCTS ${binary_dir}/gitinfo.txt
+        BYPRODUCTS ${output_dir}/gitinfo.txt
     )
 
     add_custom_command(
-        COMMENT "Updating ${NAME}:"
-        OUTPUT ${binary_dir}/${NAME}.c
+        COMMENT "Updating ${name}:"
+        OUTPUT ${source_file}
         COMMAND ${CMAKE_COMMAND}
-        -DBINARY_DIR=${binary_dir}
-        -DNAME=${NAME}
+        -DOUTPUT_DIR=${output_dir}
+        -DPROJECT_NAME=${_PROJECT_NAME}
         -DFUNCTION_NAME=${FUNCTION_NAME}
         -DPROJECT_VERSION=${PROJECT_VERSION}
         -DSYSTEM_NAME=${CMAKE_SYSTEM_NAME}
@@ -66,16 +67,22 @@ function(cable_add_buildinfo_library)
         DEPENDS
         ${cable_buildinfo_template_dir}/buildinfo.cmake
         ${cable_buildinfo_template_dir}/buildinfo.c.in
-        ${NAME}-git
-        ${binary_dir}/gitinfo.txt
+        ${name}-git
+        ${output_dir}/gitinfo.txt
     )
 
     string(TIMESTAMP TIMESTAMP)
-    configure_file(${cable_buildinfo_template_dir}/buildinfo.h.in ${binary_dir}/${NAME}.h)
+    configure_file(${cable_buildinfo_template_dir}/buildinfo.h.in ${header_file})
 
     # Add buildinfo library under given name.
     # Make is static and do not build by default until some other target will actually use it.
-    add_library(${NAME} STATIC EXCLUDE_FROM_ALL ${binary_dir}/${NAME}.c ${binary_dir}/${NAME}.h)
+    add_library(${name} STATIC EXCLUDE_FROM_ALL ${source_file} ${header_file})
 
-    target_include_directories(${NAME} PUBLIC ${binary_dir})
+    target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+    set_target_properties(
+        ${name} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${output_dir}
+        ARCHIVE_OUTPUT_DIRECTORY ${output_dir}
+        OUTPUT_NAME buildinfo
+    )
 endfunction()

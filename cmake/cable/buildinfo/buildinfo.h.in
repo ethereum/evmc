@@ -14,7 +14,9 @@ extern "C"
 
 struct buildinfo
 {
+    const char* project_name;
     const char* project_version;
+    const char* project_name_with_version;
     const char* git_commit_hash;
     const char* system_name;
     const char* system_processor;
