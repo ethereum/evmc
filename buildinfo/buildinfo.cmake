@@ -10,7 +10,7 @@ string(TIMESTAMP TIMESTAMP)
 
 # Read the git info from a file. The gitinfo is suppose to update the file
 # only if the information has changed.
-file(READ ${BINARY_DIR}/gitinfo.txt GIT_INFO)
+file(READ ${OUTPUT_DIR}/gitinfo.txt GIT_INFO)
 
 # The output of `git describe --always --long --tags --match=v*`.
 string(REGEX MATCH "(v(.+)-([0-9]+)-g)?([0-9a-f]+)(-dirty)?" match "${GIT_INFO}")
@@ -48,8 +48,15 @@ else()
     set(PROJECT_VERSION "${PROJECT_VERSION}${version_commit}")
 endif()
 
+if(PROJECT_VERSION MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+    set(PROJECT_VERSION_IS_PRERELEASE false)
+else()
+    set(PROJECT_VERSION_IS_PRERELEASE true)
+    set(prerelease_comment " (prerelease)")
+endif()
+
 message(
-    "       Project Version:  ${PROJECT_VERSION}\n"
+    "       Project Version:  ${PROJECT_VERSION}${prerelease_comment}\n"
     "       System Name:      ${SYSTEM_NAME}\n"
     "       System Processor: ${SYSTEM_PROCESSOR}\n"
     "       Compiler ID:      ${COMPILER_ID}\n"
@@ -59,4 +66,6 @@ message(
     "       Timestamp:        ${TIMESTAMP}"
 )
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.c.in ${BINARY_DIR}/${NAME}.c)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.c.in ${OUTPUT_DIR}/buildinfo.c)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.sh.in ${OUTPUT_DIR}/buildinfo.sh)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.ps1.in ${OUTPUT_DIR}/buildinfo.ps1)
