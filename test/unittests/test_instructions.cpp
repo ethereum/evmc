@@ -101,6 +101,13 @@ TEST(instructions, constantinople_hard_fork)
     EXPECT_EQ(b[OP_CREATE2].gas_cost, -1);
     EXPECT_EQ(cn[OP_CREATE2], std::string{"CREATE2"});
     EXPECT_EQ(bn[OP_CREATE2], nullptr);
+
+    EXPECT_EQ(c[OP_EXTCODEHASH].gas_cost, 400);
+    EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_arguments, 1);
+    EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_returned_items, 1);
+    EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, -1);
+    EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
+    EXPECT_EQ(bn[OP_EXTCODEHASH], nullptr);
 }
 
 
