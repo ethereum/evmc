@@ -69,7 +69,7 @@ static const char* constantinople_names[256] = {
     /* 0x3c */ "EXTCODECOPY",
     /* 0x3d */ "RETURNDATASIZE",
     /* 0x3e */ "RETURNDATACOPY",
-    /* 0x3f */ NULL,
+    /* 0x3f */ "EXTCODEHASH",
     /* 0x40 */ "BLOCKHASH",
     /* 0x41 */ "COINBASE",
     /* 0x42 */ "TIMESTAMP",

@@ -70,6 +70,7 @@ enum evmc_opcode
     OP_EXTCODECOPY = 0x3c,
     OP_RETURNDATASIZE = 0x3d,
     OP_RETURNDATACOPY = 0x3e,
+    OP_EXTCODEHASH = 0x3f,
 
     OP_BLOCKHASH = 0x40,
     OP_COINBASE = 0x41,
