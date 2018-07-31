@@ -40,7 +40,7 @@ extern "C" {
 enum
 {
     /** The EVMC ABI version number of the interface declared in this file. */
-    EVMC_ABI_VERSION = 3
+    EVMC_ABI_VERSION = 4
 };
 
 /**
@@ -492,6 +492,18 @@ typedef size_t (*evmc_get_code_size_fn)(struct evmc_context* context,
                                         const struct evmc_address* address);
 
 /**
+ * Get code size callback function.
+ *
+ *  This callback function is used by an EVM to get the keccak256 hash of the code stored
+ *  in the account at the given address. For accounts not having a code, this
+ *  function returns keccak256 hash of empty data. For accounts not existing in the state,
+ *  this function returns 0.
+ */
+typedef void (*evmc_get_code_hash_fn)(struct evmc_uint256be* result,
+                                      struct evmc_context* context,
+                                      const struct evmc_address* address);
+
+/**
  * Copy code callback function.
  *
  *  This callback function is used by an EVM to request a copy of the code
@@ -590,6 +602,9 @@ struct evmc_context_fn_table
 
     /** Get code size callback function. */
     evmc_get_code_size_fn get_code_size;
+
+    /** Get code hash callback function. */
+    evmc_get_code_hash_fn get_code_hash;
 
     /** Copy code callback function. */
     evmc_copy_code_fn copy_code;

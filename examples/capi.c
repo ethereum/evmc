@@ -16,13 +16,6 @@ struct evmc_uint256be balance(struct evmc_context* context, const struct evmc_ad
     return ret;
 }
 
-struct evmc_address address(struct evmc_context* context)
-{
-    (void)context;
-    struct evmc_address ret = {.bytes = {1, 2, 3, 4}};
-    return ret;
-}
-
 static void print_address(const struct evmc_address* address)
 {
     int i = 0;
@@ -82,6 +75,17 @@ static size_t get_code_size(struct evmc_context* context, const struct evmc_addr
     print_address(address);
     printf("\n");
     return 0;
+}
+
+static void get_code_hash(struct evmc_uint256be* result,
+                          struct evmc_context* context,
+                          const struct evmc_address* address)
+{
+    (void)result;
+    (void)context;
+    printf("EVM-C: CODEHASH @");
+    print_address(address);
+    printf("\n");
 }
 
 static size_t copy_code(struct evmc_context* context,
@@ -155,8 +159,8 @@ static void evm_log(struct evmc_context* context,
 }
 
 static const struct evmc_context_fn_table ctx_fn_table = {
-    account_exists, get_storage, set_storage,    get_balance,    get_code_size, copy_code,
-    selfdestruct,   call,        get_tx_context, get_block_hash, evm_log,
+    account_exists, get_storage,  set_storage, get_balance,    get_code_size,  get_code_hash,
+    copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, evm_log,
 };
 
 /// Example how the API is supposed to be used.
