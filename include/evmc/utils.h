@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef _MSC_VER
+#if defined _MSC_VER || defined __MINGW32__
 #define EVMC_EXPORT __declspec(dllexport)
 #else
 #define EVMC_EXPORT __attribute__((visibility("default")))
