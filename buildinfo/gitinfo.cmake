@@ -12,10 +12,37 @@ if(GIT)
         ERROR_VARIABLE error
         ERROR_STRIP_TRAILING_WHITESPACE
     )
-endif()
+    if(error)
+        message(WARNING "Git ${error}")
+    endif()
 
-if(error)
-    message(WARNING "Git ${error}")
+    execute_process(
+        COMMAND ${GIT} rev-parse --abbrev-ref HEAD
+        WORKING_DIRECTORY ${SOURCE_DIR}
+        OUTPUT_VARIABLE gitbranch
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_VARIABLE error
+        ERROR_STRIP_TRAILING_WHITESPACE
+    )
+    if(error)
+        message(WARNING "Git ${error}")
+    else()
+        set(gitinfo "${gitinfo}\n${gitbranch}")
+    endif()
+
+    execute_process(
+        COMMAND ${GIT} config --get remote.origin.url
+        WORKING_DIRECTORY ${SOURCE_DIR}
+        OUTPUT_VARIABLE gitorigin
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_VARIABLE error
+        ERROR_STRIP_TRAILING_WHITESPACE
+    )
+    if(error)
+        message(WARNING "Git ${error}")
+    else()
+        set(gitinfo "${gitinfo}\n${gitorigin}\n")
+    endif()
 endif()
 
 set(gitinfo_file ${OUTPUT_DIR}/gitinfo.txt)
