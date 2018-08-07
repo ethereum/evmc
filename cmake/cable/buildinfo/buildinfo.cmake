@@ -70,5 +70,6 @@ message(
 )
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.c.in ${OUTPUT_DIR}/buildinfo.c)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.json.in ${OUTPUT_DIR}/buildinfo.json)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.sh.in ${OUTPUT_DIR}/buildinfo.sh)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/buildinfo.ps1.in ${OUTPUT_DIR}/buildinfo.ps1)
