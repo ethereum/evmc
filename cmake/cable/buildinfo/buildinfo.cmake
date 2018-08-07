@@ -10,13 +10,16 @@ string(TIMESTAMP TIMESTAMP)
 
 # Read the git info from a file. The gitinfo is suppose to update the file
 # only if the information has changed.
-file(READ ${OUTPUT_DIR}/gitinfo.txt GIT_INFO)
+file(STRINGS ${OUTPUT_DIR}/gitinfo.txt gitinfo)
+list(GET gitinfo 0 describe)
+list(GET gitinfo 1 GIT_BRANCH)
+list(GET gitinfo 2 GIT_ORIGIN_URL)
 
 # The output of `git describe --always --long --tags --match=v*`.
-string(REGEX MATCH "(v(.+)-([0-9]+)-g)?([0-9a-f]+)(-dirty)?" match "${GIT_INFO}")
+string(REGEX MATCH "(v(.+)-([0-9]+)-g)?([0-9a-f]+)(-dirty)?" match "${describe}")
 
 if(NOT match)
-    message(WARNING "Cannot parse git describe: ${GIT_INFO}")
+    message(WARNING "Cannot parse git describe: ${describe}")
 endif()
 
 set(GIT_LATEST_PROJECT_VERSION ${CMAKE_MATCH_2})
