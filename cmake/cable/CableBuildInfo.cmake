@@ -52,7 +52,7 @@ function(cable_add_buildinfo_library)
 
     add_custom_command(
         COMMENT "Updating ${name}:"
-        OUTPUT ${source_file}
+        OUTPUT ${source_file} ${output_dir}/buildinfo.json
         COMMAND ${CMAKE_COMMAND}
         -DOUTPUT_DIR=${output_dir}
         -DPROJECT_NAME=${_PROJECT_NAME}
@@ -67,6 +67,7 @@ function(cable_add_buildinfo_library)
         DEPENDS
         ${cable_buildinfo_template_dir}/buildinfo.cmake
         ${cable_buildinfo_template_dir}/buildinfo.c.in
+        ${cable_buildinfo_template_dir}/buildinfo.json.in
         ${name}-git
         ${output_dir}/gitinfo.txt
     )
