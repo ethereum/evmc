@@ -10,7 +10,7 @@
 #
 # This is internal variable automaticaly updated with external tools.
 # Use CABLE_VERSION variable if you need this information.
-set(version 0.2.7)
+set(version 0.2.8)
 
 # For conveniance, add the project CMake module dir to module path.
 set(module_dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
