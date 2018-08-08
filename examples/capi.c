@@ -45,10 +45,10 @@ static void get_storage(struct evmc_uint256be* result,
     printf("\n");
 }
 
-static void set_storage(struct evmc_context* context,
-                        const struct evmc_address* address,
-                        const struct evmc_uint256be* key,
-                        const struct evmc_uint256be* value)
+static enum evmc_storage_status set_storage(struct evmc_context* context,
+                                            const struct evmc_address* address,
+                                            const struct evmc_uint256be* key,
+                                            const struct evmc_uint256be* value)
 {
     (void)context;
     (void)key;
@@ -56,6 +56,7 @@ static void set_storage(struct evmc_context* context,
     printf("EVM-C: SSTORE @");
     print_address(address);
     printf("\n");
+    return EVMC_STORAGE_UNCHANGED;
 }
 
 static void get_balance(struct evmc_uint256be* result,

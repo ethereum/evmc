@@ -40,7 +40,7 @@ extern "C" {
 enum
 {
     /** The EVMC ABI version number of the interface declared in this file. */
-    EVMC_ABI_VERSION = 4
+    EVMC_ABI_VERSION = 5
 };
 
 /**
@@ -451,21 +451,35 @@ typedef void (*evmc_get_storage_fn)(struct evmc_uint256be* result,
                                     const struct evmc_address* address,
                                     const struct evmc_uint256be* key);
 
+
+/**
+ * The effect of an attempt to modify a contract storage item.
+ */
+enum evmc_storage_status
+{
+    EVMC_STORAGE_UNCHANGED = 0, /**< The storage item value unchanged. */
+    EVMC_STORAGE_MODIFIED = 1,  /**< The storage item value modified. */
+    EVMC_STORAGE_ADDED = 2,     /**< The storage item added. */
+    EVMC_STORAGE_DELETED = 3,   /**< The storage item deleted. */
+};
+
+
 /**
  * Set storage callback function.
  *
- *  This callback function is used by an EVM to update the given contract
- *  storage entry.
- *  @param context  The pointer to the Host execution context.
- *                  @see ::evmc_context.
- *  @param address  The address of the contract.
- *  @param key      The index of the storage entry.
- *  @param value    The value to be stored.
+ * This callback function is used by an EVM to update the given contract
+ * storage entry.
+ * @param context  The pointer to the Host execution context.
+ *                 @see ::evmc_context.
+ * @param address  The address of the contract.
+ * @param key      The index of the storage entry.
+ * @param value    The value to be stored.
+ * @return         The effect on the storage item.
  */
-typedef void (*evmc_set_storage_fn)(struct evmc_context* context,
-                                    const struct evmc_address* address,
-                                    const struct evmc_uint256be* key,
-                                    const struct evmc_uint256be* value);
+typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
+                                                        const struct evmc_address* address,
+                                                        const struct evmc_uint256be* key,
+                                                        const struct evmc_uint256be* value);
 
 /**
  * Get balance callback function.
