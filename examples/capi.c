@@ -142,14 +142,12 @@ static void get_block_hash(struct evmc_uint256be* result,
 }
 
 /// EVM log callback.
-///
-/// @note The `evm_log` name is used to avoid conflict with `log()` C function.
-static void evm_log(struct evmc_context* context,
-                    const struct evmc_address* address,
-                    const uint8_t* data,
-                    size_t data_size,
-                    const struct evmc_uint256be topics[],
-                    size_t topics_count)
+static void emit_log(struct evmc_context* context,
+                     const struct evmc_address* address,
+                     const uint8_t* data,
+                     size_t data_size,
+                     const struct evmc_uint256be topics[],
+                     size_t topics_count)
 {
     (void)context;
     (void)address;
@@ -161,7 +159,7 @@ static void evm_log(struct evmc_context* context,
 
 static const struct evmc_context_fn_table ctx_fn_table = {
     account_exists, get_storage,  set_storage, get_balance,    get_code_size,  get_code_hash,
-    copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, evm_log,
+    copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log,
 };
 
 /// Example how the API is supposed to be used.
