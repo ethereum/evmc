@@ -40,7 +40,7 @@ extern "C" {
 enum
 {
     /** The EVMC ABI version number of the interface declared in this file. */
-    EVMC_ABI_VERSION = 4
+    EVMC_ABI_VERSION = 5
 };
 
 /**
@@ -451,21 +451,57 @@ typedef void (*evmc_get_storage_fn)(struct evmc_uint256be* result,
                                     const struct evmc_address* address,
                                     const struct evmc_uint256be* key);
 
+
+/**
+ * The effect of an attempt to modify a contract storage item.
+ *
+ * For the purpose of explaining the meaning of each element, the following
+ * notation is used:
+ * - 0 is zero value,
+ * - X != 0 (X is any value other than 0),
+ * - Y != X, Y != 0 (Y is any value other than X and 0),
+ * - the "->" means the change from one value to another.
+ */
+enum evmc_storage_status
+{
+    /**
+     * The value of a storage item has been left unchanged: 0 -> 0 and X -> X.
+     */
+    EVMC_STORAGE_UNCHANGED = 0,
+
+    /**
+     * The value of a storage item has been modified: X -> Y.
+     */
+    EVMC_STORAGE_MODIFIED = 1,
+
+    /**
+     * A new storage item has been added: 0 -> X.
+     */
+    EVMC_STORAGE_ADDED = 2,
+
+    /**
+     * A storage item has been deleted: X -> 0.
+     */
+    EVMC_STORAGE_DELETED = 3,
+};
+
+
 /**
  * Set storage callback function.
  *
- *  This callback function is used by an EVM to update the given contract
- *  storage entry.
- *  @param context  The pointer to the Host execution context.
- *                  @see ::evmc_context.
- *  @param address  The address of the contract.
- *  @param key      The index of the storage entry.
- *  @param value    The value to be stored.
+ * This callback function is used by an EVM to update the given contract
+ * storage entry.
+ * @param context  The pointer to the Host execution context.
+ *                 @see ::evmc_context.
+ * @param address  The address of the contract.
+ * @param key      The index of the storage entry.
+ * @param value    The value to be stored.
+ * @return         The effect on the storage item, @see ::evmc_storage_status.
  */
-typedef void (*evmc_set_storage_fn)(struct evmc_context* context,
-                                    const struct evmc_address* address,
-                                    const struct evmc_uint256be* key,
-                                    const struct evmc_uint256be* value);
+typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
+                                                        const struct evmc_address* address,
+                                                        const struct evmc_uint256be* key,
+                                                        const struct evmc_uint256be* value);
 
 /**
  * Get balance callback function.
