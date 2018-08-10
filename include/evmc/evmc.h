@@ -2,7 +2,7 @@
  * EVMC: Ethereum Client-VM Connector API
  *
  * @copyright
- * Copyright 2018 Pawel Bylica.
+ * Copyright 2018 Alex Beregszaszi, Pawel Bylica.
  * Licensed under the MIT License. See the LICENSE file.
  *
  * ## High level design rules
