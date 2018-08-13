@@ -54,13 +54,16 @@ jobs:
       - run:
           name: "Test documentation"
           command: |
-            doxygen Doxyfile > doxygen.log 2> doxygen.warnings
+            cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
             if [ -s doxygen.warnings ]; then
               printf '\n\nDoxygen warnings:\n\n'
               cat doxygen.warnings
               exit 1
             fi
             cat doxygen.log
+      - store_artifacts:
+          path: ~/docs
+          destination: docs
 
   upload-docs:
     docker:
