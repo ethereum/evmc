@@ -4,6 +4,8 @@
 
 #include "vmtester.hpp"
 
+#include <evmc/helpers.h>
+
 #include <cstring>
 
 // Compile time checks:
@@ -22,7 +24,7 @@ static_assert(sizeof(evmc_revision) == sizeof(int), "Enum `evmc_revision` is not
 
 static constexpr size_t optionalDataSize =
     sizeof(evmc_result) - offsetof(evmc_result, create_address);
-static_assert(optionalDataSize == sizeof(evmc_result_optional_data), "");
+static_assert(optionalDataSize == sizeof(evmc_result_optional_storage), "");
 
 TEST_F(evmc_vm_test, abi_version_match)
 {

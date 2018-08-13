@@ -394,40 +394,6 @@ struct evmc_result
 
 
 /**
- * The union representing evmc_result "optional data".
- *
- *  The evmc_result struct contains 24 bytes of optional data that can be
- *  reused by the object creator if the object does not contain
- *  evmc_result::create_address.
- *
- *  An EVM implementation MAY use this memory to keep additional data
- *  when returning result from ::evmc_execute_fn.
- *  The host application MAY use this memory to keep additional data
- *  when returning result of performed calls from ::evmc_call_fn.
- *
- *  @see evmc_get_optional_data(), evmc_get_const_optional_data().
- */
-union evmc_result_optional_data
-{
-    uint8_t bytes[24]; /**< 24 bytes of optional data. */
-    void* pointer;     /**< Optional pointer. */
-};
-
-/** Provides read-write access to evmc_result "optional data". */
-static inline union evmc_result_optional_data* evmc_get_optional_data(struct evmc_result* result)
-{
-    return (union evmc_result_optional_data*)&result->create_address;
-}
-
-/** Provides read-only access to evmc_result "optional data". */
-static inline const union evmc_result_optional_data* evmc_get_const_optional_data(
-    const struct evmc_result* result)
-{
-    return (const union evmc_result_optional_data*)&result->create_address;
-}
-
-
-/**
  * Check account existence callback function
  *
  *  This callback function is used by the EVM to check if
