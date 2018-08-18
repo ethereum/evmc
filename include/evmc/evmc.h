@@ -286,6 +286,12 @@ enum evmc_status_code
      */
     EVMC_WASM_UNREACHABLE_INSTRUCTION = 15,
 
+    /**
+     * A WebAssembly trap has been hit during execution. This can be for many
+     * reasons, including division by zero, validation errors, etc.
+     */
+    EVMC_WASM_TRAP = 16,
+
     /** EVM implementation generic internal error. */
     EVMC_INTERNAL_ERROR = -1,
 
