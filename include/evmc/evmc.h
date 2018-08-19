@@ -275,6 +275,11 @@ enum evmc_status_code
      */
     EVMC_CONTRACT_VALIDATION_FAILURE = 13,
 
+    /**
+     * An argument to a state accessing method has a value outside of the
+     * accepted range of values.
+     */
+    EVMC_ARGUMENT_OUT_OF_RANGE = 14,
 
     /** EVM implementation generic internal error. */
     EVMC_INTERNAL_ERROR = -1,
