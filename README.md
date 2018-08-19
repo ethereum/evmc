@@ -53,8 +53,8 @@ Licensed under the [MIT License](LICENSE.md).
 [evmjit]: https://github.com/ethereum/evmjit
 [Hera]: https://github.com/ewasm/hera
 [Gitter]: https://gitter.im/ethereum/evmc
-[aleth-interpreter]: https://github.com/ethereum/cpp-ethereum/tree/master/libaleth-interpreter
-[aleth]: https://github.com/ethereum/cpp-ethereum
+[aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
+[aleth]: https://github.com/ethereum/aleth
 [nim-evmc]: https://github.com/status-im/nim-evmc
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17050
 [pyevm]: https://github.com/ethereum/py-evm
