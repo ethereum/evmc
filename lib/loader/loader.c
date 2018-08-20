@@ -5,6 +5,7 @@
 
 #include <evmc/loader.h>
 #include <evmc/evmc.h>
+#include <evmc/helpers.h>
 
 #include <stdint.h>
 #include <string.h>
@@ -137,7 +138,7 @@ struct evmc_instance* evmc_load_and_create(const char* filename, enum evmc_loade
         return NULL;
     }
 
-    if (instance->abi_version != EVMC_ABI_VERSION)
+    if (!evmc_is_abi_compatible(instance))
     {
         *error_code = EVMC_LOADER_ABI_VERSION_MISMATCH;
         return NULL;

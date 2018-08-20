@@ -18,6 +18,14 @@
 #include <evmc/evmc.h>
 
 /**
+ * Returns true if the instance has a compatible ABI version.
+ */
+static inline int evmc_is_abi_compatible(struct evmc_instance *instance)
+{
+    return instance->abi_version == EVMC_ABI_VERSION;
+}
+
+/**
  * Destroys the VM instance.
  *
  * @see evmc_destroy_fn
