@@ -116,17 +116,15 @@ func (err Error) Error() string {
 		return "evmc: the WebAssembly unreachable instruction has been hit during execution"
 	case C.EVMC_WASM_TRAP:
 		return "evmc: a WebAssembly trap has been hit during execution"
-	case C.EVMC_INTERNAL_ERROR:
-		return "evmc: internal error"
 	case C.EVMC_REJECTED:
 		return "evmc: rejected"
 	}
 
 	if code < 0 {
-		return fmt.Sprintf("evmc: unknown internal error (%d)", int32(code))
+		return fmt.Sprintf("evmc: internal error (%d)", int32(code))
 	}
 
-	return fmt.Sprintf("evmc: unknown status code %d", int32(code))
+	return fmt.Sprintf("evmc: unknown non-fatal status code %d", int32(code))
 }
 
 const (
