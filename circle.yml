@@ -82,11 +82,31 @@ jobs:
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
+  bindings-go-1.10:
+    docker:
+      - image: circleci/golang:1.10
+    steps: &bindings-go-steps
+      - checkout
+      - run:
+          name: "Go Build"
+          command: |
+            go get -v github.com/ethereum/go-ethereum/common
+            go build -v ./bindings/go/evmc
+            go vet -v ./bindings/go/evmc
+
+  bindings-go-1.9:
+    docker:
+      - image: circleci/golang:1.9
+    steps: *bindings-go-steps
+
+
 workflows:
   version: 2
   evmc:
     jobs:
       - build
+      - bindings-go-1.10
+      - bindings-go-1.9
       - test-docs
       - upload-docs:
           requires:
