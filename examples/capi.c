@@ -1,4 +1,5 @@
 #include <evmc/evmc.h>
+#include <evmc/helpers.h>
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -209,9 +210,8 @@ int main()
         printf("\n");
     }
 
-    if (result.release)
-        result.release(&result);
-    vm->destroy(vm);
+    evmc_release_result(&result);
+    evmc_destroy(vm);
 
     return 0;
 }
