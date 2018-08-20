@@ -52,7 +52,7 @@ static struct evmc_result execute_wrapper(struct evmc_instance* instance, int64_
 	};
 
 	struct extended_context ctx = {{&evmc_go_fn_table}, context_index};
-	return instance->execute(instance, &ctx.context, rev, &msg, code, code_size);
+	return evmc_execute(instance, &ctx.context, rev, &msg, code, code_size);
 }
 */
 import "C"
