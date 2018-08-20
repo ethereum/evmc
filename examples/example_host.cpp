@@ -107,11 +107,12 @@ static evmc_tx_context get_tx_context(evmc_context* context)
     return result;
 }
 
-static void get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
+static int get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
 {
     (void)result;
     (void)context;
     (void)number;
+    return 0;
 }
 
 static void emit_log(evmc_context* context,

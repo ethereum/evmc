@@ -182,11 +182,20 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 }
 
 //export getBlockHash
-func getBlockHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, number int64) {
+func getBlockHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, number int64) C.int {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 
-	*pResult = evmcUint256be(ctx.GetBlockHash(number))
+	blockhash := ctx.GetBlockHash(number)
+
+	// FIXME: should we instead adjust `ctx.GetBlockHash`?
+	if blockhash == (common.Hash{}) {
+		// All zeroes hash is considered a failure in lookup.
+		return C.int(0)
+	}
+
+	*pResult = evmcUint256be(blockhash)
+	return C.int(1)
 }
 
 //export emitLog
