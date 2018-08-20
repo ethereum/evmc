@@ -190,7 +190,7 @@ int main()
     msg.gas = gas;
     msg.depth = 0;
 
-    struct evmc_result result = vm->execute(vm, &ctx, EVMC_HOMESTEAD, &msg, code, code_size);
+    struct evmc_result result = evmc_execute(vm, &ctx, EVMC_HOMESTEAD, &msg, code, code_size);
 
     printf("Execution result:\n");
     if (result.status_code != EVMC_SUCCESS)

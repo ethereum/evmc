@@ -42,6 +42,21 @@ static inline int evmc_set_option(struct evmc_instance* instance,
 }
 
 /**
+ * Executes code in the VM instance.
+ *
+ * @see evmc_execute_fn.
+ */
+static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
+                                              struct evmc_context* context,
+                                              enum evmc_revision rev,
+                                              const struct evmc_message* msg,
+                                              uint8_t const* code,
+                                              size_t code_size)
+{
+    return instance->execute(instance, context, rev, msg, code, code_size);
+}
+
+/**
  * Releases the resources allocated to the execution result.
  *
  * @see evmc_release_result_fn
