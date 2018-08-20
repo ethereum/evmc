@@ -165,8 +165,8 @@ static const struct evmc_context_fn_table ctx_fn_table = {
 /// Example how the API is supposed to be used.
 int main()
 {
-    struct evmc_instance* jit = evmc_create_examplevm();
-    if (jit->abi_version != EVMC_ABI_VERSION)
+    struct evmc_instance* vm = evmc_create_examplevm();
+    if (vm->abi_version != EVMC_ABI_VERSION)
         return 1;  // Incompatible ABI version.
 
     const uint8_t code[] = "Place some EVM bytecode here";
@@ -189,7 +189,7 @@ int main()
     msg.gas = gas;
     msg.depth = 0;
 
-    struct evmc_result result = jit->execute(jit, &ctx, EVMC_HOMESTEAD, &msg, code, code_size);
+    struct evmc_result result = vm->execute(vm, &ctx, EVMC_HOMESTEAD, &msg, code, code_size);
 
     printf("Execution result:\n");
     if (result.status_code != EVMC_SUCCESS)
@@ -211,7 +211,7 @@ int main()
 
     if (result.release)
         result.release(&result);
-    jit->destroy(jit);
+    vm->destroy(vm);
 
     return 0;
 }
