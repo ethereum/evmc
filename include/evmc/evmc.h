@@ -5,23 +5,6 @@
  * Copyright 2018 Alex Beregszaszi, Pawel Bylica.
  * Licensed under the MIT License. See the LICENSE file.
  *
- * ## High level design rules
- *
- * 1. Pass function arguments and results by value.
- *    This rule comes from modern C++ and tries to avoid costly alias analysis
- *    needed for optimization. As the result we have a lots of complex structs
- *    and unions. And variable sized arrays of bytes cannot be passed by copy.
- * 2. The EVM operates on integers so it prefers values to be host-endian.
- *    On the other hand, LLVM can generate good code for byte swaping.
- *    The interface also tries to match host application "natural" endianess.
- *    I would like to know what endianess you use and where.
- *
- * ## Terms
- *
- * 1. EVM  -- an Ethereum Virtual Machine instance/implementation.
- * 2. Host -- an entity controlling the EVM. The Host requests code execution
- *            and responses to EVM queries by callback functions.
- *
  * @defgroup EVMC EVMC
  * @{
  */
