@@ -110,6 +110,12 @@ func (err Error) Error() string {
 		return "evmc: precompile failure"
 	case C.EVMC_CONTRACT_VALIDATION_FAILURE:
 		return "evmc: contract validation failure"
+	case C.EVMC_ARGUMENT_OUT_OF_RANGE:
+		return "evmc: argument out of range"
+	case C.EVMC_WASM_UNREACHABLE_INSTRUCTION:
+		return "evmc: the WebAssembly unreachable instruction has been hit during execution"
+	case C.EVMC_WASM_TRAP:
+		return "evmc: a WebAssembly trap has been hit during execution"
 	case C.EVMC_INTERNAL_ERROR:
 		return "evmc: internal error"
 	case C.EVMC_REJECTED:
