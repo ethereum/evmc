@@ -126,7 +126,7 @@ func (err Error) Error() string {
 		return fmt.Sprintf("evmc: unknown internal error (%d)", int32(code))
 	}
 
-	panic(fmt.Sprintf("evmc: unknown status code %d", int32(code)))
+	return fmt.Sprintf("evmc: unknown status code %d", int32(code))
 }
 
 const (
