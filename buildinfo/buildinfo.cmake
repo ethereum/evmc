@@ -2,23 +2,28 @@
 # Copyright 2018 Pawel Bylica.
 # Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
-string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-string(TOLOWER ${SYSTEM_PROCESSOR} SYSTEM_PROCESSOR)
-string(TOLOWER ${COMPILER_ID} COMPILER_ID)
-string(TOLOWER ${BUILD_TYPE} BUILD_TYPE)
+string(TOLOWER "${SYSTEM_NAME}" SYSTEM_NAME)
+string(TOLOWER "${SYSTEM_PROCESSOR}" SYSTEM_PROCESSOR)
+string(TOLOWER "${COMPILER_ID}" COMPILER_ID)
+string(TOLOWER "${BUILD_TYPE}" BUILD_TYPE)
 string(TIMESTAMP TIMESTAMP)
 
 # Read the git info from a file. The gitinfo is suppose to update the file
 # only if the information has changed.
 file(STRINGS ${OUTPUT_DIR}/gitinfo.txt gitinfo)
-list(GET gitinfo 0 describe)
-list(GET gitinfo 1 GIT_BRANCH)
-list(GET gitinfo 2 GIT_ORIGIN_URL)
+list(LENGTH gitinfo gitinfo_len)
+if(gitinfo_len LESS 3)
+    message(WARNING "Git info not available")
+else()
+    list(GET gitinfo 0 describe)
+    list(GET gitinfo 1 GIT_BRANCH)
+    list(GET gitinfo 2 GIT_ORIGIN_URL)
+endif()
 
 # The output of `git describe --always --long --tags --match=v*`.
 string(REGEX MATCH "(v(.+)-([0-9]+)-g)?([0-9a-f]+)(-dirty)?" match "${describe}")
 
-if(NOT match)
+if(DEFINED describe AND NOT match)
     message(WARNING "Cannot parse git describe: ${describe}")
 endif()
 
@@ -40,7 +45,11 @@ if(GIT_COMMIT_HASH)
     endif()
 endif()
 
-if(${PROJECT_VERSION} STREQUAL "${GIT_LATEST_PROJECT_VERSION}")
+if(NOT PROJECT_VERSION)
+    message(WARNING "PROJECT_VERSION not specified")
+endif()
+
+if(PROJECT_VERSION STREQUAL GIT_LATEST_PROJECT_VERSION)
     if(${GIT_LATEST_PROJECT_VERSION_DISTANCE} GREATER 0)
         set(PROJECT_VERSION "${PROJECT_VERSION}-${GIT_LATEST_PROJECT_VERSION_DISTANCE}${version_commit}")
     endif()

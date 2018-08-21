@@ -52,7 +52,7 @@ function(cable_add_buildinfo_library)
 
     add_custom_command(
         COMMENT "Updating ${name}:"
-        OUTPUT ${source_file}
+        OUTPUT ${source_file} ${output_dir}/buildinfo.json
         COMMAND ${CMAKE_COMMAND}
         -DOUTPUT_DIR=${output_dir}
         -DPROJECT_NAME=${_PROJECT_NAME}
@@ -67,6 +67,7 @@ function(cable_add_buildinfo_library)
         DEPENDS
         ${cable_buildinfo_template_dir}/buildinfo.cmake
         ${cable_buildinfo_template_dir}/buildinfo.c.in
+        ${cable_buildinfo_template_dir}/buildinfo.json.in
         ${name}-git
         ${output_dir}/gitinfo.txt
     )
@@ -76,13 +77,12 @@ function(cable_add_buildinfo_library)
 
     # Add buildinfo library under given name.
     # Make is static and do not build by default until some other target will actually use it.
-    add_library(${name} STATIC EXCLUDE_FROM_ALL ${source_file} ${header_file})
+    add_library(${name} STATIC ${source_file} ${header_file})
 
-    target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(${name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
     set_target_properties(
         ${name} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${output_dir}
         ARCHIVE_OUTPUT_DIRECTORY ${output_dir}
-        OUTPUT_NAME buildinfo
     )
 endfunction()
