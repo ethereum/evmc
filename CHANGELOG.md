@@ -14,6 +14,8 @@
   Documentation has been extended.
 - Improved: [[#59](https://github.com/ethereum/evmc/pull/59)]
   Optional Result Storage helper module has been separated.
+- Improved: [[#75](https://github.com/ethereum/evmc/pull/75)]
+  Cable upgraded to 0.2.11.
 
 ## [5.0.0] - 2018-08-10
 
