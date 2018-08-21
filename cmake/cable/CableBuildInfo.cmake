@@ -77,13 +77,12 @@ function(cable_add_buildinfo_library)
 
     # Add buildinfo library under given name.
     # Make is static and do not build by default until some other target will actually use it.
-    add_library(${name} STATIC EXCLUDE_FROM_ALL ${source_file} ${header_file})
+    add_library(${name} STATIC ${source_file} ${header_file})
 
-    target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(${name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
     set_target_properties(
         ${name} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${output_dir}
         ARCHIVE_OUTPUT_DIRECTORY ${output_dir}
-        OUTPUT_NAME buildinfo
     )
 endfunction()
