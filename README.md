@@ -41,9 +41,11 @@ Talk with us on the [EVMC Gitter chat][Gitter].
 - Alex Beregszaszi [@axic]
 - Paweł Bylica [@chfast]
 
+See also the list of [EVMC Authors](AUTHORS.md).
+
 ## License
 
-Licensed under the [MIT License](LICENSE.md).
+Licensed under the [MIT License](LICENSE).
 
 
 [@axic]: https://github.com/axic
