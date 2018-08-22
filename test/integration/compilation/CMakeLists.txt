@@ -1,6 +1,6 @@
 # EVMC: Ethereum Client-VM Connector API.
 # Copyright 2018 The EVMC Authors.
-# Licensed under the MIT License. See the LICENSE file.
+# Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
 add_library(test-compile-c99 STATIC compilation_test.c)
 target_link_libraries(test-compile-c99 PRIVATE evmc)
