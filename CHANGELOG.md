@@ -16,6 +16,8 @@
   Optional Result Storage helper module has been separated.
 - Improved: [[#75](https://github.com/ethereum/evmc/pull/75)]
   Cable upgraded to 0.2.11.
+- Improved: [[#77](https://github.com/ethereum/evmc/pull/77)]
+  The license changed from MIT to Apache 2.0.
 
 ## [5.0.0] - 2018-08-10
 
