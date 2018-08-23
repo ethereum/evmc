@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.1.0-dev] - unreleased
+## [5.1.0] - 2018-08-23
 
 - Feature: [[#41](https://github.com/ethereum/evmc/pull/41)]
   Go language bindings for EVMC.
@@ -39,5 +39,5 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[5.1.0-dev]: https://github.com/ethereum/evmc/compare/v5.0.0...HEAD
+[5.1.0]: https://github.com/ethereum/evmc/releases/tag/v5.1.0
 [5.0.0]: https://github.com/ethereum/evmc/releases/tag/v5.0.0
