@@ -176,10 +176,12 @@ func (instance *Instance) Destroy() {
 }
 
 func (instance *Instance) Name() string {
+	// TODO: consider using C.evmc_vm_name(instance.handle)
 	return C.GoString(instance.handle.name)
 }
 
 func (instance *Instance) Version() string {
+	// TODO: consider using C.evmc_vm_version(instance.handle)
 	return C.GoString(instance.handle.version)
 }
 
