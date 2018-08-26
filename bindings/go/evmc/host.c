@@ -21,8 +21,3 @@ const struct evmc_context_fn_table evmc_go_fn_table = {
     (evmc_get_block_hash_fn)getBlockHash,
     (evmc_emit_log_fn)emitLog,
 };
-
-void evmc_go_free_result_output(const struct evmc_result* result)
-{
-    free((void*)result->output_data);
-}

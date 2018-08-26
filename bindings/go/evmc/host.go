@@ -9,14 +9,18 @@ package evmc
 
 #include <evmc/evmc.h>
 
+#include <stdlib.h>
+
 struct extended_context
 {
     struct evmc_context context;
     int64_t index;
 };
 
-void evmc_go_free_result_output(const struct evmc_result* result);
-
+static void evmc_go_free_result_output(const struct evmc_result* result)
+{
+    free((void*)result->output_data);
+}
 */
 import "C"
 import (
