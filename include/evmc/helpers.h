@@ -18,11 +18,27 @@
 #include <evmc/evmc.h>
 
 /**
- * Returns true if the instance has a compatible ABI version.
+ * Returns true if the VM instance has a compatible ABI version.
  */
 static inline int evmc_is_abi_compatible(struct evmc_instance *instance)
 {
     return instance->abi_version == EVMC_ABI_VERSION;
+}
+
+/**
+ * Returns the name of the VM instance.
+ */
+static inline const char* evmc_vm_name(struct evmc_instance *instance)
+{
+    return instance->name;
+}
+
+/**
+ * Returns the version of the VM instance.
+ */
+static inline const char* evmc_vm_version(struct evmc_instance *instance)
+{
+    return instance->version;
 }
 
 /**
