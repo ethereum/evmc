@@ -298,12 +298,18 @@ struct evmc_result;
 /**
  * Releases resources assigned to an execution result.
  *
- *  This function releases memory (and other resources, if any) assigned to the
- *  specified execution result making the result object invalid.
+ * This function releases memory (and other resources, if any) assigned to the
+ * specified execution result making the result object invalid.
  *
- *  @param result  The execution result which resource are to be released. The
- *                 result itself it not modified by this function, but becomes
- *                 invalid and user should discard it as well.
+ * @param result  The execution result which resources are to be released. The
+ *                result itself it not modified by this function, but becomes
+ *                invalid and user MUST discard it as well.
+ *                This MUST NOT be NULL.
+ *
+ * @note
+ * The result is passed by pointer to avoid (shallow) copy of the ::evmc_result
+ * struct. Think of this as the best possible C language approximation to
+ * passing objects by reference.
  */
 typedef void (*evmc_release_result_fn)(const struct evmc_result* result);
 
