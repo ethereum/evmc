@@ -31,6 +31,11 @@ TEST_F(evmc_vm_test, abi_version_match)
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
 }
 
+TEST_F(evmc_vm_test, destroy)
+{
+    vm->destroy(vm);
+}
+
 TEST_F(evmc_vm_test, set_option_unknown)
 {
     if (vm->set_option)
