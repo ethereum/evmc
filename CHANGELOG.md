@@ -2,6 +2,9 @@
 
 ## [5.2.0-dev] - unreleased
 
+- Feature: [[#81](https://github.com/ethereum/evmc/pull/81)]
+  Use also "evmc_create" function name for loading EVMC DLLs.
+
 ## [5.1.0] - 2018-08-23
 
 - Feature: [[#41](https://github.com/ethereum/evmc/pull/41)]

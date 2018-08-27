@@ -113,6 +113,9 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
     }
 
     if (!create_fn)
+        create_fn = DLL_GET_CREATE_FN(handle, "evmc_create");
+
+    if (!create_fn)
     {
         DLL_CLOSE(handle);
         ec = EVMC_LOADER_SYMBOL_NOT_FOUND;
