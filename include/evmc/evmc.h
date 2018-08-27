@@ -447,7 +447,7 @@ enum evmc_storage_status
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 3,
+    EVMC_STORAGE_DELETED = 3
 };
 
 
