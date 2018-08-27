@@ -6,6 +6,7 @@
 
 #include <evmc/helpers.h>
 
+#include <array>
 #include <cstring>
 
 // Compile time checks:
@@ -29,6 +30,26 @@ static_assert(optionalDataSize == sizeof(evmc_result_optional_storage), "");
 TEST_F(evmc_vm_test, abi_version_match)
 {
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
+}
+
+TEST_F(evmc_vm_test, execute)
+{
+    evmc_context context{};
+    evmc_message msg{};
+    std::array<uint8_t, 2> code = {{0xfe, 0x00}};
+
+    evmc_result result =
+        vm->execute(vm, &context, EVMC_LATEST_REVISION, &msg, code.data(), code.size());
+
+    // Validate some constraints
+    if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
+        EXPECT_EQ(result.gas_left, 0);
+
+    if (result.output_data == NULL)
+        EXPECT_EQ(result.output_size, 0);
+
+    if (result.release)
+        result.release(&result);
 }
 
 TEST_F(evmc_vm_test, set_option_unknown)
