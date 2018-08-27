@@ -245,6 +245,19 @@ TEST(loader, lib_)
     EXPECT_EQ(x, nullptr);
 }
 
+TEST(loader, load_default)
+{
+    auto path = "unittests/default.evmc";
+
+    evmc_loader_error_code ec;
+    auto fn = evmc_load(path, &ec);
+    EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
+    EXPECT_EQ((uintptr_t)fn(), 0xdeaf);
+
+    fn = evmc_load(path, nullptr);
+    EXPECT_EQ((uintptr_t)fn(), 0xdeaf);
+}
+
 TEST(loader, load_and_create_failure)
 {
     evmc_loader_error_code ec;

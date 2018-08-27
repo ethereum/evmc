@@ -5,6 +5,10 @@
 add_library(vm-mock SHARED vm_mock.c)
 target_link_libraries(vm-mock PRIVATE evmc)
 
+add_library(vm-mock-default SHARED vm_mock_default.c)
+target_link_libraries(vm-mock-default PRIVATE evmc)
+
+
 if(UNIX)
     set(cmd create_symlink)
 else()
@@ -13,6 +17,7 @@ endif()
 
 add_custom_command(
     TARGET vm-mock POST_BUILD
+
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> libaaa.so
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> double_prefix_aaa.evm
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> double-prefix-aaa.evm
@@ -26,6 +31,9 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> ../aaa.evm
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> failure.vm
     COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock> abi42.vm
+
+    COMMAND ${CMAKE_COMMAND} -E ${cmd} $<TARGET_FILE:vm-mock-default> default.evmc
+
     COMMAND ${CMAKE_COMMAND} -E touch empty.file
 )
 
