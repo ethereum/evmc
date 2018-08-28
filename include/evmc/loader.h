@@ -99,7 +99,8 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
  * the DLL is not going to be loaded multiple times, but the function will return new VM instance
  * each time.
  */
-struct evmc_instance* evmc_load_and_create(const char* filename, enum evmc_loader_error_code* error_code);
+struct evmc_instance* evmc_load_and_create(const char* filename,
+                                           enum evmc_loader_error_code* error_code);
 
 #if __cplusplus
 }

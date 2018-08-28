@@ -1,6 +1,17 @@
 version: 2
 jobs:
 
+  lint:
+    docker:
+    - image: ethereum/cpp-build-env
+    steps:
+    - checkout
+    - run:
+        name: "Check code format"
+        command: |
+          find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+          git diff --color --exit-code
+
   build: &build
     docker:
       - image: ethereum/cpp-build-env
@@ -110,6 +121,7 @@ workflows:
   version: 2
   evmc:
     jobs:
+      - lint
       - build
       - build-clang-3.8
       - bindings-go-1.10
