@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define STR(x) #x
+
+#if !defined(PROJECT_VERSION)
+#define PROJECT_VERSION 0.0.0
+#endif
+
 struct examplevm
 {
     struct evmc_instance instance;
@@ -129,7 +135,7 @@ struct evmc_instance* evmc_create_examplevm()
     struct evmc_instance init = {
         .abi_version = EVMC_ABI_VERSION,
         .name = "examplevm",
-        .version = "0.0.0",
+        .version = STR(PROJECT_VERSION),
         .destroy = destroy,
         .execute = execute,
         .set_option = set_option,

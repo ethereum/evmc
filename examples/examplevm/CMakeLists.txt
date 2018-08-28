@@ -12,6 +12,7 @@ set_target_properties(
     RUNTIME_OUTPUT_DIRECTORY ..
     LIBRARY_OUTPUT_DIRECTORY ..
 )
+set_source_files_properties(examplevm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=${PROJECT_VERSION})
 
 install(
     TARGETS evmc-examplevm
