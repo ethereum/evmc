@@ -170,7 +170,8 @@ int main()
     if (!evmc_is_abi_compatible(vm))
         return 1;
 
-    const uint8_t code[] = "Place some EVM bytecode here";
+    // EVM bytecode goes here. This is one of the examples examplevm.c
+    const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code);
     const struct evmc_uint256be code_hash = {.bytes = {1, 2, 3}};
     const uint8_t input[] = "Hello World!";
