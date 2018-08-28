@@ -5,6 +5,11 @@
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
 add_subdirectory(integration)
 add_subdirectory(unittests)
 add_subdirectory(vmtester)
