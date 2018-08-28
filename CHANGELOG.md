@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.2.0-dev] - unreleased
+## [5.2.0] - 2018-08-28
 
 - Feature: [[#81](https://github.com/ethereum/evmc/pull/81)]
   Use also "evmc_create" function name for loading EVMC DLLs.
@@ -50,6 +50,6 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[5.2.0-dev]: https://github.com/ethereum/evmc/compare/v5.1.0...HEAD
+[5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
 [5.1.0]: https://github.com/ethereum/evmc/releases/tag/v5.1.0
 [5.0.0]: https://github.com/ethereum/evmc/releases/tag/v5.0.0
