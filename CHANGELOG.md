@@ -4,6 +4,10 @@
 
 - Feature: [[#81](https://github.com/ethereum/evmc/pull/81)]
   Use also "evmc_create" function name for loading EVMC DLLs.
+- Fix: [[#92](https://github.com/ethereum/evmc/pull/92)]
+  The evmc.h header compatibility with C++98 fixed.
+- Improved: [[#97](https://github.com/ethereum/evmc/pull/97)]
+  Documentation improvements.
 
 ## [5.1.0] - 2018-08-23
 
