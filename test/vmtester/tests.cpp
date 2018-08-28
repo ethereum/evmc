@@ -27,6 +27,8 @@ static constexpr size_t optionalDataSize =
     sizeof(evmc_result) - offsetof(evmc_result, create_address);
 static_assert(optionalDataSize == sizeof(evmc_result_optional_storage), "");
 
+extern const struct evmc_context_fn_table mock_context_fn_table;
+
 TEST_F(evmc_vm_test, abi_version_match)
 {
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
@@ -34,7 +36,7 @@ TEST_F(evmc_vm_test, abi_version_match)
 
 TEST_F(evmc_vm_test, execute)
 {
-    evmc_context context{};
+    evmc_context context = {&mock_context_fn_table};
     evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
