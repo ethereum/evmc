@@ -71,10 +71,10 @@ static struct evmc_result execute(struct evmc_instance* instance,
     // Solidity inline assembly is used in the examples instead of EVM bytecode.
 
     // Assembly: `{ mstore(0, address()) return(0, msize()) }`.
-    const char return_address[] = "30600052596000f3";
+    const char return_address[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
 
     // Assembly: `{ sstore(0, add(sload(0), 1)) }`
-    const char counter[] = "600160005401600055";
+    const char counter[] = "\x60\x01\x60\x00\x54\x01\x60\x00\x55";
 
     if (code_size == strlen(return_address) &&
         strncmp((const char*)code, return_address, code_size) == 0)
