@@ -59,10 +59,8 @@ enum evmc_call_kind
 };
 
 /** The flags for ::evmc_message. */
-enum evmc_flags
-{
-    EVMC_STATIC = 1 /**< Static call mode. */
-};
+static const uint32_t EVMC_STATIC = 1; /**< Static call mode. */
+
 
 /**
  * The message describing an EVM call,
