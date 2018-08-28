@@ -5,4 +5,3 @@
 
 #include <evmc/evmc.h>
 #include <evmc/utils.h>
-

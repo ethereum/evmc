@@ -4,6 +4,7 @@
  */
 
 #include <evmc/loader.h>
+
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
@@ -127,7 +128,8 @@ exit:
     return create_fn;
 }
 
-struct evmc_instance* evmc_load_and_create(const char* filename, enum evmc_loader_error_code* error_code)
+struct evmc_instance* evmc_load_and_create(const char* filename,
+                                           enum evmc_loader_error_code* error_code)
 {
     evmc_create_fn create_fn = evmc_load(filename, error_code);
 
