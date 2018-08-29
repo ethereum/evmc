@@ -208,7 +208,7 @@ func emitLog(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pData unsafe.Poi
 }
 
 //export call
-func call(pResult *C.struct_evmc_result, pCtx unsafe.Pointer, msg *C.struct_evmc_message) {
+func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 
@@ -234,5 +234,5 @@ func call(pResult *C.struct_evmc_result, pCtx unsafe.Pointer, msg *C.struct_evmc
 		result.release = (C.evmc_release_result_fn)(C.evmc_go_free_result_output)
 	}
 
-	*pResult = result
+	return result
 }

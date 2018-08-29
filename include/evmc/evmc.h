@@ -574,16 +574,12 @@ typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
 /**
  * Pointer to the callback function supporting EVM calls.
  *
- *  @param[out] result  The result of the call. The result object is not
- *                      initialized by the EVM, the Client MUST correctly
- *                      initialize all expected fields of the structure.
- *  @param      context The pointer to the Host execution context.
- *                      @see ::evmc_context.
- *  @param      msg     Call parameters. @see ::evmc_message.
+ * @param  context The pointer to the Host execution context.
+ * @param  msg     The call parameters.
+ * @return         The result of the call.
  */
-typedef void (*evmc_call_fn)(struct evmc_result* result,
-                             struct evmc_context* context,
-                             const struct evmc_message* msg);
+typedef struct evmc_result (*evmc_call_fn)(struct evmc_context* context,
+                                           const struct evmc_message* msg);
 
 /**
  * The context interface.
