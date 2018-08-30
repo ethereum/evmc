@@ -16,7 +16,7 @@
 #define DLL_HANDLE HMODULE
 #define DLL_OPEN(filename) LoadLibrary(filename)
 #define DLL_CLOSE(handle) FreeLibrary(handle)
-#define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn) GetProcAddress(handle, name)
+#define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) GetProcAddress(handle, name)
 #define HAVE_STRCPY_S 1
 #else
 #include <dlfcn.h>
