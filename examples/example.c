@@ -4,7 +4,7 @@
  */
 
 #include "example_host.h"
-#include "examplevm/examplevm.h"
+#include "examplevm.h"
 
 #include <evmc/helpers.h>
 
