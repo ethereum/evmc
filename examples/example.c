@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0. See the LICENSE file.
  */
 
-#include "example_host/example_host.h"
+#include "example_host.h"
 #include "examplevm/examplevm.h"
 
 #include <evmc/helpers.h>

@@ -6,8 +6,11 @@ if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
+set(CMAKE_DEBUG_POSTFIX "")
 
-add_subdirectory(example_host)
+add_library(evmc-example-host STATIC example_host.cpp)
+target_link_libraries(evmc-example-host PRIVATE evmc)
+
 add_subdirectory(examplevm)
 
 add_executable(evmc-example example.c)

@@ -2,7 +2,7 @@
 // Copyright 2018 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
-#include "../../examples/example_host/example_host.h"
+#include "../../examples/example_host.h"
 #include "vmtester.hpp"
 
 #include <evmc/helpers.h>
