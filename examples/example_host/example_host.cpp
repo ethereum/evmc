@@ -128,7 +128,22 @@ static void emit_log(evmc_context* context,
     (void)topics_count;
 }
 
-extern const evmc_context_fn_table mock_context_fn_table = {
+static const evmc_context_fn_table methods = {
     account_exists, get_storage,  set_storage, get_balance,    get_code_size,  get_code_hash,
     copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log,
 };
+
+struct example_host_context : evmc_context
+{
+    example_host_context() : evmc_context{&methods} {}
+};
+
+evmc_context* example_host_create_context()
+{
+    return new example_host_context;
+}
+
+void example_host_destroy_context(evmc_context* context)
+{
+    delete context;
+}

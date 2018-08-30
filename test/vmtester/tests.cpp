@@ -9,6 +9,12 @@
 #include <array>
 #include <cstring>
 
+// Declarations of functions from example host:
+
+evmc_context* example_host_create_context();
+void example_host_destroy_context(evmc_context* context);
+
+
 // Compile time checks:
 
 static_assert(sizeof(evmc_uint256be) == 32, "evmc_uint256be is too big");
@@ -27,7 +33,6 @@ static constexpr size_t optionalDataSize =
     sizeof(evmc_result) - offsetof(evmc_result, create_address);
 static_assert(optionalDataSize == sizeof(evmc_result_optional_storage), "");
 
-extern const struct evmc_context_fn_table mock_context_fn_table;
 
 TEST_F(evmc_vm_test, abi_version_match)
 {
@@ -36,12 +41,12 @@ TEST_F(evmc_vm_test, abi_version_match)
 
 TEST_F(evmc_vm_test, execute)
 {
-    evmc_context context = {&mock_context_fn_table};
+    evmc_context* context = example_host_create_context();
     evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, &context, EVMC_LATEST_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, context, EVMC_LATEST_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -56,6 +61,8 @@ TEST_F(evmc_vm_test, execute)
 
     if (result.release)
         result.release(&result);
+
+    example_host_destroy_context(context);
 }
 
 TEST_F(evmc_vm_test, set_option_unknown)
