@@ -2,6 +2,9 @@
 
 ## [6.0.0-dev] - unreleased
 
+- Improved: [[#119](https://github.com/ethereum/evmc/pull/119)]
+  EVMC loader symbol searching has been generalized.
+
 ## [5.2.0] - 2018-08-28
 
 - Feature: [[#81](https://github.com/ethereum/evmc/pull/81)]
