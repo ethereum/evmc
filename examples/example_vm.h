@@ -11,4 +11,4 @@
 /**
  * Creates EVMC Example VM.
  */
-EVMC_EXPORT struct evmc_instance* evmc_create_examplevm(void);
+EVMC_EXPORT struct evmc_instance* evmc_create_example_vm(void);

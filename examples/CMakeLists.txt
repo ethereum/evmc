@@ -15,16 +15,16 @@ add_library(evmc-example-host STATIC example_host.cpp)
 target_link_libraries(evmc-example-host PRIVATE evmc)
 
 
-add_library(evmc-examplevm examplevm.c)
-target_link_libraries(evmc-examplevm PRIVATE evmc)
-set_source_files_properties(examplevm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=${PROJECT_VERSION})
+add_library(evmc-example-vm example_vm.c)
+target_link_libraries(evmc-example-vm PRIVATE evmc)
+set_source_files_properties(example_vm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=${PROJECT_VERSION})
 
 
 add_executable(evmc-example example.c)
-target_link_libraries(evmc-example PRIVATE evmc-example-host evmc-examplevm evmc)
+target_link_libraries(evmc-example PRIVATE evmc-example-host evmc-example-vm evmc)
 
 
-install(TARGETS evmc-examplevm
+install(TARGETS evmc-example-vm
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

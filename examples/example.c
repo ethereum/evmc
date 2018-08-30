@@ -4,7 +4,7 @@
  */
 
 #include "example_host.h"
-#include "examplevm.h"
+#include "example_vm.h"
 
 #include <evmc/helpers.h>
 
@@ -13,10 +13,10 @@
 
 int main()
 {
-    struct evmc_instance* vm = evmc_create_examplevm();
+    struct evmc_instance* vm = evmc_create_example_vm();
     if (!evmc_is_abi_compatible(vm))
         return 1;
-    // EVM bytecode goes here. This is one of the examples examplevm.c
+    // EVM bytecode goes here. This is one of the examples.
     const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code);
     const struct evmc_uint256be code_hash = {.bytes = {1, 2, 3}};
