@@ -88,11 +88,13 @@ static void selfdestruct(evmc_context* context,
     (void)beneficiary;
 }
 
-static void call(evmc_result* result, evmc_context* context, const evmc_message* msg)
+static evmc_result call(evmc_context* context, const evmc_message* msg)
 {
     (void)context;
     (void)msg;
-    result->status_code = EVMC_FAILURE;
+    evmc_result result{};
+    result.status_code = EVMC_FAILURE;
+    return result;
 }
 
 static void get_tx_context(evmc_tx_context* result, evmc_context* context)

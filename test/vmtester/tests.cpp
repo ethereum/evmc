@@ -45,10 +45,14 @@ TEST_F(evmc_vm_test, execute)
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
+    {
         EXPECT_EQ(result.gas_left, 0);
+    }
 
     if (result.output_data == NULL)
+    {
         EXPECT_EQ(result.output_size, 0);
+    }
 
     if (result.release)
         result.release(&result);
