@@ -46,9 +46,10 @@ static inline void go_exported_functions_type_checks()
     size_t size = 0;
     int64_t number = 0;
     struct evmc_message* message = NULL;
-    struct evmc_result* result = NULL;
     struct evmc_tx_context* tx_context = NULL;
-    
+
+    struct evmc_result result;
+    (void)result;
     enum evmc_storage_status storage_status;
     (void)storage_status;
     int status;
@@ -87,8 +88,8 @@ static inline void go_exported_functions_type_checks()
     selfdestruct(context, address, address);
 
     evmc_call_fn call_fn = NULL;
-    call_fn(result, context, message);
-    call(result, context, message);
+    result = call_fn(context, message);
+    result = call(context, message);
 
     evmc_get_tx_context_fn get_tx_context_fn = NULL;
     get_tx_context_fn(tx_context, context);
