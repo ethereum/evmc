@@ -1,12 +1,14 @@
+// EVMC -- Ethereum Client-VM Connector API
+// Copyright 2018 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+
+/// @file
+/// Example implementation of an EVMC Host.
+
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-evmc_uint256be balance(evmc_context* context, const evmc_address* address)
+static evmc_uint256be balance(evmc_context* context, const evmc_address* address)
 {
     (void)context;
     (void)address;
@@ -111,7 +113,6 @@ static void get_block_hash(evmc_uint256be* result, evmc_context* context, int64_
     (void)number;
 }
 
-/// EVM log callback.
 static void emit_log(evmc_context* context,
                      const evmc_address* address,
                      const uint8_t* data,

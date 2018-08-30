@@ -1,8 +1,12 @@
+# EVMC: Ethereum Client-VM Connector API.
+# Copyright 2018 The EVMC Authors.
+# Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+add_subdirectory(example_host)
 add_subdirectory(examplevm)
 
-add_executable(example-capi capi.c)
-target_link_libraries(example-capi PRIVATE evmc evmc-examplevm)
-if(NOT MSVC)
-    target_compile_options(example-capi PRIVATE -Wno-extra)
-endif()
