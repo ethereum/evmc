@@ -145,13 +145,10 @@ struct evmc_context;
  *  This callback function is used by an EVM to retrieve the transaction and
  *  block context.
  *
- *  @param[out] result   The returned transaction context.
- *                       @see ::evmc_tx_context.
  *  @param      context  The pointer to the Host execution context.
- *                       @see ::evmc_context.
+ *  @return              The transaction context.
  */
-typedef void (*evmc_get_tx_context_fn)(struct evmc_tx_context* result,
-                                       struct evmc_context* context);
+typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* context);
 
 /**
  * Get block hash callback function.

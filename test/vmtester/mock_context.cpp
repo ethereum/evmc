@@ -97,10 +97,11 @@ static evmc_result call(evmc_context* context, const evmc_message* msg)
     return result;
 }
 
-static void get_tx_context(evmc_tx_context* result, evmc_context* context)
+static evmc_tx_context get_tx_context(evmc_context* context)
 {
-    (void)result;
     (void)context;
+    evmc_tx_context result{};
+    return result;
 }
 
 static void get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
