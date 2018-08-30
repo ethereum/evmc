@@ -5,7 +5,8 @@
 /// @file
 /// Example implementation of an EVMC Host.
 
-#include <evmc/evmc.h>
+#include "example_host.h"
+
 #include <evmc/helpers.h>
 
 static evmc_uint256be balance(evmc_context* context, const evmc_address* address)
@@ -138,6 +139,8 @@ struct example_host_context : evmc_context
     example_host_context() : evmc_context{&methods} {}
 };
 
+extern "C" {
+
 evmc_context* example_host_create_context()
 {
     return new example_host_context;
@@ -146,4 +149,5 @@ evmc_context* example_host_create_context()
 void example_host_destroy_context(evmc_context* context)
 {
     delete context;
+}
 }

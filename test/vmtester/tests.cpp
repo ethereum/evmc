@@ -1,19 +1,14 @@
-// EVMC -- Ethereum Client-VM Connector API
+// EVMC: Ethereum Client-VM Connector API
 // Copyright 2018 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
+#include "../../examples/example_host/example_host.h"
 #include "vmtester.hpp"
 
 #include <evmc/helpers.h>
 
 #include <array>
 #include <cstring>
-
-// Declarations of functions from example host:
-
-evmc_context* example_host_create_context();
-void example_host_destroy_context(evmc_context* context);
-
 
 // Compile time checks:
 
