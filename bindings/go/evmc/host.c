@@ -46,8 +46,9 @@ static inline void go_exported_functions_type_checks()
     size_t size = 0;
     int64_t number = 0;
     struct evmc_message* message = NULL;
-    struct evmc_tx_context* tx_context = NULL;
 
+    struct evmc_tx_context tx_context;
+    (void)tx_context;
     struct evmc_result result;
     (void)result;
     enum evmc_storage_status storage_status;
@@ -92,8 +93,8 @@ static inline void go_exported_functions_type_checks()
     result = call(context, message);
 
     evmc_get_tx_context_fn get_tx_context_fn = NULL;
-    get_tx_context_fn(tx_context, context);
-    getTxContext(tx_context, context);
+    tx_context = get_tx_context_fn(context);
+    tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
     get_block_hash_fn(uint256be, context, number);

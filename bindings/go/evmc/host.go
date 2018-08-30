@@ -164,13 +164,13 @@ func selfdestruct(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pBeneficiar
 }
 
 //export getTxContext
-func getTxContext(pResult unsafe.Pointer, pCtx unsafe.Pointer) {
+func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 
 	gasPrice, origin, coinbase, number, timestamp, gasLimit, difficulty := ctx.GetTxContext()
 
-	*(*C.struct_evmc_tx_context)(pResult) = C.struct_evmc_tx_context{
+	return C.struct_evmc_tx_context{
 		evmcUint256be(gasPrice),
 		evmcAddress(origin),
 		evmcAddress(coinbase),

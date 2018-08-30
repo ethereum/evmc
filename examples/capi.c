@@ -126,10 +126,12 @@ static struct evmc_result call(struct evmc_context* context, const struct evmc_m
     return result;
 }
 
-static void get_tx_context(struct evmc_tx_context* result, struct evmc_context* context)
+static struct evmc_tx_context get_tx_context(struct evmc_context* context)
 {
-    (void)result;
     (void)context;
+    struct evmc_tx_context result;
+    memset(&result, 0, sizeof(struct evmc_tx_context));
+    return result;
 }
 
 static void get_block_hash(struct evmc_uint256be* result,
