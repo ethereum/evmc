@@ -10,7 +10,7 @@ if(TARGET evmc)
 endif()
 
 option(EVMC_TESTING "Build EVMC tests and test tools" OFF)
-option(EVMC_EXAMPLES "Build EVMC examples" OFF)
+option(EVMC_EXAMPLES "Build EVMC examples" ${EVMC_TESTING})
 option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_TESTING}")
 
 include(cmake/cable/bootstrap.cmake)
@@ -46,7 +46,7 @@ if(EVMC_TESTING)
     add_subdirectory(test)
 endif()
 
-if(EVMC_EXAMPLES)
+if(EVMC_EXAMPLES OR EVMC_TESTING)
     add_subdirectory(examples)
 endif()
 
