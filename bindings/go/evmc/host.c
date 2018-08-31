@@ -20,7 +20,7 @@ void evmc_go_free_result_output(const struct evmc_result* result)
  * problem the go_exported_functions_type_checks() function simulates usage
  * of Go exported functions with expected types to check them during compilation.
  */
-const struct evmc_context_fn_table evmc_go_fn_table = {
+const struct evmc_host_interface evmc_go_host = {
     (evmc_account_exists_fn)accountExists,
     (evmc_get_storage_fn)getStorage,
     (evmc_set_storage_fn)setStorage,

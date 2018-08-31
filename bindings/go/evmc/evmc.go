@@ -29,7 +29,7 @@ struct extended_context
 	int64_t index;
 };
 
-extern const struct evmc_context_fn_table evmc_go_fn_table;
+extern const struct evmc_host_interface evmc_go_host;
 
 static struct evmc_result execute_wrapper(struct evmc_instance* instance, int64_t context_index, enum evmc_revision rev,
 	const struct evmc_address* destination, const struct evmc_address* sender, const struct evmc_uint256be* value,
@@ -51,7 +51,7 @@ static struct evmc_result execute_wrapper(struct evmc_instance* instance, int64_
 		flags,
 	};
 
-	struct extended_context ctx = {{&evmc_go_fn_table}, context_index};
+	struct extended_context ctx = {{&evmc_go_host}, context_index};
 	return evmc_execute(instance, &ctx.context, rev, &msg, code, code_size);
 }
 */

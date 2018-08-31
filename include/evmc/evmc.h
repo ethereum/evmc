@@ -579,14 +579,14 @@ typedef struct evmc_result (*evmc_call_fn)(struct evmc_context* context,
                                            const struct evmc_message* msg);
 
 /**
- * The context interface.
+ * The Host interface.
  *
- *  The set of all callback functions expected by EVM instances. This is C
- *  realisation of vtable for OOP interface (only virtual methods, no data).
- *  Host implementations SHOULD create constant singletons of this (similarly
- *  to vtables) to lower the maintenance and memory management cost.
+ * The set of all callback functions expected by VM instances. This is C
+ * realisation of vtable for OOP interface (only virtual methods, no data).
+ * Host implementations SHOULD create constant singletons of this (similarly
+ * to vtables) to lower the maintenance and memory management cost.
  */
-struct evmc_context_fn_table
+struct evmc_host_interface
 {
     /** Check account existence callback function. */
     evmc_account_exists_fn account_exists;
@@ -638,8 +638,8 @@ struct evmc_context_fn_table
  */
 struct evmc_context
 {
-    /** Function table defining the context interface (vtable). */
-    const struct evmc_context_fn_table* fn_table;
+    /** The Host interface. */
+    const struct evmc_host_interface* host;
 };
 
 
