@@ -10,3 +10,5 @@ endif()
 add_subdirectory(example_host)
 add_subdirectory(examplevm)
 
+add_executable(evmc-example example.c)
+target_link_libraries(evmc-example PRIVATE evmc-example-host evmc-examplevm evmc)
