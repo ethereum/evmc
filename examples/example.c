@@ -19,7 +19,6 @@ int main()
     // EVM bytecode goes here. This is one of the examples.
     const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code);
-    const struct evmc_uint256be code_hash = {.bytes = {1, 2, 3}};
     const uint8_t input[] = "Hello World!";
     const struct evmc_uint256be value = {{1, 0}};
     const struct evmc_address addr = {{0, 1, 2}};
@@ -31,7 +30,6 @@ int main()
     msg.value = value;
     msg.input_data = input;
     msg.input_size = sizeof(input);
-    msg.code_hash = code_hash;
     msg.gas = gas;
     msg.depth = 0;
     struct evmc_result result = evmc_execute(vm, ctx, EVMC_HOMESTEAD, &msg, code, code_size);

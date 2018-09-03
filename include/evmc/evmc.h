@@ -116,12 +116,6 @@ struct evmc_message
      * Ignored unless kind is EVMC_CREATE2.
      */
     struct evmc_uint256be create2_salt;
-
-    /**
-     * The optional hash of the code of the destination account.
-     * The null hash MUST be used when not specified.
-     */
-    struct evmc_uint256be code_hash;
 };
 
 
