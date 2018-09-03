@@ -439,19 +439,19 @@ enum evmc_storage_status
     EVMC_STORAGE_MODIFIED = 1,
 
     /**
+     * A storage item has been modified after being modified before: X -> Y -> Z.
+     */
+    EVMC_STORAGE_MODIFIED_DIRTY = 2,
+
+    /**
      * A new storage item has been added: 0 -> X.
      */
-    EVMC_STORAGE_ADDED = 2,
+    EVMC_STORAGE_ADDED = 3,
 
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 3,
-
-    /**
-     * A storage item has been modified after being modified before: X -> Y -> Z.
-     */
-    EVMC_STORAGE_MODIFIED_DIRTY = 4
+    EVMC_STORAGE_DELETED = 4
 };
 
 

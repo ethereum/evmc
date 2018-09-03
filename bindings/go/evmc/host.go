@@ -41,9 +41,9 @@ type StorageStatus int
 const (
 	StorageUnchanged StorageStatus = C.EVMC_STORAGE_UNCHANGED
 	StorageModified  StorageStatus = C.EVMC_STORAGE_MODIFIED
+	StorageModifiedDirty StorageStatus = C.EVMC_STORAGE_MODIFIED_DIRTY
 	StorageAdded     StorageStatus = C.EVMC_STORAGE_ADDED
 	StorageDeleted   StorageStatus = C.EVMC_STORAGE_DELETED
-	StorageModifiedDirty StorageStatus = C.EVMC_STORAGE_MODIFIED_DIRTY
 )
 
 func goAddress(in C.struct_evmc_address) common.Address {
