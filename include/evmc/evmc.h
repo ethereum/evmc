@@ -450,7 +450,12 @@ enum evmc_storage_status
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 3
+    EVMC_STORAGE_DELETED = 3,
+
+    /**
+     * A storage item has been modified after being modified before: X -> Y -> Z.
+     */
+    EVMC_STORAGE_MODIFIED_DIRTY = 4
 };
 
 
