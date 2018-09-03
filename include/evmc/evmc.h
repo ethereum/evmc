@@ -441,7 +441,7 @@ enum evmc_storage_status
     /**
      * A storage item has been modified after being modified before: X -> Y -> Z.
      */
-    EVMC_STORAGE_MODIFIED_DIRTY = 2,
+    EVMC_STORAGE_MODIFIED_AGAIN = 2,
 
     /**
      * A new storage item has been added: 0 -> X.
