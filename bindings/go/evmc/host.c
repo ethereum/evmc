@@ -97,8 +97,8 @@ static inline void go_exported_functions_type_checks()
     tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
-    get_block_hash_fn(uint256be, context, number);
-    getBlockHash(uint256be, context, number);
+    status = get_block_hash_fn(uint256be, context, number);
+    status = getBlockHash(uint256be, context, number);
 
     evmc_emit_log_fn emit_log_fn = NULL;
     emit_log_fn(context, address, data, size, uint256be, size);
