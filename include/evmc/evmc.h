@@ -70,6 +70,21 @@ enum evmc_flags
  */
 struct evmc_message
 {
+    /** The kind of the call. For zero-depth calls ::EVMC_CALL SHOULD be used. */
+    enum evmc_call_kind kind;
+
+    /**
+     * Additional flags modifying the call execution behavior.
+     * In the current version the only valid values are ::EVMC_STATIC or 0.
+     */
+    uint32_t flags;
+
+    /** The call depth. */
+    int32_t depth;
+
+    /** The amount of gas for message execution. */
+    int64_t gas;
+
     /** The destination of the message. */
     struct evmc_address destination;
 
@@ -77,51 +92,36 @@ struct evmc_message
     struct evmc_address sender;
 
     /**
-     * The amount of Ether transferred with the message.
-     */
-    struct evmc_uint256be value;
-
-    /**
      * The message input data.
      *
-     *  This MAY be NULL.
+     * This MAY be NULL.
      */
     const uint8_t* input_data;
 
     /**
      * The size of the message input data.
      *
-     *  If input_data is NULL this MUST be 0.
+     * If input_data is NULL this MUST be 0.
      */
     size_t input_size;
 
     /**
-     * The optional hash of the code of the destination account.
-     *  The null hash MUST be used when not specified.
+     * The amount of Ether transferred with the message.
      */
-    struct evmc_uint256be code_hash;
+    struct evmc_uint256be value;
 
     /**
      * The optional value used in new contract address construction.
      *
-     *  Ignored unless kind is EVMC_CREATE2.
+     * Ignored unless kind is EVMC_CREATE2.
      */
     struct evmc_uint256be create2_salt;
 
-    /** The amount of gas for message execution. */
-    int64_t gas;
-
-    /** The call depth. */
-    int32_t depth;
-
-    /** The kind of the call. For zero-depth calls ::EVMC_CALL SHOULD be used. */
-    enum evmc_call_kind kind;
-
     /**
-     * Additional flags modifying the call execution behavior.
-     *  In the current version the only valid values are ::EVMC_STATIC or 0.
+     * The optional hash of the code of the destination account.
+     * The null hash MUST be used when not specified.
      */
-    uint32_t flags;
+    struct evmc_uint256be code_hash;
 };
 
 
