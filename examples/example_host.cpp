@@ -9,6 +9,13 @@
 
 #include <evmc/helpers.h>
 
+struct example_host_context : evmc_context
+{
+    example_host_context();
+
+    evmc_tx_context tx_context = {};
+};
+
 static evmc_uint256be balance(evmc_context* context, const evmc_address* address)
 {
     (void)context;
@@ -109,10 +116,15 @@ static evmc_tx_context get_tx_context(evmc_context* context)
 
 static int get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
 {
-    (void)result;
-    (void)context;
-    (void)number;
-    return 0;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    int64_t current_block_number = host->tx_context.block_number;
+
+    if (number >= current_block_number || number < current_block_number - 256)
+        return 0;
+
+    evmc_uint256be example_block_hash{};
+    *result = example_block_hash;
+    return 1;
 }
 
 static void emit_log(evmc_context* context,
@@ -135,10 +147,7 @@ static const evmc_host_interface interface = {
     copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log,
 };
 
-struct example_host_context : evmc_context
-{
-    example_host_context() : evmc_context{&interface} {}
-};
+example_host_context::example_host_context() : evmc_context{&interface} {}
 
 extern "C" {
 
