@@ -188,8 +188,12 @@ func (instance *Instance) Version() string {
 func (instance *Instance) SetOption(name string, value string) (err error) {
 
 	r := C.set_option(instance.handle, C.CString(name), C.CString(value))
-	if r != C.EVMC_SET_OPTION_SUCCESS {
+	switch r {
+	case C.EVMC_SET_OPTION_INVALID_NAME:
 		err = fmt.Errorf("evmc: option '%s' not accepted", name)
+	case C.EVMC_SET_OPTION_INVALID_VALUE:
+		err = fmt.Errorf("evmc: option '%s' has invalid value", name)
+	case C.EVMC_SET_OPTION_SUCCESS:
 	}
 	return err
 }
