@@ -16,7 +16,7 @@ to access Ethereum environment and state.
    – a collection of utility functions for easier integration with EVMC.
 - [EVM Instructions](@ref instructions) 
    – the library with collection of metrics for EVM1 instruction set.
-- [EMVC VM Tester](@ref vmtester)
+- [EVMC VM Tester](@ref vmtester)
    – the EVMC-compatibility testing tool for VM implementations.
 
 
