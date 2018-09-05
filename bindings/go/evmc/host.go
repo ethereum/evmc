@@ -88,15 +88,10 @@ type HostContext interface {
 }
 
 //export accountExists
-func accountExists(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.int {
+func accountExists(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	exists := ctx.AccountExists(goAddress(*pAddr))
-	r := C.int(0)
-	if exists {
-		r = 1
-	}
-	return r
+	return C.bool(ctx.AccountExists(goAddress(*pAddr)))
 }
 
 //export getStorage
@@ -183,17 +178,17 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 }
 
 //export getBlockHash
-func getBlockHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, number int64) C.int {
+func getBlockHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, number int64) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 
 	blockhash, err := ctx.GetBlockHash(number)
 	if err != nil {
-		return C.int(0)
+		return false
 	}
 
 	*pResult = evmcUint256be(blockhash)
-	return C.int(1)
+	return true
 }
 
 //export emitLog
