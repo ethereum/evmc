@@ -31,19 +31,21 @@ static void destroy(struct evmc_instance* evm)
 /// Example options.
 ///
 /// VMs are allowed to omit this function implementation.
-static int set_option(struct evmc_instance* instance, char const* name, char const* value)
+static enum evmc_set_option_result set_option(struct evmc_instance* instance,
+                                              char const* name,
+                                              char const* value)
 {
     struct example_vm* vm = (struct example_vm*)instance;
     if (strcmp(name, "verbose") == 0)
     {
         long int v = strtol(value, NULL, 0);
         if (v > INT_MAX || v < INT_MIN)
-            return 0;
+            return EVMC_SET_OPTION_INVALID_VALUE;
         vm->verbose = (int)v;
-        return 1;
+        return EVMC_SET_OPTION_SUCCESS;
     }
 
-    return 0;
+    return EVMC_SET_OPTION_INVALID_NAME;
 }
 
 static void release_result(struct evmc_result const* result)
