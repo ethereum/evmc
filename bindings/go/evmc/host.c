@@ -53,12 +53,12 @@ static inline void go_exported_functions_type_checks()
     (void)result;
     enum evmc_storage_status storage_status;
     (void)storage_status;
-    int status;
-    (void)status;
+    bool bool_flag;
+    (void)bool_flag;
 
     evmc_account_exists_fn account_exists_fn = NULL;
-    status = account_exists_fn(context, address);
-    status = accountExists(context, address);
+    bool_flag = account_exists_fn(context, address);
+    bool_flag = accountExists(context, address);
 
     evmc_get_storage_fn get_storage_fn = NULL;
     get_storage_fn(uint256be, context, address, uint256be);
@@ -97,8 +97,8 @@ static inline void go_exported_functions_type_checks()
     tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
-    status = get_block_hash_fn(uint256be, context, number);
-    status = getBlockHash(uint256be, context, number);
+    bool_flag = get_block_hash_fn(uint256be, context, number);
+    bool_flag = getBlockHash(uint256be, context, number);
 
     evmc_emit_log_fn emit_log_fn = NULL;
     emit_log_fn(context, address, data, size, uint256be, size);

@@ -24,11 +24,11 @@ static evmc_uint256be balance(evmc_context* context, const evmc_address* address
     return ret;
 }
 
-static int account_exists(evmc_context* context, const evmc_address* address)
+static bool account_exists(evmc_context* context, const evmc_address* address)
 {
     (void)context;
     (void)address;
-    return 0;
+    return false;
 }
 
 static void get_storage(evmc_uint256be* result,
@@ -114,17 +114,17 @@ static evmc_tx_context get_tx_context(evmc_context* context)
     return result;
 }
 
-static int get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
+static bool get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     int64_t current_block_number = host->tx_context.block_number;
 
     if (number >= current_block_number || number < current_block_number - 256)
-        return 0;
+        return false;
 
     evmc_uint256be example_block_hash{};
     *result = example_block_hash;
-    return 1;
+    return true;
 }
 
 static void emit_log(evmc_context* context,

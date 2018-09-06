@@ -11,8 +11,9 @@
 #ifndef EVMC_H
 #define EVMC_H
 
-#include <stddef.h> /* Definition of size_t. */
-#include <stdint.h> /* Definition of int64_t, uint64_t. */
+#include <stdbool.h> /* Definition of bool, true and false. */
+#include <stddef.h>  /* Definition of size_t. */
+#include <stdint.h>  /* Definition of int64_t, uint64_t. */
 
 #if __cplusplus
 extern "C" {
@@ -147,19 +148,19 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
 /**
  * Get block hash callback function.
  *
- *  This callback function is used by an VM to query the block hash of
- *  a given block. If the requested block is not found, then an appropriate
- *  result code is returned.
+ * This callback function is used by an VM to query the block hash of
+ * a given block. If the requested block is not found, then an appropriate
+ * result code is returned.
  *
- *  @param[out] result   The returned block hash value. Only written to
- *                       if the return value is 1 (information is avialable).
- *  @param      context  The pointer to the Host execution context.
- *  @param      number   The block number.
- *  @return              1 if the information is available, 0 otherwise.
+ * @param[out] result   The returned block hash value. Only written to
+ *                      if the return value is 1 (information is avialable).
+ * @param      context  The pointer to the Host execution context.
+ * @param      number   The block number.
+ * @return              true if the information is available, false otherwise.
  */
-typedef int (*evmc_get_block_hash_fn)(struct evmc_uint256be* result,
-                                      struct evmc_context* context,
-                                      int64_t number);
+typedef bool (*evmc_get_block_hash_fn)(struct evmc_uint256be* result,
+                                       struct evmc_context* context,
+                                       int64_t number);
 
 /**
  * The execution status code.
@@ -387,17 +388,16 @@ struct evmc_result
 
 
 /**
- * Check account existence callback function
+ * Check account existence callback function.
  *
- *  This callback function is used by the EVM to check if
- *  there exists an account at given address.
- *  @param      context  The pointer to the Host execution context.
- *                       @see ::evmc_context.
- *  @param      address  The address of the account the query is about.
- *  @return              1 if exists, 0 otherwise.
+ * This callback function is used by the VM to check if
+ * there exists an account at given address.
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account the query is about.
+ * @return         true if exists, false otherwise.
  */
-typedef int (*evmc_account_exists_fn)(struct evmc_context* context,
-                                      const struct evmc_address* address);
+typedef bool (*evmc_account_exists_fn)(struct evmc_context* context,
+                                       const struct evmc_address* address);
 
 /**
  * Get storage callback function.
