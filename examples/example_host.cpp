@@ -9,26 +9,42 @@
 
 #include <evmc/helpers.h>
 
+#include <cstring>
+#include <map>
+
+/// The comparator for std::map<evmc_address, ...>.
+bool operator<(const evmc_address& a, const evmc_address& b)
+{
+    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
+}
+
+/// The comparator for std::map<evmc_uint256be, ...>.
+bool operator<(const evmc_uint256be& a, const evmc_uint256be& b)
+{
+    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
+}
+
+struct account
+{
+    evmc_uint256be balance = {};
+    size_t code_size = 0;
+    evmc_uint256be code_hash = {};
+    std::map<evmc_uint256be, evmc_uint256be> storage;
+};
+
 struct example_host_context : evmc_context
 {
     example_host_context();
 
     evmc_tx_context tx_context = {};
-};
 
-static evmc_uint256be balance(evmc_context* context, const evmc_address* address)
-{
-    (void)context;
-    (void)address;
-    evmc_uint256be ret = {{1, 2, 3, 4}};
-    return ret;
-}
+    std::map<evmc_address, account> accounts;
+};
 
 static bool account_exists(evmc_context* context, const evmc_address* address)
 {
-    (void)context;
-    (void)address;
-    return false;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    return host->accounts.find(*address) != host->accounts.end();
 }
 
 static void get_storage(evmc_uint256be* result,
@@ -56,15 +72,25 @@ static enum evmc_storage_status set_storage(evmc_context* context,
 
 static bool get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)
 {
-    *result = balance(context, address);
-    return true;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    auto it = host->accounts.find(*address);
+    if (it != host->accounts.end())
+    {
+        *result = it->second.balance;
+        return true;
+    }
+    return false;
 }
 
 static bool get_code_size(size_t* result, evmc_context* context, const evmc_address* address)
 {
-    (void)result;
-    (void)context;
-    (void)address;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    auto it = host->accounts.find(*address);
+    if (it != host->accounts.end())
+    {
+        *result = it->second.code_size;
+        return true;
+    }
     return false;
 }
 
@@ -72,9 +98,13 @@ static bool get_code_hash(evmc_uint256be* result,
                           evmc_context* context,
                           const evmc_address* address)
 {
-    (void)result;
-    (void)context;
-    (void)address;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    auto it = host->accounts.find(*address);
+    if (it != host->accounts.end())
+    {
+        *result = it->second.code_hash;
+        return true;
+    }
     return false;
 }
 
