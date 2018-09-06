@@ -15,9 +15,9 @@ package evmc
 #include <stdlib.h>
 #include <string.h>
 
-static inline int set_option(struct evmc_instance* instance, char* name, char* value)
+static inline enum evmc_set_option_result set_option(struct evmc_instance* instance, char* name, char* value)
 {
-	int ret = evmc_set_option(instance, name, value);
+	enum evmc_set_option_result ret = evmc_set_option(instance, name, value);
 	free(name);
 	free(value);
 	return ret;
@@ -188,8 +188,12 @@ func (instance *Instance) Version() string {
 func (instance *Instance) SetOption(name string, value string) (err error) {
 
 	r := C.set_option(instance.handle, C.CString(name), C.CString(value))
-	if r != 1 {
+	switch r {
+	case C.EVMC_SET_OPTION_INVALID_NAME:
 		err = fmt.Errorf("evmc: option '%s' not accepted", name)
+	case C.EVMC_SET_OPTION_INVALID_VALUE:
+		err = fmt.Errorf("evmc: option '%s' has invalid value", name)
+	case C.EVMC_SET_OPTION_SUCCESS:
 	}
 	return err
 }

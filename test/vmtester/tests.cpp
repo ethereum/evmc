@@ -64,10 +64,10 @@ TEST_F(evmc_vm_test, set_option_unknown)
 {
     if (vm->set_option)
     {
-        int r = vm->set_option(vm, "unknown_option_csk9twq", "v");
-        EXPECT_EQ(r, 0);
+        enum evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", "v");
+        EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
         r = vm->set_option(vm, "unknown_option_csk9twq", "x");
-        EXPECT_EQ(r, 0);
+        EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
     }
 }
 
@@ -75,8 +75,8 @@ TEST_F(evmc_vm_test, set_option_empty_value)
 {
     if (vm->set_option)
     {
-        int r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
-        EXPECT_EQ(r, 0);
+        enum evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
+        EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
     }
 }
 

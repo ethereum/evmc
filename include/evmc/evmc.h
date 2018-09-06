@@ -654,6 +654,15 @@ struct evmc_instance;
  */
 typedef void (*evmc_destroy_fn)(struct evmc_instance* evm);
 
+/**
+ * Possible outcomes of evmc_set_option.
+ */
+enum evmc_set_option_result
+{
+    EVMC_SET_OPTION_SUCCESS = 0,
+    EVMC_SET_OPTION_INVALID_NAME = 1,
+    EVMC_SET_OPTION_INVALID_VALUE = 2
+};
 
 /**
  * Configures the EVM instance.
@@ -666,9 +675,11 @@ typedef void (*evmc_destroy_fn)(struct evmc_instance* evm);
  *  @param evm    The EVM instance to be configured.
  *  @param name   The option name. NULL-terminated string. Cannot be NULL.
  *  @param value  The new option value. NULL-terminated string. Cannot be NULL.
- *  @return       1 if the option set successfully, 0 otherwise.
+ *  @return       The outcome of the operation.
  */
-typedef int (*evmc_set_option_fn)(struct evmc_instance* evm, char const* name, char const* value);
+typedef enum evmc_set_option_result (*evmc_set_option_fn)(struct evmc_instance* evm,
+                                                          char const* name,
+                                                          char const* value);
 
 
 /**

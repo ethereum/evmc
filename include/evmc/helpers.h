@@ -56,13 +56,13 @@ static inline void evmc_destroy(struct evmc_instance* instance)
  *
  * @see evmc_set_option_fn
  */
-static inline int evmc_set_option(struct evmc_instance* instance,
-                                  char const* name,
-                                  char const* value)
+static inline enum evmc_set_option_result evmc_set_option(struct evmc_instance* instance,
+                                                          char const* name,
+                                                          char const* value)
 {
     if (instance->set_option)
         return instance->set_option(instance, name, value);
-    return 0;
+    return EVMC_SET_OPTION_INVALID_NAME;
 }
 
 /**
