@@ -8,11 +8,11 @@
 
 # Cable version.
 #
-# This is internal variable automaticaly updated with external tools.
+# This is internal variable automatically updated with external tools.
 # Use CABLE_VERSION variable if you need this information.
-set(version 0.2.11)
+set(version 0.2.13)
 
-# For conveniance, add the project CMake module dir to module path.
+# For convenience, add the project CMake module dir to module path.
 set(module_dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if(EXISTS ${module_dir})
     list(APPEND CMAKE_MODULE_PATH ${module_dir})
@@ -24,7 +24,7 @@ if(CABLE_VERSION)
     # Compare versions of the top project and this instances.
     if(CABLE_VERSION VERSION_LESS version)
         set(severity WARNING)
-        set(comment "vesion older than ${version}")
+        set(comment "version older than ${version}")
     elseif(CABLE_VERSION VERSION_EQUAL version)
         set(severity STATUS)
         set(comment "same version")
