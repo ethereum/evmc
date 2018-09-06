@@ -23,7 +23,14 @@ extern "C" {
 
 enum
 {
-    /** The EVMC ABI version number of the interface declared in this file. */
+    /**
+     * The EVMC ABI version number of the interface declared in this file.
+     *
+     * The EVMC ABI version always equals the major version number of the EVMC project.
+     * The Host SHOULD check if the ABI versions match when dynamically loading VMs.
+     *
+     * @see @ref versioning
+     */
     EVMC_ABI_VERSION = 6
 };
 
