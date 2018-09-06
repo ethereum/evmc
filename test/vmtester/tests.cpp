@@ -12,7 +12,7 @@
 
 // Compile time checks:
 
-static_assert(sizeof(evmc_uint256be) == 32, "evmc_uint256be is too big");
+static_assert(sizeof(evmc_bytes32) == 32, "evmc_bytes32 is too big");
 static_assert(sizeof(evmc_address) == 20, "evmc_address is too big");
 static_assert(sizeof(evmc_result) <= 64, "evmc_result does not fit cache line");
 static_assert(sizeof(evmc_instance) <= 64, "evmc_instance does not fit cache line");
