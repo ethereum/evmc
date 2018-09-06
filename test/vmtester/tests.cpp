@@ -60,11 +60,11 @@ TEST_F(evmc_vm_test, execute)
     example_host_destroy_context(context);
 }
 
-TEST_F(evmc_vm_test, set_option_unknown)
+TEST_F(evmc_vm_test, set_option_unknown_name)
 {
     if (vm->set_option)
     {
-        enum evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", "v");
+        evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", "v");
         EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
         r = vm->set_option(vm, "unknown_option_csk9twq", "x");
         EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
@@ -75,8 +75,25 @@ TEST_F(evmc_vm_test, set_option_empty_value)
 {
     if (vm->set_option)
     {
-        enum evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
+        evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
         EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
+    }
+}
+
+TEST_F(evmc_vm_test, set_option_unknown_value)
+{
+    auto r = evmc_set_option(vm, "verbose", "1");
+
+    // Execute more tests if the VM supports "verbose" option.
+    if (r != EVMC_SET_OPTION_INVALID_NAME)
+    {
+        // The VM supports "verbose" option. Try dummy value for it.
+        auto r2 = evmc_set_option(vm, "verbose", "GjNOONsbUl");
+        EXPECT_EQ(r2, EVMC_SET_OPTION_INVALID_VALUE);
+
+        // For null the behavior should be the same.
+        auto r3 = evmc_set_option(vm, "verbose", nullptr);
+        EXPECT_EQ(r3, EVMC_SET_OPTION_INVALID_VALUE);
     }
 }
 
