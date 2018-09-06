@@ -67,13 +67,14 @@ static size_t get_code_size(evmc_context* context, const evmc_address* address)
     return 0;
 }
 
-static void get_code_hash(evmc_uint256be* result,
+static bool get_code_hash(evmc_uint256be* result,
                           evmc_context* context,
                           const evmc_address* address)
 {
     (void)result;
     (void)context;
     (void)address;
+    return false;
 }
 
 static size_t copy_code(evmc_context* context,
