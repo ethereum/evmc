@@ -52,15 +52,19 @@ static bool account_exists(evmc_context* context, const evmc_address* address)
     return host->accounts.find(*address) != host->accounts.end();
 }
 
-static void get_storage(evmc_uint256be* result,
+static bool get_storage(evmc_uint256be* result,
                         evmc_context* context,
                         const evmc_address* address,
                         const evmc_uint256be* key)
 {
-    (void)result;
-    (void)context;
-    (void)address;
-    (void)key;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    auto it = host->accounts.find(*address);
+    if (it != host->accounts.end())
+    {
+        *result = it->second.storage[*key];
+        return true;
+    }
+    return false;
 }
 
 static enum evmc_storage_status set_storage(evmc_context* context,
