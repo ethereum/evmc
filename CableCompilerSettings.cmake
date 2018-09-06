@@ -35,7 +35,7 @@ macro(cable_configure_compiler)
         cmake_parse_arguments(cable "NO_CONVERSION_WARNINGS;NO_STACK_PROTECTION" "" "" ${ARGN})
 
         if(cable_UNPARSED_ARGUMENTS)
-            message(FATAL_ERROR "cable_configure_compiler: Uknown options: ${cable_UNPARSED_ARGUMENTS}")
+            message(FATAL_ERROR "cable_configure_compiler: Unknown options: ${cable_UNPARSED_ARGUMENTS}")
         endif()
 
         # Set helper variables recognizing C++ compilers.
