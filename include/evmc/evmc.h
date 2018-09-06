@@ -431,6 +431,7 @@ typedef void (*evmc_get_storage_fn)(struct evmc_uint256be* result,
  * - 0 is zero value,
  * - X != 0 (X is any value other than 0),
  * - Y != X, Y != 0 (Y is any value other than X and 0),
+ * - Z != Y (Z is any value other than Y),
  * - the "->" means the change from one value to another.
  */
 enum evmc_storage_status
