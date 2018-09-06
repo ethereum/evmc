@@ -475,14 +475,19 @@ typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* con
 /**
  * Get balance callback function.
  *
- *  This callback function is used by an EVM to query the balance of the given
- *  address.
- *  @param[out] result   The returned balance value.
- *  @param      context  The pointer to the Host execution context.
- *                       @see ::evmc_context.
- *  @param      address  The address.
+ * This callback function is used by a VM to query the balance of the given address.
+ *
+ * @param[out] result   The pointer to the place where to put the result balance.
+ *                      The pointed memory is only modified when the function returns true.
+ *                      The pointer MUST NOT be null.
+ * @param      context  The pointer to the Host execution context.
+ * @param      address  The address of the account.
+ * @return              If the account exists its balance is put at the location
+ *                      pointed by @p result and true is returned.
+ *                      If the account does not exist false is returned without
+ *                      modifying the memory pointed by @p result.
  */
-typedef void (*evmc_get_balance_fn)(struct evmc_uint256be* result,
+typedef bool (*evmc_get_balance_fn)(struct evmc_uint256be* result,
                                     struct evmc_context* context,
                                     const struct evmc_address* address);
 

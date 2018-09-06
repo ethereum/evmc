@@ -73,7 +73,7 @@ type HostContext interface {
 	AccountExists(addr common.Address) bool
 	GetStorage(addr common.Address, key common.Hash) common.Hash
 	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
-	GetBalance(addr common.Address) common.Hash
+	GetBalance(addr common.Address) (common.Hash, error)
 	GetCodeSize(addr common.Address) int
 	GetCodeHash(addr common.Address) common.Hash
 	GetCode(addr common.Address) []byte
@@ -110,11 +110,15 @@ func setStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.struc
 }
 
 //export getBalance
-func getBalance(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) {
+func getBalance(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	balance := ctx.GetBalance(goAddress(*pAddr))
+	balance, err := ctx.GetBalance(goAddress(*pAddr))
+	if err != nil {
+		return false
+	}
 	*pResult = evmcUint256be(balance)
+	return true
 }
 
 //export getCodeSize

@@ -69,8 +69,8 @@ static inline void go_exported_functions_type_checks()
     storage_status = setStorage(context, address, uint256be, uint256be);
 
     evmc_get_balance_fn get_balance_fn = NULL;
-    get_balance_fn(uint256be, context, address);
-    getBalance(uint256be, context, address);
+    bool_flag = get_balance_fn(uint256be, context, address);
+    bool_flag = getBalance(uint256be, context, address);
 
     evmc_get_code_size_fn get_code_size_fn = NULL;
     size = get_code_size_fn(context, address);

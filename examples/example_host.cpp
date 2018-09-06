@@ -54,9 +54,10 @@ static enum evmc_storage_status set_storage(evmc_context* context,
     return EVMC_STORAGE_UNCHANGED;
 }
 
-static void get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)
+static bool get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)
 {
     *result = balance(context, address);
+    return true;
 }
 
 static size_t get_code_size(evmc_context* context, const evmc_address* address)
