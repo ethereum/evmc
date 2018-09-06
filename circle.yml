@@ -11,6 +11,12 @@ jobs:
         command: |
           find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
+    - run:
+        name: "Run codespell"
+        command: |
+          sudo pip3 install --upgrade pip setuptools
+          sudo pip3 install codespell
+          codespell --skip=".git" --ignore-words=./.codespell-whitelist
 
   build: &build
     docker:

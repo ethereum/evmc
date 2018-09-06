@@ -259,7 +259,7 @@ enum evmc_status_code
     EVMC_ARGUMENT_OUT_OF_RANGE = 14,
 
     /**
-     * A WebAssembly `unreachable` instruction has been hit during exection.
+     * A WebAssembly `unreachable` instruction has been hit during execution.
      */
     EVMC_WASM_UNREACHABLE_INSTRUCTION = 15,
 
