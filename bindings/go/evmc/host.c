@@ -41,7 +41,7 @@ static inline void go_exported_functions_type_checks()
 {
     struct evmc_context* context = NULL;
     struct evmc_address* address = NULL;
-    struct evmc_bytes32* bytes32 = NULL;
+    evmc_bytes32* bytes32 = NULL;
     evmc_uint256be* uint256be = NULL;
     uint8_t* data = NULL;
     size_t size = 0;

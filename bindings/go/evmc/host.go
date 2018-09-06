@@ -54,7 +54,7 @@ func goAddress(in C.struct_evmc_address) common.Address {
 	return out
 }
 
-func goHash(in C.struct_evmc_bytes32) common.Hash {
+func goHash(in C.evmc_bytes32) common.Hash {
 	out := common.Hash{}
 	for i := 0; i < len(out); i++ {
 		out[i] = byte(in.bytes[i])
@@ -95,7 +95,7 @@ func accountExists(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 }
 
 //export getStorage
-func getStorage(pResult *C.struct_evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.struct_evmc_bytes32) C.bool {
+func getStorage(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.struct_evmc_bytes32) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 	value, err := ctx.GetStorage(goAddress(*pAddr), goHash(*pKey))
@@ -107,7 +107,7 @@ func getStorage(pResult *C.struct_evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.st
 }
 
 //export setStorage
-func setStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.struct_evmc_bytes32, pVal *C.struct_evmc_bytes32) C.enum_evmc_storage_status {
+func setStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_bytes32, pVal *C.evmc_bytes32) C.enum_evmc_storage_status {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 	status, err := ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal))
@@ -142,7 +142,7 @@ func getCodeSize(pResult *C.size_t, pCtx unsafe.Pointer, pAddr *C.struct_evmc_ad
 }
 
 //export getCodeHash
-func getCodeHash(pResult *C.struct_evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
+func getCodeHash(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 	codeHash, err := ctx.GetCodeHash(goAddress(*pAddr))
@@ -200,7 +200,7 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 }
 
 //export getBlockHash
-func getBlockHash(pResult *C.struct_evmc_bytes32, pCtx unsafe.Pointer, number int64) C.bool {
+func getBlockHash(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, number int64) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 

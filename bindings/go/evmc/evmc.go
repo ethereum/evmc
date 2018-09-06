@@ -36,7 +36,7 @@ static struct evmc_result execute_wrapper(struct evmc_instance* instance,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
 	const struct evmc_address* destination, const struct evmc_address* sender,
 	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
-	const uint8_t* code, size_t code_size, const struct evmc_bytes32* create2_salt)
+	const uint8_t* code, size_t code_size, const evmc_bytes32* create2_salt)
 {
 	struct evmc_message msg = {
 		kind,
@@ -68,8 +68,8 @@ import (
 
 // Static asserts.
 const (
-	_ = uint(common.HashLength - C.sizeof_struct_evmc_bytes32) // The size of evmc_bytes32 equals the size of Hash.
-	_ = uint(C.sizeof_struct_evmc_bytes32 - common.HashLength)
+	_ = uint(common.HashLength - C.sizeof_evmc_bytes32) // The size of evmc_bytes32 equals the size of Hash.
+	_ = uint(C.sizeof_evmc_bytes32 - common.HashLength)
 	_ = uint(common.AddressLength - C.sizeof_struct_evmc_address) // The size of evmc_address equals the size of Address.
 	_ = uint(C.sizeof_struct_evmc_address - common.AddressLength)
 )
@@ -261,8 +261,8 @@ func getHostContext(idx int) HostContext {
 	return ctx
 }
 
-func evmcBytes32(in common.Hash) C.struct_evmc_bytes32 {
-	out := C.struct_evmc_bytes32{}
+func evmcBytes32(in common.Hash) C.evmc_bytes32 {
+	out := C.evmc_bytes32{}
 	for i := 0; i < len(in); i++ {
 		out.bytes[i] = C.uint8_t(in[i])
 	}

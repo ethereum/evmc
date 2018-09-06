@@ -40,11 +40,11 @@ enum
  *
  * 32 bytes of data capable of storing e.g. 256-bit hashes.
  */
-struct evmc_bytes32
+typedef struct evmc_bytes32
 {
     /** The 32 bytes. */
     uint8_t bytes[32];
-};
+} evmc_bytes32;
 
 /**
  * The alias for evmc_bytes32 to represent a big-endian 256-bit integer.
@@ -126,7 +126,7 @@ struct evmc_message
      *
      * Ignored unless kind is EVMC_CREATE2.
      */
-    struct evmc_bytes32 create2_salt;
+    evmc_bytes32 create2_salt;
 };
 
 
@@ -168,7 +168,7 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
  * @param      number   The block number.
  * @return              true if the information is available, false otherwise.
  */
-typedef bool (*evmc_get_block_hash_fn)(struct evmc_bytes32* result,
+typedef bool (*evmc_get_block_hash_fn)(evmc_bytes32* result,
                                        struct evmc_context* context,
                                        int64_t number);
 
@@ -423,10 +423,10 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context,
  *                      If the account does not exist false is returned without
  *                      modifying the memory pointed by @p result.
  */
-typedef bool (*evmc_get_storage_fn)(struct evmc_bytes32* result,
+typedef bool (*evmc_get_storage_fn)(evmc_bytes32* result,
                                     struct evmc_context* context,
                                     const struct evmc_address* address,
-                                    const struct evmc_bytes32* key);
+                                    const evmc_bytes32* key);
 
 
 /**
@@ -487,8 +487,8 @@ enum evmc_storage_status
  */
 typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
                                                         const struct evmc_address* address,
-                                                        const struct evmc_bytes32* key,
-                                                        const struct evmc_bytes32* value);
+                                                        const evmc_bytes32* key,
+                                                        const evmc_bytes32* value);
 
 /**
  * Get balance callback function.
@@ -546,7 +546,7 @@ typedef bool (*evmc_get_code_size_fn)(size_t* result,
  *                      If the account does not exist false is returned without
  *                      modifying the memory pointed by @p result.
  */
-typedef bool (*evmc_get_code_hash_fn)(struct evmc_bytes32* result,
+typedef bool (*evmc_get_code_hash_fn)(evmc_bytes32* result,
                                       struct evmc_context* context,
                                       const struct evmc_address* address);
 
@@ -608,7 +608,7 @@ typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
                                  const struct evmc_address* address,
                                  const uint8_t* data,
                                  size_t data_size,
-                                 const struct evmc_bytes32 topics[],
+                                 const evmc_bytes32 topics[],
                                  size_t topics_count);
 
 /**
