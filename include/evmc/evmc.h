@@ -34,19 +34,22 @@ enum
     EVMC_ABI_VERSION = 6
 };
 
+
 /**
- * Big-endian 256-bit integer.
+ * The fixed size array of 32 bytes.
  *
- * 32 bytes of data representing big-endian 256-bit integer. I.e. bytes[0] is
- * the most significant byte, bytes[31] is the least significant byte.
- * This type is used to transfer to/from the VM values interpreted by the user
- * as both 256-bit integers and 256-bit hashes.
+ * 32 bytes of data capable of storing e.g. 256-bit hashes.
  */
-struct evmc_uint256be
+struct evmc_bytes32
 {
-    /** The 32 bytes of the big-endian integer or hash. */
+    /** The 32 bytes. */
     uint8_t bytes[32];
 };
+
+/**
+ * The alias for evmc_bytes32 to represent a big-endian 256-bit integer.
+ */
+typedef struct evmc_bytes32 evmc_uint256be;
 
 /** Big-endian 160-bit hash suitable for keeping an Ethereum address. */
 struct evmc_address
@@ -116,27 +119,27 @@ struct evmc_message
     /**
      * The amount of Ether transferred with the message.
      */
-    struct evmc_uint256be value;
+    evmc_uint256be value;
 
     /**
      * The optional value used in new contract address construction.
      *
      * Ignored unless kind is EVMC_CREATE2.
      */
-    struct evmc_uint256be create2_salt;
+    struct evmc_bytes32 create2_salt;
 };
 
 
 /** The transaction and block data for execution. */
 struct evmc_tx_context
 {
-    struct evmc_uint256be tx_gas_price;     /**< The transaction gas price. */
-    struct evmc_address tx_origin;          /**< The transaction origin account. */
-    struct evmc_address block_coinbase;     /**< The miner of the block. */
-    int64_t block_number;                   /**< The block number. */
-    int64_t block_timestamp;                /**< The block timestamp. */
-    int64_t block_gas_limit;                /**< The block gas limit. */
-    struct evmc_uint256be block_difficulty; /**< The block difficulty. */
+    evmc_uint256be tx_gas_price;        /**< The transaction gas price. */
+    struct evmc_address tx_origin;      /**< The transaction origin account. */
+    struct evmc_address block_coinbase; /**< The miner of the block. */
+    int64_t block_number;               /**< The block number. */
+    int64_t block_timestamp;            /**< The block timestamp. */
+    int64_t block_gas_limit;            /**< The block gas limit. */
+    evmc_uint256be block_difficulty;    /**< The block difficulty. */
 };
 
 struct evmc_context;
@@ -165,7 +168,7 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
  * @param      number   The block number.
  * @return              true if the information is available, false otherwise.
  */
-typedef bool (*evmc_get_block_hash_fn)(struct evmc_uint256be* result,
+typedef bool (*evmc_get_block_hash_fn)(struct evmc_bytes32* result,
                                        struct evmc_context* context,
                                        int64_t number);
 
@@ -420,10 +423,10 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context,
  *                      If the account does not exist false is returned without
  *                      modifying the memory pointed by @p result.
  */
-typedef bool (*evmc_get_storage_fn)(struct evmc_uint256be* result,
+typedef bool (*evmc_get_storage_fn)(struct evmc_bytes32* result,
                                     struct evmc_context* context,
                                     const struct evmc_address* address,
-                                    const struct evmc_uint256be* key);
+                                    const struct evmc_bytes32* key);
 
 
 /**
@@ -484,8 +487,8 @@ enum evmc_storage_status
  */
 typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
                                                         const struct evmc_address* address,
-                                                        const struct evmc_uint256be* key,
-                                                        const struct evmc_uint256be* value);
+                                                        const struct evmc_bytes32* key,
+                                                        const struct evmc_bytes32* value);
 
 /**
  * Get balance callback function.
@@ -502,7 +505,7 @@ typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* con
  *                      If the account does not exist false is returned without
  *                      modifying the memory pointed by @p result.
  */
-typedef bool (*evmc_get_balance_fn)(struct evmc_uint256be* result,
+typedef bool (*evmc_get_balance_fn)(evmc_uint256be* result,
                                     struct evmc_context* context,
                                     const struct evmc_address* address);
 
@@ -543,7 +546,7 @@ typedef bool (*evmc_get_code_size_fn)(size_t* result,
  *                      If the account does not exist false is returned without
  *                      modifying the memory pointed by @p result.
  */
-typedef bool (*evmc_get_code_hash_fn)(struct evmc_uint256be* result,
+typedef bool (*evmc_get_code_hash_fn)(struct evmc_bytes32* result,
                                       struct evmc_context* context,
                                       const struct evmc_address* address);
 
@@ -605,7 +608,7 @@ typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
                                  const struct evmc_address* address,
                                  const uint8_t* data,
                                  size_t data_size,
-                                 const struct evmc_uint256be topics[],
+                                 const struct evmc_bytes32 topics[],
                                  size_t topics_count);
 
 /**
@@ -806,7 +809,7 @@ typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
                                     enum evmc_status_code status_code,
                                     int64_t gas_left,
                                     size_t stack_num_items,
-                                    const struct evmc_uint256be* pushed_stack_item,
+                                    const evmc_uint256be* pushed_stack_item,
                                     size_t memory_size,
                                     size_t changed_memory_offset,
                                     size_t changed_memory_size,

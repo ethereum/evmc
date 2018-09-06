@@ -20,7 +20,7 @@ int main()
     const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code);
     const uint8_t input[] = "Hello World!";
-    const struct evmc_uint256be value = {{1, 0}};
+    const evmc_uint256be value = {{1, 0}};
     const struct evmc_address addr = {{0, 1, 2}};
     const int64_t gas = 200000;
     struct evmc_context* ctx = example_host_create_context();

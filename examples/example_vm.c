@@ -114,11 +114,11 @@ static struct evmc_result execute(struct evmc_instance* instance,
     }
     else if (code_size == strlen(counter) && strncmp((const char*)code, counter, code_size) == 0)
     {
-        struct evmc_uint256be value;
-        const struct evmc_uint256be index = {{0}};
-        context->host->get_storage(&value, context, &msg->destination, &index);
+        struct evmc_bytes32 value;
+        const struct evmc_bytes32 key = {{0}};
+        context->host->get_storage(&value, context, &msg->destination, &key);
         value.bytes[31]++;
-        context->host->set_storage(context, &msg->destination, &index, &value);
+        context->host->set_storage(context, &msg->destination, &key, &value);
         ret.status_code = EVMC_SUCCESS;
         return ret;
     }
