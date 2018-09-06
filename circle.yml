@@ -11,16 +11,11 @@ jobs:
         command: |
           find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
-
-  codespell:
-    docker:
-    - image: circleci/python
-    steps:
-    - checkout
     - run:
         name: "Run codespell"
         command: |
-          sudo pip install codespell
+          sudo pip3 install --upgrade pip setuptools
+          sudo pip3 install codespell
           codespell --skip=".git" --ignore-words=./.codespell-whitelist
 
   build: &build
@@ -133,7 +128,6 @@ workflows:
   evmc:
     jobs:
       - lint
-      - codespell
       - build
       - build-clang-3.8
       - bindings-go-1.10
