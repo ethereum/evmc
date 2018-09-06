@@ -7,27 +7,10 @@
 
 #include "example_host.h"
 
+#include <evmc/helpers.hpp>
 #include <evmc/helpers.h>
 
-#include <cstring>
 #include <map>
-
-/// The comparator for std::map<evmc_address, ...>.
-bool operator<(const evmc_address& a, const evmc_address& b)
-{
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
-}
-
-/// The comparator for std::map<evmc_bytes32, ...>.
-bool operator<(const evmc_bytes32& a, const evmc_bytes32& b)
-{
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
-}
-
-bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
-{
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
-}
 
 struct account
 {
