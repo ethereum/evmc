@@ -73,8 +73,8 @@ static inline void go_exported_functions_type_checks()
     bool_flag = getBalance(uint256be, context, address);
 
     evmc_get_code_size_fn get_code_size_fn = NULL;
-    size = get_code_size_fn(context, address);
-    size = getCodeSize(context, address);
+    bool_flag = get_code_size_fn(&size, context, address);
+    bool_flag = getCodeSize(&size, context, address);
 
     evmc_get_code_hash_fn get_code_hash_fn = NULL;
     bool_flag = get_code_hash_fn(uint256be, context, address);
