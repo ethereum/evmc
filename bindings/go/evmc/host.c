@@ -69,16 +69,16 @@ static inline void go_exported_functions_type_checks()
     storage_status = setStorage(context, address, uint256be, uint256be);
 
     evmc_get_balance_fn get_balance_fn = NULL;
-    get_balance_fn(uint256be, context, address);
-    getBalance(uint256be, context, address);
+    bool_flag = get_balance_fn(uint256be, context, address);
+    bool_flag = getBalance(uint256be, context, address);
 
     evmc_get_code_size_fn get_code_size_fn = NULL;
-    size = get_code_size_fn(context, address);
-    size = getCodeSize(context, address);
+    bool_flag = get_code_size_fn(&size, context, address);
+    bool_flag = getCodeSize(&size, context, address);
 
     evmc_get_code_hash_fn get_code_hash_fn = NULL;
-    get_code_hash_fn(uint256be, context, address);
-    getCodeHash(uint256be, context, address);
+    bool_flag = get_code_hash_fn(uint256be, context, address);
+    bool_flag = getCodeHash(uint256be, context, address);
 
     evmc_copy_code_fn copy_code_fn = NULL;
     size = copy_code_fn(context, address, size, data, size);

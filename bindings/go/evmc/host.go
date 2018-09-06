@@ -73,9 +73,9 @@ type HostContext interface {
 	AccountExists(addr common.Address) bool
 	GetStorage(addr common.Address, key common.Hash) common.Hash
 	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
-	GetBalance(addr common.Address) common.Hash
-	GetCodeSize(addr common.Address) int
-	GetCodeHash(addr common.Address) common.Hash
+	GetBalance(addr common.Address) (common.Hash, error)
+	GetCodeSize(addr common.Address) (int, error)
+	GetCodeHash(addr common.Address) (common.Hash, error)
 	GetCode(addr common.Address) []byte
 	Selfdestruct(addr common.Address, beneficiary common.Address)
 	GetTxContext() (gasPrice common.Hash, origin common.Address, coinbase common.Address, number int64, timestamp int64,
@@ -110,25 +110,39 @@ func setStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.struc
 }
 
 //export getBalance
-func getBalance(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) {
+func getBalance(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	balance := ctx.GetBalance(goAddress(*pAddr))
+	balance, err := ctx.GetBalance(goAddress(*pAddr))
+	if err != nil {
+		return false
+	}
 	*pResult = evmcUint256be(balance)
+	return true
 }
 
 //export getCodeSize
-func getCodeSize(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.size_t {
+func getCodeSize(pResult *C.size_t, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	return C.size_t(ctx.GetCodeSize(goAddress(*pAddr)))
+	codeSize, err := ctx.GetCodeSize(goAddress(*pAddr))
+	if err != nil {
+		return false
+	}
+	*pResult = C.size_t(codeSize)
+	return true
 }
 
 //export getCodeHash
-func getCodeHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) {
+func getCodeHash(pResult *C.struct_evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address) C.bool {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	*pResult = evmcUint256be(ctx.GetCodeHash(goAddress(*pAddr)))
+	codeHash, err := ctx.GetCodeHash(goAddress(*pAddr))
+	if err != nil {
+		return false
+	}
+	*pResult = evmcUint256be(codeHash)
+	return true
 }
 
 //export copyCode
