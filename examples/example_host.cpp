@@ -24,6 +24,11 @@ bool operator<(const evmc_uint256be& a, const evmc_uint256be& b)
     return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
 }
 
+bool operator==(const evmc_uint256be& a, const evmc_uint256be& b)
+{
+    return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
+}
+
 struct account
 {
     evmc_uint256be balance = {};
@@ -63,11 +68,26 @@ static enum evmc_storage_status set_storage(evmc_context* context,
                                             const evmc_uint256be* key,
                                             const evmc_uint256be* value)
 {
-    (void)context;
-    (void)address;
-    (void)key;
-    (void)value;
-    return EVMC_STORAGE_UNCHANGED;
+    example_host_context* host = static_cast<example_host_context*>(context);
+    auto accountIt = host->accounts.find(*address);
+    if (accountIt == host->accounts.end())
+        return EVMC_STORAGE_NON_EXISTING_ACCOUNT;
+
+    auto storageIt = accountIt->second.storage.find(*key);
+    if (storageIt == accountIt->second.storage.end())
+    {
+        accountIt->second.storage.emplace(std::make_pair(*key, *value));
+        return EVMC_STORAGE_ADDED;
+    }
+    else if (storageIt->second == *value)
+    {
+        return EVMC_STORAGE_UNCHANGED;
+    }
+    else
+    {
+        storageIt->second = *value;
+        return EVMC_STORAGE_MODIFIED;
+    }
 }
 
 static bool get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)

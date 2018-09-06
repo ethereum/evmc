@@ -459,21 +459,25 @@ enum evmc_storage_status
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 4
+    EVMC_STORAGE_DELETED = 4,
+
+    /**
+     * An attempt to modify storage of an non-existing account.
+     */
+    EVMC_STORAGE_NON_EXISTING_ACCOUNT = 5
 };
 
 
 /**
  * Set storage callback function.
  *
- * This callback function is used by an EVM to update the given contract
- * storage entry.
+ * This callback function is used by an EVM to update the given contract storage entry.
+ *
  * @param context  The pointer to the Host execution context.
- *                 @see ::evmc_context.
  * @param address  The address of the contract.
  * @param key      The index of the storage entry.
  * @param value    The value to be stored.
- * @return         The effect on the storage item, @see ::evmc_storage_status.
+ * @return         The effect on the storage item. @see ::evmc_storage_status.
  */
 typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
                                                         const struct evmc_address* address,
