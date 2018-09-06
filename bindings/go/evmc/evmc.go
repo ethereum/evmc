@@ -34,7 +34,7 @@ extern const struct evmc_host_interface evmc_go_host;
 static struct evmc_result execute_wrapper(struct evmc_instance* instance,
 	int64_t context_index, enum evmc_revision rev,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
-	const struct evmc_address* destination, const struct evmc_address* sender,
+	const evmc_address* destination, const evmc_address* sender,
 	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
 	const uint8_t* code, size_t code_size, const evmc_bytes32* create2_salt)
 {
@@ -70,8 +70,8 @@ import (
 const (
 	_ = uint(common.HashLength - C.sizeof_evmc_bytes32) // The size of evmc_bytes32 equals the size of Hash.
 	_ = uint(C.sizeof_evmc_bytes32 - common.HashLength)
-	_ = uint(common.AddressLength - C.sizeof_struct_evmc_address) // The size of evmc_address equals the size of Address.
-	_ = uint(C.sizeof_struct_evmc_address - common.AddressLength)
+	_ = uint(common.AddressLength - C.sizeof_evmc_address) // The size of evmc_address equals the size of Address.
+	_ = uint(C.sizeof_evmc_address - common.AddressLength)
 )
 
 type Error int32
@@ -269,8 +269,8 @@ func evmcBytes32(in common.Hash) C.evmc_bytes32 {
 	return out
 }
 
-func evmcAddress(address common.Address) C.struct_evmc_address {
-	r := C.struct_evmc_address{}
+func evmcAddress(address common.Address) C.evmc_address {
+	r := C.evmc_address{}
 	for i := 0; i < len(address); i++ {
 		r.bytes[i] = C.uint8_t(address[i])
 	}

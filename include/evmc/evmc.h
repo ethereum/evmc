@@ -52,11 +52,11 @@ typedef struct evmc_bytes32
 typedef struct evmc_bytes32 evmc_uint256be;
 
 /** Big-endian 160-bit hash suitable for keeping an Ethereum address. */
-struct evmc_address
+typedef struct evmc_address
 {
     /** The 20 bytes of the hash. */
     uint8_t bytes[20];
-};
+} evmc_address;
 
 /** The kind of call-like instruction. */
 enum evmc_call_kind
@@ -97,10 +97,10 @@ struct evmc_message
     int64_t gas;
 
     /** The destination of the message. */
-    struct evmc_address destination;
+    evmc_address destination;
 
     /** The sender of the message. */
-    struct evmc_address sender;
+    evmc_address sender;
 
     /**
      * The message input data.
@@ -133,13 +133,13 @@ struct evmc_message
 /** The transaction and block data for execution. */
 struct evmc_tx_context
 {
-    evmc_uint256be tx_gas_price;        /**< The transaction gas price. */
-    struct evmc_address tx_origin;      /**< The transaction origin account. */
-    struct evmc_address block_coinbase; /**< The miner of the block. */
-    int64_t block_number;               /**< The block number. */
-    int64_t block_timestamp;            /**< The block timestamp. */
-    int64_t block_gas_limit;            /**< The block gas limit. */
-    evmc_uint256be block_difficulty;    /**< The block difficulty. */
+    evmc_uint256be tx_gas_price;     /**< The transaction gas price. */
+    evmc_address tx_origin;          /**< The transaction origin account. */
+    evmc_address block_coinbase;     /**< The miner of the block. */
+    int64_t block_number;            /**< The block number. */
+    int64_t block_timestamp;         /**< The block timestamp. */
+    int64_t block_gas_limit;         /**< The block gas limit. */
+    evmc_uint256be block_difficulty; /**< The block difficulty. */
 };
 
 struct evmc_context;
@@ -380,7 +380,7 @@ struct evmc_result
      *  This field has valid value only if the result describes successful
      *  CREATE (evmc_result::status_code is ::EVMC_SUCCESS).
      */
-    struct evmc_address create_address;
+    evmc_address create_address;
 
     /**
      * Reserved data that MAY be used by a evmc_result object creator.
@@ -406,8 +406,7 @@ struct evmc_result
  * @param address  The address of the account the query is about.
  * @return         true if exists, false otherwise.
  */
-typedef bool (*evmc_account_exists_fn)(struct evmc_context* context,
-                                       const struct evmc_address* address);
+typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_address* address);
 
 /**
  * Get storage callback function.
@@ -425,7 +424,7 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context,
  */
 typedef bool (*evmc_get_storage_fn)(evmc_bytes32* result,
                                     struct evmc_context* context,
-                                    const struct evmc_address* address,
+                                    const evmc_address* address,
                                     const evmc_bytes32* key);
 
 
@@ -486,7 +485,7 @@ enum evmc_storage_status
  * @return         The effect on the storage item. @see ::evmc_storage_status.
  */
 typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
-                                                        const struct evmc_address* address,
+                                                        const evmc_address* address,
                                                         const evmc_bytes32* key,
                                                         const evmc_bytes32* value);
 
@@ -507,7 +506,7 @@ typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* con
  */
 typedef bool (*evmc_get_balance_fn)(evmc_uint256be* result,
                                     struct evmc_context* context,
-                                    const struct evmc_address* address);
+                                    const evmc_address* address);
 
 /**
  * Get code size callback function.
@@ -527,7 +526,7 @@ typedef bool (*evmc_get_balance_fn)(evmc_uint256be* result,
  */
 typedef bool (*evmc_get_code_size_fn)(size_t* result,
                                       struct evmc_context* context,
-                                      const struct evmc_address* address);
+                                      const evmc_address* address);
 
 /**
  * Get code size callback function.
@@ -548,7 +547,7 @@ typedef bool (*evmc_get_code_size_fn)(size_t* result,
  */
 typedef bool (*evmc_get_code_hash_fn)(evmc_bytes32* result,
                                       struct evmc_context* context,
-                                      const struct evmc_address* address);
+                                      const evmc_address* address);
 
 /**
  * Copy code callback function.
@@ -569,7 +568,7 @@ typedef bool (*evmc_get_code_hash_fn)(evmc_bytes32* result,
  *  @return             The number of bytes copied to the buffer by the Client.
  */
 typedef size_t (*evmc_copy_code_fn)(struct evmc_context* context,
-                                    const struct evmc_address* address,
+                                    const evmc_address* address,
                                     size_t code_offset,
                                     uint8_t* buffer_data,
                                     size_t buffer_size);
@@ -587,8 +586,8 @@ typedef size_t (*evmc_copy_code_fn)(struct evmc_context* context,
  *                      transferred.
  */
 typedef void (*evmc_selfdestruct_fn)(struct evmc_context* context,
-                                     const struct evmc_address* address,
-                                     const struct evmc_address* beneficiary);
+                                     const evmc_address* address,
+                                     const evmc_address* beneficiary);
 
 /**
  * Log callback function.
@@ -605,7 +604,7 @@ typedef void (*evmc_selfdestruct_fn)(struct evmc_context* context,
  *                       0 and 4 inclusively.
  */
 typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
-                                 const struct evmc_address* address,
+                                 const evmc_address* address,
                                  const uint8_t* data,
                                  size_t data_size,
                                  const evmc_bytes32 topics[],
