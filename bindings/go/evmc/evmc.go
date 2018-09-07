@@ -34,9 +34,9 @@ extern const struct evmc_host_interface evmc_go_host;
 static struct evmc_result execute_wrapper(struct evmc_instance* instance,
 	int64_t context_index, enum evmc_revision rev,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
-	const struct evmc_address* destination, const struct evmc_address* sender,
-	const uint8_t* input_data, size_t input_size, const struct evmc_uint256be* value,
-	const uint8_t* code, size_t code_size, const struct evmc_uint256be* create2_salt)
+	const evmc_address* destination, const evmc_address* sender,
+	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
+	const uint8_t* code, size_t code_size, const evmc_bytes32* create2_salt)
 {
 	struct evmc_message msg = {
 		kind,
@@ -68,10 +68,10 @@ import (
 
 // Static asserts.
 const (
-	_ = uint(common.HashLength - C.sizeof_struct_evmc_uint256be) // The size of evmc_uint256be equals the size of Hash.
-	_ = uint(C.sizeof_struct_evmc_uint256be - common.HashLength)
-	_ = uint(common.AddressLength - C.sizeof_struct_evmc_address) // The size of evmc_address equals the size of Address.
-	_ = uint(C.sizeof_struct_evmc_address - common.AddressLength)
+	_ = uint(common.HashLength - C.sizeof_evmc_bytes32) // The size of evmc_bytes32 equals the size of Hash.
+	_ = uint(C.sizeof_evmc_bytes32 - common.HashLength)
+	_ = uint(common.AddressLength - C.sizeof_evmc_address) // The size of evmc_address equals the size of Address.
+	_ = uint(C.sizeof_evmc_address - common.AddressLength)
 )
 
 type Error int32
@@ -212,8 +212,8 @@ func (instance *Instance) Execute(ctx HostContext, rev Revision,
 	// FIXME: Clarify passing by pointer vs passing by value.
 	evmcDestination := evmcAddress(destination)
 	evmcSender := evmcAddress(sender)
-	evmcValue := evmcUint256be(value)
-	evmcCreate2Salt := evmcUint256be(create2Salt)
+	evmcValue := evmcBytes32(value)
+	evmcCreate2Salt := evmcBytes32(create2Salt)
 	result := C.execute_wrapper(instance.handle, C.int64_t(ctxId), uint32(rev),
 		C.enum_evmc_call_kind(kind), flags, C.int32_t(depth), C.int64_t(gas),
 		&evmcDestination, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
@@ -261,16 +261,16 @@ func getHostContext(idx int) HostContext {
 	return ctx
 }
 
-func evmcUint256be(in common.Hash) C.struct_evmc_uint256be {
-	out := C.struct_evmc_uint256be{}
+func evmcBytes32(in common.Hash) C.evmc_bytes32 {
+	out := C.evmc_bytes32{}
 	for i := 0; i < len(in); i++ {
 		out.bytes[i] = C.uint8_t(in[i])
 	}
 	return out
 }
 
-func evmcAddress(address common.Address) C.struct_evmc_address {
-	r := C.struct_evmc_address{}
+func evmcAddress(address common.Address) C.evmc_address {
+	r := C.evmc_address{}
 	for i := 0; i < len(address); i++ {
 		r.bytes[i] = C.uint8_t(address[i])
 	}

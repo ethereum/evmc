@@ -18,13 +18,13 @@ bool operator<(const evmc_address& a, const evmc_address& b)
     return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
 }
 
-/// The comparator for std::map<evmc_uint256be, ...>.
-bool operator<(const evmc_uint256be& a, const evmc_uint256be& b)
+/// The comparator for std::map<evmc_bytes32, ...>.
+bool operator<(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
 }
 
-bool operator==(const evmc_uint256be& a, const evmc_uint256be& b)
+bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
 }
@@ -33,8 +33,8 @@ struct account
 {
     evmc_uint256be balance = {};
     size_t code_size = 0;
-    evmc_uint256be code_hash = {};
-    std::map<evmc_uint256be, evmc_uint256be> storage;
+    evmc_bytes32 code_hash = {};
+    std::map<evmc_bytes32, evmc_bytes32> storage;
 };
 
 struct example_host_context : evmc_context
@@ -52,10 +52,10 @@ static bool account_exists(evmc_context* context, const evmc_address* address)
     return host->accounts.find(*address) != host->accounts.end();
 }
 
-static bool get_storage(evmc_uint256be* result,
+static bool get_storage(evmc_bytes32* result,
                         evmc_context* context,
                         const evmc_address* address,
-                        const evmc_uint256be* key)
+                        const evmc_bytes32* key)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
@@ -69,8 +69,8 @@ static bool get_storage(evmc_uint256be* result,
 
 static enum evmc_storage_status set_storage(evmc_context* context,
                                             const evmc_address* address,
-                                            const evmc_uint256be* key,
-                                            const evmc_uint256be* value)
+                                            const evmc_bytes32* key,
+                                            const evmc_bytes32* value)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto accountIt = host->accounts.find(*address);
@@ -118,9 +118,7 @@ static bool get_code_size(size_t* result, evmc_context* context, const evmc_addr
     return false;
 }
 
-static bool get_code_hash(evmc_uint256be* result,
-                          evmc_context* context,
-                          const evmc_address* address)
+static bool get_code_hash(evmc_bytes32* result, evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
@@ -171,7 +169,7 @@ static evmc_tx_context get_tx_context(evmc_context* context)
     return result;
 }
 
-static bool get_block_hash(evmc_uint256be* result, evmc_context* context, int64_t number)
+static bool get_block_hash(evmc_bytes32* result, evmc_context* context, int64_t number)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     int64_t current_block_number = host->tx_context.block_number;
@@ -179,7 +177,7 @@ static bool get_block_hash(evmc_uint256be* result, evmc_context* context, int64_
     if (number >= current_block_number || number < current_block_number - 256)
         return false;
 
-    evmc_uint256be example_block_hash{};
+    evmc_bytes32 example_block_hash{};
     *result = example_block_hash;
     return true;
 }
@@ -188,7 +186,7 @@ static void emit_log(evmc_context* context,
                      const evmc_address* address,
                      const uint8_t* data,
                      size_t data_size,
-                     const evmc_uint256be topics[],
+                     const evmc_bytes32 topics[],
                      size_t topics_count)
 {
     (void)context;
