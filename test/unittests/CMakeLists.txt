@@ -39,6 +39,7 @@ add_custom_command(
 
 add_executable(
     evmc-test
+    test_helpers.cpp
     test_instructions.cpp
     test_loader.cpp
 )

@@ -10,6 +10,8 @@
  * These are convenient for languages where invoking function pointers
  * is "ugly" or impossible (such as Go).
  *
+ * It also contains helpers (overloaded operators) for using EVMC types effectively in C++.
+ *
  * @defgroup helpers EVMC Helpers
  * @{
  */

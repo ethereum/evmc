@@ -100,7 +100,7 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = \
-    include/evmc/evmc.h include/evmc/loader.h include/evmc/helpers.h include/evmc/utils.h include/evmc/instructions.h \
+    include/evmc/evmc.h include/evmc/helpers.h include/evmc/helpers.hpp include/evmc/loader.h include/evmc/utils.h include/evmc/instructions.h \
     docs/
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
