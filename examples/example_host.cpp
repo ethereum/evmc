@@ -7,8 +7,8 @@
 
 #include "example_host.h"
 
-#include <evmc/helpers.hpp>
 #include <evmc/helpers.h>
+#include <evmc/helpers.hpp>
 
 #include <map>
 

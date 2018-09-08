@@ -4,11 +4,10 @@
  */
 
 /**
- * EVMC C++ helpers
+ * @file
+ * A collection of helpers (overloaded operators) for using EVMC types effectively in C++.
  *
- * A collection of helpers (overloaded operators) for using EVMC effectively in C++.
- *
- * @defgroup cpphelpers EVMC C++ helpers
+ * @addtogroup helpers
  * @{
  */
 #pragma once
@@ -19,31 +18,31 @@
 #include <functional>
 
 /// The comparator for std::map<evmc_address, ...>.
-bool operator<(const evmc_address& a, const evmc_address& b)
+inline bool operator<(const evmc_address& a, const evmc_address& b)
 {
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
+    return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) < 0;
 }
 
 /// The comparator for std::map<evmc_bytes32, ...>.
-bool operator<(const evmc_bytes32& a, const evmc_bytes32& b)
+inline bool operator<(const evmc_bytes32& a, const evmc_bytes32& b)
 {
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) < 0;
+    return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) < 0;
 }
 
 /// The comparator for equality.
-bool operator==(const evmc_address& a, const evmc_address& b)
+inline bool operator==(const evmc_address& a, const evmc_address& b)
 {
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
+    return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
 }
 
 /// The comparator for equality.
-bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
+inline bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
 {
-    return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
+    return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
 }
 
 /// FNV1a hash function with 64-bit result.
-static inline uint64_t fnv1a_64(const uint8_t* ptr, size_t len)
+inline uint64_t fnv1a_64(const uint8_t* ptr, size_t len)
 {
     constexpr uint64_t prime = 1099511628211ULL;
     constexpr uint64_t offset_basis = 14695981039346656037ULL;
@@ -57,20 +56,27 @@ static inline uint64_t fnv1a_64(const uint8_t* ptr, size_t len)
     return ret;
 }
 
-static_assert(sizeof(size_t) == sizeof(uint64_t), "size_t is not 64-bit wide");
-
 namespace std
 {
-/// Hash operator template needed for std::ordered_set and others using hashes.
+/// Hash operator template specialization for evmc_address needed for unordered containers.
+template <>
+struct hash<evmc_address>
+{
+    /// Hash operator using FNV1a.
+    std::enable_if<sizeof(size_t) == 8, std::size_t>::type operator()(const evmc_address& s) const
+        noexcept
+    {
+        return fnv1a_64(s.bytes, sizeof(s.bytes));
+    }
+};
+
+/// Hash operator template needed for std::unordered_set and others using hashes.
 template <>
 struct hash<evmc_bytes32>
 {
-    /// The argument type.
-    typedef evmc_bytes32 argument_type;
-    /// The result type.
-    typedef std::size_t result_type;
     /// Hash operator using FNV1a.
-    result_type operator()(argument_type const& s) const noexcept
+    std::enable_if<sizeof(size_t) == 8, std::size_t>::type operator()(const evmc_bytes32& s) const
+        noexcept
     {
         return fnv1a_64(s.bytes, sizeof(s.bytes));
     }
