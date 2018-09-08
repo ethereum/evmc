@@ -185,6 +185,17 @@ func (instance *Instance) Version() string {
 	return C.GoString(instance.handle.version)
 }
 
+type Capability uint32
+
+const (
+	CapabilityEVM1  Capability = C.EVMC_CAPABILITY_EVM1
+	CapabilityEWASM Capability = C.EVMC_CAPABILITY_EWASM
+)
+
+func (instance *Instance) HasCapability(capability Capability) bool {
+	return bool(C.evmc_vm_has_capability(instance.handle, uint32(capability)))
+}
+
 func (instance *Instance) SetOption(name string, value string) (err error) {
 
 	r := C.set_option(instance.handle, C.CString(name), C.CString(value))
