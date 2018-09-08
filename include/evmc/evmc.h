@@ -768,20 +768,27 @@ typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
  */
 enum evmc_capabilities
 {
-    EVMC_CAPABILITY_EVM1 = 1, /**< The VM is capable of executing EVM1 bytecode. */
-    EVMC_CAPABILITY_EWASM = 2 /**< The VM is capable of execution ewasm bytecode. */
+    EVMC_CAPABILITY_EVM1 = (1u << 0), /**< The VM is capable of executing EVM1 bytecode. */
+    EVMC_CAPABILITY_EWASM = (1u << 1) /**< The VM is capable of execution ewasm bytecode. */
 };
+
+/**
+ * Alias for unsigned integer representing a set of bit flags of EVMC capabilities.
+ *
+ * @see evmc_capabilities
+ */
+typedef uint32_t evmc_capabilities_flagset;
 
 /**
  * Return the supported capabilities of the VM instance.
  *
  * This function MAY be invoked multiple times for a single VM instance,
- * and its value MAY be influenced by calls to set_option.
+ * and its value MAY be influenced by calls to evmc_instance::set_option.
  *
- * @param instance   The EVM instance.
- * @return           The supported capabilities of the VM, @see ::evmc_capabilities.
+ * @param instance  The EVM instance.
+ * @return          The supported capabilities of the VM. @see evmc_capabilities.
  */
-typedef int (*evmc_get_capabilities_fn)(struct evmc_instance* instance);
+typedef evmc_capabilities_flagset (*evmc_get_capabilities_fn)(struct evmc_instance* instance);
 
 /** The opaque type representing a Client-side tracer object. */
 struct evmc_tracer_context;
@@ -890,7 +897,7 @@ struct evmc_instance
     evmc_execute_fn execute;
 
     /**
-     * Pointer to function returning capabilities supported by the EVM instance.
+     * Pointer to function returning capabilities supported by the VM instance.
      *
      * The value returned might change when different options are requested via set_option.
      *
