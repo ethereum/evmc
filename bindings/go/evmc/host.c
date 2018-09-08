@@ -41,7 +41,7 @@ static inline void go_exported_functions_type_checks()
 {
     struct evmc_context* context = NULL;
     evmc_address* address = NULL;
-    evmc_bytes32* bytes32 = NULL;
+    evmc_bytes32 bytes32;
     evmc_uint256be* uint256be = NULL;
     uint8_t* data = NULL;
     size_t size = 0;
@@ -62,12 +62,12 @@ static inline void go_exported_functions_type_checks()
     bool_flag = accountExists(context, address);
 
     evmc_get_storage_fn get_storage_fn = NULL;
-    get_storage_fn(bytes32, context, address, bytes32);
-    getStorage(bytes32, context, address, bytes32);
+    bytes32 = get_storage_fn(context, address, &bytes32);
+    bytes32 = getStorage(context, address, &bytes32);
 
     evmc_set_storage_fn set_storage_fn = NULL;
-    storage_status = set_storage_fn(context, address, bytes32, bytes32);
-    storage_status = setStorage(context, address, bytes32, bytes32);
+    storage_status = set_storage_fn(context, address, &bytes32, &bytes32);
+    storage_status = setStorage(context, address, &bytes32, &bytes32);
 
     evmc_get_balance_fn get_balance_fn = NULL;
     bool_flag = get_balance_fn(uint256be, context, address);
@@ -78,8 +78,8 @@ static inline void go_exported_functions_type_checks()
     bool_flag = getCodeSize(&size, context, address);
 
     evmc_get_code_hash_fn get_code_hash_fn = NULL;
-    bool_flag = get_code_hash_fn(bytes32, context, address);
-    bool_flag = getCodeHash(bytes32, context, address);
+    bool_flag = get_code_hash_fn(&bytes32, context, address);
+    bool_flag = getCodeHash(&bytes32, context, address);
 
     evmc_copy_code_fn copy_code_fn = NULL;
     size = copy_code_fn(context, address, size, data, size);
@@ -98,10 +98,10 @@ static inline void go_exported_functions_type_checks()
     tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
-    bool_flag = get_block_hash_fn(bytes32, context, number);
-    bool_flag = getBlockHash(bytes32, context, number);
+    bool_flag = get_block_hash_fn(&bytes32, context, number);
+    bool_flag = getBlockHash(&bytes32, context, number);
 
     evmc_emit_log_fn emit_log_fn = NULL;
-    emit_log_fn(context, address, data, size, bytes32, size);
-    emitLog(context, address, data, size, bytes32, size);
+    emit_log_fn(context, address, data, size, &bytes32, size);
+    emitLog(context, address, data, size, &bytes32, size);
 }

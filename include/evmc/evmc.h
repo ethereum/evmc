@@ -413,19 +413,15 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_
  *
  * This callback function is used by a VM to query the given contract storage entry.
  *
- * @param[out] result   The pointer to the place where to put the result value.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @param      key      The index of the account's storage entry.
- * @return              If the account exists the value is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The Host execution context.
+ * @param address  The address of the account.
+ * @param key      The index of the account's storage entry.
+ * @return         The storage value at the given storage key or null bytes
+ *                 if the account does not exist.
  */
-typedef bool (*evmc_get_storage_fn)(evmc_bytes32* result,
-                                    struct evmc_context* context,
-                                    const evmc_address* address,
-                                    const evmc_bytes32* key);
+typedef evmc_bytes32 (*evmc_get_storage_fn)(struct evmc_context* context,
+                                            const evmc_address* address,
+                                            const evmc_bytes32* key);
 
 
 /**
