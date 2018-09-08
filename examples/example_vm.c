@@ -28,6 +28,12 @@ static void destroy(struct evmc_instance* evm)
     free(evm);
 }
 
+static evmc_capabilities_flagset get_capabilities(struct evmc_instance* vm)
+{
+    (void)vm;
+    return EVMC_CAPABILITY_EVM1 | EVMC_CAPABILITY_EWASM;
+}
+
 /// Example options.
 ///
 /// VMs are allowed to omit this function implementation.
@@ -150,6 +156,7 @@ struct evmc_instance* evmc_create_example_vm()
         .version = STR(PROJECT_VERSION),
         .destroy = destroy,
         .execute = execute,
+        .get_capabilites = get_capabilities,
         .set_option = set_option,
         .set_tracer = set_tracer,
     };
