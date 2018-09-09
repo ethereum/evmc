@@ -128,17 +128,17 @@ static evmc_tx_context get_tx_context(evmc_context* context)
     return result;
 }
 
-static bool get_block_hash(evmc_bytes32* result, evmc_context* context, int64_t number)
+static evmc_bytes32 get_block_hash(evmc_context* context, int64_t number)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     int64_t current_block_number = host->tx_context.block_number;
 
-    if (number >= current_block_number || number < current_block_number - 256)
-        return false;
-
-    evmc_bytes32 example_block_hash{};
-    *result = example_block_hash;
-    return true;
+    evmc_bytes32 example_block_hash;
+    if (number < current_block_number && number >= current_block_number - 256)
+        example_block_hash = {{1, 1, 1, 1}};
+    else
+        example_block_hash = {};
+    return example_block_hash;
 }
 
 static void emit_log(evmc_context* context,

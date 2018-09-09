@@ -80,7 +80,7 @@ type HostContext interface {
 	Selfdestruct(addr common.Address, beneficiary common.Address)
 	GetTxContext() (gasPrice common.Hash, origin common.Address, coinbase common.Address, number int64, timestamp int64,
 		gasLimit int64, difficulty common.Hash)
-	GetBlockHash(number int64) (common.Hash, error)
+	GetBlockHash(number int64) common.Hash
 	EmitLog(addr common.Address, topics []common.Hash, data []byte)
 	Call(kind CallKind,
 		destination common.Address, sender common.Address, value *big.Int, input []byte, gas int64, depth int,
@@ -176,17 +176,10 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 }
 
 //export getBlockHash
-func getBlockHash(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, number int64) C.bool {
+func getBlockHash(pCtx unsafe.Pointer, number int64) C.evmc_bytes32 {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-
-	blockhash, err := ctx.GetBlockHash(number)
-	if err != nil {
-		return false
-	}
-
-	*pResult = evmcBytes32(blockhash)
-	return true
+	return evmcBytes32(ctx.GetBlockHash(number))
 }
 
 //export emitLog

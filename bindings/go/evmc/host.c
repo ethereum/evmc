@@ -99,8 +99,8 @@ static inline void go_exported_functions_type_checks()
     tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
-    bool_flag = get_block_hash_fn(&bytes32, context, number);
-    bool_flag = getBlockHash(&bytes32, context, number);
+    bytes32 = get_block_hash_fn(context, number);
+    bytes32 = getBlockHash(context, number);
 
     evmc_emit_log_fn emit_log_fn = NULL;
     emit_log_fn(context, address, data, size, &bytes32, size);
