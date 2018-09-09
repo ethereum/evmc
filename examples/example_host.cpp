@@ -80,16 +80,13 @@ static size_t get_code_size(evmc_context* context, const evmc_address* address)
     return 0;
 }
 
-static bool get_code_hash(evmc_bytes32* result, evmc_context* context, const evmc_address* address)
+static evmc_bytes32 get_code_hash(evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.code_hash;
-        return true;
-    }
-    return false;
+        return it->second.code_hash;
+    return {};
 }
 
 static size_t copy_code(evmc_context* context,

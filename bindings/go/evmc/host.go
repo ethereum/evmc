@@ -75,7 +75,7 @@ type HostContext interface {
 	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
 	GetBalance(addr common.Address) common.Hash
 	GetCodeSize(addr common.Address) int
-	GetCodeHash(addr common.Address) (common.Hash, error)
+	GetCodeHash(addr common.Address) common.Hash
 	GetCode(addr common.Address) []byte
 	Selfdestruct(addr common.Address, beneficiary common.Address)
 	GetTxContext() (gasPrice common.Hash, origin common.Address, coinbase common.Address, number int64, timestamp int64,
@@ -123,15 +123,10 @@ func getCodeSize(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.size_t {
 }
 
 //export getCodeHash
-func getCodeHash(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
+func getCodeHash(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.evmc_bytes32 {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	codeHash, err := ctx.GetCodeHash(goAddress(*pAddr))
-	if err != nil {
-		return false
-	}
-	*pResult = evmcBytes32(codeHash)
-	return true
+	return evmcBytes32(ctx.GetCodeHash(goAddress(*pAddr)))
 }
 
 //export copyCode

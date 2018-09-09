@@ -79,8 +79,8 @@ static inline void go_exported_functions_type_checks()
     size = getCodeSize(context, address);
 
     evmc_get_code_hash_fn get_code_hash_fn = NULL;
-    bool_flag = get_code_hash_fn(&bytes32, context, address);
-    bool_flag = getCodeHash(&bytes32, context, address);
+    bytes32 = get_code_hash_fn(context, address);
+    bytes32 = getCodeHash(context, address);
 
     evmc_copy_code_fn copy_code_fn = NULL;
     size = copy_code_fn(context, address, size, data, size);

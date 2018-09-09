@@ -511,19 +511,12 @@ typedef size_t (*evmc_get_code_size_fn)(struct evmc_context* context, const evmc
  * in the account at the given address. For existing accounts not having a code, this
  * function returns keccak256 hash of empty data.
  *
- * @param[out] result   The pointer to the place where to put the result code hash.
- *                      The pointed memory is only modified when the function returns true.
- *                      The pointer MUST NOT be null.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @return              If the account exists the hash of its code is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account.
+ * @return         The hash of the code in the account or null bytes if the account does not exist.
  */
-typedef bool (*evmc_get_code_hash_fn)(evmc_bytes32* result,
-                                      struct evmc_context* context,
-                                      const evmc_address* address);
+typedef evmc_bytes32 (*evmc_get_code_hash_fn)(struct evmc_context* context,
+                                              const evmc_address* address);
 
 /**
  * Copy code callback function.
