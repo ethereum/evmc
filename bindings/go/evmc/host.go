@@ -72,7 +72,7 @@ func goByteSlice(data *C.uint8_t, size C.size_t) []byte {
 type HostContext interface {
 	AccountExists(addr common.Address) bool
 	GetStorage(addr common.Address, key common.Hash) common.Hash
-	SetStorage(addr common.Address, key common.Hash, value common.Hash) (StorageStatus, error)
+	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
 	GetBalance(addr common.Address) (common.Hash, error)
 	GetCodeSize(addr common.Address) (int, error)
 	GetCodeHash(addr common.Address) (common.Hash, error)
@@ -105,11 +105,7 @@ func getStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_
 func setStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32, pVal *C.evmc_bytes32) C.enum_evmc_storage_status {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	status, err := ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal))
-	if err != nil {
-		return C.EVMC_STORAGE_NON_EXISTING_ACCOUNT
-	}
-	return C.enum_evmc_storage_status(status)
+	return C.enum_evmc_storage_status(ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal)));
 }
 
 //export getBalance
