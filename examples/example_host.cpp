@@ -62,16 +62,13 @@ static enum evmc_storage_status set_storage(evmc_context* context,
         return EVMC_STORAGE_MODIFIED;
 }
 
-static bool get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)
+static evmc_uint256be get_balance(evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.balance;
-        return true;
-    }
-    return false;
+        return it->second.balance;
+    return {};
 }
 
 static bool get_code_size(size_t* result, evmc_context* context, const evmc_address* address)

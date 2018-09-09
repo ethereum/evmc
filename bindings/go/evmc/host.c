@@ -42,12 +42,13 @@ static inline void go_exported_functions_type_checks()
     struct evmc_context* context = NULL;
     evmc_address* address = NULL;
     evmc_bytes32 bytes32;
-    evmc_uint256be* uint256be = NULL;
     uint8_t* data = NULL;
     size_t size = 0;
     int64_t number = 0;
     struct evmc_message* message = NULL;
 
+    evmc_uint256be uint256be;
+    (void)uint256be;
     struct evmc_tx_context tx_context;
     (void)tx_context;
     struct evmc_result result;
@@ -70,8 +71,8 @@ static inline void go_exported_functions_type_checks()
     storage_status = setStorage(context, address, &bytes32, &bytes32);
 
     evmc_get_balance_fn get_balance_fn = NULL;
-    bool_flag = get_balance_fn(uint256be, context, address);
-    bool_flag = getBalance(uint256be, context, address);
+    uint256be = get_balance_fn(context, address);
+    uint256be = getBalance(context, address);
 
     evmc_get_code_size_fn get_code_size_fn = NULL;
     bool_flag = get_code_size_fn(&size, context, address);
