@@ -163,7 +163,7 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
  * result code is returned.
  *
  * @param[out] result   The returned block hash value. Only written to
- *                      if the return value is 1 (information is avialable).
+ *                      if the return value is 1 (information is available).
  * @param      context  The pointer to the Host execution context.
  * @param      number   The block number.
  * @return              true if the information is available, false otherwise.
