@@ -13,3 +13,8 @@ endif()
 add_subdirectory(integration)
 add_subdirectory(unittests)
 add_subdirectory(vmtester)
+
+option(EVMC_VM_FUZZER "Build EVMC VM fuzzer" OFF)
+if(EVMC_VM_FUZZER)
+    add_library(vm_fuzzer)
+endif()
