@@ -120,9 +120,8 @@ static struct evmc_result execute(struct evmc_instance* instance,
     }
     else if (code_size == strlen(counter) && strncmp((const char*)code, counter, code_size) == 0)
     {
-        evmc_bytes32 value;
         const evmc_bytes32 key = {{0}};
-        context->host->get_storage(&value, context, &msg->destination, &key);
+        evmc_bytes32 value = context->host->get_storage(context, &msg->destination, &key);
         value.bytes[31]++;
         context->host->set_storage(context, &msg->destination, &key, &value);
         ret.status_code = EVMC_SUCCESS;

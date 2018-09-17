@@ -35,19 +35,15 @@ static bool account_exists(evmc_context* context, const evmc_address* address)
     return host->accounts.find(*address) != host->accounts.end();
 }
 
-static bool get_storage(evmc_bytes32* result,
-                        evmc_context* context,
-                        const evmc_address* address,
-                        const evmc_bytes32* key)
+static evmc_bytes32 get_storage(evmc_context* context,
+                                const evmc_address* address,
+                                const evmc_bytes32* key)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.storage[*key];
-        return true;
-    }
-    return false;
+        return it->second.storage[*key];
+    return {};
 }
 
 static enum evmc_storage_status set_storage(evmc_context* context,
@@ -56,61 +52,41 @@ static enum evmc_storage_status set_storage(evmc_context* context,
                                             const evmc_bytes32* value)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
-    auto accountIt = host->accounts.find(*address);
-    if (accountIt == host->accounts.end())
-        return EVMC_STORAGE_NON_EXISTING_ACCOUNT;
+    auto& account = host->accounts[*address];
+    auto prevValue = account.storage[*key];
+    account.storage[*key] = *value;
 
-    auto storageIt = accountIt->second.storage.find(*key);
-    if (storageIt == accountIt->second.storage.end())
-    {
-        accountIt->second.storage.emplace(std::make_pair(*key, *value));
-        return EVMC_STORAGE_ADDED;
-    }
-    else if (storageIt->second == *value)
-    {
+    if (prevValue == *value)
         return EVMC_STORAGE_UNCHANGED;
-    }
     else
-    {
-        storageIt->second = *value;
         return EVMC_STORAGE_MODIFIED;
-    }
 }
 
-static bool get_balance(evmc_uint256be* result, evmc_context* context, const evmc_address* address)
+static evmc_uint256be get_balance(evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.balance;
-        return true;
-    }
-    return false;
+        return it->second.balance;
+    return {};
 }
 
-static bool get_code_size(size_t* result, evmc_context* context, const evmc_address* address)
+static size_t get_code_size(evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.code_size;
-        return true;
-    }
-    return false;
+        return it->second.code_size;
+    return 0;
 }
 
-static bool get_code_hash(evmc_bytes32* result, evmc_context* context, const evmc_address* address)
+static evmc_bytes32 get_code_hash(evmc_context* context, const evmc_address* address)
 {
     example_host_context* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
-    {
-        *result = it->second.code_hash;
-        return true;
-    }
-    return false;
+        return it->second.code_hash;
+    return {};
 }
 
 static size_t copy_code(evmc_context* context,

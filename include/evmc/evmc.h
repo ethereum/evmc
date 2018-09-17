@@ -163,7 +163,7 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
  * result code is returned.
  *
  * @param[out] result   The returned block hash value. Only written to
- *                      if the return value is 1 (information is avialable).
+ *                      if the return value is 1 (information is available).
  * @param      context  The pointer to the Host execution context.
  * @param      number   The block number.
  * @return              true if the information is available, false otherwise.
@@ -413,19 +413,15 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_
  *
  * This callback function is used by a VM to query the given contract storage entry.
  *
- * @param[out] result   The pointer to the place where to put the result value.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @param      key      The index of the account's storage entry.
- * @return              If the account exists the value is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The Host execution context.
+ * @param address  The address of the account.
+ * @param key      The index of the account's storage entry.
+ * @return         The storage value at the given storage key or null bytes
+ *                 if the account does not exist.
  */
-typedef bool (*evmc_get_storage_fn)(evmc_bytes32* result,
-                                    struct evmc_context* context,
-                                    const evmc_address* address,
-                                    const evmc_bytes32* key);
+typedef evmc_bytes32 (*evmc_get_storage_fn)(struct evmc_context* context,
+                                            const evmc_address* address,
+                                            const evmc_bytes32* key);
 
 
 /**
@@ -464,12 +460,7 @@ enum evmc_storage_status
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 4,
-
-    /**
-     * An attempt to modify storage of an non-existing account.
-     */
-    EVMC_STORAGE_NON_EXISTING_ACCOUNT = 5
+    EVMC_STORAGE_DELETED = 4
 };
 
 
@@ -482,7 +473,7 @@ enum evmc_storage_status
  * @param address  The address of the contract.
  * @param key      The index of the storage entry.
  * @param value    The value to be stored.
- * @return         The effect on the storage item. @see ::evmc_storage_status.
+ * @return         The effect on the storage item.
  */
 typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
                                                         const evmc_address* address,
@@ -492,21 +483,14 @@ typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* con
 /**
  * Get balance callback function.
  *
- * This callback function is used by a VM to query the balance of the given address.
+ * This callback function is used by a VM to query the balance of the given account.
  *
- * @param[out] result   The pointer to the place where to put the result balance.
- *                      The pointed memory is only modified when the function returns true.
- *                      The pointer MUST NOT be null.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @return              If the account exists its balance is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account.
+ * @return         The balance of the given account or 0 if the account does not exist.
  */
-typedef bool (*evmc_get_balance_fn)(evmc_uint256be* result,
-                                    struct evmc_context* context,
-                                    const evmc_address* address);
+typedef evmc_uint256be (*evmc_get_balance_fn)(struct evmc_context* context,
+                                              const evmc_address* address);
 
 /**
  * Get code size callback function.
@@ -514,19 +498,11 @@ typedef bool (*evmc_get_balance_fn)(evmc_uint256be* result,
  * This callback function is used by a VM to get the size of the code stored
  * in the account at the given address.
  *
- * @param[out] result   The pointer to the place where to put the result code size.
- *                      The pointed memory is only modified when the function returns true.
- *                      The pointer MUST NOT be null.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @return              If the account exists the size of its code is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account.
+ * @return         The size of the code in the account or 0 if the account does not exist.
  */
-typedef bool (*evmc_get_code_size_fn)(size_t* result,
-                                      struct evmc_context* context,
-                                      const evmc_address* address);
+typedef size_t (*evmc_get_code_size_fn)(struct evmc_context* context, const evmc_address* address);
 
 /**
  * Get code size callback function.
@@ -535,19 +511,12 @@ typedef bool (*evmc_get_code_size_fn)(size_t* result,
  * in the account at the given address. For existing accounts not having a code, this
  * function returns keccak256 hash of empty data.
  *
- * @param[out] result   The pointer to the place where to put the result code hash.
- *                      The pointed memory is only modified when the function returns true.
- *                      The pointer MUST NOT be null.
- * @param      context  The pointer to the Host execution context.
- * @param      address  The address of the account.
- * @return              If the account exists the hash of its code is put at the location
- *                      pointed by @p result and true is returned.
- *                      If the account does not exist false is returned without
- *                      modifying the memory pointed by @p result.
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account.
+ * @return         The hash of the code in the account or null bytes if the account does not exist.
  */
-typedef bool (*evmc_get_code_hash_fn)(evmc_bytes32* result,
-                                      struct evmc_context* context,
-                                      const evmc_address* address);
+typedef evmc_bytes32 (*evmc_get_code_hash_fn)(struct evmc_context* context,
+                                              const evmc_address* address);
 
 /**
  * Copy code callback function.

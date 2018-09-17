@@ -41,13 +41,14 @@ static inline void go_exported_functions_type_checks()
 {
     struct evmc_context* context = NULL;
     evmc_address* address = NULL;
-    evmc_bytes32* bytes32 = NULL;
-    evmc_uint256be* uint256be = NULL;
+    evmc_bytes32 bytes32;
     uint8_t* data = NULL;
     size_t size = 0;
     int64_t number = 0;
     struct evmc_message* message = NULL;
 
+    evmc_uint256be uint256be;
+    (void)uint256be;
     struct evmc_tx_context tx_context;
     (void)tx_context;
     struct evmc_result result;
@@ -62,24 +63,24 @@ static inline void go_exported_functions_type_checks()
     bool_flag = accountExists(context, address);
 
     evmc_get_storage_fn get_storage_fn = NULL;
-    get_storage_fn(bytes32, context, address, bytes32);
-    getStorage(bytes32, context, address, bytes32);
+    bytes32 = get_storage_fn(context, address, &bytes32);
+    bytes32 = getStorage(context, address, &bytes32);
 
     evmc_set_storage_fn set_storage_fn = NULL;
-    storage_status = set_storage_fn(context, address, bytes32, bytes32);
-    storage_status = setStorage(context, address, bytes32, bytes32);
+    storage_status = set_storage_fn(context, address, &bytes32, &bytes32);
+    storage_status = setStorage(context, address, &bytes32, &bytes32);
 
     evmc_get_balance_fn get_balance_fn = NULL;
-    bool_flag = get_balance_fn(uint256be, context, address);
-    bool_flag = getBalance(uint256be, context, address);
+    uint256be = get_balance_fn(context, address);
+    uint256be = getBalance(context, address);
 
     evmc_get_code_size_fn get_code_size_fn = NULL;
-    bool_flag = get_code_size_fn(&size, context, address);
-    bool_flag = getCodeSize(&size, context, address);
+    size = get_code_size_fn(context, address);
+    size = getCodeSize(context, address);
 
     evmc_get_code_hash_fn get_code_hash_fn = NULL;
-    bool_flag = get_code_hash_fn(bytes32, context, address);
-    bool_flag = getCodeHash(bytes32, context, address);
+    bytes32 = get_code_hash_fn(context, address);
+    bytes32 = getCodeHash(context, address);
 
     evmc_copy_code_fn copy_code_fn = NULL;
     size = copy_code_fn(context, address, size, data, size);
@@ -98,10 +99,10 @@ static inline void go_exported_functions_type_checks()
     tx_context = getTxContext(context);
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
-    bool_flag = get_block_hash_fn(bytes32, context, number);
-    bool_flag = getBlockHash(bytes32, context, number);
+    bool_flag = get_block_hash_fn(&bytes32, context, number);
+    bool_flag = getBlockHash(&bytes32, context, number);
 
     evmc_emit_log_fn emit_log_fn = NULL;
-    emit_log_fn(context, address, data, size, bytes32, size);
-    emitLog(context, address, data, size, bytes32, size);
+    emit_log_fn(context, address, data, size, &bytes32, size);
+    emitLog(context, address, data, size, &bytes32, size);
 }

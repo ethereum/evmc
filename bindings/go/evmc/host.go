@@ -71,11 +71,11 @@ func goByteSlice(data *C.uint8_t, size C.size_t) []byte {
 
 type HostContext interface {
 	AccountExists(addr common.Address) bool
-	GetStorage(addr common.Address, key common.Hash) (common.Hash, error)
-	SetStorage(addr common.Address, key common.Hash, value common.Hash) (StorageStatus, error)
-	GetBalance(addr common.Address) (common.Hash, error)
-	GetCodeSize(addr common.Address) (int, error)
-	GetCodeHash(addr common.Address) (common.Hash, error)
+	GetStorage(addr common.Address, key common.Hash) common.Hash
+	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
+	GetBalance(addr common.Address) common.Hash
+	GetCodeSize(addr common.Address) int
+	GetCodeHash(addr common.Address) common.Hash
 	GetCode(addr common.Address) []byte
 	Selfdestruct(addr common.Address, beneficiary common.Address)
 	GetTxContext() (gasPrice common.Hash, origin common.Address, coinbase common.Address, number int64, timestamp int64,
@@ -95,62 +95,38 @@ func accountExists(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
 }
 
 //export getStorage
-func getStorage(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_bytes32) C.bool {
+func getStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_bytes32) C.evmc_bytes32 {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	value, err := ctx.GetStorage(goAddress(*pAddr), goHash(*pKey))
-	if err != nil {
-		return false
-	}
-	*pResult = evmcBytes32(value)
-	return true
+	return evmcBytes32(ctx.GetStorage(goAddress(*pAddr), goHash(*pKey)))
 }
 
 //export setStorage
 func setStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32, pVal *C.evmc_bytes32) C.enum_evmc_storage_status {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	status, err := ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal))
-	if err != nil {
-		return C.EVMC_STORAGE_NON_EXISTING_ACCOUNT
-	}
-	return C.enum_evmc_storage_status(status)
+	return C.enum_evmc_storage_status(ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal)))
 }
 
 //export getBalance
-func getBalance(pResult *C.evmc_uint256be, pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
+func getBalance(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.evmc_uint256be {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	balance, err := ctx.GetBalance(goAddress(*pAddr))
-	if err != nil {
-		return false
-	}
-	*pResult = evmcBytes32(balance)
-	return true
+	return evmcBytes32(ctx.GetBalance(goAddress(*pAddr)))
 }
 
 //export getCodeSize
-func getCodeSize(pResult *C.size_t, pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
+func getCodeSize(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.size_t {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	codeSize, err := ctx.GetCodeSize(goAddress(*pAddr))
-	if err != nil {
-		return false
-	}
-	*pResult = C.size_t(codeSize)
-	return true
+	return C.size_t(ctx.GetCodeSize(goAddress(*pAddr)))
 }
 
 //export getCodeHash
-func getCodeHash(pResult *C.evmc_bytes32, pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
+func getCodeHash(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.evmc_bytes32 {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
-	codeHash, err := ctx.GetCodeHash(goAddress(*pAddr))
-	if err != nil {
-		return false
-	}
-	*pResult = evmcBytes32(codeHash)
-	return true
+	return evmcBytes32(ctx.GetCodeHash(goAddress(*pAddr)))
 }
 
 //export copyCode
