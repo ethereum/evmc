@@ -20,6 +20,8 @@ independent and it is easy to use them individually.
 
 ## Install
 
+The suggested Cable location is `cmake/cable` relative to your project root directory.
+
 ### As git subtree
 
 Adding a dependency project as a [git subtree] is just a copy of the source code
@@ -28,15 +30,22 @@ done in a bit more systematic way.
 If you are not familiar with managing dependencies with git subtree read the
 [Git subtree: the alternative to Git submodule][git subtree tutorial].
 
+#### To install
+
 ```sh
 git remote add cable https://github.com/ethereum/cable
 git subtree add --prefix cmake/cable cable master --squash
 ```
 
+#### To update
+
+```sh
+git subtree pull --prefix cmake/cable cable master --squash
+```
+
 ### As git submodule
 
-Include the Cable library as [git submodule] in your project. The suggested
-submodule location is `cmake/cable` relative to your project root directory.
+Include the Cable library as [git submodule] in your project.
 
 ```sh
 git submodule add https://github.com/ethereum/cable cmake/cable
