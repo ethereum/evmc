@@ -6,6 +6,11 @@ On the Client-side it defines the interface for EVM implementations
 to access Ethereum environment and state.
 
 
+# Guides
+
+- [Host Implementation Guide](@ref hostguide)
+
+
 # Versioning {#versioning}
 
 The EVMC project uses [Semantic Versioning](https://semver.org).
