@@ -411,7 +411,7 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_
 /**
  * Get storage callback function.
  *
- * This callback function is used by a VM to query the given contract storage entry.
+ * This callback function is used by a VM to query the given account storage entry.
  *
  * @param context  The Host execution context.
  * @param address  The address of the account.
@@ -467,10 +467,13 @@ enum evmc_storage_status
 /**
  * Set storage callback function.
  *
- * This callback function is used by an EVM to update the given contract storage entry.
+ * This callback function is used by a VM to update the given account storage entry.
+ * The VM MUST make sure that the account exists. This requirement is only a formality because
+ * VM implementations only modify storage of the account of the current execution context
+ * (i.e. referenced by evmc_message::destination).
  *
  * @param context  The pointer to the Host execution context.
- * @param address  The address of the contract.
+ * @param address  The address of the account.
  * @param key      The index of the storage entry.
  * @param value    The value to be stored.
  * @return         The effect on the storage item.
