@@ -16,7 +16,7 @@ jobs:
         command: |
           sudo pip3 install --upgrade pip setuptools
           sudo pip3 install codespell
-          codespell --skip=".git" --ignore-words=./.codespell-whitelist
+          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
 
   build: &build
     docker:
