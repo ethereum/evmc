@@ -911,7 +911,7 @@ struct evmc_instance
  *
  * @return  EVM instance or NULL indicating instance creation failure.
  */
-struct evmc_instance* evmc_create_examplevm(void);
+struct evmc_instance* evmc_create_example_vm(void);
 #endif
 
 #if __cplusplus
