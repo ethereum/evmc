@@ -2,6 +2,15 @@
  * Copyright 2018 The EVMC Authors.
  * Licensed under the Apache License, Version 2.0. See the LICENSE file.
  */
+
+/// @file
+/// Example implementation of the EVMC VM interface.
+///
+/// This VM does not do anything useful except for showing
+/// how EVMC VM API should be implemented.
+/// The inplementation is done in C only, but could be done in C++ in very
+/// similar way.
+
 #include "example_vm.h"
 
 #include <limits.h>
