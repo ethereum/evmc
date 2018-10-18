@@ -18,34 +18,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define STR(x) #x
 
-#if !defined(PROJECT_VERSION)
-#define PROJECT_VERSION 0.0.0
-#endif
-
+/// The example VM instance struct extending the evmc_instance.
 struct example_vm
 {
-    struct evmc_instance instance;
-    int verbose;
-    evmc_trace_callback trace_callback;
-    struct evmc_tracer_context* tracer_context;
+    struct evmc_instance instance;               ///< The base struct.
+    int verbose;                                 ///< The verbosity level.
+    evmc_trace_callback trace_callback;          ///< The trace callback.
+    struct evmc_tracer_context* tracer_context;  ///< The tracer context.
 };
 
-static void destroy(struct evmc_instance* evm)
+/// The implementation of the evmc_instance::destroy() method.
+static void destroy(struct evmc_instance* vm)
 {
-    free(evm);
+    free(vm);
 }
 
+/// The example implementation of the evmc_instance::get_capabilites() method.
 static evmc_capabilities_flagset get_capabilities(struct evmc_instance* vm)
 {
     (void)vm;
     return EVMC_CAPABILITY_EVM1 | EVMC_CAPABILITY_EWASM;
 }
 
-/// Example options.
+/// Example VM options.
 ///
-/// VMs are allowed to omit this function implementation.
+/// The implementation of the evmc_instance::set_option() method.
+/// VMs are allowed to omit this method implementation.
 static enum evmc_set_option_result set_option(struct evmc_instance* instance,
                                               const char* name,
                                               const char* value)
@@ -69,16 +68,14 @@ static enum evmc_set_option_result set_option(struct evmc_instance* instance,
     return EVMC_SET_OPTION_INVALID_NAME;
 }
 
-static void release_result(struct evmc_result const* result)
-{
-    (void)result;
-}
-
-static void free_result_output_data(struct evmc_result const* result)
+/// The implementation of the evmc_result::release() method that frees
+/// the output buffer attached to the result object.
+static void free_result_output_data(const struct evmc_result* result)
 {
     free((uint8_t*)result->output_data);
 }
 
+/// The example implementation of the evmc_instance::execute() method.
 static struct evmc_result execute(struct evmc_instance* instance,
                                   struct evmc_context* context,
                                   enum evmc_revision rev,
@@ -137,7 +134,6 @@ static struct evmc_result execute(struct evmc_instance* instance,
         return ret;
     }
 
-    ret.release = release_result;
     ret.status_code = EVMC_FAILURE;
     ret.gas_left = 0;
 
@@ -147,6 +143,7 @@ static struct evmc_result execute(struct evmc_instance* instance,
     return ret;
 }
 
+/// The implementation of the optional evmc_instance::set_tracer() method.
 static void set_tracer(struct evmc_instance* instance,
                        evmc_trace_callback callback,
                        struct evmc_tracer_context* context)
@@ -155,6 +152,19 @@ static void set_tracer(struct evmc_instance* instance,
     vm->trace_callback = callback;
     vm->tracer_context = context;
 }
+
+
+/// @cond internal
+
+/// Stringify the argument.
+#define STR(x) #x
+
+#if !defined(PROJECT_VERSION)
+/// The dummy project version if not provided by the build system.
+#define PROJECT_VERSION 0.0.0
+#endif
+
+/// @endcond
 
 struct evmc_instance* evmc_create_example_vm()
 {
