@@ -876,7 +876,7 @@ struct evmc_instance
      * A Client SHOULD only rely on the value returned here if it has queried it after
      * it has called set_option.
      */
-    evmc_get_capabilities_fn get_capabilites;
+    evmc_get_capabilities_fn get_capabilities;
 
     /**
      * Optional pointer to function setting the EVM instruction tracer.

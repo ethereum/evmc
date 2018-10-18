@@ -34,7 +34,7 @@ static void destroy(struct evmc_instance* vm)
     free(vm);
 }
 
-/// The example implementation of the evmc_instance::get_capabilites() method.
+/// The example implementation of the evmc_instance::get_capabilities() method.
 static evmc_capabilities_flagset get_capabilities(struct evmc_instance* vm)
 {
     (void)vm;
@@ -174,7 +174,7 @@ struct evmc_instance* evmc_create_example_vm()
         .version = STR(PROJECT_VERSION),
         .destroy = destroy,
         .execute = execute,
-        .get_capabilites = get_capabilities,
+        .get_capabilities = get_capabilities,
         .set_option = set_option,
         .set_tracer = set_tracer,
     };
