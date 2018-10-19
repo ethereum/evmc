@@ -51,7 +51,7 @@ static inline const char* evmc_vm_version(struct evmc_instance* instance)
 static inline bool evmc_vm_has_capability(struct evmc_instance* vm,
                                           enum evmc_capabilities capability)
 {
-    return (vm->get_capabilites(vm) & (evmc_capabilities_flagset)capability) != 0;
+    return (vm->get_capabilities(vm) & (evmc_capabilities_flagset)capability) != 0;
 }
 
 /**

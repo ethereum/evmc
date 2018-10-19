@@ -20,7 +20,7 @@ When Host implementation is ready it's time to start using EVMC VMs.
 
 1. Firstly, create a VM instance. You need to know what is the name of the "create"
    function in particular VM implementation. The EVMC recommends to name the 
-   function by the VM codename, e.g. ::evmc_create_examplevm().
+   function by the VM codename, e.g. ::evmc_create_example_vm().
    Invoking the create function will give you the VM instance (::evmc_instance). 
    It is recommended to create the VM instance once.
    

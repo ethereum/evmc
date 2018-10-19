@@ -2,13 +2,14 @@
 
 The EVMC is the low-level ABI between Ethereum Virtual Machines (EVMs) and
 Ethereum Clients. On the EVM-side it supports classic EVM1 and [eWASM].
-On the Client-side it defines the interface for EVM implementations 
+On the Client-side it defines the interface for EVM implementations
 to access Ethereum environment and state.
 
 
 # Guides
 
 - [Host Implementation Guide](@ref hostguide)
+- [VM Implementation Guide](@ref vmguide)
 
 
 # Versioning {#versioning}
@@ -22,13 +23,13 @@ can be referenced as EVMC ABIv3 or just EVMC 3.
 
 # Modules
 
-- [EVMC](@ref EVMC) 
+- [EVMC](@ref EVMC)
    – the main component that defines API for VMs and Clients (Hosts).
 - [EVMC Loader](@ref loader)
-   – the library for loading VMs implemented as Dynamically Loaded Libraries (DLLs, shared objects). 
+   – the library for loading VMs implemented as Dynamically Loaded Libraries (DLLs, shared objects).
 - [EVMC Helpers](@ref helpers)
    – a collection of utility functions for easier integration with EVMC.
-- [EVM Instructions](@ref instructions) 
+- [EVM Instructions](@ref instructions)
    – the library with collection of metrics for EVM1 instruction set.
 - [EVMC VM Tester](@ref vmtester)
    – the EVMC-compatibility testing tool for VM implementations.
@@ -42,10 +43,10 @@ can be referenced as EVMC ABIv3 or just EVMC 3.
 ## Terms
 
 1. **VM** – An Ethereum Virtual Machine instance/implementation.
-2. **Host** – An entity controlling the VM. 
-   The Host requests code execution and responses to VM queries by callback 
+2. **Host** – An entity controlling the VM.
+   The Host requests code execution and responses to VM queries by callback
    functions. This usually represents an Ethereum Client.
-   
+
 
 ## Responsibilities
 
@@ -56,8 +57,8 @@ can be referenced as EVMC ABIv3 or just EVMC 3.
   counter.
 - Controls the call depth, including the exceptional termination of execution
   in case the maximum depth is reached.
-  
-  
+
+
 ### Host
 
 - Provides access to State.
