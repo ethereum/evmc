@@ -158,19 +158,16 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
 /**
  * Get block hash callback function.
  *
- * This callback function is used by an VM to query the block hash of
- * a given block. If the requested block is not found, then an appropriate
- * result code is returned.
+ * This callback function is used by a VM to query the hash of the header of the given block.
+ * If the information about the requested block is not available, then this is signalled by
+ * returning null bytes.
  *
- * @param[out] result   The returned block hash value. Only written to
- *                      if the return value is 1 (information is available).
- * @param      context  The pointer to the Host execution context.
- * @param      number   The block number.
- * @return              true if the information is available, false otherwise.
+ * @param context  The pointer to the Host execution context.
+ * @param number   The block number.
+ * @return         The block hash or null bytes
+ *                 if the information about the block is not available.
  */
-typedef bool (*evmc_get_block_hash_fn)(evmc_bytes32* result,
-                                       struct evmc_context* context,
-                                       int64_t number);
+typedef evmc_bytes32 (*evmc_get_block_hash_fn)(struct evmc_context* context, int64_t number);
 
 /**
  * The execution status code.
