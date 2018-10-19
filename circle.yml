@@ -122,6 +122,11 @@ jobs:
       - image: circleci/golang:1.9
     steps: *bindings-go-steps
 
+  bindings-go-1.11:
+    docker:
+      - image: circleci/golang:1.11
+    steps: *bindings-go-steps
+
 
 workflows:
   version: 2
@@ -130,6 +135,7 @@ workflows:
       - lint
       - build
       - build-clang-3.8
+      - bindings-go-1.11
       - bindings-go-1.10
       - bindings-go-1.9
       - test-docs
