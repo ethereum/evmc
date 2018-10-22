@@ -2,8 +2,32 @@
 
 ## [6.0.0-dev] - unreleased
 
-- Improved: [[#119](https://github.com/ethereum/evmc/pull/119)]
+- Added: [[#116](https://github.com/ethereum/evmc/pull/116)]
+  [EVMC Host implementation example](https://github.com/ethereum/evmc/blob/master/examples/example_host.cpp).
+- Added: [[#127](https://github.com/ethereum/evmc/pull/127)]
+  Support for Constantinople SSTORE net gas metering.
+- Added: [[#133](https://github.com/ethereum/evmc/pull/133)]
+  Support for Constantinople CREATE2 salt in Go bindings.
+- Added: [[#144](https://github.com/ethereum/evmc/pull/144)]
+  A VM can now report its **capabilities** (i.e. EVM and/or eWASM).
+- Added: [[#159](https://github.com/ethereum/evmc/pull/159)]
+  [EVMC Host implementation guide](https://ethereum.github.io/evmc/hostguide.html).
+- Added: [[#160](https://github.com/ethereum/evmc/pull/160)]
+  [EVMC VM implementation guide](https://ethereum.github.io/evmc/vmguide.html).
+- Changed: [[#119](https://github.com/ethereum/evmc/pull/119)]
   EVMC loader symbol searching has been generalized.
+- Changed: [[#125](https://github.com/ethereum/evmc/pull/125)]
+  The `evmc_context_fn_table` renamed to `evmc_host_interface`.
+- Changed: [[#128](https://github.com/ethereum/evmc/pull/128)]
+  The `evmc_message` fields reordered.
+- Changed: [[#136](https://github.com/ethereum/evmc/pull/136)]
+  The `evmc_set_option()` now returns more information about the failure cause.
+- Changed: [[#138](https://github.com/ethereum/evmc/pull/138)], [[#140](https://github.com/ethereum/evmc/pull/140)]
+  In C the `bool` type is used instead of `int` for true/false flags.
+- Changed: [[#152](https://github.com/ethereum/evmc/pull/152)]
+  Introduction of the `evmc_bytes32` type.
+- Changed: [[#154](https://github.com/ethereum/evmc/pull/154)]
+  Simplification of signatures of Host methods.
 
 ## [5.2.0] - 2018-08-28
 
