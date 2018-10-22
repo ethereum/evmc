@@ -24,7 +24,7 @@ include(defaults/HunterCacheServers)
 include(HunterConfig)
 
 project(evmc)
-set(PROJECT_VERSION 6.0.0-dev)
+set(PROJECT_VERSION 6.0.0)
 
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
