@@ -9,7 +9,7 @@
 - Added: [[#133](https://github.com/ethereum/evmc/pull/133)]
   Support for Constantinople CREATE2 salt in Go bindings.
 - Added: [[#144](https://github.com/ethereum/evmc/pull/144)]
-  A VM can now report its **capabilities** (i.e. EVM and/or eWASM).
+  A VM can now report its **capabilities** (i.e. EVM and/or ewasm).
 - Added: [[#159](https://github.com/ethereum/evmc/pull/159)]
   [EVMC Host implementation guide](https://ethereum.github.io/evmc/hostguide.html).
 - Added: [[#160](https://github.com/ethereum/evmc/pull/160)]
