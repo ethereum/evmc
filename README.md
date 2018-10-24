@@ -30,18 +30,18 @@ Please visit the [documentation].
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
 
-## Contribute
-
-[![chat: on gitter][gitter badge]][Gitter]
-
-Talk with us on the [EVMC Gitter chat][Gitter].
-
 ## Maintainers
 
 - Alex Beregszaszi [@axic]
 - Paweł Bylica [@chfast]
 
 See also the list of [EVMC Authors](AUTHORS.md).
+
+## Contributing
+
+[![chat: on gitter][gitter badge]][Gitter]
+
+Talk with us on the [EVMC Gitter chat][Gitter].
 
 ## License
 
