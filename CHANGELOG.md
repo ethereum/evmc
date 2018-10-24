@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.0.0-dev] - unreleased
+## [6.0.0] - 2018-10-24
 
 - Added: [[#116](https://github.com/ethereum/evmc/pull/116)]
   [EVMC Host implementation example](https://github.com/ethereum/evmc/blob/master/examples/example_host.cpp).
@@ -79,7 +79,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[6.0.0-dev]: https://github.com/ethereum/evmc/compare/v5.2.0...HEAD
+[6.0.0]: https://github.com/ethereum/evmc/releases/tag/v6.0.0
 [5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
 [5.1.0]: https://github.com/ethereum/evmc/releases/tag/v5.1.0
 [5.0.0]: https://github.com/ethereum/evmc/releases/tag/v5.0.0
