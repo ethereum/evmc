@@ -30,11 +30,6 @@ Please visit the [documentation].
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
 
-## Contribute
-
-[![chat: on gitter][gitter badge]][Gitter]
-
-Talk with us on the [EVMC Gitter chat][Gitter].
 
 ## Maintainers
 
@@ -43,9 +38,27 @@ Talk with us on the [EVMC Gitter chat][Gitter].
 
 See also the list of [EVMC Authors](AUTHORS.md).
 
+## Contributing
+
+[![chat: on gitter][gitter badge]][Gitter]
+
+Talk with us on the [EVMC Gitter chat][Gitter].
+
 ## License
 
 Licensed under the [MIT License](LICENSE).
+
+
+## Internal
+
+### Making new release
+
+1. Update [CHANGELOG.md](CHANGELOG.md), put the release date, update release link.
+2. `git add CHANGELOG.md`.
+3. Tag new release: `bumpversion --allow-dirty prerel`.
+4. Prepare CHANGELOG for next release: add unreleased section and link.
+5. `git add CHANGELOG.md`.
+6. Start new release series: `bumpversion --allow-dirty --no-tag minor`.
 
 
 [@axic]: https://github.com/axic
