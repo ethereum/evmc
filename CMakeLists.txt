@@ -26,7 +26,7 @@ if(EVMC_TESTING)
 endif()
 
 project(evmc)
-set(PROJECT_VERSION 6.0.0)
+set(PROJECT_VERSION 6.0.1)
 
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
