@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.1] - unreleased
+
+- Fixed: [[#169](https://github.com/ethereum/evmc/pull/169)]
+  Integration of EVMC as a CMake subproject is easier because 
+  Hunter is not loaded unless building tests (`EVMC_TESTING=ON`) is requested.
+
 ## [6.0.0] - 2018-10-24
 
 - Added: [[#116](https://github.com/ethereum/evmc/pull/116)]
@@ -79,6 +85,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
+[6.0.1]: https://github.com/ethereum/evmc/compare/v6.0.0...release/6.0
 [6.0.0]: https://github.com/ethereum/evmc/releases/tag/v6.0.0
 [5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
 [5.1.0]: https://github.com/ethereum/evmc/releases/tag/v5.1.0
