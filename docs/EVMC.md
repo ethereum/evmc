@@ -6,7 +6,7 @@ On the Client-side it defines the interface for EVM implementations
 to access Ethereum environment and state.
 
 
-# Guides
+# Guides {#guides}
 
 - [Host Implementation Guide](@ref hostguide)
 - [VM Implementation Guide](@ref vmguide)
@@ -21,7 +21,7 @@ For example EVMC 3.2.1 would have ABI version 3 and therefore this project relea
 can be referenced as EVMC ABIv3 or just EVMC 3.
 
 
-# Modules
+# Modules {#modules}
 
 - [EVMC](@ref EVMC)
    – the main component that defines API for VMs and Clients (Hosts).
@@ -33,6 +33,15 @@ can be referenced as EVMC ABIv3 or just EVMC 3.
    – the library with collection of metrics for EVM1 instruction set.
 - [EVMC VM Tester](@ref vmtester)
    – the EVMC-compatibility testing tool for VM implementations.
+
+
+# Language bindings {#bindings}
+
+## Go
+
+```go
+import "github.com/ethereum/evmc/bindings/go/evmc"
+```
 
 
 [ewasm]: https://github.com/ewasm/design
