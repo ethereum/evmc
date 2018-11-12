@@ -35,6 +35,15 @@ can be referenced as EVMC ABIv3 or just EVMC 3.
    – the EVMC-compatibility testing tool for VM implementations.
 
 
+# Language bindings
+
+## Go
+
+```go
+import "github.com/ethereum/evmc/bindings/go/evmc"
+```
+
+
 [ewasm]: https://github.com/ewasm/design
 
 
