@@ -21,6 +21,15 @@ include(GNUInstallDirs)
 
 if(EVMC_TESTING)
 	include(HunterGate)
+
+	# Load Hunter if the project including EVMC didn't.
+	if(not ${HUNTER_GATE_DONE})
+	    HunterGate(
+		URL "https://github.com/ruslo/hunter/archive/v0.20.24.tar.gz"
+		SHA1 "3e2037a462bcf2ec3440f60298d933e74ffd4df3"
+	    )
+	endif()
+
 	include(HunterConfig)
 	include(defaults/HunterCacheServers)
 endif()
