@@ -39,11 +39,12 @@ add_custom_command(
 
 add_executable(
     evmc-test
+    test_cpp.cpp
     test_helpers.cpp
     test_instructions.cpp
     test_loader.cpp
 )
 
-target_link_libraries(evmc-test PRIVATE instructions loader GTest::gtest GTest::main)
+target_link_libraries(evmc-test PRIVATE evmc-example-vm instructions loader GTest::gtest GTest::main)
 set_target_properties(evmc-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 add_dependencies(evmc-test vm-mock)
