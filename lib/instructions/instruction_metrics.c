@@ -1321,6 +1321,8 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
 {
     switch (revision)
     {
+    case EVMC_ISTANBUL:
+        /* Currently the same as Costantinople */
     case EVMC_CONSTANTINOPLE:
         return constantinople_metrics;
     case EVMC_BYZANTIUM:
