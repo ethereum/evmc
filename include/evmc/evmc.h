@@ -706,8 +706,9 @@ enum evmc_revision
     EVMC_SPURIOUS_DRAGON = 3,
     EVMC_BYZANTIUM = 4,
     EVMC_CONSTANTINOPLE = 5,
+    EVMC_ISTANBUL = 6,
 
-    EVMC_LATEST_REVISION = EVMC_CONSTANTINOPLE
+    EVMC_LATEST_REVISION = EVMC_ISTANBUL /**< This is the maximum revision number supported. */
 };
 
 
