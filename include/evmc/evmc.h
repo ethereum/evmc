@@ -708,7 +708,7 @@ enum evmc_revision
     EVMC_CONSTANTINOPLE = 5,
     EVMC_ISTANBUL = 6,
 
-    EVMC_LATEST_REVISION = EVMC_ISTANBUL
+    EVMC_LATEST_REVISION = EVMC_ISTANBUL /**< This is the maximum revision number supported. */
 };
 
 
