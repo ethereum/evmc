@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.0.2-dev] - unreleased
+
+- Fixed: [[#179](https://github.com/ethereum/evmc/pull/179)]
+  Add missing salt argument for CREATE2 in Host in Go bindings.
+
 ## [6.0.1] - 2018-11-10
 
 - Fixed: [[#169](https://github.com/ethereum/evmc/pull/169)]
@@ -85,6 +90,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
+[6.0.2-dev]: https://github.com/ethereum/evmc/compare/v6.0.1...release/6.0
 [6.0.1]: https://github.com/ethereum/evmc/releases/tag/v6.0.1
 [6.0.0]: https://github.com/ethereum/evmc/releases/tag/v6.0.0
 [5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
