@@ -16,6 +16,7 @@ option(HUNTER_ENABLED "Enable Hunter package manager support" "${EVMC_TESTING}")
 include(cmake/cable/bootstrap.cmake)
 include(CableBuildType)
 include(CableCompilerSettings)
+include(CableToolchains)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -24,6 +25,8 @@ if(EVMC_TESTING)
 	include(HunterConfig)
 	include(defaults/HunterCacheServers)
 endif()
+
+cable_configure_toolchain(DEFAULT cxx11-pic)
 
 project(evmc)
 set(PROJECT_VERSION 6.1.0-dev)
