@@ -2,6 +2,11 @@
 
 ## [6.1.0-dev] - unreleased
 
+## [6.0.2] - 2019-01-16
+
+- Fixed: [[#179](https://github.com/ethereum/evmc/pull/179)]
+  Add missing salt argument for CREATE2 in Host in Go bindings.
+
 ## [6.0.1] - 2018-11-10
 
 - Fixed: [[#169](https://github.com/ethereum/evmc/pull/169)]
@@ -88,6 +93,7 @@
 
 
 [6.1.0-dev]: https://github.com/ethereum/evmc/compare/v6.0.0...HEAD
+[6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
 [6.0.1]: https://github.com/ethereum/evmc/releases/tag/v6.0.1
 [6.0.0]: https://github.com/ethereum/evmc/releases/tag/v6.0.0
 [5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
