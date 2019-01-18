@@ -40,7 +40,7 @@ enum evmc_loader_error_code
     EVMC_LOADER_INSTANCE_CREATION_FAILURE = 4,
 
     /** The ABI version of the VM instance has mismatched. */
-    EVMC_LOADER_ABI_VERSION_MISMATCH = 5,
+    EVMC_LOADER_ABI_VERSION_MISMATCH = 5
 };
 
 /**
