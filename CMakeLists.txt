@@ -1,6 +1,6 @@
 # EVMC: Ethereum Client-VM Connector API.
-# Copyright 2018 The EVMC Authors.
-# Licensed under the Apache License, Version 2.0. See the LICENSE file.
+# Copyright 2019 The EVMC Authors.
+# Licensed under the Apache License, Version 2.0.
 
 cmake_minimum_required(VERSION 3.5)
 
@@ -21,9 +21,9 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 if(EVMC_TESTING)
-	include(HunterGate)
-	include(HunterConfig)
-	include(defaults/HunterCacheServers)
+    include(HunterGate)
+    include(HunterConfig)
+    include(defaults/HunterCacheServers)
 endif()
 
 cable_configure_toolchain(DEFAULT cxx11-pic)

@@ -1,19 +1,32 @@
 # EVMC: Ethereum Client-VM Connector API.
-# Copyright 2018 The EVMC Authors.
-# Licensed under the Apache License, Version 2.0. See the LICENSE file.
+# Copyright 2019 The EVMC Authors.
+# Licensed under the Apache License, Version 2.0.
 
-add_library(test-compile-c99 STATIC compilation_test.c)
-target_link_libraries(test-compile-c99 PRIVATE evmc)
-set_target_properties(test-compile-c99 PROPERTIES C_STANDARD 99 C_EXTENSIONS OFF)
+# This CMake script creates multiple additional targets to test the compilation of public headers
+# with different C and C++ standards.
 
-add_library(test-compile-c11 STATIC ${PROJECT_SOURCE_DIR}/include/evmc/evmc.h compilation_test.c)
-target_link_libraries(test-compile-c11 PRIVATE evmc)
-set_target_properties(test-compile-c11 PROPERTIES C_STANDARD 11 C_EXTENSIONS OFF)
+macro(create_compilation_test STANDARD)
+    if (${STANDARD} MATCHES "^(C|CXX)([0-9]+)$")
+        set(lang ${CMAKE_MATCH_1})
+        set(num ${CMAKE_MATCH_2})
+    else()
+        message(FATAL_ERROR "Unknown language standard: ${STANDARD}")
+    endif()
 
-add_library(test-compile-cxx98 STATIC compilation_test.cpp)
-target_link_libraries(test-compile-cxx98 PRIVATE evmc)
-set_target_properties(test-compile-cxx98 PROPERTIES CXX_STANDARD 98 CXX_EXTENSIONS OFF)
+    if (lang STREQUAL CXX)
+        set(ext cpp)
+    else()
+        set(ext c)
+    endif()
 
-add_library(test-compile-cxx11 STATIC compilation_test.cpp)
-target_link_libraries(test-compile-cxx11 PRIVATE evmc)
-set_target_properties(test-compile-cxx11 PROPERTIES CXX_STANDARD 11 CXX_EXTENSIONS OFF)
+    string(TOLOWER ${STANDARD} standard)
+    set(target test-compile-${standard})
+
+    add_library(${target} OBJECT compilation_test.${ext})
+    target_include_directories(${target} PRIVATE ${include_dir})
+    set_target_properties(${target} PROPERTIES ${lang}_STANDARD ${num} ${lang}_EXTENSIONS OFF)
+endmacro()
+
+foreach(standard C90;C99;C11;CXX11;CXX14;CXX17)
+    create_compilation_test(${standard})
+endforeach()
