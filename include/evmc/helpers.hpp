@@ -1,6 +1,6 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  */
 
 /**
@@ -39,6 +39,18 @@ inline bool operator==(const evmc_address& a, const evmc_address& b)
 inline bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
+}
+
+/// Check if the address is zero (all bytes are zeros).
+inline bool is_zero(const evmc_address& address) noexcept
+{
+    return address == evmc_address{};
+}
+
+/// Check if the hash is zero (all bytes are zeros).
+inline bool is_zero(const evmc_bytes32& x) noexcept
+{
+    return x == evmc_bytes32{};
 }
 
 /// FNV1a hash function with 64-bit result.

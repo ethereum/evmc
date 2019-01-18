@@ -1,6 +1,6 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018 The EVMC Authors.
-// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+// Copyright 2019 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0.
 
 #include <evmc/helpers.hpp>
 
@@ -26,4 +26,17 @@ TEST(helpers, maps)
     std::unordered_map<evmc_bytes32, bool> unordered_storage;
     unordered_storage.emplace(*storage.begin());
     EXPECT_EQ(unordered_storage.size(), 1);
+}
+
+TEST(helpers, is_zero)
+{
+    auto a = evmc_address{};
+    EXPECT_TRUE(is_zero(a));
+    a.bytes[0] = 1;
+    EXPECT_FALSE(is_zero(a));
+
+    auto b = evmc_bytes32{};
+    EXPECT_TRUE(is_zero(b));
+    b.bytes[0] = 1;
+    EXPECT_FALSE(is_zero(b));
 }
