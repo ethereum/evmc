@@ -15,10 +15,20 @@ to access Ethereum environment and state.
 # Versioning {#versioning}
 
 The EVMC project uses [Semantic Versioning](https://semver.org).
-Moreover, the _MAJOR_ version number is also referenced as the EVMC ABI version.
+The version format is `MAJOR.MINOR.PATCH`.
+
+The _MAJOR_ version number is also referenced as the **EVMC ABI version**.
 This ABI version is available to VM and Host implementations by ::EVMC_ABI_VERSION.
 For example EVMC 3.2.1 would have ABI version 3 and therefore this project release
 can be referenced as EVMC ABIv3 or just EVMC 3.
+Every C ABI breaking change requires increasing the _MAJOR_ version number.
+
+The releases with _MINOR_ version change allow adding new API features
+and modifying the language bindings API.
+Backward incompatible API changes are allowed but should be avoided if possible.
+
+The releases with _PATCH_ should only include bug fixes. Exceptionally,
+API changes are allowed when required to fix a broken feature.
 
 
 # Modules {#modules}
