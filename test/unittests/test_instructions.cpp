@@ -113,7 +113,7 @@ TEST(instructions, constantinople_hard_fork)
 
 TEST(instructions, name_gas_cost_equivalence)
 {
-    for (auto rev = EVMC_FRONTIER; rev <= EVMC_LATEST_REVISION;
+    for (auto rev = EVMC_FRONTIER; rev <= EVMC_MAX_REVISION;
          rev = static_cast<evmc_revision>(rev + 1))
     {
         const auto names = evmc_get_instruction_names_table(rev);

@@ -41,7 +41,7 @@ TEST_F(evmc_vm_test, execute)
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, context, EVMC_LATEST_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)

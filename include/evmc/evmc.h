@@ -2,8 +2,8 @@
  * EVMC: Ethereum Client-VM Connector API
  *
  * @copyright
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  *
  * @defgroup EVMC EVMC
  * @{
@@ -708,7 +708,8 @@ enum evmc_revision
     EVMC_CONSTANTINOPLE = 5,
     EVMC_ISTANBUL = 6,
 
-    EVMC_LATEST_REVISION = EVMC_ISTANBUL /**< This is the maximum revision number supported. */
+    /** The maximum EVM revision supported. */
+    EVMC_MAX_REVISION = EVMC_ISTANBUL
 };
 
 
