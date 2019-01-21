@@ -2,6 +2,10 @@
 
 ## [6.1.0-dev] - unreleased
 
+- Added: [[#174](https://github.com/ethereum/evmc/pull/174)]
+  The **Istanbul** EVM revision.
+- Added: [[#182](https://github.com/ethereum/evmc/pull/182)]
+  The `is_zero()` C++ helper for basic data types.
 - Deprecated: [[#184](https://github.com/ethereum/evmc/pull/184)]
   The `EVMC_LATEST_REVISION` is deprecated, replaced with `EVMC_MAX_REVISION`.
 
