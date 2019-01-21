@@ -2,14 +2,25 @@
  * EVMC: Ethereum Client-VM Connector API
  *
  * @copyright
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  *
  * @defgroup EVMC EVMC
  * @{
  */
 #ifndef EVMC_H
 #define EVMC_H
+
+#ifdef __has_attribute
+#if __has_attribute(deprecated)
+#define EVMC_DEPRECATED __attribute__((deprecated))
+#endif
+#endif
+
+#ifndef EVMC_DEPRECATED
+#define EVMC_DEPRECATED
+#endif
+
 
 #include <stdbool.h> /* Definition of bool, true and false. */
 #include <stddef.h>  /* Definition of size_t. */
@@ -708,7 +719,16 @@ enum evmc_revision
     EVMC_CONSTANTINOPLE = 5,
     EVMC_ISTANBUL = 6,
 
-    EVMC_LATEST_REVISION = EVMC_ISTANBUL /**< This is the maximum revision number supported. */
+    /** The maximum EVM revision supported. */
+    EVMC_MAX_REVISION = EVMC_ISTANBUL,
+
+
+    /**
+     * The latests EVM revision supported.
+     *
+     * @deprecated Replaced with ::EVMC_MAX_REVISION.
+     */
+    EVMC_LATEST_REVISION EVMC_DEPRECATED = EVMC_MAX_REVISION
 };
 
 
