@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.1.0-dev] - unreleased
+## [6.1.0] - 2019-01-24
 
 - Added: [[#174](https://github.com/ethereum/evmc/pull/174)]
   The **Istanbul** EVM revision.
@@ -103,7 +103,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[6.1.0-dev]: https://github.com/ethereum/evmc/compare/v6.0.0...HEAD
+[6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
 [6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
 [6.0.1]: https://github.com/ethereum/evmc/releases/tag/v6.0.1
 [6.0.0]: https://github.com/ethereum/evmc/releases/tag/v6.0.0

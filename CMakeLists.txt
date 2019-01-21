@@ -29,7 +29,7 @@ endif()
 cable_configure_toolchain(DEFAULT cxx11-pic)
 
 project(evmc)
-set(PROJECT_VERSION 6.1.0-dev)
+set(PROJECT_VERSION 6.1.0)
 
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
