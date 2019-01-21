@@ -717,7 +717,14 @@ enum evmc_revision
     EVMC_SPURIOUS_DRAGON = 3,
     EVMC_BYZANTIUM = 4,
     EVMC_CONSTANTINOPLE = 5,
-    EVMC_ISTANBUL = 6,
+
+    /**
+     * Reserved for the post-Constantinople upgrade. The name is likely to
+     * be changed, but the assigned number should stay.
+     */
+    EVMC_CONSTANTINOPLE2 = 6,
+
+    EVMC_ISTANBUL = 7,
 
     /** The maximum EVM revision supported. */
     EVMC_MAX_REVISION = EVMC_ISTANBUL,
