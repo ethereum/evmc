@@ -720,7 +720,15 @@ enum evmc_revision
     EVMC_ISTANBUL = 6,
 
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_ISTANBUL
+    EVMC_MAX_REVISION = EVMC_ISTANBUL,
+
+
+    /**
+     * The latests EVM revision supported.
+     *
+     * @deprecated Replaced with ::EVMC_MAX_REVISION.
+     */
+    EVMC_LATEST_REVISION EVMC_DEPRECATED = EVMC_MAX_REVISION
 };
 
 
