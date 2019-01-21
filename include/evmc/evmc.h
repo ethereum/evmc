@@ -11,6 +11,17 @@
 #ifndef EVMC_H
 #define EVMC_H
 
+#ifdef __has_attribute
+#if __has_attribute(deprecated)
+#define EVMC_DEPRECATED __attribute__((deprecated))
+#endif
+#endif
+
+#ifndef EVMC_DEPRECATED
+#define EVMC_DEPRECATED
+#endif
+
+
 #include <stdbool.h> /* Definition of bool, true and false. */
 #include <stddef.h>  /* Definition of size_t. */
 #include <stdint.h>  /* Definition of int64_t, uint64_t. */
