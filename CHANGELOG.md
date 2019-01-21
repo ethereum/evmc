@@ -2,6 +2,9 @@
 
 ## [6.1.0-dev] - unreleased
 
+- Deprecated: [[#184](https://github.com/ethereum/evmc/pull/184)]
+  The `EVMC_LATEST_REVISION` is deprecated, replaced with `EVMC_MAX_REVISION`.
+
 ## [6.0.2] - 2019-01-16
 
 - Fixed: [[#179](https://github.com/ethereum/evmc/pull/179)]
