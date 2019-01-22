@@ -54,7 +54,8 @@ TEST(cpp, vm)
 
 TEST(cpp, vm_set_option)
 {
-    auto raw_instance = evmc_instance{};
+    evmc_instance raw_instance = {EVMC_ABI_VERSION, "",      "",      nullptr,
+                                  nullptr,          nullptr, nullptr, nullptr};
     raw_instance.destroy = [](evmc_instance*) {};
 
     auto vm = evmc::vm{&raw_instance};
