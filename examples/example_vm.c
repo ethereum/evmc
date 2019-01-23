@@ -1,6 +1,6 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  */
 
 /// @file
@@ -158,6 +158,7 @@ static void set_tracer(struct evmc_instance* instance,
 
 /// Stringify the argument.
 #define STR(x) #x
+#define XSTR(x) STR(x)
 
 #if !defined(PROJECT_VERSION)
 /// The dummy project version if not provided by the build system.
@@ -171,7 +172,7 @@ struct evmc_instance* evmc_create_example_vm()
     struct evmc_instance init = {
         .abi_version = EVMC_ABI_VERSION,
         .name = "example_vm",
-        .version = STR(PROJECT_VERSION),
+        .version = XSTR(PROJECT_VERSION),
         .destroy = destroy,
         .execute = execute,
         .get_capabilities = get_capabilities,

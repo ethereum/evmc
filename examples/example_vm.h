@@ -8,7 +8,15 @@
 #include <evmc/evmc.h>
 #include <evmc/utils.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Creates EVMC Example VM.
  */
 EVMC_EXPORT struct evmc_instance* evmc_create_example_vm(void);
+
+#ifdef __cplusplus
+}
+#endif
