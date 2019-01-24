@@ -8,6 +8,8 @@
   The `is_zero()` C++ helper for basic data types.
 - Added: [[#186](https://github.com/ethereum/evmc/pull/186)]
   Reserved the post-Constantinople EVM revision number.
+- Added: [[#187](https://github.com/ethereum/evmc/pull/187)]
+  C++ wrappers for VM and execution result objects.
 - Deprecated: [[#184](https://github.com/ethereum/evmc/pull/184)]
   The `EVMC_LATEST_REVISION` is deprecated, replaced with `EVMC_MAX_REVISION`.
 
