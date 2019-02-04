@@ -11,13 +11,15 @@
 #ifndef EVMC_H
 #define EVMC_H
 
-#ifdef __has_attribute
-#if __has_attribute(deprecated)
+#if defined(__clang__) || (defined(__GNUC__) && __GNUC__ >= 6)
+/**
+ * Portable declaration of "deprecated" attribute.
+ *
+ * Available for clang and GCC 6+ compilers. The older GCC compilers know
+ * this attribute, but it cannot be applied to enum elements.
+ */
 #define EVMC_DEPRECATED __attribute__((deprecated))
-#endif
-#endif
-
-#ifndef EVMC_DEPRECATED
+#else
 #define EVMC_DEPRECATED
 #endif
 

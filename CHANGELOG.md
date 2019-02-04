@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.1.1] - Unreleased
+
+- Fixed: [[#190](https://github.com/ethereum/evmc/pull/190)]
+  Compilation with GCC 5 because of the "deprecated" attribute applied
+  to an enum element.
+
 ## [6.1.0] - 2019-01-24
 
 - Added: [[#174](https://github.com/ethereum/evmc/pull/174)]
@@ -103,6 +109,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
+[6.1.1]: https://github.com/ethereum/evmc/compare/v6.1.0...release/6.1
 [6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
 [6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
 [6.0.1]: https://github.com/ethereum/evmc/releases/tag/v6.0.1
