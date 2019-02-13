@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.1.1] - Unreleased
+## [6.1.1] - 2019-02-13
 
 - Added: [[#192](https://github.com/ethereum/evmc/pull/192)]
   Documentation of elements of evmc_revision.
@@ -111,7 +111,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[6.1.1]: https://github.com/ethereum/evmc/compare/v6.1.0...release/6.1
+[6.1.1]: https://github.com/ethereum/evmc/releases/tag/v6.1.1
 [6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
 [6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
 [6.0.1]: https://github.com/ethereum/evmc/releases/tag/v6.0.1
