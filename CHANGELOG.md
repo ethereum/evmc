@@ -2,6 +2,8 @@
 
 ## [6.1.1] - Unreleased
 
+- Added: [[#192](https://github.com/ethereum/evmc/pull/192)]
+  Documentation of elements of evmc_revision.
 - Fixed: [[#190](https://github.com/ethereum/evmc/pull/190)]
   Compilation with GCC 5 because of the "deprecated" attribute applied
   to an enum element.

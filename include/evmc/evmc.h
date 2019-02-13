@@ -708,24 +708,66 @@ typedef enum evmc_set_option_result (*evmc_set_option_fn)(struct evmc_instance* 
 /**
  * EVM revision.
  *
- *  The revision of the EVM specification based on the Ethereum
- *  upgrade / hard fork codenames.
+ * The revision of the EVM specification based on the Ethereum
+ * upgrade / hard fork codenames.
  */
 enum evmc_revision
 {
+    /**
+     * The Frontier revision.
+     *
+     * The one Ethereum launched with.
+     */
     EVMC_FRONTIER = 0,
+
+    /**
+     * The Homestead revision.
+     *
+     * https://eips.ethereum.org/EIPS/eip-606
+     */
     EVMC_HOMESTEAD = 1,
+
+    /**
+     * The Tangerine Whistle revision.
+     *
+     * https://eips.ethereum.org/EIPS/eip-608
+     */
     EVMC_TANGERINE_WHISTLE = 2,
+
+    /**
+     * The Spurious Dragon revision.
+     *
+     * https://eips.ethereum.org/EIPS/eip-607
+     */
     EVMC_SPURIOUS_DRAGON = 3,
+
+    /**
+     * The Byzantium revision.
+     *
+     * https://eips.ethereum.org/EIPS/eip-609
+     */
     EVMC_BYZANTIUM = 4,
+
+    /**
+     * The Constantinople revision.
+     *
+     * https://eips.ethereum.org/EIPS/eip-1013
+     */
     EVMC_CONSTANTINOPLE = 5,
 
     /**
      * Reserved for the post-Constantinople upgrade. The name is likely to
      * be changed, but the assigned number should stay.
+     *
+     * The spec draft: https://github.com/ethereum/EIPs/pull/1716.
      */
     EVMC_CONSTANTINOPLE2 = 6,
 
+    /**
+     * The Istanbul revision.
+     *
+     * The spec draft: https://eips.ethereum.org/EIPS/eip-1679.
+     */
     EVMC_ISTANBUL = 7,
 
     /** The maximum EVM revision supported. */
