@@ -3,12 +3,13 @@ jobs:
 
   lint:
     docker:
-    - image: ethereum/cpp-build-env:7
+    - image: ethereum/cpp-build-env:10
     steps:
     - checkout
     - run:
         name: "Check code format"
         command: |
+          clang-format --version
           find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
     - run:
@@ -18,11 +19,21 @@ jobs:
           sudo pip3 install codespell
           codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
 
-  build-cxx11: &build
+  build: &build
     docker:
-      - image: ethereum/cpp-build-env:7
+      - image: ethereum/cpp-build-env:10
     steps:
       - checkout
+      - run:
+          name: "Environment"
+          command: |
+            CC=${CC:-cc}
+            CXX=${CXX:-cpp}
+            echo CC: $CC
+            echo CXX: $CXX
+            $CC --version
+            $CXX --version
+            cmake --version
       - run:
           name: "Configure"
           working_directory: ~/build
@@ -63,23 +74,35 @@ jobs:
           name: "Run evmc-vmtester libevmc-example-vm.so"
           command: ~/install/bin/evmc-vmtester ~/install/lib/libevmc-example-vm.so
 
+  build-cxx17:
+    <<: *build
+    environment:
+      CC: gcc-8
+      CXX: g++-8
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
+
   build-cxx14:
     <<: *build
     environment:
-      CC: clang-3.8
-      CXX: clang++-3.8
+      CC: clang-8
+      CXX: clang++-8
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic
 
-  build-cxx17:
+  build-gcc6:
     <<: *build
     environment:
       CC: gcc-6
       CXX: g++-6
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
+
+  build-clang3.8:
+    <<: *build
+    environment:
+      CC: clang-3.8
+      CXX: clang++-3.8
 
   test-docs:
     docker:
-      - image: ethereum/cpp-build-env
+      - image: ethereum/cpp-build-env:10
     steps:
       - checkout
       - run:
@@ -98,7 +121,7 @@ jobs:
 
   upload-docs:
     docker:
-      - image: ethereum/cpp-build-env
+      - image: ethereum/cpp-build-env:10
     steps:
       - checkout
       - run:
@@ -141,9 +164,10 @@ workflows:
   evmc:
     jobs:
       - lint
-      - build-cxx11
-      - build-cxx14
       - build-cxx17
+      - build-cxx14
+      - build-gcc6
+      - build-clang3.8
       - bindings-go-1.11
       - bindings-go-1.10
       - bindings-go-1.9
