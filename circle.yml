@@ -9,6 +9,7 @@ jobs:
     - run:
         name: "Check code format"
         command: |
+          clang-format --version
           find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
     - run:
