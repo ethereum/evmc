@@ -1046,7 +1046,7 @@ const char* const* evmc_get_instruction_names_table(enum evmc_revision revision)
     switch (revision)
     {
     case EVMC_ISTANBUL:
-    case EVMC_CONSTANTINOPLE2:
+    case EVMC_PETERSBURG:
     case EVMC_CONSTANTINOPLE:
         return constantinople_names;
     case EVMC_BYZANTIUM:

@@ -756,12 +756,12 @@ enum evmc_revision
     EVMC_CONSTANTINOPLE = 5,
 
     /**
-     * Reserved for the post-Constantinople upgrade. The name is likely to
-     * be changed, but the assigned number should stay.
+     * The Petersburg revision.
      *
-     * The spec draft: https://github.com/ethereum/EIPs/pull/1716.
+     * Other names: Constantinople2, ConstantinopleFix.
+     * https://eips.ethereum.org/EIPS/eip-1716
      */
-    EVMC_CONSTANTINOPLE2 = 6,
+    EVMC_PETERSBURG = 6,
 
     /**
      * The Istanbul revision.
@@ -773,6 +773,13 @@ enum evmc_revision
     /** The maximum EVM revision supported. */
     EVMC_MAX_REVISION = EVMC_ISTANBUL,
 
+
+    /**
+     * Reserved for the post-Constantinople upgrade.
+     *
+     * @deprecated Replaced with ::EVMC_PETERSBURG.
+     */
+    EVMC_CONSTANTINOPLE2 EVMC_DEPRECATED = EVMC_PETERSBURG,
 
     /**
      * The latests EVM revision supported.

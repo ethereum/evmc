@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.2.0] - Unreleased
+
+- Deprecated: [[#196](https://github.com/ethereum/evmc/pull/196)]
+  The `EVMC_CONSTANTINOPLE2` revision name is deprecated, replaced with `EVMC_PETERSBURG`.
+
 ## [6.1.1] - 2019-02-13
 
 - Added: [[#192](https://github.com/ethereum/evmc/pull/192)]
@@ -111,6 +116,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
+[6.2.0]: https://github.com/ethereum/evmc/compare/v6.1.1...master
 [6.1.1]: https://github.com/ethereum/evmc/releases/tag/v6.1.1
 [6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
 [6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
