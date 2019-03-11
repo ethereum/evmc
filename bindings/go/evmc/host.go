@@ -1,6 +1,6 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018 The EVMC Authors.
-// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+// Copyright 2019 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0.
 
 package evmc
 
@@ -69,6 +69,17 @@ func goByteSlice(data *C.uint8_t, size C.size_t) []byte {
 	return (*[1 << 30]byte)(unsafe.Pointer(data))[:size:size]
 }
 
+// TxContext contains information about current transaction and block.
+type TxContext struct {
+	GasPrice   common.Hash
+	Origin     common.Address
+	Coinbase   common.Address
+	Number     int64
+	Timestamp  int64
+	GasLimit   int64
+	Difficulty common.Hash
+}
+
 type HostContext interface {
 	AccountExists(addr common.Address) bool
 	GetStorage(addr common.Address, key common.Hash) common.Hash
@@ -78,8 +89,7 @@ type HostContext interface {
 	GetCodeHash(addr common.Address) common.Hash
 	GetCode(addr common.Address) []byte
 	Selfdestruct(addr common.Address, beneficiary common.Address)
-	GetTxContext() (gasPrice common.Hash, origin common.Address, coinbase common.Address, number int64, timestamp int64,
-		gasLimit int64, difficulty common.Hash)
+	GetTxContext() TxContext
 	GetBlockHash(number int64) common.Hash
 	EmitLog(addr common.Address, topics []common.Hash, data []byte)
 	Call(kind CallKind,
@@ -162,16 +172,16 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 	idx := int((*C.struct_extended_context)(pCtx).index)
 	ctx := getHostContext(idx)
 
-	gasPrice, origin, coinbase, number, timestamp, gasLimit, difficulty := ctx.GetTxContext()
+	txContext := ctx.GetTxContext()
 
 	return C.struct_evmc_tx_context{
-		evmcBytes32(gasPrice),
-		evmcAddress(origin),
-		evmcAddress(coinbase),
-		C.int64_t(number),
-		C.int64_t(timestamp),
-		C.int64_t(gasLimit),
-		evmcBytes32(difficulty),
+		evmcBytes32(txContext.GasPrice),
+		evmcAddress(txContext.Origin),
+		evmcAddress(txContext.Coinbase),
+		C.int64_t(txContext.Number),
+		C.int64_t(txContext.Timestamp),
+		C.int64_t(txContext.GasLimit),
+		evmcBytes32(txContext.Difficulty),
 	}
 }
 
