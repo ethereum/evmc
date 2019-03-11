@@ -21,6 +21,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 if(EVMC_TESTING)
+    set(HUNTER_CONFIGURATION_TYPES Release CACHE STRING "Build type of Hunter packages")
     include(HunterGate)
     include(HunterConfig)
     include(defaults/HunterCacheServers)
