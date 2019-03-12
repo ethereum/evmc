@@ -107,7 +107,10 @@ static struct evmc_result execute(struct evmc_instance* instance,
     // Assembly: `{ sstore(0, add(sload(0), 1)) }`
     const char counter[] = "\x60\x01\x60\x00\x54\x01\x60\x00\x55";
 
-    if (code_size == strlen(return_address) &&
+    // Assembly: `{ mstore(0, number()) return(0, msize()) }`
+    const char return_block_number[] = "\x43\x60\x00\x52\x59\x60\x00\xf3";
+
+    if (code_size == (sizeof(return_address) - 1) &&
         strncmp((const char*)code, return_address, code_size) == 0)
     {
         static const size_t address_size = sizeof(msg->destination);
@@ -125,13 +128,29 @@ static struct evmc_result execute(struct evmc_instance* instance,
         ret.release = &free_result_output_data;
         return ret;
     }
-    else if (code_size == strlen(counter) && strncmp((const char*)code, counter, code_size) == 0)
+    else if (code_size == (sizeof(counter) - 1) &&
+             strncmp((const char*)code, counter, code_size) == 0)
     {
         const evmc_bytes32 key = {{0}};
         evmc_bytes32 value = context->host->get_storage(context, &msg->destination, &key);
         value.bytes[31]++;
         context->host->set_storage(context, &msg->destination, &key, &value);
         ret.status_code = EVMC_SUCCESS;
+        return ret;
+    }
+    else if (code_size == (sizeof(return_block_number) - 1) &&
+             strncmp((const char*)code, return_block_number, code_size) == 0)
+    {
+        const struct evmc_tx_context tx_context = context->host->get_tx_context(context);
+        const size_t output_size = 20;
+
+        uint8_t* output_data = (uint8_t*)calloc(1, output_size);
+        snprintf((char*)output_data, output_size, "%u", (unsigned)tx_context.block_number);
+        ret.status_code = EVMC_SUCCESS;
+        ret.gas_left = msg->gas / 2;
+        ret.output_data = output_data;
+        ret.output_size = output_size;
+        ret.release = &free_result_output_data;
         return ret;
     }
 
