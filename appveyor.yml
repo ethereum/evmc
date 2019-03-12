@@ -48,7 +48,7 @@ build_script:
 
       go build ./bindings/go/evmc
       go generate ./bindings/go/evmc
-      go test ./bindings/go/evmc
+      go test -v ./bindings/go/evmc
     }
 
 after_build:

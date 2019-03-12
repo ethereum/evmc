@@ -91,6 +91,7 @@ static struct evmc_result execute(struct evmc_instance* instance,
         ret.output_data = (const uint8_t*)error;
         ret.output_size = strlen(error);
         ret.status_code = EVMC_FAILURE;
+        ret.gas_left = msg->gas / 10;
         ret.release = NULL;  // We don't need to release the constant messages.
         return ret;
     }
