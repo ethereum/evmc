@@ -82,7 +82,7 @@ TEST(loader, aaa)
     auto fn = evmc_load(path, &ec);
     ASSERT_NE(fn, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
+    EXPECT_EQ((uintptr_t)fn(), 0xabbaa);
 
     fn = evmc_load(path, nullptr);
     ASSERT_NE(fn, nullptr);
