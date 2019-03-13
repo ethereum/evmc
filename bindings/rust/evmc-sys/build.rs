@@ -11,6 +11,10 @@ fn gen_bindings() {
         .generate_comments(true)
         // https://github.com/rust-lang-nursery/rust-bindgen/issues/947#issuecomment-327100002
         .layout_tests(false)
+        // do not generate an empty enum for EVMC_ABI_VERSION
+        .constified_enum("")
+        // generate Rust enums for each evmc enum
+        .rustified_enum("*")
         .generate()
         .expect("Unable to generate bindings");
 
