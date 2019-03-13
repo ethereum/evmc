@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "bindings/rust/evmc-sys",
+    "bindings/rust/evmc-vm",
+]
