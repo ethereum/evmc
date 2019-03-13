@@ -1,0 +1,11 @@
+[package]
+name = "evmc-vm"
+version = "6.2.0-dev"
+authors = ["Alex Beregszaszi <alex@rtfs.hu>"]
+license = "Apache-2.0"
+repository = "https://github.com/ethereum/evmc"
+description = "Bindings to EVMC (VM specific)"
+edition = "2018"
+
+[dependencies]
+evmc-sys = { path = "../evmc-sys" }
