@@ -341,6 +341,18 @@ extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     }
 }
 
+// Add VM name, version as arguments
+#[macro_export]
+macro_rules! evmc_create_vm {
+    () => {
+	    #[no_mangle]
+	    pub extern "C" fn evmc_create() -> ffi::evmc_instance {
+	    }
+    };
+}
+
+evmc_create_vm!{}
+
 #[cfg(test)]
 mod tests {
     use super::*;
