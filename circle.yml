@@ -160,6 +160,29 @@ jobs:
       - image: circleci/golang:1.11
     steps: *bindings-go-steps
 
+  bindings-rust:
+    docker:
+      - image: rust:1
+    steps:
+      - checkout
+      - run:
+          name: Update environment
+          command: |
+            apt update
+            apt -y install libclang-dev clang
+            rustup component add rustfmt
+            rustup update
+      - run:
+          name: Check formatting
+          command: |
+            rustfmt --version
+            cargo fmt --all -- --check
+      - run:
+          name: Build
+          command: cargo build
+      - run:
+          name: Test
+          command: cargo test
 
 workflows:
   version: 2
@@ -173,6 +196,7 @@ workflows:
       - bindings-go-1.11
       - bindings-go-1.10
       - bindings-go-1.9
+      - bindings-rust
       - test-docs
       - upload-docs:
           requires:
