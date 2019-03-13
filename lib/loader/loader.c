@@ -11,7 +11,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#if _WIN32
+#if defined(EVMC_LOADER_MOCK)
+#include "../../test/unittests/loader_mock.h"
+#elif _WIN32
 #include <Windows.h>
 #define DLL_HANDLE HMODULE
 #define DLL_OPEN(filename) LoadLibrary(filename)

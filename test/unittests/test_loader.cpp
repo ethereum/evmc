@@ -14,125 +14,115 @@ static constexpr bool is_windows = true;
 static constexpr bool is_windows = false;
 #endif
 
-TEST(loader, nonexistent)
+extern "C" {
+extern const char* evmc_test_library_path;
+extern const char* evmc_test_library_symbol;
+extern evmc_create_fn evmc_test_create_fn;
+}
+
+class loader : public ::testing::Test
 {
+protected:
+    void setup(const char* path, const char* symbol, evmc_create_fn fn) noexcept
+    {
+        evmc_test_library_path = path;
+        evmc_test_library_symbol = symbol;
+        evmc_test_create_fn = fn;
+    }
+};
+
+static evmc_instance* create_aaa()
+{
+    return (evmc_instance*)0xaaa;
+}
+
+static evmc_instance* create_eee_bbb()
+{
+    return (evmc_instance*)0xeeebbb;
+}
+
+static evmc_instance* create_failure()
+{
+    return nullptr;
+}
+
+static evmc_instance* create_abi42()
+{
+    static int abi_version = 42;
+    return reinterpret_cast<evmc_instance*>(&abi_version);
+}
+
+TEST_F(loader, load_nonexistent)
+{
+    constexpr auto path = "nonexistent";
     evmc_loader_error_code ec;
-    auto x = evmc_load("nonexistent", &ec);
+    EXPECT_EQ(evmc_load(path, &ec), nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_CANNOT_OPEN);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load("nonexistent", nullptr);
-    EXPECT_EQ(x, nullptr);
+    EXPECT_EQ(evmc_load(path, nullptr), nullptr);
 }
 
-TEST(loader, longpath)
+TEST_F(loader, load_long_path)
 {
-    std::string path(5000, 'a');
-
+    const std::string path(5000, 'a');
     evmc_loader_error_code ec;
-    auto x = evmc_load(path.c_str(), &ec);
+    EXPECT_EQ(evmc_load(path.c_str(), &ec), nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_ARGUMENT);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path.c_str(), nullptr);
-    EXPECT_EQ(x, nullptr);
+    EXPECT_EQ(evmc_load(path.c_str(), nullptr), nullptr);
 }
 
-TEST(loader, not_so)
-{
-    auto path = "unittests/empty.file";
-
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_CANNOT_OPEN);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-
-TEST(loader, null_path)
+TEST_F(loader, load_null_path)
 {
     evmc_loader_error_code ec;
-    auto x = evmc_load(nullptr, &ec);
+    EXPECT_EQ(evmc_load(nullptr, &ec), nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_ARGUMENT);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(nullptr, nullptr);
-    EXPECT_EQ(x, nullptr);
+    EXPECT_EQ(evmc_load(nullptr, nullptr), nullptr);
 }
 
-TEST(loader, empty_path)
+TEST_F(loader, load_empty_path)
 {
     evmc_loader_error_code ec;
-    auto x = evmc_load("", &ec);
+    EXPECT_EQ(evmc_load("", &ec), nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_ARGUMENT);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load("", nullptr);
-    EXPECT_EQ(x, nullptr);
+    EXPECT_EQ(evmc_load("", nullptr), nullptr);
 }
 
-TEST(loader, aaa)
+TEST_F(loader, load_prefix_aaa)
 {
-    auto path = "unittests/libaaa.so";
-
-    evmc_loader_error_code ec;
-    auto fn = evmc_load(path, &ec);
-    ASSERT_NE(fn, nullptr);
-    EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
-
-    fn = evmc_load(path, nullptr);
-    ASSERT_NE(fn, nullptr);
-    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
-}
-
-TEST(loader, prefix_aaa)
-{
-    auto paths = {"unittests/double-prefix-aaa.evm", "unittests/double_prefix_aaa.evm"};
+    auto paths = {
+        "./aaa.evm",
+        "aaa.evm",
+        "unittests/libaaa.so",
+        "unittests/double-prefix-aaa.evm",
+        "unittests/double_prefix_aaa.evm",
+    };
 
     for (auto& path : paths)
     {
+        setup(path, "evmc_create_aaa", create_aaa);
         evmc_loader_error_code ec;
         auto fn = evmc_load(path, &ec);
-        ASSERT_NE(fn, nullptr);
         EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
+        ASSERT_NE(fn, nullptr);
         EXPECT_EQ((uintptr_t)fn(), 0xaaa);
     }
 }
 
-TEST(loader, eee_bbb)
+TEST_F(loader, load_eee_bbb)
 {
-    auto path = "unittests/eee-bbb.dll";
-
+    setup("unittests/eee-bbb.dll", "evmc_create_eee_bbb", create_eee_bbb);
     evmc_loader_error_code ec;
-    auto fn = evmc_load(path, &ec);
+    auto fn = evmc_load(evmc_test_library_path, &ec);
     ASSERT_NE(fn, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
     EXPECT_EQ((uintptr_t)fn(), 0xeeebbb);
 }
 
-#if _WIN32
-TEST(loader, nextto)
-{
-    // On Unix dlopen searches for system libs when the path does not contain "/".
 
-    auto path = "aaa.evm";
-
-    evmc_loader_error_code ec;
-    auto fn = evmc_load(path, &ec);
-    ASSERT_NE(fn, nullptr);
-    EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ((uintptr_t)fn(), 0xaaa);
-}
-#endif
-
-TEST(loader, windows_path)
+TEST_F(loader, load_windows_path)
 {
     auto paths = {
-        "./aaa.evm",
-        ".\\aaa.evm",
+        "./eee-bbb.evm",
+        ".\\eee-bbb.evm",
         "./unittests/eee-bbb.dll",
         "./unittests\\eee-bbb.dll",
         ".\\unittests\\eee-bbb.dll",
@@ -142,133 +132,59 @@ TEST(loader, windows_path)
 
     for (auto& path : paths)
     {
-        bool is_windows_path = std::strchr(path, '\\') != nullptr;
+        bool should_open = is_windows || std::strchr(path, '\\') == nullptr;
+        setup(should_open ? path : nullptr, "evmc_create_eee_bbb", create_eee_bbb);
 
-        if (is_windows_path && !is_windows)
-        {
-            evmc_loader_error_code ec;
-            auto fn = evmc_load(path, &ec);
-            EXPECT_EQ(fn, nullptr);
-            EXPECT_EQ(ec, EVMC_LOADER_CANNOT_OPEN);
-        }
-        else
-        {
-            evmc_loader_error_code ec;
-            auto fn = evmc_load(path, &ec);
-            EXPECT_NE(fn, nullptr);
-            EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-        }
+        evmc_loader_error_code ec;
+        evmc_load(path, &ec);
+        EXPECT_EQ(ec, should_open ? EVMC_LOADER_SUCCESS : EVMC_LOADER_CANNOT_OPEN);
     }
 }
 
-TEST(loader, eee1)
+TEST_F(loader, load_symbol_not_found)
 {
-    auto path = "unittests/libeee1.so";
+    auto paths = {"libaaa1.so", "eee2.so", "libeee3.x", "eee4", "_", "lib_.so"};
 
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
+    for (auto& path : paths)
+    {
+        setup(path, "evmc_create_aaa", create_aaa);
 
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
+        evmc_loader_error_code ec;
+        EXPECT_EQ(evmc_load(evmc_test_library_path, &ec), nullptr);
+        EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
+        EXPECT_EQ(evmc_load(evmc_test_library_path, nullptr), nullptr);
+    }
 }
 
-TEST(loader, eee2)
+TEST_F(loader, load_default_symbol)
 {
-    auto path = "unittests/eee2.so";
+    setup("default.evmc", "evmc_create", create_aaa);
 
     evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-
-TEST(loader, eee3)
-{
-    auto path = "unittests/libeee3.x";
-
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-
-#if !_WIN32
-TEST(loader, eee4)
-{
-    // Windows is not loading DLLs without extensions.
-    auto path = "unittests/eee4";
-
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-
-TEST(loader, _)
-{
-    // Windows is not loading DLLs without extensions.
-    auto path = "unittests/_";
-
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-#endif
-
-TEST(loader, lib_)
-{
-    // Windows is not loading DLLs without extensions.
-    auto path = "unittests/lib_.so";
-
-    evmc_loader_error_code ec;
-    auto x = evmc_load(path, &ec);
-    EXPECT_EQ(ec, EVMC_LOADER_SYMBOL_NOT_FOUND);
-    EXPECT_EQ(x, nullptr);
-
-    x = evmc_load(path, nullptr);
-    EXPECT_EQ(x, nullptr);
-}
-
-TEST(loader, load_default)
-{
-    auto path = "unittests/default.evmc";
-
-    evmc_loader_error_code ec;
-    auto fn = evmc_load(path, &ec);
+    auto fn = evmc_load(evmc_test_library_path, &ec);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ((uintptr_t)fn(), 0xdeaf);
+    EXPECT_EQ(fn, &create_aaa);
 
-    fn = evmc_load(path, nullptr);
-    EXPECT_EQ((uintptr_t)fn(), 0xdeaf);
+    fn = evmc_load(evmc_test_library_path, nullptr);
+    EXPECT_EQ(fn, &create_aaa);
 }
 
-TEST(loader, load_and_create_failure)
+TEST_F(loader, load_and_create_failure)
 {
+    setup("failure.vm", "evmc_create", create_failure);
+
     evmc_loader_error_code ec;
-    auto vm = evmc_load_and_create("unittests/failure.vm", &ec);
+    auto vm = evmc_load_and_create(evmc_test_library_path, &ec);
     EXPECT_EQ(vm, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_INSTANCE_CREATION_FAILURE);
 }
 
-TEST(loader, load_and_create_abi_mismatch)
+TEST_F(loader, load_and_create_abi_mismatch)
 {
+    setup("abi42.vm", "evmc_create", create_abi42);
+
     evmc_loader_error_code ec;
-    auto vm = evmc_load_and_create("unittests/abi42.vm", &ec);
+    auto vm = evmc_load_and_create(evmc_test_library_path, &ec);
     EXPECT_EQ(vm, nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_ABI_VERSION_MISMATCH);
 }
