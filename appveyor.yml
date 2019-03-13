@@ -47,6 +47,8 @@ build_script:
       copy lib/loader/loader.c bindings/go/evmc
 
       go build ./bindings/go/evmc
+      go generate ./bindings/go/evmc
+      go test -v ./bindings/go/evmc
     }
 
 after_build:
