@@ -15,8 +15,6 @@ jobs:
     - run:
         name: "Run codespell"
         command: |
-          sudo pip3 install --upgrade pip setuptools
-          sudo pip3 install codespell
           codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
 
   build: &build
