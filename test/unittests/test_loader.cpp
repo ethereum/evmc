@@ -1,6 +1,6 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018 The EVMC Authors.
-// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+// Copyright 2019 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0.
 
 #include <evmc/loader.h>
 
@@ -27,15 +27,14 @@ TEST(loader, nonexistent)
 
 TEST(loader, longpath)
 {
-    std::vector<char> path(5000, 'a');
-    *path.rbegin() = 0;
+    std::string path(5000, 'a');
 
     evmc_loader_error_code ec;
-    auto x = evmc_load(path.data(), &ec);
+    auto x = evmc_load(path.c_str(), &ec);
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_ARGUMENT);
     EXPECT_EQ(x, nullptr);
 
-    x = evmc_load(path.data(), nullptr);
+    x = evmc_load(path.c_str(), nullptr);
     EXPECT_EQ(x, nullptr);
 }
 
