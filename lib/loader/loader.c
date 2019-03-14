@@ -1,6 +1,6 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  */
 
 #include <evmc/loader.h>
@@ -11,25 +11,29 @@
 #include <stdint.h>
 #include <string.h>
 
-#if _WIN32
+#if defined(EVMC_LOADER_MOCK)
+#include "../../test/unittests/loader_mock.h"
+#elif _WIN32
 #include <Windows.h>
 #define DLL_HANDLE HMODULE
 #define DLL_OPEN(filename) LoadLibrary(filename)
 #define DLL_CLOSE(handle) FreeLibrary(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) GetProcAddress(handle, name)
-#define HAVE_STRCPY_S 1
 #else
 #include <dlfcn.h>
 #define DLL_HANDLE void*
 #define DLL_OPEN(filename) dlopen(filename, RTLD_LAZY)
 #define DLL_CLOSE(handle) dlclose(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) dlsym(handle, name)
-#define HAVE_STRCPY_S 0
 #endif
 
 #define PATH_MAX_LENGTH 4096
 
-#if !HAVE_STRCPY_S
+#if !_WIN32
+/*
+ * Provide strcpy_s() for GNU libc.
+ * The availability check might need to adjusted for other C standard library implementations.
+ */
 static void strcpy_s(char* dest, size_t destsz, const char* src)
 {
     size_t len = strlen(src);
