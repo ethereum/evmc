@@ -76,4 +76,92 @@ public:
 private:
     evmc_instance* const m_instance = nullptr;
 };
+
+
+/// Wrapper around EVMC host context / host interface.
+class host
+{
+    evmc_context* context = nullptr;
+    evmc_tx_context tx_context = {};
+
+public:
+    host(evmc_context* context) noexcept : context{context} {}
+
+    bool account_exists(const evmc_address& address) noexcept
+    {
+        return context->host->account_exists(context, &address);
+    }
+
+    evmc_bytes32 get_storage(const evmc_address& address, const evmc_bytes32& key) noexcept
+    {
+        return context->host->get_storage(context, &address, &key);
+    }
+
+    evmc_storage_status set_storage(const evmc_address& address,
+                                    const evmc_bytes32& key,
+                                    const evmc_bytes32& value) noexcept
+    {
+        return context->host->set_storage(context, &address, &key, &value);
+    }
+
+    evmc_uint256be get_balance(const evmc_address& address) noexcept
+    {
+        return context->host->get_balance(context, &address);
+    }
+
+    size_t get_code_size(const evmc_address& address) noexcept
+    {
+        return context->host->get_code_size(context, &address);
+    }
+
+    evmc_bytes32 get_code_hash(const evmc_address& address) noexcept
+    {
+        return context->host->get_code_hash(context, &address);
+    }
+
+    size_t copy_code(const evmc_address& address,
+                     size_t code_offset,
+                     uint8_t* buffer_data,
+                     size_t buffer_size) noexcept
+    {
+        return context->host->copy_code(context, &address, code_offset, buffer_data, buffer_size);
+    }
+
+    void selfdestruct(const evmc_address& address, const evmc_address& beneficiary)
+    {
+        context->host->selfdestruct(context, &address, &beneficiary);
+    }
+
+    result call(const evmc_message& message) noexcept
+    {
+        return result{context->host->call(context, &message)};
+    }
+
+    /// Gets the transaction and block context from the Host.
+    ///
+    /// The implementation caches the received transaction context
+    /// by assuming that the block timestamp should never be zero.
+    ///
+    /// @return Reference to the cached transaction context.
+    const evmc_tx_context& get_tx_context() noexcept
+    {
+        if (tx_context.block_timestamp == 0)
+            tx_context = context->host->get_tx_context(context);
+        return tx_context;
+    }
+
+    evmc_bytes32 get_block_hash(int64_t number) noexcept
+    {
+        return context->host->get_block_hash(context, number);
+    }
+
+    void emit_log(const evmc_address& address,
+                  const uint8_t* data,
+                  size_t data_size,
+                  const evmc_bytes32 topics[],
+                  size_t topics_count) noexcept
+    {
+        context->host->emit_log(context, &address, data, data_size, topics, topics_count);
+    }
+};
 }  // namespace evmc
