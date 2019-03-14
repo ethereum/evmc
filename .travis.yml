@@ -1,0 +1,24 @@
+branches:
+  only:
+    - master
+    - /^release\/.*$/
+    - travis
+
+matrix:
+  include:
+    - language: cpp
+      os: windows
+
+cache:
+  directories:
+    - C:/Users/travis/.hunter/_Base/Cache
+
+install:
+  - cmake --version
+  - mkdir build && cd build
+  - cmake .. -G "Visual Studio 15 2017 Win64" -DEVMC_TESTING=ON -DCMAKE_INSTALL_PREFIX=$HOME
+  - cmake --build . --config Release --target install
+
+script:
+  - test/Release/evmc-test.exe
+  - $HOME/bin/evmc-vmtester.exe $HOME/bin/evmc-example-vm.dll
