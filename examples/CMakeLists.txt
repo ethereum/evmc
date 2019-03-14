@@ -1,6 +1,6 @@
 # EVMC: Ethereum Client-VM Connector API.
-# Copyright 2018 The EVMC Authors.
-# Licensed under the Apache License, Version 2.0. See the LICENSE file.
+# Copyright 2019 The EVMC Authors.
+# Licensed under the Apache License, Version 2.0.
 
 include(GNUInstallDirs)
 
@@ -15,8 +15,12 @@ add_library(evmc-example-host STATIC example_host.cpp)
 target_link_libraries(evmc-example-host PRIVATE evmc)
 
 
-add_library(evmc-example-vm example_vm.c)
+add_library(evmc-example-vm SHARED example_vm.c)
 target_link_libraries(evmc-example-vm PRIVATE evmc)
+
+add_library(evmc-example-vm-static STATIC example_vm.c)
+target_link_libraries(evmc-example-vm-static PRIVATE evmc)
+
 set_source_files_properties(example_vm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=${PROJECT_VERSION})
 
 
