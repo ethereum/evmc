@@ -2,9 +2,11 @@
 // Copyright 2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+#include "../../examples/example_host.h"
 #include "../../examples/example_vm.h"
 
 #include <evmc/evmc.hpp>
+#include <evmc/helpers.hpp>
 
 #include <gtest/gtest.h>
 
@@ -60,4 +62,39 @@ TEST(cpp, vm_set_option)
 
     auto vm = evmc::vm{&raw_instance};
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
+}
+
+TEST(cpp, host)
+{
+    // Use example host to execute all methods from the C++ host wrapper.
+
+    auto* host_context = example_host_create_context();
+    auto host = evmc::host{host_context};
+
+    auto a = evmc_address{{1}};
+    auto v = evmc_bytes32{{7, 7, 7}};
+
+    EXPECT_FALSE(host.account_exists(a));
+
+    EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_MODIFIED);
+    EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_UNCHANGED);
+    EXPECT_EQ(host.get_storage(a, {}), v);
+
+    EXPECT_TRUE(is_zero(host.get_balance(a)));
+
+    EXPECT_EQ(host.get_code_size(a), 0);
+    EXPECT_EQ(host.get_code_hash(a), evmc_bytes32{});
+    EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), 0);
+
+    host.selfdestruct(a, a);
+    EXPECT_EQ(host.call({}).gas_left, 0);
+
+    auto* tx = &host.get_tx_context();
+    EXPECT_EQ(&host.get_tx_context(), tx);
+
+    EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
+
+    host.emit_log(a, nullptr, 0, nullptr, 0);
+
+    example_host_destroy_context(host_context);
 }

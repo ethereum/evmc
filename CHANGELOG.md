@@ -2,6 +2,9 @@
 
 ## [6.2.0] - Unreleased
 
+- Added: [[#217](https://github.com/ethereum/evmc/pull/217)]
+  The `evmc::host` C++ wrapper for EVMC host context and interface
+  to be used by VM implementations.
 - Deprecated: [[#196](https://github.com/ethereum/evmc/pull/196)]
   The `EVMC_CONSTANTINOPLE2` revision name is deprecated, replaced with `EVMC_PETERSBURG`.
 
