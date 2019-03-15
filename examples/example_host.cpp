@@ -1,6 +1,7 @@
-// EVMC -- Ethereum Client-VM Connector API
-// Copyright 2018 The EVMC Authors.
-// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+/* EVMC: Ethereum Client-VM Connector API.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
+ */
 
 /// @file
 /// Example implementation of an EVMC Host.
@@ -31,7 +32,7 @@ struct example_host_context : evmc_context
 
 static bool account_exists(evmc_context* context, const evmc_address* address)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     return host->accounts.find(*address) != host->accounts.end();
 }
 
@@ -39,32 +40,29 @@ static evmc_bytes32 get_storage(evmc_context* context,
                                 const evmc_address* address,
                                 const evmc_bytes32* key)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
         return it->second.storage[*key];
     return {};
 }
 
-static enum evmc_storage_status set_storage(evmc_context* context,
-                                            const evmc_address* address,
-                                            const evmc_bytes32* key,
-                                            const evmc_bytes32* value)
+static evmc_storage_status set_storage(evmc_context* context,
+                                       const evmc_address* address,
+                                       const evmc_bytes32* key,
+                                       const evmc_bytes32* value)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     auto& account = host->accounts[*address];
-    auto prevValue = account.storage[*key];
+    auto prev_value = account.storage[*key];
     account.storage[*key] = *value;
 
-    if (prevValue == *value)
-        return EVMC_STORAGE_UNCHANGED;
-    else
-        return EVMC_STORAGE_MODIFIED;
+    return (prev_value == *value) ? EVMC_STORAGE_UNCHANGED : EVMC_STORAGE_MODIFIED;
 }
 
 static evmc_uint256be get_balance(evmc_context* context, const evmc_address* address)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
         return it->second.balance;
@@ -73,7 +71,7 @@ static evmc_uint256be get_balance(evmc_context* context, const evmc_address* add
 
 static size_t get_code_size(evmc_context* context, const evmc_address* address)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
         return it->second.code_size;
@@ -82,7 +80,7 @@ static size_t get_code_size(evmc_context* context, const evmc_address* address)
 
 static evmc_bytes32 get_code_hash(evmc_context* context, const evmc_address* address)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     auto it = host->accounts.find(*address);
     if (it != host->accounts.end())
         return it->second.code_hash;
@@ -130,14 +128,12 @@ static evmc_tx_context get_tx_context(evmc_context* context)
 
 static evmc_bytes32 get_block_hash(evmc_context* context, int64_t number)
 {
-    example_host_context* host = static_cast<example_host_context*>(context);
+    auto* host = static_cast<example_host_context*>(context);
     int64_t current_block_number = host->tx_context.block_number;
 
-    evmc_bytes32 example_block_hash;
+    auto example_block_hash = evmc_bytes32{};
     if (number < current_block_number && number >= current_block_number - 256)
         example_block_hash = {{1, 1, 1, 1}};
-    else
-        example_block_hash = {};
     return example_block_hash;
 }
 
