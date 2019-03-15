@@ -354,13 +354,13 @@ evmc_create_vm!("myvm", "1.0", MyVM)
 */
 
 pub struct EvmcInstance(Box<ffi::evmc_instance>);
-/*
+
 pub trait VMInstance {
-  pub fn execute(instance: EvmcInstance, host: ffi::evmc_context, revision: ffi::evmc_revision, msg: ffi::evmc_message, code: &[u8]);
+  fn execute(instance: EvmcInstance, host: ffi::evmc_context, revision: ffi::evmc_revision, msg: ffi::evmc_message, code: &[u8]) -> ffi::evmc_result;
 //  pub fn set_option();
 //  pub fn set_tracer();
 }
-*/
+
 
 // Add VM name, version as arguments
 #[macro_export]
