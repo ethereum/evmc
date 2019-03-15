@@ -1,6 +1,6 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018 The EVMC Authors.
-// Licensed under the Apache License, Version 2.0. See the LICENSE file.
+// Copyright 2019 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0.
 
 #include "vmtester.hpp"
 
@@ -51,6 +51,9 @@ int main(int argc, char* argv[])
             return static_cast<int>(ec);
         case EVMC_LOADER_SYMBOL_NOT_FOUND:
             std::cerr << "EVMC create function not found in " << vm_path << "\n";
+            return static_cast<int>(ec);
+        case EVMC_LOADER_INVALID_ARGUMENT:
+            std::cerr << "Invalid argument: \"" << vm_path << "\"\n";
             return static_cast<int>(ec);
         default:
             std::cerr << "Unexpected error in evmc_load(): " << ec << "\n";
