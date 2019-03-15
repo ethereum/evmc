@@ -357,8 +357,21 @@ evmc_create_vm!("myvm", "1.0", MyVM)
 #[macro_export]
 macro_rules! evmc_create_vm {
     () => {
+	    static VM_NAME: &'static str = "";
+	    static VM_VERSION: &'static str = "";
+
 	    #[no_mangle]
 	    pub extern "C" fn evmc_create() -> ffi::evmc_instance {
+		ffi::evmc_instance {
+			abi_version: ffi::EVMC_ABI_VERSION as i32,
+			destroy: None,
+			execute: None,
+			get_capabilities: None,
+			set_option: None,
+			set_tracer: None,
+			name: VM_NAME.as_ptr() as *const i8,
+			version: 0 as *const i8
+		}
 	    }
     };
 }
