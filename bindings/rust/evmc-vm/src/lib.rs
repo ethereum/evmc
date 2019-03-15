@@ -341,6 +341,18 @@ extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     }
 }
 
+/*
+struct MyVM {}
+
+impl EVMCInstance for MyVM {
+  fn execute(...) {
+  }
+}
+
+evmc_create_vm!("myvm", "1.0", MyVM)
+
+*/
+
 // Add VM name, version as arguments
 #[macro_export]
 macro_rules! evmc_create_vm {
