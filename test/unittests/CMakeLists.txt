@@ -15,5 +15,5 @@ add_executable(
     test_loader.cpp
 )
 
-target_link_libraries(evmc-test PRIVATE loader-mocked evmc-example-vm-static instructions GTest::gtest GTest::main)
+target_link_libraries(evmc-test PRIVATE loader-mocked evmc-example-vm-static evmc-example-host instructions GTest::gtest GTest::main)
 set_target_properties(evmc-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
