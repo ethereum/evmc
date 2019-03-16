@@ -4,12 +4,9 @@
 
 include(GNUInstallDirs)
 
-hunter_add_package(CLI11)
-find_package(CLI11)
-
 add_executable(evmc-vmtester vmtester.hpp vmtester.cpp tests.cpp)
 set_target_properties(evmc-vmtester PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
-target_link_libraries(evmc-vmtester PRIVATE evmc loader evmc-example-host GTest::gtest CLI11::CLI11)
+target_link_libraries(evmc-vmtester PRIVATE evmc loader evmc-example-host GTest::gtest)
 set_source_files_properties(vmtester.cpp PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=\"${PROJECT_VERSION}\")
 
 
