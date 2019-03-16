@@ -19,7 +19,7 @@ add_test(NAME vmtester-help
     COMMAND evmc-vmtester --help
 )
 set_tests_properties(vmtester-help PROPERTIES
-    PASS_REGULAR_EXPRESSION "Options:"
+    PASS_REGULAR_EXPRESSION "Usage:"
 )
 
 add_test(NAME vmtester-nonexistingvm
