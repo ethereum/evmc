@@ -12,25 +12,23 @@ set_source_files_properties(vmtester.cpp PROPERTIES COMPILE_DEFINITIONS PROJECT_
 
 install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-add_test(NAME vmtester-help
-    COMMAND evmc-vmtester --help
-)
-set_tests_properties(vmtester-help PROPERTIES
-    PASS_REGULAR_EXPRESSION "Usage:"
-)
+add_test(NAME vmtester-help COMMAND evmc-vmtester --version --help)
+set_tests_properties(vmtester-help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
 
-add_test(NAME vmtester-nonexistingvm
-    COMMAND evmc-vmtester nonexistingvm
-)
-set_tests_properties(vmtester-nonexistingvm PROPERTIES
-    WILL_FAIL TRUE
-    FAIL_REGULAR_EXPRESSION "no such file"
-)
+add_test(NAME vmtester-nonexistingvm COMMAND evmc-vmtester nonexistingvm)
+set_tests_properties(vmtester-nonexistingvm PROPERTIES PASS_REGULAR_EXPRESSION "Cannot open")
 
-add_test(NAME vmtester-novm
-    COMMAND evmc-vmtester
-)
-set_tests_properties(vmtester-novm PROPERTIES
-    WILL_FAIL TRUE
-    FAIL_REGULAR_EXPRESSION "required but missing"
-)
+add_test(NAME vmtester-noarg COMMAND evmc-vmtester)
+set_tests_properties(vmtester-noarg PROPERTIES PASS_REGULAR_EXPRESSION "is required")
+
+add_test(NAME vmtester-too-many-args COMMAND evmc-vmtester a b)
+set_tests_properties(vmtester-too-many-args PROPERTIES PASS_REGULAR_EXPRESSION "Unexpected")
+
+add_test(NAME vmtester-version COMMAND evmc-vmtester --version)
+set_tests_properties(vmtester-version PROPERTIES PASS_REGULAR_EXPRESSION ${PROJECT_VERSION})
+
+add_test(NAME vmtester-unknown-option COMMAND evmc-vmtester --verbose)
+set_tests_properties(vmtester-unknown-option PROPERTIES PASS_REGULAR_EXPRESSION "Unknown")
+
+add_test(NAME vmtester-option-long-prefix COMMAND evmc-vmtester ---)
+set_tests_properties(vmtester-option-long-prefix PROPERTIES PASS_REGULAR_EXPRESSION "Unknown")
