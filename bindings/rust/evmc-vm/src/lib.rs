@@ -353,7 +353,12 @@ evmc_create_vm!("myvm", "1.0", MyVM)
 
 */
 
-pub struct EvmcInstance(Box<ffi::evmc_instance>);
+//pub struct EvmcInstance(Box<ffi::evmc_instance>);
+
+pub struct EvmcInstance {
+	instance: ffi::evmc_instance,
+	executor: VMInstance
+}
 
 pub trait VMInstance {
   fn execute(instance: EvmcInstance, host: ffi::evmc_context, revision: ffi::evmc_revision, msg: ffi::evmc_message, code: &[u8]) -> ffi::evmc_result;
@@ -361,15 +366,14 @@ pub trait VMInstance {
 //  pub fn set_tracer();
 }
 
+extern "C" fn instance_destroy(
+	instance: *mut ffi::evmc_instance
+) {
+	// The EVMC specification ensures instance cannot be null.
+	drop(unsafe { Box::from_raw(instance) })
+}
 
-// Add VM name, version as arguments
-#[macro_export]
-macro_rules! evmc_create_vm {
-    () => {
-	    static VM_NAME: &'static str = "";
-	    static VM_VERSION: &'static str = "";
-
-	    extern "C" fn evmc_execute(
+	    extern "C" fn instance_execute(
 		    instance: *mut ffi::evmc_instance,
 		    context: *mut ffi::evmc_context,
 		    rev: ffi::evmc_revision,
@@ -377,6 +381,9 @@ macro_rules! evmc_create_vm {
 		    code: *const u8,
 		    code_size: usize,
 	    ) -> ffi::evmc_result {
+		    let instance = unsafe { Box::from_raw(instance) };
+		    
+
 		    ffi::evmc_result{
 			create_address: ffi::evmc_address{ bytes: [0u8;20] },
 			gas_left: 0,
@@ -388,12 +395,20 @@ macro_rules! evmc_create_vm {
 		    }
 	    }
 
+
+// Add VM name, version as arguments
+#[macro_export]
+macro_rules! evmc_create_vm {
+    () => {
+	    static VM_NAME: &'static str = "";
+	    static VM_VERSION: &'static str = "";
+
 	    #[no_mangle]
 	    pub extern "C" fn evmc_create() -> ffi::evmc_instance {
 		ffi::evmc_instance {
 			abi_version: ffi::EVMC_ABI_VERSION as i32,
-			destroy: None,
-			execute: Some(evmc_execute),
+			destroy: Some(instance_destroy),
+			execute: Some(instance_execute),
 			get_capabilities: None,
 			set_option: None,
 			set_tracer: None,
