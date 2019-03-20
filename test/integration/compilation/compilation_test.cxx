@@ -6,6 +6,7 @@
 // Test compilation of C and C++ public headers.
 
 #include <evmc/evmc.h>
+#include <evmc/evmc.hpp>
 #include <evmc/instructions.h>
 #include <evmc/loader.h>
 #include <evmc/utils.h>
