@@ -357,7 +357,7 @@ evmc_create_vm!("myvm", "1.0", MyVM)
 
 pub struct EvmcInstance {
 	instance: ffi::evmc_instance,
-	executor: VMInstance
+//	executor: &VMInstance
 }
 
 pub trait VMInstance {
@@ -399,8 +399,8 @@ extern "C" fn instance_destroy(
 // Add VM name, version as arguments
 #[macro_export]
 macro_rules! evmc_create_vm {
-    () => {
-	    static VM_NAME: &'static str = "";
+    ($name: expr, $version: expr) => {
+	    static VM_NAME: &'static str = $name;
 	    static VM_VERSION: &'static str = "";
 
 	    #[no_mangle]
@@ -419,7 +419,7 @@ macro_rules! evmc_create_vm {
     };
 }
 
-evmc_create_vm!{}
+evmc_create_vm!{"testvm", "1.0.0"}
 
 #[cfg(test)]
 mod tests {
