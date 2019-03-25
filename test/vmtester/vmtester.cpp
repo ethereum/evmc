@@ -26,19 +26,37 @@ evmc_instance* get_vm_instance()
     return vm.get();
 }
 
-int main(int argc, char* argv[])
+class cli_parser
 {
-    try
+public:
+    const char* const app_name = nullptr;
+    const char* const app_version = nullptr;
+
+    std::vector<std::string> args_names;
+    std::vector<std::string> args;
+
+    cli_parser(const char* app_name,
+               const char* app_version,
+               std::vector<std::string> args_names) noexcept
+      : app_name{app_name}, app_version{app_version}, args_names{std::move(args_names)}
     {
-        const auto app_name = "EVMC VM Tester " PROJECT_VERSION;
+        args.reserve(this->args_names.size());
+    }
 
-        testing::InitGoogleTest(&argc, argv);
-
-        auto help = false;
-        auto version = false;
-
-        std::string evmc_module;
-        int num_args = 0;
+    /// Parses the command line arguments.
+    ///
+    /// It recognize --help and --version options and output for these is sent
+    /// to the @p out output stream.
+    /// Errors are sent to the @p err output stream.
+    ///
+    /// @return Negative value in case of error,
+    ///         0 in case --help or --version was provided and the program should terminate,
+    ///         positive value in case the program should continue.
+    int parse(int argc, char* argv[], std::ostream& out, std::ostream& err)
+    {
+        bool help = false;
+        bool version = false;
+        size_t num_args = 0;
         for (int i = 1; i < argc; ++i)
         {
             auto arg = std::string{argv[i]};
@@ -47,12 +65,12 @@ int main(int argc, char* argv[])
             if (x == 0)  // Argument.
             {
                 ++num_args;
-                if (num_args > 1)
+                if (num_args > args_names.size())
                 {
-                    std::cerr << "Unexpected argument \"" << arg << "\"\n";
+                    err << "Unexpected argument \"" << arg << "\"\n";
                     return -1;
                 }
-                evmc_module = std::move(arg);
+                args.emplace_back(std::move(arg));
                 continue;
             }
             else if (x <= 2)
@@ -71,33 +89,49 @@ int main(int argc, char* argv[])
                 }
             }
 
-            std::cerr << "Unknown option \"" << argv[i] << "\"\n";
+            err << "Unknown option \"" << argv[i] << "\"\n";
             return -1;
         }
 
+        out << app_name << " " << app_version << "\n";
+
         if (help)
         {
-            std::cout << "\n"
-                      << app_name << "\n"
-                      << "Usage: " << argv[0] << " MODULE\n";
+            out << "Usage: " << argv[0];
+            for (const auto& name : args_names)
+                out << " " << name;
+            out << "\n";
             return 0;
         }
 
         if (version)
-        {
-            std::cout << app_name << "\n";
             return 0;
-        }
 
-        if (num_args < 1)
+        if (num_args < args_names.size())
         {
-            std::cerr << "The MODULE argument is required.\n"
-                      << "Run with --help for more information.\n";
+            for (auto i = num_args; i < args_names.size(); ++i)
+                err << "The " << args_names[i] << " argument is required.\n";
+            err << "Run with --help for more information.\n";
             return -1;
         }
 
-        std::cout << app_name << "\n";
+        return 1;
+    }
+};
 
+int main(int argc, char* argv[])
+{
+    try
+    {
+        testing::InitGoogleTest(&argc, argv);
+
+        auto cli = cli_parser{"EVMC VM Tester", PROJECT_VERSION, {"MODULE"}};
+
+        const auto error_code = cli.parse(argc, argv, std::cout, std::cerr);
+        if (error_code <= 0)
+            return error_code;
+
+        const auto& evmc_module = cli.args[0];
         std::cout << "Testing " << evmc_module << "\n";
         evmc_loader_error_code ec;
         create_fn = evmc_load(evmc_module.c_str(), &ec);
