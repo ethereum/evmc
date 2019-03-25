@@ -13,3 +13,4 @@ edition = "2018"
 
 [dependencies]
 evmc-sys = { path = "../evmc-sys" }
+paste = "0.1"

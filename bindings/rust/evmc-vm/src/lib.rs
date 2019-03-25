@@ -399,7 +399,9 @@ extern "C" fn instance_destroy(
 // Add VM name, version as arguments
 #[macro_export]
 macro_rules! evmc_create_vm {
-    ($name: expr, $version: expr) => {
+    ($name: expr, $version: expr, $instance: ident) => {
+    paste::item! {
+	    static [<$instance _NAME>]: &'static str ="";
 	    static VM_NAME: &'static str = $name;
 	    static VM_VERSION: &'static str = "";
 
@@ -416,10 +418,13 @@ macro_rules! evmc_create_vm {
 			version: 0 as *const i8
 		}
 	    }
+    }
     };
 }
 
-evmc_create_vm!{"testvm", "1.0.0"}
+struct TestVM {}
+
+evmc_create_vm!{"testvm", "1.0.0", TestVM}
 
 #[cfg(test)]
 mod tests {
