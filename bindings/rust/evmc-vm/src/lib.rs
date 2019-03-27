@@ -405,19 +405,21 @@ macro_rules! evmc_create_vm {
         }
 
         #[no_mangle]
-        pub extern "C" fn evmc_create() -> ffi::evmc_instance {
-            ffi::evmc_instance {
-                abi_version: ffi::EVMC_ABI_VERSION as i32,
+        pub extern "C" fn evmc_create() -> evmc_sys::evmc_instance {
+            evmc_sys::evmc_instance {
+                abi_version: evmc_sys::EVMC_ABI_VERSION as i32,
                 destroy: Some(instance_destroy),
                 execute: Some(instance_execute),
                 get_capabilities: None,
                 set_option: None,
                 set_tracer: None,
-                name: paste::expr! { // FIXME: needs to be a ptr to a c string.
-                    unsafe { [<$__vm _NAME>].as_ptr() as *const i8 }
+                name: unsafe {
+                    let c_str = paste::expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
+                    c_str.into_raw() as *const i8
                 },
-                version: paste::expr! {
-                    unsafe { [<$__vm _VERSION>].as_ptr() as *const i8 }
+                version: unsafe {
+                    let c_str = paste::expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
+                    c_str.into_raw() as *const i8
                 },
             }
         }
@@ -675,8 +677,5 @@ mod tests {
         assert!(instance.set_tracer.is_none());
         assert!(instance.name != std::ptr::null());
         assert!(instance.version != std::ptr::null());
-
-        assert!(instance.name == Foo_NAME.as_ptr() as *const i8);
-        assert!(instance.version == Foo_VERSION.as_ptr() as *const i8);
     }
 }
