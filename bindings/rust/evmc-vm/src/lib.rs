@@ -413,11 +413,11 @@ macro_rules! evmc_create_vm {
                 get_capabilities: None,
                 set_option: None,
                 set_tracer: None,
-                name: unsafe {
+                name: {
                     let c_str = paste::expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
                     c_str.into_raw() as *const i8
                 },
-                version: unsafe {
+                version: {
                     let c_str = paste::expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
                     c_str.into_raw() as *const i8
                 },
