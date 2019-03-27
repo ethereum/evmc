@@ -4,6 +4,10 @@
  */
 
 pub extern crate evmc_sys;
+
+#[macro_use]
+extern crate paste;
+
 pub use evmc_sys as ffi;
 
 // TODO: Add convenient helpers for evmc_execute
@@ -354,10 +358,10 @@ evmc_create_vm!("myvm", "1.0", MyVM)
 */
 
 //pub struct EvmcInstance(Box<ffi::evmc_instance>);
-
+/*
 pub struct EvmcInstance {
-	instance: ffi::evmc_instance,
-//	executor: &VMInstance
+    instance: ffi::evmc_instance,
+    executor: VMInstance
 }
 
 pub trait VMInstance {
@@ -365,66 +369,61 @@ pub trait VMInstance {
 //  pub fn set_option();
 //  pub fn set_tracer();
 }
-
-extern "C" fn instance_destroy(
-	instance: *mut ffi::evmc_instance
-) {
-	// The EVMC specification ensures instance cannot be null.
-	drop(unsafe { Box::from_raw(instance) })
+*/
+extern "C" fn instance_destroy(instance: *mut ffi::evmc_instance) {
+    // The EVMC specification ensures instance cannot be null.
+    drop(unsafe { Box::from_raw(instance) })
 }
 
-	    extern "C" fn instance_execute(
-		    instance: *mut ffi::evmc_instance,
-		    context: *mut ffi::evmc_context,
-		    rev: ffi::evmc_revision,
-		    msg: *const ffi::evmc_message,
-		    code: *const u8,
-		    code_size: usize,
-	    ) -> ffi::evmc_result {
-		    let instance = unsafe { Box::from_raw(instance) };
-		    
+extern "C" fn instance_execute(
+    instance: *mut ffi::evmc_instance,
+    context: *mut ffi::evmc_context,
+    rev: ffi::evmc_revision,
+    msg: *const ffi::evmc_message,
+    code: *const u8,
+    code_size: usize,
+) -> ffi::evmc_result {
+    let instance = unsafe { Box::from_raw(instance) };
 
-		    ffi::evmc_result{
-			create_address: ffi::evmc_address{ bytes: [0u8;20] },
-			gas_left: 0,
-			output_data: 0 as *const u8,
-			output_size: 0,
-			release: None,
-			status_code: ffi::evmc_status_code::EVMC_FAILURE,
-			padding: [0u8;4]
-		    }
-	    }
-
+    ffi::evmc_result {
+        create_address: ffi::evmc_address { bytes: [0u8; 20] },
+        gas_left: 0,
+        output_data: 0 as *const u8,
+        output_size: 0,
+        release: None,
+        status_code: ffi::evmc_status_code::EVMC_FAILURE,
+        padding: [0u8; 4],
+    }
+}
 
 // Add VM name, version as arguments
 #[macro_export]
 macro_rules! evmc_create_vm {
-    ($name: expr, $version: expr, $instance: ident) => {
-    paste::item! {
-	    static [<$instance _NAME>]: &'static str ="";
-	    static VM_NAME: &'static str = $name;
-	    static VM_VERSION: &'static str = "";
+    ($__vm:ident, $__version:expr) => {
+        paste::item! {
+        static [<$__vm _NAME>]: &'static str = stringify!($__vm);
+        static [<$__vm _VERSION>]: &'static str = $__version;
+        }
 
-	    #[no_mangle]
-	    pub extern "C" fn evmc_create() -> ffi::evmc_instance {
-		ffi::evmc_instance {
-			abi_version: ffi::EVMC_ABI_VERSION as i32,
-			destroy: Some(instance_destroy),
-			execute: Some(instance_execute),
-			get_capabilities: None,
-			set_option: None,
-			set_tracer: None,
-			name: VM_NAME.as_ptr() as *const i8,
-			version: 0 as *const i8
-		}
-	    }
-    }
+        #[no_mangle]
+        pub extern "C" fn evmc_create() -> ffi::evmc_instance {
+            ffi::evmc_instance {
+                abi_version: ffi::EVMC_ABI_VERSION as i32,
+                destroy: Some(instance_destroy),
+                execute: Some(instance_execute),
+                get_capabilities: None,
+                set_option: None,
+                set_tracer: None,
+                name: paste::expr! {
+                    unsafe { [<$__vm _NAME>].as_ptr() as *const i8 }
+                },
+                version: paste::expr! {
+                    unsafe { [<$__vm _VERSION>].as_ptr() as *const i8 }
+                },
+            }
+        }
     };
 }
-
-struct TestVM {}
-
-evmc_create_vm!{"testvm", "1.0.0", TestVM}
 
 #[cfg(test)]
 mod tests {
@@ -660,5 +659,14 @@ mod tests {
         let b = exe_context.get_code_size(&test_addr);
 
         assert_eq!(a, b);
+    }
+
+    evmc_create_vm!(Foo, "0.1.0-stable");
+    #[test]
+    fn test_create_macro() {
+        println!("vm name: {}", Foo_NAME);
+        println!("vm version: {}", Foo_VERSION);
+        assert!(Foo_NAME == "Foo");
+        assert!(Foo_VERSION == "0.1.0-stable");
     }
 }
