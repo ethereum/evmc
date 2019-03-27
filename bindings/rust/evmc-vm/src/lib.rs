@@ -677,5 +677,17 @@ mod tests {
         assert!(instance.set_tracer.is_none());
         assert!(instance.name != std::ptr::null());
         assert!(instance.version != std::ptr::null());
+
+        unsafe {
+            let name_raw = std::ffi::CString::from_raw(instance.name as *mut std::os::raw::c_char);
+            let name = name_raw.to_str().unwrap();
+
+            let version_raw =
+                std::ffi::CString::from_raw(instance.version as *mut std::os::raw::c_char);
+            let version = version_raw.to_str().unwrap();
+
+            assert!(name == Foo_NAME);
+            assert!(version == Foo_VERSION);
+        }
     }
 }
