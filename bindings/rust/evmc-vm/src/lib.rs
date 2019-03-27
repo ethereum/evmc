@@ -396,13 +396,12 @@ extern "C" fn instance_execute(
     }
 }
 
-// Add VM name, version as arguments
 #[macro_export]
 macro_rules! evmc_create_vm {
     ($__vm:ident, $__version:expr) => {
         paste::item! {
-        static [<$__vm _NAME>]: &'static str = stringify!($__vm);
-        static [<$__vm _VERSION>]: &'static str = $__version;
+            static [<$__vm _NAME>]: &'static str = stringify!($__vm);
+            static [<$__vm _VERSION>]: &'static str = $__version;
         }
 
         #[no_mangle]
@@ -414,7 +413,7 @@ macro_rules! evmc_create_vm {
                 get_capabilities: None,
                 set_option: None,
                 set_tracer: None,
-                name: paste::expr! {
+                name: paste::expr! { // FIXME: needs to be a ptr to a c string.
                     unsafe { [<$__vm _NAME>].as_ptr() as *const i8 }
                 },
                 version: paste::expr! {
@@ -664,9 +663,20 @@ mod tests {
     evmc_create_vm!(Foo, "0.1.0-stable");
     #[test]
     fn test_create_macro() {
-        println!("vm name: {}", Foo_NAME);
-        println!("vm version: {}", Foo_VERSION);
         assert!(Foo_NAME == "Foo");
         assert!(Foo_VERSION == "0.1.0-stable");
+
+        let instance = evmc_create();
+        assert!(instance.abi_version == ffi::EVMC_ABI_VERSION as i32);
+        assert!(instance.destroy == Some(instance_destroy));
+        assert!(instance.execute == Some(instance_execute));
+        assert!(instance.get_capabilities.is_none());
+        assert!(instance.set_option.is_none());
+        assert!(instance.set_tracer.is_none());
+        assert!(instance.name != std::ptr::null());
+        assert!(instance.version != std::ptr::null());
+
+        assert!(instance.name == Foo_NAME.as_ptr() as *const i8);
+        assert!(instance.version == Foo_VERSION.as_ptr() as *const i8);
     }
 }
