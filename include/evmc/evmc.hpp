@@ -79,6 +79,48 @@ private:
 };
 
 
+class HostInterface
+{
+public:
+    virtual ~HostInterface() noexcept = default;
+
+    virtual bool account_exists(const evmc_address& addr) noexcept = 0;
+
+    virtual evmc_bytes32 get_storage(const evmc_address& addr,
+                                     const evmc_bytes32& key) noexcept = 0;
+
+    virtual evmc_storage_status set_storage(const evmc_address& addr,
+                                            const evmc_bytes32& key,
+                                            const evmc_bytes32& value) noexcept = 0;
+
+    virtual evmc_uint256be get_balance(const evmc_address& addr) noexcept = 0;
+
+    virtual size_t get_code_size(const evmc_address& addr) noexcept = 0;
+
+    virtual evmc_bytes32 get_code_hash(const evmc_address& addr) noexcept = 0;
+
+    virtual size_t copy_code(const evmc_address& addr,
+                             size_t code_offset,
+                             uint8_t* buffer_data,
+                             size_t buffer_size) noexcept = 0;
+
+    virtual void selfdestruct(const evmc_address& addr,
+                              const evmc_address& beneficiary) noexcept = 0;
+
+    virtual result call(const evmc_message& msg) noexcept = 0;
+
+    virtual evmc_tx_context get_tx_context() noexcept = 0;
+
+    virtual evmc_bytes32 get_block_hash(int64_t block_number) noexcept = 0;
+
+    virtual void emit_log(const evmc_address& addr,
+                          const uint8_t* data,
+                          size_t data_size,
+                          const evmc_bytes32 topics[],
+                          size_t num_topics) noexcept = 0;
+};
+
+
 /// Wrapper around EVMC host context / host interface.
 class HostContext
 {
