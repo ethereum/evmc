@@ -69,7 +69,7 @@ TEST(cpp, host)
     // Use example host to execute all methods from the C++ host wrapper.
 
     auto* host_context = example_host_create_context();
-    auto host = evmc::host{host_context};
+    auto host = evmc::HostContext{host_context};
 
     auto a = evmc_address{{1}};
     auto v = evmc_bytes32{{7, 7, 7}};

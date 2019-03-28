@@ -80,13 +80,13 @@ private:
 
 
 /// Wrapper around EVMC host context / host interface.
-class host
+class HostContext
 {
     evmc_context* context = nullptr;
     evmc_tx_context tx_context = {};
 
 public:
-    host(evmc_context* context) noexcept : context{context} {}
+    HostContext(evmc_context* context) noexcept : context{context} {}  // NOLINT
 
     bool account_exists(const evmc_address& address) noexcept
     {
