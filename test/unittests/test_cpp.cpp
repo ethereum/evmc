@@ -89,8 +89,8 @@ TEST(cpp, host)
     host.selfdestruct(a, a);
     EXPECT_EQ(host.call({}).gas_left, 0);
 
-    auto* tx = &host.get_tx_context();
-    EXPECT_EQ(&host.get_tx_context(), tx);
+    auto tx = host.get_tx_context();
+    EXPECT_EQ(host.get_tx_context().block_number, tx.block_number);
 
     EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
 

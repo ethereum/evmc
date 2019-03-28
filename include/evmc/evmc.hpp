@@ -122,7 +122,9 @@ public:
 
 
 /// Wrapper around EVMC host context / host interface.
-class HostContext
+///
+/// To be used by VM implementations as better alternative to using ::evmc_context directly.
+class HostContext : public HostInterface
 {
     evmc_context* context = nullptr;
     evmc_tx_context tx_context = {};
@@ -130,34 +132,34 @@ class HostContext
 public:
     HostContext(evmc_context* context) noexcept : context{context} {}  // NOLINT
 
-    bool account_exists(const evmc_address& address) noexcept
+    bool account_exists(const evmc_address& address) noexcept final
     {
         return context->host->account_exists(context, &address);
     }
 
-    evmc_bytes32 get_storage(const evmc_address& address, const evmc_bytes32& key) noexcept
+    evmc_bytes32 get_storage(const evmc_address& address, const evmc_bytes32& key) noexcept final
     {
         return context->host->get_storage(context, &address, &key);
     }
 
     evmc_storage_status set_storage(const evmc_address& address,
                                     const evmc_bytes32& key,
-                                    const evmc_bytes32& value) noexcept
+                                    const evmc_bytes32& value) noexcept final
     {
         return context->host->set_storage(context, &address, &key, &value);
     }
 
-    evmc_uint256be get_balance(const evmc_address& address) noexcept
+    evmc_uint256be get_balance(const evmc_address& address) noexcept final
     {
         return context->host->get_balance(context, &address);
     }
 
-    size_t get_code_size(const evmc_address& address) noexcept
+    size_t get_code_size(const evmc_address& address) noexcept final
     {
         return context->host->get_code_size(context, &address);
     }
 
-    evmc_bytes32 get_code_hash(const evmc_address& address) noexcept
+    evmc_bytes32 get_code_hash(const evmc_address& address) noexcept final
     {
         return context->host->get_code_hash(context, &address);
     }
@@ -165,17 +167,17 @@ public:
     size_t copy_code(const evmc_address& address,
                      size_t code_offset,
                      uint8_t* buffer_data,
-                     size_t buffer_size) noexcept
+                     size_t buffer_size) noexcept final
     {
         return context->host->copy_code(context, &address, code_offset, buffer_data, buffer_size);
     }
 
-    void selfdestruct(const evmc_address& address, const evmc_address& beneficiary)
+    void selfdestruct(const evmc_address& address, const evmc_address& beneficiary) noexcept final
     {
         context->host->selfdestruct(context, &address, &beneficiary);
     }
 
-    result call(const evmc_message& message) noexcept
+    result call(const evmc_message& message) noexcept final
     {
         return result{context->host->call(context, &message)};
     }
@@ -185,15 +187,15 @@ public:
     /// The implementation caches the received transaction context
     /// by assuming that the block timestamp should never be zero.
     ///
-    /// @return Reference to the cached transaction context.
-    const evmc_tx_context& get_tx_context() noexcept
+    /// @return The cached transaction context.
+    evmc_tx_context get_tx_context() noexcept final
     {
         if (tx_context.block_timestamp == 0)
             tx_context = context->host->get_tx_context(context);
         return tx_context;
     }
 
-    evmc_bytes32 get_block_hash(int64_t number) noexcept
+    evmc_bytes32 get_block_hash(int64_t number) noexcept final
     {
         return context->host->get_block_hash(context, number);
     }
@@ -202,7 +204,7 @@ public:
                   const uint8_t* data,
                   size_t data_size,
                   const evmc_bytes32 topics[],
-                  size_t topics_count) noexcept
+                  size_t topics_count) noexcept final
     {
         context->host->emit_log(context, &address, data, data_size, topics, topics_count);
     }
