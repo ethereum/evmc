@@ -927,14 +927,16 @@ struct evmc_instance
     /**
      * The name of the EVMC VM implementation.
      *
-     *  It MUST be a NULL-terminated not empty string.
+     * It MUST be a NULL-terminated not empty string.
+     * The content MUST be UTF-8 encoded (this implies ASCII encoding is also allowed).
      */
     const char* name;
 
     /**
      * The version of the EVMC VM implementation, e.g. "1.2.3b4".
      *
-     *  It MUST be a NULL-terminated not empty string.
+     * It MUST be a NULL-terminated not empty string.
+     * The content MUST be UTF-8 encoded (this implies ASCII encoding is also allowed).
      */
     const char* version;
 
