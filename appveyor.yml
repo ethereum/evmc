@@ -54,7 +54,6 @@ build_script:
 after_build:
 - ps: >-
     if ($env:GENERATOR) {
-      cd C:\projects\evmc\build\test
-      Release\evmc-unittests.exe
+      cmake --build . --config $env:CONFIGURATION --target RUN_TESTS
       C:\install\bin\evmc-vmtester.exe C:\install\bin\evmc-example-vm.dll
     }

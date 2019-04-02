@@ -20,5 +20,5 @@ install:
   - cmake --build . --config Release --target install
 
 script:
-  - test/Release/evmc-unittests.exe
+  - cmake --build . --config Release --target RUN_TESTS
   - $HOME/bin/evmc-vmtester.exe $HOME/bin/evmc-example-vm.dll

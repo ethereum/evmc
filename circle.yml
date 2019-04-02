@@ -40,10 +40,6 @@ jobs:
           name: "Build"
           command: cmake --build ~/build
       - run:
-          name: "Unit tests"
-          working_directory: ~/build/test
-          command: ./evmc-unittests
-      - run:
           name: "Test"
           command: cmake --build ~/build --target test
       - run:
