@@ -55,6 +55,6 @@ after_build:
 - ps: >-
     if ($env:GENERATOR) {
       cd C:\projects\evmc\build\test
-      Release\evmc-test.exe
+      Release\evmc-unittests.exe
       C:\install\bin\evmc-vmtester.exe C:\install\bin\evmc-example-vm.dll
     }
