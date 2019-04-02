@@ -13,6 +13,13 @@ pub use evmc_sys as ffi;
 // TODO: Add convenient helpers for evmc_execute
 // TODO: Add a derive macro here for creating evmc_create
 
+// The primary trait that an EVM-C compatible VM must implement.
+pub trait EvmcVM {
+    fn init() -> Self;
+    // TODO: higher level API
+    fn execute(&self, code: &[u8], interface: &InterfaceManager) -> ExecutionResult;
+}
+
 /// EVMC result structure.
 pub struct ExecutionResult {
     status_code: ffi::evmc_status_code,
@@ -370,20 +377,6 @@ pub trait VMInstance {
 //  pub fn set_tracer();
 }
 */
-
-// The primary trait that an EVM-C compatible VM must implement.
-pub trait EvmcVM {
-    fn init() -> Self;
-    // TODO: higher level API
-    fn execute(
-        &self,
-        code: &[u8],
-        msg: ffi::evmc_message,
-        rev: ffi::evmc_revision,
-        context: ffi::evmc_context,
-        instance: ffi::evmc_instance,
-    ) -> ExecutionResult;
-}
 
 #[macro_export]
 macro_rules! evmc_create_vm {
@@ -744,14 +737,7 @@ mod tests {
             FooVM { bar: 42, baz: 64 }
         }
 
-        fn execute(
-            &self,
-            code: &[u8],
-            msg: ffi::evmc_message,
-            rev: ffi::evmc_revision,
-            context: ffi::evmc_context,
-            instance: ffi::evmc_instance,
-        ) -> ExecutionResult {
+        fn execute(&self, code: &[u8], interface: &InterfaceManager) -> ExecutionResult {
             unimplemented!();
         }
     }
