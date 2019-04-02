@@ -375,7 +375,14 @@ pub trait VMInstance {
 pub trait EvmcVM {
     fn init() -> Self;
     // TODO: higher level API
-    //    fn execute(&self, code: &[u8], msg: ffi::evmc_message, rev: ffi::evmc_revision, context: ffi::evmc_context, instance: ffi::evmc_instance) -> ExecutionResult;
+    fn execute(
+        &self,
+        code: &[u8],
+        msg: ffi::evmc_message,
+        rev: ffi::evmc_revision,
+        context: ffi::evmc_context,
+        instance: ffi::evmc_instance,
+    ) -> ExecutionResult;
 }
 
 #[macro_export]
@@ -387,17 +394,18 @@ macro_rules! evmc_create_vm {
         }
 
         paste::item! {
+            #[derive(Clone)]
             #[repr(C)]
             pub struct [<$__vm Instance>] {
                 inner: evmc_sys::evmc_instance,
-                data: $__vm,
+                vm: $__vm,
             }
         }
 
         paste::item! {
             impl [<$__vm Instance>] {
                 pub fn new() -> Self {
-                    //$__vm must implement a new() func as well
+                    //$__vm must implement EvmcVM
                     [<$__vm Instance>] {
                         inner: evmc_sys::evmc_instance {
                             abi_version: evmc_sys::EVMC_ABI_VERSION as i32,
@@ -415,16 +423,29 @@ macro_rules! evmc_create_vm {
                                 c_str.into_raw() as *const i8
                             },
                         },
-                        data: $__vm::new(),
+                        vm: $__vm::init(),
                     }
                 }
 
-                pub fn get_data(&self) -> &$__vm {
-                    &self.data
+                pub fn get_vm(&self) -> &$__vm {
+                    &self.vm
                 }
 
                 pub fn into_inner_raw(mut self) -> *mut evmc_sys::evmc_instance {
                     Box::into_raw(Box::new(self)) as *mut evmc_sys::evmc_instance
+                }
+
+                // Assumes the pointer is casted from another instance of Self. otherwise UB
+                pub unsafe fn coerce_from_raw(raw: *mut ffi::evmc_instance) -> Self {
+                    let borrowed = (raw as *mut [<$__vm Instance>]).as_ref();
+                    if let Some(instance) = borrowed {
+                        let ret = instance.clone();
+                        // deallocate the old heap-allocated instance.
+                        Box::from_raw(raw);
+                        ret
+                    } else {
+                        panic!();
+                    }
                 }
             }
         }
@@ -438,7 +459,9 @@ macro_rules! evmc_create_vm {
                 code: *const u8,
                 code_size: usize,
             ) -> ffi::evmc_result {
-                let instance = unsafe { Box::from_raw(instance) };
+                let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
+
+                let result = instance.get_vm();
 
                 ffi::evmc_result {
                     create_address: ffi::evmc_address { bytes: [0u8; 20] },
@@ -706,14 +729,26 @@ mod tests {
         assert_eq!(a, b);
     }
 
+    #[derive(Clone)]
     pub struct FooVM {
         pub bar: u32,
         pub baz: u64,
     }
 
-    impl FooVM {
-        fn new() -> Self {
+    impl EvmcVM for FooVM {
+        fn init() -> Self {
             FooVM { bar: 42, baz: 64 }
+        }
+
+        fn execute(
+            &self,
+            code: &[u8],
+            msg: ffi::evmc_message,
+            rev: ffi::evmc_revision,
+            context: ffi::evmc_context,
+            instance: ffi::evmc_instance,
+        ) -> ExecutionResult {
+            unimplemented!();
         }
     }
     evmc_create_vm!(FooVM, "0.5");
@@ -748,7 +783,7 @@ mod tests {
         // should be ok to coerce it back to said struct. do not try this at home kids. seriously though
         let coerced = unsafe { Box::from_raw(instance as *mut FooVMInstance) };
 
-        let vmdata: &FooVM = coerced.get_data();
+        let vmdata: &FooVM = coerced.get_vm();
 
         assert!(vmdata.bar == 42);
         assert!(vmdata.baz == 64);
