@@ -370,30 +370,12 @@ pub trait VMInstance {
 //  pub fn set_tracer();
 }
 */
-extern "C" fn instance_destroy(instance: *mut ffi::evmc_instance) {
-    // The EVMC specification ensures instance cannot be null.
-    drop(unsafe { Box::from_raw(instance) })
-}
 
-extern "C" fn instance_execute(
-    instance: *mut ffi::evmc_instance,
-    context: *mut ffi::evmc_context,
-    rev: ffi::evmc_revision,
-    msg: *const ffi::evmc_message,
-    code: *const u8,
-    code_size: usize,
-) -> ffi::evmc_result {
-    let instance = unsafe { Box::from_raw(instance) };
-
-    ffi::evmc_result {
-        create_address: ffi::evmc_address { bytes: [0u8; 20] },
-        gas_left: 0,
-        output_data: 0 as *const u8,
-        output_size: 0,
-        release: None,
-        status_code: ffi::evmc_status_code::EVMC_FAILURE,
-        padding: [0u8; 4],
-    }
+// The primary trait that an EVM-C compatible VM must implement.
+pub trait EvmcVM {
+    fn init() -> Self;
+    // TODO: higher level API
+    //    fn execute(&self, code: &[u8], msg: ffi::evmc_message, rev: ffi::evmc_revision, context: ffi::evmc_context, instance: ffi::evmc_instance) -> ExecutionResult;
 }
 
 #[macro_export]
@@ -404,26 +386,88 @@ macro_rules! evmc_create_vm {
             static [<$__vm _VERSION>]: &'static str = $__version;
         }
 
-        #[no_mangle]
-        pub extern "C" fn evmc_create() -> evmc_sys::evmc_instance {
-            evmc_sys::evmc_instance {
-                abi_version: evmc_sys::EVMC_ABI_VERSION as i32,
-                destroy: Some(instance_destroy),
-                execute: Some(instance_execute),
-                get_capabilities: None,
-                set_option: None,
-                set_tracer: None,
-                name: {
-                    let c_str = paste::expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
-                    c_str.into_raw() as *const i8
-                },
-                version: {
-                    let c_str = paste::expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
-                    c_str.into_raw() as *const i8
-                },
+        paste::item! {
+            #[repr(C)]
+            pub struct [<$__vm Instance>] {
+                inner: evmc_sys::evmc_instance,
+                data: $__vm,
             }
         }
-    };
+
+        paste::item! {
+            impl [<$__vm Instance>] {
+                pub fn new() -> Self {
+                    //$__vm must implement a new() func as well
+                    [<$__vm Instance>] {
+                        inner: evmc_sys::evmc_instance {
+                            abi_version: evmc_sys::EVMC_ABI_VERSION as i32,
+                            destroy: paste::expr! { Some([<$__vm _destroy>]) },
+                            execute: paste::expr! { Some([<$__vm _execute>]) },
+                            get_capabilities: None,
+                            set_option: None,
+                            set_tracer: None,
+                            name: {
+                                let c_str = paste::expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
+                                c_str.into_raw() as *const i8
+                            },
+                            version: {
+                                let c_str = paste::expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
+                                c_str.into_raw() as *const i8
+                            },
+                        },
+                        data: $__vm::new(),
+                    }
+                }
+
+                pub fn get_data(&self) -> &$__vm {
+                    &self.data
+                }
+
+                pub fn into_inner_raw(mut self) -> *mut evmc_sys::evmc_instance {
+                    Box::into_raw(Box::new(self)) as *mut evmc_sys::evmc_instance
+                }
+            }
+        }
+
+        paste::item! {
+            extern "C" fn [<$__vm _execute>](
+                instance: *mut ffi::evmc_instance,
+                context: *mut ffi::evmc_context,
+                rev: ffi::evmc_revision,
+                msg: *const ffi::evmc_message,
+                code: *const u8,
+                code_size: usize,
+            ) -> ffi::evmc_result {
+                let instance = unsafe { Box::from_raw(instance) };
+
+                ffi::evmc_result {
+                    create_address: ffi::evmc_address { bytes: [0u8; 20] },
+                    gas_left: 0,
+                    output_data: 0 as *const u8,
+                    output_size: 0,
+                    release: None,
+                    status_code: ffi::evmc_status_code::EVMC_FAILURE,
+                    padding: [0u8; 4],
+                }
+            }
+        }
+
+        paste::item! {
+            extern "C" fn [<$__vm _destroy>](instance: *mut ffi::evmc_instance) {
+                // The EVMC specification ensures instance cannot be null.
+                // Cast to the enclosing struct so that the extra data gets deallocated too.
+                let todrop = instance as *mut [<$__vm Instance>];
+                drop(unsafe { Box::from_raw(todrop) })
+            }
+        }
+
+        paste::item! {
+            #[no_mangle]
+            pub extern "C" fn [<evmc_create_ $__vm>]() -> *const evmc_sys::evmc_instance {
+                paste::expr! { [<$__vm Instance>]::new().into_inner_raw() }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -662,32 +706,53 @@ mod tests {
         assert_eq!(a, b);
     }
 
-    evmc_create_vm!(Foo, "0.1.0-stable");
+    pub struct FooVM {
+        pub bar: u32,
+        pub baz: u64,
+    }
+
+    impl FooVM {
+        fn new() -> Self {
+            FooVM { bar: 42, baz: 64 }
+        }
+    }
+    evmc_create_vm!(FooVM, "0.5");
     #[test]
-    fn test_create_macro() {
-        assert!(Foo_NAME == "Foo");
-        assert!(Foo_VERSION == "0.1.0-stable");
+    fn create_macro() {
+        assert!(FooVM_NAME == "FooVM");
+        assert!(FooVM_VERSION == "0.5");
 
-        let instance = evmc_create();
-        assert!(instance.abi_version == ffi::EVMC_ABI_VERSION as i32);
-        assert!(instance.destroy == Some(instance_destroy));
-        assert!(instance.execute == Some(instance_execute));
-        assert!(instance.get_capabilities.is_none());
-        assert!(instance.set_option.is_none());
-        assert!(instance.set_tracer.is_none());
-        assert!(instance.name != std::ptr::null());
-        assert!(instance.version != std::ptr::null());
-
+        let instance = evmc_create_FooVM();
         unsafe {
-            let name_raw = std::ffi::CString::from_raw(instance.name as *mut std::os::raw::c_char);
+            assert!((*instance).abi_version == ffi::EVMC_ABI_VERSION as i32);
+            assert!((*instance).destroy == Some(FooVM_destroy));
+            assert!((*instance).execute == Some(FooVM_execute));
+            assert!((*instance).get_capabilities.is_none());
+            assert!((*instance).set_option.is_none());
+            assert!((*instance).set_tracer.is_none());
+            assert!((*instance).name != std::ptr::null());
+            assert!((*instance).version != std::ptr::null());
+
+            let name_raw =
+                std::ffi::CString::from_raw((*instance).name as *mut std::os::raw::c_char);
             let name = name_raw.to_str().unwrap();
 
             let version_raw =
-                std::ffi::CString::from_raw(instance.version as *mut std::os::raw::c_char);
+                std::ffi::CString::from_raw((*instance).version as *mut std::os::raw::c_char);
             let version = version_raw.to_str().unwrap();
 
-            assert!(name == Foo_NAME);
-            assert!(version == Foo_VERSION);
+            assert!(name == FooVM_NAME);
+            assert!(version == FooVM_VERSION);
         }
+        // assuming this pointer is coerced from a larger instance struct with the private data, it
+        // should be ok to coerce it back to said struct. do not try this at home kids. seriously though
+        let coerced = unsafe { Box::from_raw(instance as *mut FooVMInstance) };
+
+        let vmdata: &FooVM = coerced.get_data();
+
+        assert!(vmdata.bar == 42);
+        assert!(vmdata.baz == 64);
+
+        let uncoerced = unsafe { Box::into_raw(coerced) as *mut ffi::evmc_instance };
     }
 }
