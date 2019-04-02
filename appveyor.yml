@@ -55,5 +55,4 @@ after_build:
 - ps: >-
     if ($env:GENERATOR) {
       cmake --build . --config $env:CONFIGURATION --target RUN_TESTS
-      C:\install\bin\evmc-vmtester.exe C:\install\bin\evmc-example-vm.dll
     }

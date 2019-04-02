@@ -64,9 +64,6 @@ jobs:
             mkdir ~/build-example-instructions && cd ~/build-example-instructions
             cmake ~/project/examples/use_instructions_in_cmake -DCMAKE_PREFIX_PATH=~/install
             cmake --build .
-      - run:
-          name: "Run evmc-vmtester libevmc-example-vm.so"
-          command: ~/install/bin/evmc-vmtester ~/install/lib/libevmc-example-vm.so
 
   build-cxx17:
     <<: *build
