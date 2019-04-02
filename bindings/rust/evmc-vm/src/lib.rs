@@ -431,6 +431,10 @@ macro_rules! evmc_create_vm {
                     &self.vm
                 }
 
+                pub fn get_inner(&self) -> &evmc_sys::evmc_instance {
+                    &self.inner
+                }
+
                 pub fn into_inner_raw(mut self) -> *mut evmc_sys::evmc_instance {
                     Box::into_raw(Box::new(self)) as *mut evmc_sys::evmc_instance
                 }
@@ -461,8 +465,8 @@ macro_rules! evmc_create_vm {
             ) -> ffi::evmc_result {
                 let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
 
-                let result = instance.get_vm();
-
+                //let result = instance.get_vm().execute(...);
+                //result.into()
                 ffi::evmc_result {
                     create_address: ffi::evmc_address { bytes: [0u8; 20] },
                     gas_left: 0,
