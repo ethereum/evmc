@@ -69,7 +69,7 @@ TEST(cpp, host)
     // Use example host to execute all methods from the C++ host wrapper.
 
     auto* host_context = example_host_create_context();
-    auto host = evmc::host{host_context};
+    auto host = evmc::HostContext{host_context};
 
     auto a = evmc_address{{1}};
     auto v = evmc_bytes32{{7, 7, 7}};
@@ -89,8 +89,8 @@ TEST(cpp, host)
     host.selfdestruct(a, a);
     EXPECT_EQ(host.call({}).gas_left, 0);
 
-    auto* tx = &host.get_tx_context();
-    EXPECT_EQ(&host.get_tx_context(), tx);
+    auto tx = host.get_tx_context();
+    EXPECT_EQ(host.get_tx_context().block_number, tx.block_number);
 
     EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
 
