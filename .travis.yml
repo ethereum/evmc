@@ -20,5 +20,4 @@ install:
   - cmake --build . --config Release --target install
 
 script:
-  - test/Release/evmc-test.exe
-  - $HOME/bin/evmc-vmtester.exe $HOME/bin/evmc-example-vm.dll
+  - ctest -C Release -j4 --schedule-random --output-on-failure
