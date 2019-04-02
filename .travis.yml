@@ -20,4 +20,4 @@ install:
   - cmake --build . --config Release --target install
 
 script:
-  - cmake --build . --config Release --target RUN_TESTS
+  - ctest -C Release -j4 --schedule-random --output-on-failure

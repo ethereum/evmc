@@ -41,7 +41,7 @@ jobs:
           command: cmake --build ~/build
       - run:
           name: "Test"
-          command: cmake --build ~/build --target test
+          command: cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
       - run:
           name: "Install"
           command: cmake --build ~/build --target install

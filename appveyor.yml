@@ -54,5 +54,5 @@ build_script:
 after_build:
 - ps: >-
     if ($env:GENERATOR) {
-      cmake --build . --config $env:CONFIGURATION --target RUN_TESTS
+      ctest -C $env:CONFIGURATION -j4 --schedule-random --output-on-failure
     }
