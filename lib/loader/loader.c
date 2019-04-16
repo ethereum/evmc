@@ -44,9 +44,12 @@ static void strcpy_s(char* dest, size_t destsz, const char* src)
 }
 #endif
 
+static const char* last_error_msg = NULL;
+
 
 evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* error_code)
 {
+    last_error_msg = NULL;  // Reset last error.
     enum evmc_loader_error_code ec = EVMC_LOADER_SUCCESS;
     evmc_create_fn create_fn = NULL;
 
@@ -66,6 +69,11 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
     DLL_HANDLE handle = DLL_OPEN(filename);
     if (!handle)
     {
+#if !defined(EVMC_LOADER_MOCK) && !_WIN32
+        // If available, get the error message from dlerror().
+        last_error_msg = dlerror();
+#endif
+
         ec = EVMC_LOADER_CANNOT_OPEN;
         goto exit;
     }
@@ -130,9 +138,15 @@ exit:
     return create_fn;
 }
 
+const char* evmc_last_error_msg()
+{
+    return last_error_msg;
+}
+
 struct evmc_instance* evmc_load_and_create(const char* filename,
                                            enum evmc_loader_error_code* error_code)
 {
+    // First load the DLL. This also resets the last_error_msg;
     evmc_create_fn create_fn = evmc_load(filename, error_code);
 
     if (!create_fn)

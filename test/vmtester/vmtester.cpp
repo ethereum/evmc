@@ -140,8 +140,14 @@ int main(int argc, char* argv[])
         case EVMC_LOADER_SUCCESS:
             break;
         case EVMC_LOADER_CANNOT_OPEN:
-            std::cerr << "Cannot open " << evmc_module << "\n";
+        {
+            const auto error = evmc_last_error_msg();
+            if (error)
+                std::cerr << error << "\n";
+            else
+                std::cerr << "Cannot open " << evmc_module << "\n";
             return static_cast<int>(ec);
+        }
         case EVMC_LOADER_SYMBOL_NOT_FOUND:
             std::cerr << "EVMC create function not found in " << evmc_module << "\n";
             return static_cast<int>(ec);

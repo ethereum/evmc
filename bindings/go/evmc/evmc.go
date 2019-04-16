@@ -158,7 +158,13 @@ func Load(filename string) (instance *Instance, err error) {
 	case C.EVMC_LOADER_SUCCESS:
 		instance = &Instance{handle}
 	case C.EVMC_LOADER_CANNOT_OPEN:
-		err = fmt.Errorf("evmc loader: cannot open %s", filename)
+		optionalErrMsg := C.evmc_last_error_msg()
+		if optionalErrMsg != nil {
+			msg := C.GoString(optionalErrMsg)
+			err = fmt.Errorf("evmc loader: %s", msg)
+		} else {
+			err = fmt.Errorf("evmc loader: cannot open %s", filename)
+		}
 	case C.EVMC_LOADER_SYMBOL_NOT_FOUND:
 		err = fmt.Errorf("evmc loader: the EVMC create function not found in %s", filename)
 	case C.EVMC_LOADER_INVALID_ARGUMENT:

@@ -1,6 +1,6 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0. See the LICENSE file.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
  */
 
 /**
@@ -102,6 +102,19 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
  */
 struct evmc_instance* evmc_load_and_create(const char* filename,
                                            enum evmc_loader_error_code* error_code);
+
+/**
+ * Returns the human-readable message describing the most recent error
+ * that occurred in EVMC loading.
+ *
+ * In case any loading function returned ::EVMC_LOADER_SUCCESS this function always returns NULL.
+ * In case of error code other than success returned, this function MAY return the error message.
+ * This function is not thread-safe.
+ *
+ * @return Error message or NULL if no additional information is available.
+ *         The returned pointer MUST NOT be freed by the caller.
+ */
+const char* evmc_last_error_msg();
 
 #if __cplusplus
 }
