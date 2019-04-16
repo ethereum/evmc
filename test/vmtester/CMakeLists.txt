@@ -18,7 +18,7 @@ add_test(NAME vmtester/help COMMAND evmc-vmtester --version --help)
 set_tests_properties(vmtester/help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
 
 add_test(NAME vmtester/nonexistingvm COMMAND evmc-vmtester nonexistingvm)
-set_tests_properties(vmtester/nonexistingvm PROPERTIES PASS_REGULAR_EXPRESSION "Cannot open")
+set_tests_properties(vmtester/nonexistingvm PROPERTIES PASS_REGULAR_EXPRESSION "[Cc]annot open")
 
 add_test(NAME vmtester/noarg COMMAND evmc-vmtester)
 set_tests_properties(vmtester/noarg PROPERTIES PASS_REGULAR_EXPRESSION "is required")
