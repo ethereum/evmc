@@ -140,7 +140,9 @@ exit:
 
 const char* evmc_last_error_msg()
 {
-    return last_error_msg;
+    const char* m = last_error_msg;
+    last_error_msg = NULL;
+    return m;
 }
 
 struct evmc_instance* evmc_load_and_create(const char* filename,
