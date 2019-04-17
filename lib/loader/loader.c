@@ -19,12 +19,14 @@
 #define DLL_OPEN(filename) LoadLibrary(filename)
 #define DLL_CLOSE(handle) FreeLibrary(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) GetProcAddress(handle, name)
+#define DLL_GET_ERROR_MSG() NULL
 #else
 #include <dlfcn.h>
 #define DLL_HANDLE void*
 #define DLL_OPEN(filename) dlopen(filename, RTLD_LAZY)
 #define DLL_CLOSE(handle) dlclose(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) dlsym(handle, name)
+#define DLL_GET_ERROR_MSG() dlerror()
 #endif
 
 #define PATH_MAX_LENGTH 4096
@@ -69,11 +71,8 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
     DLL_HANDLE handle = DLL_OPEN(filename);
     if (!handle)
     {
-#if !defined(EVMC_LOADER_MOCK) && !_WIN32
-        // If available, get the error message from dlerror().
-        last_error_msg = dlerror();
-#endif
-
+        // Get error message if available.
+        last_error_msg = DLL_GET_ERROR_MSG();
         ec = EVMC_LOADER_CANNOT_OPEN;
         goto exit;
     }

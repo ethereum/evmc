@@ -137,7 +137,17 @@ TEST_F(loader, load_windows_path)
 
         evmc_loader_error_code ec;
         evmc_load(path, &ec);
-        EXPECT_EQ(ec, should_open ? EVMC_LOADER_SUCCESS : EVMC_LOADER_CANNOT_OPEN);
+        if (should_open)
+        {
+            EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
+            EXPECT_EQ(evmc_last_error_msg(), nullptr);
+        }
+        else
+        {
+            EXPECT_EQ(ec, EVMC_LOADER_CANNOT_OPEN);
+            EXPECT_STREQ(evmc_last_error_msg(), "cannot load library");
+            EXPECT_EQ(evmc_last_error_msg(), nullptr);
+        }
     }
 }
 
