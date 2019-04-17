@@ -31,7 +31,16 @@
 #define DLL_GET_ERROR_MSG() dlerror()
 #endif
 
-#define PATH_MAX_LENGTH 4096
+#ifdef __has_attribute
+#if __has_attribute(format)
+#define ATTR_FORMAT(archetype, string_index, first_to_check) \
+    __attribute__((format(archetype, string_index, first_to_check)))
+#endif
+#endif
+
+#ifndef ATTR_FORMAT
+#define ATTR_FORMAT(...)
+#endif
 
 #if !_WIN32
 /*
@@ -48,6 +57,8 @@ static void strcpy_s(char* dest, size_t destsz, const char* src)
 }
 #endif
 
+#define PATH_MAX_LENGTH 4096
+
 static const char* last_error_msg = NULL;
 
 #define LAST_ERROR_MSG_BUFFER_SIZE 511
@@ -56,8 +67,7 @@ static const char* last_error_msg = NULL;
 // It has one null byte extra to avoid buffer read overflow during concurrent access.
 static char last_error_msg_buffer[LAST_ERROR_MSG_BUFFER_SIZE + 1];
 
-// TODO: Change that into a macro - will be simpler and we will get compilers warnings for snprintf
-//       misuse.
+ATTR_FORMAT(printf, 2, 3)
 static enum evmc_loader_error_code set_error(enum evmc_loader_error_code error_code,
                                              const char* format,
                                              ...)
