@@ -5,11 +5,11 @@ use evmc_vm::{EvmcVM, ExecutionResult, InterfaceManager};
 
 // NOTE: this is lowercase because of the requirements of EVMC. will fix this later.
 #[derive(Clone)]
-struct testvm;
+struct examplerustvm;
 
-impl EvmcVM for testvm {
+impl EvmcVM for examplerustvm {
     fn init() -> Self {
-        testvm
+        examplerustvm
     }
 
     fn execute(&self, code: &[u8], execution_ctx: &ExecutionContext) -> ExecutionResult {
@@ -27,26 +27,4 @@ impl EvmcVM for testvm {
     }
 }
 
-evmc_create_vm!(testvm, "0.1.0");
-
-#[no_mangle]
-pub extern "C" fn evmc_create_examplerustvm() -> *const ffi::evmc_instance {
-    let ret = ffi::evmc_instance {
-        abi_version: ffi::EVMC_ABI_VERSION as i32,
-        destroy: Some(destroy),
-        execute: Some(execute),
-        get_capabilities: Some(get_capabilities),
-        set_option: None,
-        set_tracer: None,
-        name: {
-            let c_str =
-                std::ffi::CString::new("ExampleRustVM").expect("Failed to build EVMC name string");
-            c_str.into_raw() as *const i8
-        },
-        version: {
-            let c_str = std::ffi::CString::new("1.0").expect("Failed to build EVMC version string");
-            c_str.into_raw() as *const i8
-        },
-    };
-    Box::into_raw(Box::new(ret))
-}
+evmc_create_vm!(examplerustvm, "0.1.0");
