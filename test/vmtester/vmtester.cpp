@@ -16,6 +16,8 @@ evmc_create_fn create_fn;
 std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
 {
     auto vm = create_fn();
+    if (vm == nullptr)
+        return {nullptr, nullptr};
     return {vm, vm->destroy};
 }
 }  // namespace
