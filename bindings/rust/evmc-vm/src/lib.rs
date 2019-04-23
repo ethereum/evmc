@@ -389,7 +389,7 @@ macro_rules! evmc_create_vm {
         paste::item! {
             #[derive(Clone)]
             #[repr(C)]
-            pub struct [<$__vm Instance>] {
+            struct [<$__vm Instance>] {
                 inner: evmc_sys::evmc_instance,
                 vm: $__vm,
             }
@@ -456,17 +456,15 @@ macro_rules! evmc_create_vm {
                 code: *const u8,
                 code_size: usize,
             ) -> ffi::evmc_result {
-                assert!(!instance.is_null());
-
-                // code to slice
                 assert!(code_size < std::isize::MAX as usize);
                 assert!(!code.is_null());
                 let code_ref: &[u8] = unsafe {
                     std::slice::from_raw_parts(code, code_size)
                 };
-                // interface manager : revision, message, context, instance
+
                 assert!(!msg.is_null());
                 assert!(!context.is_null());
+                assert!(!instance.is_null());
                 let host = unsafe {
                     InterfaceManager::new(&rev,
                         &*msg,
@@ -505,7 +503,7 @@ macro_rules! evmc_create_vm {
 
         paste::item! {
             #[no_mangle]
-            pub extern "C" fn [<evmc_create_ $__vm>]() -> *const evmc_sys::evmc_instance {
+            extern "C" fn [<evmc_create_ $__vm>]() -> *const evmc_sys::evmc_instance {
                 paste::expr! { [<$__vm Instance>]::new().into_inner_raw() }
             }
         }
