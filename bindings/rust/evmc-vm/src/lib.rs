@@ -8,8 +8,8 @@ pub extern crate evmc_sys;
 #[macro_use]
 extern crate paste;
 
-pub use paste::item;
 pub use paste::expr;
+pub use paste::item;
 
 pub use evmc_sys as ffi;
 
