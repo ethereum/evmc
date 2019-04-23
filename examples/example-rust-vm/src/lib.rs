@@ -1,45 +1,33 @@
+#[macro_use]
 extern crate evmc_vm;
 
-use evmc_vm::*;
+use evmc_vm::{EvmcVM, ExecutionResult, InterfaceManager};
 
-extern "C" fn execute(
-    instance: *mut ffi::evmc_instance,
-    context: *mut ffi::evmc_context,
-    rev: ffi::evmc_revision,
-    msg: *const ffi::evmc_message,
-    code: *const u8,
-    code_size: usize,
-) -> ffi::evmc_result {
-    let execution_ctx = unsafe {
-        ExecutionContext::new(
-            msg.as_ref().expect("tester passed nullptr as message"),
-            context.as_mut().expect("tester passed nullptr as context"),
-        )
-    };
-    let is_create = execution_ctx.get_message().kind == ffi::evmc_call_kind::EVMC_CREATE;
+// NOTE: this is lowercase because of the requirements of EVMC. will fix this later.
+#[derive(Clone)]
+struct testvm;
 
-    if is_create {
-        evmc_vm::ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None, None).into()
-    } else {
-        evmc_vm::ExecutionResult::new(
-            ffi::evmc_status_code::EVMC_SUCCESS,
-            66,
-            Some(vec![0xc0, 0xff, 0xee]),
-            None,
-        )
-        .into()
+impl EvmcVM for testvm {
+    fn init() -> Self {
+        testvm
+    }
+
+    fn execute(&self, code: &[u8], execution_ctx: &ExecutionContext) -> ExecutionResult {
+        let is_create = execution_ctx.get_message().kind == ffi::evmc_call_kind::EVMC_CREATE;
+        if is_create {
+            evmc_vm::ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None, None)
+        } else {
+            evmc_vm::ExecutionResult::new(
+                ffi::evmc_status_code::EVMC_SUCCESS,
+                69,
+                Some(vec![0xc0, 0xff, 0xee]),
+                None,
+            )
+        }
     }
 }
 
-extern "C" fn get_capabilities(
-    instance: *mut ffi::evmc_instance,
-) -> ffi::evmc_capabilities_flagset {
-    ffi::evmc_capabilities::EVMC_CAPABILITY_EVM1 as u32
-}
-
-extern "C" fn destroy(instance: *mut ffi::evmc_instance) {
-    drop(unsafe { Box::from_raw(instance) })
-}
+evmc_create_vm!(testvm, "0.1.0");
 
 #[no_mangle]
 pub extern "C" fn evmc_create_examplerustvm() -> *const ffi::evmc_instance {

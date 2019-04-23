@@ -8,6 +8,9 @@ pub extern crate evmc_sys;
 #[macro_use]
 extern crate paste;
 
+pub use paste::item;
+pub use paste::expr;
+
 pub use evmc_sys as ffi;
 
 // TODO: Add convenient helpers for evmc_execute
@@ -381,38 +384,42 @@ pub trait VMInstance {
 #[macro_export]
 macro_rules! evmc_create_vm {
     ($__vm:ident, $__version:expr) => {
-        paste::item! {
+        use evmc_vm;
+        use evmc_vm::expr;
+        use evmc_vm::item;
+        use evmc_vm::evmc_sys as ffi;
+        item! {
             static [<$__vm _NAME>]: &'static str = stringify!($__vm);
             static [<$__vm _VERSION>]: &'static str = $__version;
         }
 
-        paste::item! {
+        item! {
             #[derive(Clone)]
             #[repr(C)]
             struct [<$__vm Instance>] {
-                inner: evmc_sys::evmc_instance,
+                inner: ffi::evmc_instance,
                 vm: $__vm,
             }
         }
 
-        paste::item! {
+        item! {
             impl [<$__vm Instance>] {
                 pub fn new() -> Self {
                     //$__vm must implement EvmcVM
                     [<$__vm Instance>] {
-                        inner: evmc_sys::evmc_instance {
-                            abi_version: evmc_sys::EVMC_ABI_VERSION as i32,
-                            destroy: paste::expr! { Some([<$__vm _destroy>]) },
-                            execute: paste::expr! { Some([<$__vm _execute>]) },
+                        inner: ffi::evmc_instance {
+                            abi_version: ffi::EVMC_ABI_VERSION as i32,
+                            destroy: expr! { Some([<$__vm _destroy>]) },
+                            execute: expr! { Some([<$__vm _execute>]) },
                             get_capabilities: None,
                             set_option: None,
                             set_tracer: None,
                             name: {
-                                let c_str = paste::expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
+                                let c_str = expr! { std::ffi::CString::new([<$__vm _NAME>]).expect("Failed to build EVMC name string") };
                                 c_str.into_raw() as *const i8
                             },
                             version: {
-                                let c_str = paste::expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
+                                let c_str = expr! { std::ffi::CString::new([<$__vm _VERSION>]).expect("Failed to build EVMC version string") };
                                 c_str.into_raw() as *const i8
                             },
                         },
@@ -424,12 +431,12 @@ macro_rules! evmc_create_vm {
                     &self.vm
                 }
 
-                pub fn get_inner(&self) -> &evmc_sys::evmc_instance {
+                pub fn get_inner(&self) -> &ffi::evmc_instance {
                     &self.inner
                 }
 
-                pub fn into_inner_raw(self) -> *mut evmc_sys::evmc_instance {
-                    Box::into_raw(Box::new(self)) as *mut evmc_sys::evmc_instance
+                pub fn into_inner_raw(self) -> *mut ffi::evmc_instance {
+                    Box::into_raw(Box::new(self)) as *mut ffi::evmc_instance
                 }
 
                 // Assumes the pointer is casted from another instance of Self. otherwise UB
@@ -447,7 +454,7 @@ macro_rules! evmc_create_vm {
             }
         }
 
-        paste::item! {
+        item! {
             extern "C" fn [<$__vm _execute>](
                 instance: *mut ffi::evmc_instance,
                 context: *mut ffi::evmc_context,
@@ -492,7 +499,7 @@ macro_rules! evmc_create_vm {
             }
         }
 
-        paste::item! {
+        item! {
             extern "C" fn [<$__vm _destroy>](instance: *mut ffi::evmc_instance) {
                 // The EVMC specification ensures instance cannot be null.
                 // Cast to the enclosing struct so that the extra data gets deallocated too.
@@ -501,10 +508,10 @@ macro_rules! evmc_create_vm {
             }
         }
 
-        paste::item! {
+        item! {
             #[no_mangle]
-            extern "C" fn [<evmc_create_ $__vm>]() -> *const evmc_sys::evmc_instance {
-                paste::expr! { [<$__vm Instance>]::new().into_inner_raw() }
+            extern "C" fn [<evmc_create_ $__vm>]() -> *const ffi::evmc_instance {
+                expr! { [<$__vm Instance>]::new().into_inner_raw() }
             }
         }
     }
@@ -513,7 +520,6 @@ macro_rules! evmc_create_vm {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use evmc_sys as ffi;
 
     #[test]
     fn new_result() {
