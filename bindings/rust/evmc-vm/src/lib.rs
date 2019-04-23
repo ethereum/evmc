@@ -119,7 +119,7 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
 extern "C" fn release_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = Box::from_raw(result as *mut ffi::evmc_result);
-        if tmp.output_data.is_null() {
+        if !tmp.output_data.is_null() {
             let buf_layout =
                 std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
             std::alloc::dealloc(tmp.output_data as *mut u8, buf_layout);
@@ -190,6 +190,29 @@ mod tests {
                 std::slice::from_raw_parts((*f).output_data, 5) as &[u8]
                     == &[0xc0, 0xff, 0xee, 0x71, 0x75]
             );
+            assert!((*f).create_address.bytes == [0u8; 20]);
+            if (*f).release.is_some() {
+                (*f).release.unwrap()(f);
+            }
+        }
+    }
+
+    #[test]
+    fn into_ffi_empty_data() {
+        let r = ExecutionResult::new(
+            ffi::evmc_status_code::EVMC_FAILURE,
+            420,
+            None,
+            ffi::evmc_address { bytes: [0u8; 20] },
+        );
+
+        let f: *const ffi::evmc_result = r.into();
+        assert!(!f.is_null());
+        unsafe {
+            assert!((*f).status_code == ffi::evmc_status_code::EVMC_FAILURE);
+            assert!((*f).gas_left == 420);
+            assert!((*f).output_data.is_null());
+            assert!((*f).output_size == 0);
             assert!((*f).create_address.bytes == [0u8; 20]);
             if (*f).release.is_some() {
                 (*f).release.unwrap()(f);
