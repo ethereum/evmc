@@ -54,6 +54,10 @@ jobs:
       - store_artifacts:
           path: ~/package
           destination: package
+      - persist_to_workspace:
+          root: ~/build
+          paths:
+            - test/evmc-vmtester
 
   build-cxx17:
     <<: *build
@@ -159,6 +163,14 @@ jobs:
       - run:
           name: Test
           command: cargo test
+      - attach_workspace:
+          at: ~/build
+      - run:
+          name: Test with evmc-vmtester
+          command: |
+            # FIXME: there is a linking issue with Cargo workspaces, this is to workaround it
+            export LD_LIBRARY_PATH="$(rustc --print sysroot)/lib:$LD_LIBRARY_PATH"
+            ~/build/test/evmc-vmtester target/debug/libexamplerustvm.so
 
 workflows:
   version: 2
@@ -171,7 +183,9 @@ workflows:
       - build-clang3.8
       - bindings-go-latest
       - bindings-go-min
-      - bindings-rust
+      - bindings-rust:
+          requires:
+            - build-cxx17
       - test-docs
       - upload-docs:
           requires:
