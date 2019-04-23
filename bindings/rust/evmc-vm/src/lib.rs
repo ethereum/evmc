@@ -384,17 +384,9 @@ pub trait VMInstance {
 #[macro_export]
 macro_rules! evmc_create_vm {
     ($__vm:ident, $__version:expr) => {
-        #[cfg(not(test))]
         use evmc_vm::expr;
-        #[cfg(not(test))]
         use evmc_vm::item;
-        #[cfg(not(test))]
         use evmc_vm::evmc_sys as ffi;
-
-        #[cfg(test)]
-        use paste::item;
-        #[cfg(test)]
-        use paste::expr;
 
         item! {
             static [<$__vm _NAME>]: &'static str = stringify!($__vm);
@@ -780,6 +772,7 @@ mod tests {
             )
         }
     }
+    /*
     evmc_create_vm!(FooVM, "0.5");
     #[test]
     fn create_macro() {
@@ -819,4 +812,5 @@ mod tests {
 
         let _uncoerced = Box::into_raw(coerced) as *mut ffi::evmc_instance;
     }
+    */
 }
