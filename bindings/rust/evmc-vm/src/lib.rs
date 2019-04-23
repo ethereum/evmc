@@ -428,7 +428,7 @@ macro_rules! evmc_create_vm {
                     &self.inner
                 }
 
-                pub fn into_inner_raw(mut self) -> *mut evmc_sys::evmc_instance {
+                pub fn into_inner_raw(self) -> *mut evmc_sys::evmc_instance {
                     Box::into_raw(Box::new(self)) as *mut evmc_sys::evmc_instance
                 }
 
@@ -456,19 +456,41 @@ macro_rules! evmc_create_vm {
                 code: *const u8,
                 code_size: usize,
             ) -> ffi::evmc_result {
-                let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
+                assert!(!instance.is_null());
 
-                //let result = instance.get_vm().execute(...);
-                //result.into()
-                ffi::evmc_result {
-                    create_address: ffi::evmc_address { bytes: [0u8; 20] },
-                    gas_left: 0,
-                    output_data: 0 as *const u8,
-                    output_size: 0,
-                    release: None,
-                    status_code: ffi::evmc_status_code::EVMC_FAILURE,
-                    padding: [0u8; 4],
+                // code to slice
+                assert!(code_size < std::isize::MAX as usize);
+                assert!(!code.is_null());
+                let code_ref: &[u8] = unsafe {
+                    std::slice::from_raw_parts(code, code_size)
+                };
+                // interface manager : revision, message, context, instance
+                assert!(!msg.is_null());
+                assert!(!context.is_null());
+                let host = unsafe {
+                    InterfaceManager::new(&rev,
+                        &*msg,
+                        &mut *context,
+                        &mut *instance)
+                };
+
+                let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
+                let result: ExecutionResult = instance.get_vm().execute(code_ref, &host);
+                let ret: *const ffi::evmc_result = result.into();
+
+                assert!(!ret.is_null());
+                unsafe {
+                    *ret
                 }
+                //ffi::evmc_result {
+                //    create_address: ffi::evmc_address { bytes: [0u8; 20] },
+                //    gas_left: 0,
+                //    output_data: 0 as *const u8,
+                //    output_size: 0,
+                //    release: None,
+                //    status_code: ffi::evmc_status_code::EVMC_FAILURE,
+                //    padding: [0u8; 4],
+                //}
             }
         }
 
@@ -738,7 +760,12 @@ mod tests {
         }
 
         fn execute(&self, code: &[u8], interface: &InterfaceManager) -> ExecutionResult {
-            unimplemented!();
+            ExecutionResult::new(
+                ffi::evmc_status_code::EVMC_SUCCESS,
+                66,
+                None,
+                ffi::evmc_address { bytes: [0u8; 20] },
+            )
         }
     }
     evmc_create_vm!(FooVM, "0.5");
@@ -778,6 +805,6 @@ mod tests {
         assert!(vmdata.bar == 42);
         assert!(vmdata.baz == 64);
 
-        let uncoerced = unsafe { Box::into_raw(coerced) as *mut ffi::evmc_instance };
+        let _uncoerced = Box::into_raw(coerced) as *mut ffi::evmc_instance;
     }
 }
