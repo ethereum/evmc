@@ -108,7 +108,7 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
             gas_left: self.gas_left,
             output_data: buffer,
             output_size: len,
-            release: Some(release_result),
+            release: Some(release_heap_result),
             create_address: self.create_address,
             padding: [0u8; 4],
         }))
@@ -116,9 +116,52 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
 }
 
 /// Callback to pass across FFI, de-allocating the optional output_data.
-extern "C" fn release_result(result: *const ffi::evmc_result) {
+extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = Box::from_raw(result as *mut ffi::evmc_result);
+        if !tmp.output_data.is_null() {
+            let buf_layout =
+                std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
+            std::alloc::dealloc(tmp.output_data as *mut u8, buf_layout);
+        }
+    }
+}
+
+/// Returns a pointer to a stack-allocated evmc_result.
+impl Into<ffi::evmc_result> for ExecutionResult {
+    fn into(self) -> ffi::evmc_result {
+        let (buffer, len) = if let Some(buf) = self.output {
+            let buf_len = buf.len();
+
+            // Manually allocate heap memory for the new home of the output buffer.
+            let memlayout = std::alloc::Layout::from_size_align(buf_len, 1).expect("Bad layout");
+            let new_buf = unsafe { std::alloc::alloc(memlayout) };
+            unsafe {
+                // Copy the data into the allocated buffer.
+                std::ptr::copy(buf.as_ptr(), new_buf, buf_len);
+            }
+
+            (new_buf as *const u8, buf_len)
+        } else {
+            (std::ptr::null(), 0)
+        };
+
+        ffi::evmc_result {
+            status_code: self.status_code,
+            gas_left: self.gas_left,
+            output_data: buffer,
+            output_size: len,
+            release: Some(release_stack_result),
+            create_address: self.create_address,
+            padding: [0u8; 4],
+        }
+    }
+}
+
+/// Callback to pass across FFI, de-allocating the optional output_data.
+extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
+    unsafe {
+        let tmp = *result;
         if !tmp.output_data.is_null() {
             let buf_layout =
                 std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
@@ -171,7 +214,7 @@ mod tests {
     }
 
     #[test]
-    fn into_ffi() {
+    fn into_heap_ffi() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -198,7 +241,7 @@ mod tests {
     }
 
     #[test]
-    fn into_ffi_empty_data() {
+    fn into_heap_ffi_empty_data() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -216,6 +259,54 @@ mod tests {
             assert!((*f).create_address.bytes == [0u8; 20]);
             if (*f).release.is_some() {
                 (*f).release.unwrap()(f);
+            }
+        }
+    }
+
+    #[test]
+    fn into_stack_ffi() {
+        let r = ExecutionResult::new(
+            ffi::evmc_status_code::EVMC_FAILURE,
+            420,
+            Some(vec![0xc0, 0xff, 0xee, 0x71, 0x75]),
+            ffi::evmc_address { bytes: [0u8; 20] },
+        );
+
+        let f: ffi::evmc_result = r.into();
+        unsafe {
+            assert!(f.status_code == ffi::evmc_status_code::EVMC_FAILURE);
+            assert!(f.gas_left == 420);
+            assert!(!f.output_data.is_null());
+            assert!(f.output_size == 5);
+            assert!(
+                std::slice::from_raw_parts(f.output_data, 5) as &[u8]
+                    == &[0xc0, 0xff, 0xee, 0x71, 0x75]
+            );
+            assert!(f.create_address.bytes == [0u8; 20]);
+            if f.release.is_some() {
+                f.release.unwrap()(&f);
+            }
+        }
+    }
+
+    #[test]
+    fn into_stack_ffi_empty_data() {
+        let r = ExecutionResult::new(
+            ffi::evmc_status_code::EVMC_FAILURE,
+            420,
+            None,
+            ffi::evmc_address { bytes: [0u8; 20] },
+        );
+
+        let f: ffi::evmc_result = r.into();
+        unsafe {
+            assert!(f.status_code == ffi::evmc_status_code::EVMC_FAILURE);
+            assert!(f.gas_left == 420);
+            assert!(f.output_data.is_null());
+            assert!(f.output_size == 0);
+            assert!(f.create_address.bytes == [0u8; 20]);
+            if f.release.is_some() {
+                f.release.unwrap()(&f);
             }
         }
     }
