@@ -115,7 +115,7 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
     }
 }
 
-/// Callback to pass across FFI, de-allocating the struct.
+/// Callback to pass across FFI, de-allocating the optional output_data.
 extern "C" fn release_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = Box::from_raw(result as *mut ffi::evmc_result);
@@ -124,7 +124,6 @@ extern "C" fn release_result(result: *const ffi::evmc_result) {
                 std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
             std::alloc::dealloc(tmp.output_data as *mut u8, buf_layout);
         }
-        Box::from_raw(result as *mut ffi::evmc_result);
     }
 }
 
@@ -192,6 +191,9 @@ mod tests {
                     == &[0xc0, 0xff, 0xee, 0x71, 0x75]
             );
             assert!((*f).create_address.bytes == [0u8; 20]);
+            if (*f).release.is_some() {
+                (*f).release.unwrap()(f);
+            }
         }
     }
 }
