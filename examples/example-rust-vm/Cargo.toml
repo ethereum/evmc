@@ -1,0 +1,12 @@
+[package]
+name = "example-rust-vm"
+version = "0.1.0"
+authors = ["Alex Beregszaszi <alex@rtfs.hu>"]
+edition = "2018"
+
+[lib]
+name = "examplerustvm"
+crate-type = ["staticlib", "dylib"]
+
+[dependencies]
+evmc-vm = { path = "../../bindings/rust/evmc-vm" }
