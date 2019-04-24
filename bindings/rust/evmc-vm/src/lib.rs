@@ -18,13 +18,19 @@ impl ExecutionResult {
         _status_code: ffi::evmc_status_code,
         _gas_left: i64,
         _output: Option<Vec<u8>>,
-        _create_address: ffi::evmc_address,
+        _create_address: Option<ffi::evmc_address>,
     ) -> Self {
         ExecutionResult {
             status_code: _status_code,
             gas_left: _gas_left,
             output: _output,
-            create_address: _create_address,
+            create_address: {
+                if let Some(_create_address) = _create_address {
+                    _create_address
+                } else {
+                    ffi::evmc_address { bytes: [0u8; 20] }
+                }
+            },
         }
     }
 
@@ -181,7 +187,7 @@ mod tests {
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
             None,
-            ffi::evmc_address { bytes: [0u8; 20] },
+            Some(ffi::evmc_address { bytes: [0u8; 20] }),
         );
 
         assert!(r.get_status_code() == ffi::evmc_status_code::EVMC_FAILURE);
@@ -219,7 +225,7 @@ mod tests {
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
             Some(vec![0xc0, 0xff, 0xee, 0x71, 0x75]),
-            ffi::evmc_address { bytes: [0u8; 20] },
+            Some(ffi::evmc_address { bytes: [0u8; 20] }),
         );
 
         let f: *const ffi::evmc_result = r.into();
@@ -246,7 +252,7 @@ mod tests {
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
             None,
-            ffi::evmc_address { bytes: [0u8; 20] },
+            Some(ffi::evmc_address { bytes: [0u8; 20] }),
         );
 
         let f: *const ffi::evmc_result = r.into();
@@ -269,7 +275,7 @@ mod tests {
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
             Some(vec![0xc0, 0xff, 0xee, 0x71, 0x75]),
-            ffi::evmc_address { bytes: [0u8; 20] },
+            Some(ffi::evmc_address { bytes: [0u8; 20] }),
         );
 
         let f: ffi::evmc_result = r.into();
@@ -295,7 +301,7 @@ mod tests {
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
             None,
-            ffi::evmc_address { bytes: [0u8; 20] },
+            Some(ffi::evmc_address { bytes: [0u8; 20] }),
         );
 
         let f: ffi::evmc_result = r.into();
