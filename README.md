@@ -32,7 +32,9 @@ Please visit the [documentation].
 
 - [aleth-interpreter]
 - [evmjit]
+- [evmone]
 - [Hera]
+- [Hera.rs]
 
 ### Clients
 
@@ -78,12 +80,14 @@ Licensed under the [MIT License](LICENSE).
 [documentation]: https://ethereum.github.io/evmc
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
+[evmone]: https://github.com/chfast/evmone
 [Hera]: https://github.com/ewasm/hera
+[Hera.rs]: https://github.com/ewasm/hera.rs
 [Gitter]: https://gitter.im/ethereum/evmc
 [aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
 [aleth]: https://github.com/ethereum/aleth
 [nim-evmc]: https://github.com/status-im/nim-evmc
-[go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17050
+[go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
