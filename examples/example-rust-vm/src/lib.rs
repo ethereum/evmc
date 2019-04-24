@@ -10,13 +10,29 @@ extern "C" fn execute(
     code: *const u8,
     code_size: usize,
 ) -> ffi::evmc_result {
-    let result = evmc_vm::ExecutionResult::new(
-        ffi::evmc_status_code::EVMC_SUCCESS,
-        66,
-        None,
-        ffi::evmc_address { bytes: [0u8; 20] },
-    );
-    result.into()
+    if msg == std::ptr::null() {
+        panic!()
+    }
+
+    let is_create = unsafe { (*msg).kind == ffi::evmc_call_kind::EVMC_CREATE };
+
+    if is_create {
+        evmc_vm::ExecutionResult::new(
+            ffi::evmc_status_code::EVMC_FAILURE,
+            0,
+            None,
+            ffi::evmc_address { bytes: [0u8; 20] },
+        )
+        .into()
+    } else {
+        evmc_vm::ExecutionResult::new(
+            ffi::evmc_status_code::EVMC_SUCCESS,
+            66,
+            None,
+            ffi::evmc_address { bytes: [0u8; 20] },
+        )
+        .into()
+    }
 }
 
 extern "C" fn get_capabilities(
