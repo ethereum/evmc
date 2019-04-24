@@ -14,10 +14,14 @@ const char* evmc_test_library_path = NULL;
 const char* evmc_test_library_symbol = NULL;
 evmc_create_fn evmc_test_create_fn = NULL;
 
+static const char* evmc_test_last_error_msg = NULL;
+
 static int evmc_test_load_library(const char* filename)
 {
+    evmc_test_last_error_msg = NULL;
     if (filename && evmc_test_library_path && strcmp(filename, evmc_test_library_path) == 0)
         return magic_handle;
+    evmc_test_last_error_msg = "cannot load library";
     return 0;
 }
 
@@ -36,7 +40,16 @@ static evmc_create_fn evmc_test_get_symbol_address(int handle, const char* symbo
     return NULL;
 }
 
+static const char* evmc_test_get_last_error_msg()
+{
+    // Return the last error message only once.
+    const char* m = evmc_test_last_error_msg;
+    evmc_test_last_error_msg = NULL;
+    return m;
+}
+
 #define DLL_HANDLE int
 #define DLL_OPEN(filename) evmc_test_load_library(filename)
 #define DLL_CLOSE(handle) evmc_test_free_library(handle)
 #define DLL_GET_CREATE_FN(handle, name) evmc_test_get_symbol_address(handle, name)
+#define DLL_GET_ERROR_MSG() evmc_test_get_last_error_msg()

@@ -105,10 +105,12 @@ struct evmc_instance* evmc_load_and_create(const char* filename,
 
 /**
  * Returns the human-readable message describing the most recent error
- * that occurred in EVMC loading.
+ * that occurred in EVMC loading since the last call to this function.
  *
  * In case any loading function returned ::EVMC_LOADER_SUCCESS this function always returns NULL.
  * In case of error code other than success returned, this function MAY return the error message.
+ * Calling this function "consumes" the error message and the function will return NULL
+ * from subsequent invocations.
  * This function is not thread-safe.
  *
  * @return Error message or NULL if no additional information is available.

@@ -8,7 +8,9 @@
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
+#include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #if defined(EVMC_LOADER_MOCK)
@@ -19,15 +21,26 @@
 #define DLL_OPEN(filename) LoadLibrary(filename)
 #define DLL_CLOSE(handle) FreeLibrary(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) GetProcAddress(handle, name)
+#define DLL_GET_ERROR_MSG() NULL
 #else
 #include <dlfcn.h>
 #define DLL_HANDLE void*
 #define DLL_OPEN(filename) dlopen(filename, RTLD_LAZY)
 #define DLL_CLOSE(handle) dlclose(handle)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) dlsym(handle, name)
+#define DLL_GET_ERROR_MSG() dlerror()
 #endif
 
-#define PATH_MAX_LENGTH 4096
+#ifdef __has_attribute
+#if __has_attribute(format)
+#define ATTR_FORMAT(archetype, string_index, first_to_check) \
+    __attribute__((format(archetype, string_index, first_to_check)))
+#endif
+#endif
+
+#ifndef ATTR_FORMAT
+#define ATTR_FORMAT(...)
+#endif
 
 #if !_WIN32
 /*
@@ -44,7 +57,29 @@ static void strcpy_s(char* dest, size_t destsz, const char* src)
 }
 #endif
 
+#define PATH_MAX_LENGTH 4096
+
 static const char* last_error_msg = NULL;
+
+#define LAST_ERROR_MSG_BUFFER_SIZE 511
+
+// Buffer for formatted error messages.
+// It has one null byte extra to avoid buffer read overflow during concurrent access.
+static char last_error_msg_buffer[LAST_ERROR_MSG_BUFFER_SIZE + 1];
+
+ATTR_FORMAT(printf, 2, 3)
+static enum evmc_loader_error_code set_error(enum evmc_loader_error_code error_code,
+                                             const char* format,
+                                             ...)
+{
+    va_list args;
+    va_start(args, format);
+    if (vsnprintf(last_error_msg_buffer, LAST_ERROR_MSG_BUFFER_SIZE, format, args) <
+        LAST_ERROR_MSG_BUFFER_SIZE)
+        last_error_msg = last_error_msg_buffer;
+    va_end(args);
+    return error_code;
+}
 
 
 evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* error_code)
@@ -55,26 +90,33 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
 
     if (!filename)
     {
-        ec = EVMC_LOADER_INVALID_ARGUMENT;
+        ec = set_error(EVMC_LOADER_INVALID_ARGUMENT, "invalid argument: file name cannot be null");
         goto exit;
     }
 
     const size_t length = strlen(filename);
-    if (length == 0 || length > PATH_MAX_LENGTH)
+    if (length == 0)
     {
-        ec = EVMC_LOADER_INVALID_ARGUMENT;
+        ec = set_error(EVMC_LOADER_INVALID_ARGUMENT, "invalid argument: file name cannot be empty");
+        goto exit;
+    }
+    else if (length > PATH_MAX_LENGTH)
+    {
+        ec = set_error(EVMC_LOADER_INVALID_ARGUMENT,
+                       "invalid argument: file name is too long (%d, maximum allowed length is %d)",
+                       (int)length, PATH_MAX_LENGTH);
         goto exit;
     }
 
     DLL_HANDLE handle = DLL_OPEN(filename);
     if (!handle)
     {
-#if !defined(EVMC_LOADER_MOCK) && !_WIN32
-        // If available, get the error message from dlerror().
-        last_error_msg = dlerror();
-#endif
-
-        ec = EVMC_LOADER_CANNOT_OPEN;
+        // Get error message if available.
+        last_error_msg = DLL_GET_ERROR_MSG();
+        if (last_error_msg)
+            ec = EVMC_LOADER_CANNOT_OPEN;
+        else
+            ec = set_error(EVMC_LOADER_CANNOT_OPEN, "cannot open %s", filename);
         goto exit;
     }
 
@@ -129,7 +171,8 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
     if (!create_fn)
     {
         DLL_CLOSE(handle);
-        ec = EVMC_LOADER_SYMBOL_NOT_FOUND;
+        ec = set_error(EVMC_LOADER_SYMBOL_NOT_FOUND, "EVMC create function not found in %s",
+                       filename);
     }
 
 exit:
@@ -140,7 +183,9 @@ exit:
 
 const char* evmc_last_error_msg()
 {
-    return last_error_msg;
+    const char* m = last_error_msg;
+    last_error_msg = NULL;
+    return m;
 }
 
 struct evmc_instance* evmc_load_and_create(const char* filename,
@@ -155,13 +200,16 @@ struct evmc_instance* evmc_load_and_create(const char* filename,
     struct evmc_instance* instance = create_fn();
     if (!instance)
     {
-        *error_code = EVMC_LOADER_INSTANCE_CREATION_FAILURE;
+        *error_code = set_error(EVMC_LOADER_INSTANCE_CREATION_FAILURE,
+                                "creating EVMC instance of %s has failed", filename);
         return NULL;
     }
 
     if (!evmc_is_abi_compatible(instance))
     {
-        *error_code = EVMC_LOADER_ABI_VERSION_MISMATCH;
+        *error_code = set_error(EVMC_LOADER_ABI_VERSION_MISMATCH,
+                                "EVMC ABI version %d of %s mismatches the expected version %d",
+                                instance->abi_version, filename, EVMC_ABI_VERSION);
         return NULL;
     }
 

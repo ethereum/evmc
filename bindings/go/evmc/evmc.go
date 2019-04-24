@@ -58,7 +58,6 @@ static struct evmc_result execute_wrapper(struct evmc_instance* instance,
 import "C"
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"unsafe"
@@ -154,28 +153,18 @@ func Load(filename string) (instance *Instance, err error) {
 	var loaderErr C.enum_evmc_loader_error_code
 	handle := C.evmc_load_and_create(cfilename, &loaderErr)
 	C.free(unsafe.Pointer(cfilename))
-	switch loaderErr {
-	case C.EVMC_LOADER_SUCCESS:
+
+	if loaderErr == C.EVMC_LOADER_SUCCESS {
 		instance = &Instance{handle}
-	case C.EVMC_LOADER_CANNOT_OPEN:
-		optionalErrMsg := C.evmc_last_error_msg()
-		if optionalErrMsg != nil {
-			msg := C.GoString(optionalErrMsg)
-			err = fmt.Errorf("evmc loader: %s", msg)
+	} else {
+		errMsg := C.evmc_last_error_msg()
+		if errMsg != nil {
+			err = fmt.Errorf("EVMC loading error: %s", C.GoString(errMsg))
 		} else {
-			err = fmt.Errorf("evmc loader: cannot open %s", filename)
+			err = fmt.Errorf("EVMC loading error %d", int(loaderErr))
 		}
-	case C.EVMC_LOADER_SYMBOL_NOT_FOUND:
-		err = fmt.Errorf("evmc loader: the EVMC create function not found in %s", filename)
-	case C.EVMC_LOADER_INVALID_ARGUMENT:
-		panic("evmc loader: filename argument is invalid")
-	case C.EVMC_LOADER_INSTANCE_CREATION_FAILURE:
-		err = errors.New("evmc loader: VM instance creation failure")
-	case C.EVMC_LOADER_ABI_VERSION_MISMATCH:
-		err = errors.New("evmc loader: ABI version mismatch")
-	default:
-		panic(fmt.Sprintf("evmc loader: unexpected error (%d)", int(loaderErr)))
 	}
+
 	return instance, err
 }
 

@@ -137,27 +137,14 @@ int main(int argc, char* argv[])
         std::cout << "Testing " << evmc_module << "\n";
         evmc_loader_error_code ec;
         create_fn = evmc_load(evmc_module.c_str(), &ec);
-        switch (ec)
-        {
-        case EVMC_LOADER_SUCCESS:
-            break;
-        case EVMC_LOADER_CANNOT_OPEN:
+
+        if (ec != EVMC_LOADER_SUCCESS)
         {
             const auto error = evmc_last_error_msg();
             if (error)
                 std::cerr << error << "\n";
             else
-                std::cerr << "Cannot open " << evmc_module << "\n";
-            return static_cast<int>(ec);
-        }
-        case EVMC_LOADER_SYMBOL_NOT_FOUND:
-            std::cerr << "EVMC create function not found in " << evmc_module << "\n";
-            return static_cast<int>(ec);
-        case EVMC_LOADER_INVALID_ARGUMENT:
-            std::cerr << "Invalid argument: \"" << evmc_module << "\"\n";
-            return static_cast<int>(ec);
-        default:
-            std::cerr << "Unexpected error in evmc_load(): " << ec << "\n";
+                std::cerr << "Loading error " << ec << "\n";
             return static_cast<int>(ec);
         }
 
