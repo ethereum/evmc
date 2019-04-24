@@ -46,6 +46,14 @@ TEST_F(evmc_vm_test, execute)
     {
         EXPECT_EQ(result.output_size, 0);
     }
+    else
+    {
+        EXPECT_NE(result.output_size, 0);
+
+        // Dereference pointer.
+        uint8_t tmp = result.output_data[0];
+        (void)tmp;
+    }
 
     if (result.release)
         result.release(&result);
