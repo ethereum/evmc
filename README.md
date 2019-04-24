@@ -23,8 +23,11 @@ Please visit the [documentation].
 | **C**                   | C90, C99, C11       | GCC 6+, clang 3.8+
 | **C++** _(helpers)_[^1] | C++11, C++14, C++17 | GCC 6+, clang 3.8+
 | **Go** _(bindings)_     | 1.9 - 1.12          |
+| **Rust** _(bindings)_[^2] | 2018 edition      | 1.31.0 and newer
 
 [^1]: C++ support is provided by C headers and some optional C++ helpers.
+
+[^2]: Rust support is limited and not complete yet.
 
 ## Related projects
 
