@@ -7,6 +7,9 @@
   to be used by VM implementations.
 - Deprecated: [[#196](https://github.com/ethereum/evmc/pull/196)]
   The `EVMC_CONSTANTINOPLE2` revision name is deprecated, replaced with `EVMC_PETERSBURG`.
+- Added: [[#201](https://github.com/ethereum/evmc/pull/201), [#202](https://github.com/ethereum/evmc/pull/202), [#233](https://github.com/ethereum/evmc/pull/233)]
+  Initial and rough bindings for Rust.  It is possible to implement an
+  EVMC VM in Rust utilising some helpers.
 
 ## [6.1.1] - 2019-02-13
 
