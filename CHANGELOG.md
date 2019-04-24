@@ -2,12 +2,29 @@
 
 ## [6.2.0] - Unreleased
 
+- Added: [[#216](https://github.com/ethereum/evmc/pull/216)]
+  CMake option `EVMC_TEST_TOOLS` to build evmc-vmtester without bothering with internal unit tests.
 - Added: [[#217](https://github.com/ethereum/evmc/pull/217)]
   The `evmc::host` C++ wrapper for EVMC host context and interface
   to be used by VM implementations.
 - Added: [[#201](https://github.com/ethereum/evmc/pull/201), [#202](https://github.com/ethereum/evmc/pull/202), [#233](https://github.com/ethereum/evmc/pull/233)]
   Initial and rough bindings for Rust.  It is possible to implement an
   EVMC VM in Rust utilising some helpers.
+- Added: 
+  [[#230](https://github.com/ethereum/evmc/pull/230)]
+  [[#232](https://github.com/ethereum/evmc/pull/232)]
+  Handling of DLL loading errors greatly improved by `evmc_last_error_msg()` function.
+- Changed: [[#197](https://github.com/ethereum/evmc/pull/197)]
+  Go bindings improved by introduction of the `TxContext` struct.
+- Changed:
+  [[#221](https://github.com/ethereum/evmc/pull/221)]
+  [[#234](https://github.com/ethereum/evmc/pull/234)]
+  [[#238](https://github.com/ethereum/evmc/pull/238)]
+  [[#241](https://github.com/ethereum/evmc/pull/241)]
+  [[#242](https://github.com/ethereum/evmc/pull/242)]
+  A lot of evmc-vmtester improvements.
+- Changed: [[#251](https://github.com/ethereum/evmc/pull/251)]
+  [Cable] upgraded to version 0.2.17.
 - Deprecated: [[#196](https://github.com/ethereum/evmc/pull/196)]
   The `EVMC_CONSTANTINOPLE2` revision name is deprecated, replaced with `EVMC_PETERSBURG`.
 
@@ -132,3 +149,5 @@
 [5.2.0]: https://github.com/ethereum/evmc/releases/tag/v5.2.0
 [5.1.0]: https://github.com/ethereum/evmc/releases/tag/v5.1.0
 [5.0.0]: https://github.com/ethereum/evmc/releases/tag/v5.0.0
+
+[Cable]: https://github.com/ethereum/cable
