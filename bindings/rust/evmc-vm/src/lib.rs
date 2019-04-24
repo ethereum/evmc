@@ -13,9 +13,6 @@ pub use paste::item;
 
 pub use evmc_sys as ffi;
 
-// TODO: Add convenient helpers for evmc_execute
-// TODO: Add a derive macro here for creating evmc_create
-
 // The primary trait that an EVM-C compatible VM must implement.
 pub trait EvmcVM {
     fn init() -> Self;
@@ -355,32 +352,6 @@ extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     }
 }
 
-/*
-struct MyVM {}
-
-impl EVMCInstance for MyVM {
-  fn execute(...) {
-  }
-}
-
-evmc_create_vm!("myvm", "1.0", MyVM)
-
-*/
-
-//pub struct EvmcInstance(Box<ffi::evmc_instance>);
-/*
-pub struct EvmcInstance {
-    instance: ffi::evmc_instance,
-    executor: VMInstance
-}
-
-pub trait VMInstance {
-  fn execute(instance: EvmcInstance, host: ffi::evmc_context, revision: ffi::evmc_revision, msg: ffi::evmc_message, code: &[u8]) -> ffi::evmc_result;
-//  pub fn set_option();
-//  pub fn set_tracer();
-}
-*/
-
 #[macro_export]
 macro_rules! evmc_create_vm {
     ($__vm:ident, $__version:expr) => {
@@ -411,7 +382,7 @@ macro_rules! evmc_create_vm {
                             abi_version: ffi::EVMC_ABI_VERSION as i32,
                             destroy: expr! { Some([<$__vm _destroy>]) },
                             execute: expr! { Some([<$__vm _execute>]) },
-                            get_capabilities: None,
+                            get_capabilities: expr! { Some([<$__vm _get_capabilities>]) },
                             set_option: None,
                             set_tracer: None,
                             name: {
@@ -481,12 +452,7 @@ macro_rules! evmc_create_vm {
 
                 let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
                 let result: ExecutionResult = instance.get_vm().execute(code_ref, &host);
-                let ret: *const ffi::evmc_result = result.into();
-
-                assert!(!ret.is_null());
-                unsafe {
-                    *ret
-                }
+                result.into()
                 //ffi::evmc_result {
                 //    create_address: ffi::evmc_address { bytes: [0u8; 20] },
                 //    gas_left: 0,
@@ -496,6 +462,12 @@ macro_rules! evmc_create_vm {
                 //    status_code: ffi::evmc_status_code::EVMC_FAILURE,
                 //    padding: [0u8; 4],
                 //}
+            }
+        }
+
+        item! {
+            extern "C" fn [<$__vm _get_capabilities>](instance: *mut ffi::evmc_instance) -> ffi::evmc_capabilities_flagset {
+                ffi::evmc_capabilities::EVMC_CAPABILITY_EVM1 as u32
             }
         }
 
