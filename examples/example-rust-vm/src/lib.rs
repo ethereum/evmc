@@ -1,6 +1,6 @@
 extern crate evmc_vm;
 
-use evmc_vm::evmc_sys as ffi;
+use evmc_vm::*;
 
 extern "C" fn execute(
     instance: *mut ffi::evmc_instance,
@@ -10,7 +10,13 @@ extern "C" fn execute(
     code: *const u8,
     code_size: usize,
 ) -> ffi::evmc_result {
-    let is_create = unsafe { (*msg).kind == ffi::evmc_call_kind::EVMC_CREATE };
+    let execution_ctx = unsafe {
+        ExecutionContext::new(
+            msg.as_ref().expect("tester passed nullptr as message"),
+            context.as_mut().expect("tester passed nullptr as context"),
+        )
+    };
+    let is_create = execution_ctx.get_message().kind == ffi::evmc_call_kind::EVMC_CREATE;
 
     if is_create {
         evmc_vm::ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None, None).into()
