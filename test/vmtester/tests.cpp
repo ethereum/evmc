@@ -6,6 +6,7 @@
 #include "vmtester.hpp"
 
 #include <evmc/helpers.h>
+#include <evmc/helpers.hpp>
 
 #include <array>
 #include <cstring>
@@ -45,7 +46,7 @@ TEST_F(evmc_vm_test, version)
     EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
 }
 
-TEST_F(evmc_vm_test, execute)
+TEST_F(evmc_vm_test, execute_call)
 {
     evmc_context* context = example_host_create_context();
     evmc_message msg{};
@@ -68,6 +69,45 @@ TEST_F(evmc_vm_test, execute)
     {
         EXPECT_NE(result.output_size, 0);
         read_buffer(result.output_data, result.output_size);
+    }
+
+    if (result.release)
+        result.release(&result);
+
+    example_host_destroy_context(context);
+}
+
+TEST_F(evmc_vm_test, execute_create)
+{
+    evmc_context* context = example_host_create_context();
+    evmc_message msg{
+        EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, NULL, 0, evmc_uint256be{},
+        evmc_bytes32{}};
+    std::array<uint8_t, 2> code = {{0xfe, 0x00}};
+
+    evmc_result result =
+        vm->execute(vm, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
+
+    // Validate some constraints
+    if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
+    {
+        EXPECT_EQ(result.gas_left, 0);
+    }
+
+    if (result.output_data == NULL)
+    {
+        EXPECT_EQ(result.output_size, 0);
+    }
+    else
+    {
+        EXPECT_NE(result.output_size, 0);
+        read_buffer(result.output_data, result.output_size);
+    }
+
+    if (result.status_code == EVMC_SUCCESS)
+    {
+        // This assumes that CREATE returns a non-zero address on success.
+        EXPECT_FALSE(is_zero(result.create_address));
     }
 
     if (result.release)

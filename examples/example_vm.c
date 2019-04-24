@@ -110,8 +110,17 @@ static struct evmc_result execute(struct evmc_instance* instance,
     // Assembly: `{ mstore(0, number()) return(0, msize()) }`
     const char return_block_number[] = "\x43\x60\x00\x52\x59\x60\x00\xf3";
 
-    if (code_size == (sizeof(return_address) - 1) &&
-        strncmp((const char*)code, return_address, code_size) == 0)
+    if (msg->kind == EVMC_CREATE)
+    {
+        evmc_address create_address = {
+            {1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+        ret.status_code = EVMC_SUCCESS;
+        ret.create_address = create_address;
+        ret.gas_left = msg->gas / 10;
+        return ret;
+    }
+    else if (code_size == (sizeof(return_address) - 1) &&
+             strncmp((const char*)code, return_address, code_size) == 0)
     {
         static const size_t address_size = sizeof(msg->destination);
         uint8_t* output_data = (uint8_t*)malloc(address_size);
