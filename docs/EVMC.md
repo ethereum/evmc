@@ -35,6 +35,8 @@ API changes are allowed when required to fix a broken feature.
 
 - [EVMC](@ref EVMC)
    – the main component that defines API for VMs and Clients (Hosts).
+- [EVMC C++ API](@ref evmc)
+   – the wrappers and bindings for C++.
 - [EVMC Loader](@ref loader)
    – the library for loading VMs implemented as Dynamically Loaded Libraries (DLLs, shared objects).
 - [EVMC Helpers](@ref helpers)
