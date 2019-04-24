@@ -338,31 +338,31 @@ public:
 ///
 /// This is a RAII wrapper for evmc_instance and objects of this type
 /// automatically destroys the VM instance.
-class vm
+class VM
 {
 public:
-    vm() noexcept = default;
+    VM() noexcept = default;
 
     /// Converting constructor from evmc_instance.
-    explicit vm(evmc_instance* instance) noexcept : m_instance{instance} {}
+    explicit VM(evmc_instance* instance) noexcept : m_instance{instance} {}
 
     /// Destructor responsible for automatically destroying the VM instance.
-    ~vm() noexcept
+    ~VM() noexcept
     {
         if (m_instance)
             m_instance->destroy(m_instance);
     }
 
-    vm(const vm&) = delete;
-    vm& operator=(const vm&) = delete;
+    VM(const VM&) = delete;
+    VM& operator=(const VM&) = delete;
 
     /// Move constructor.
-    vm(vm&& other) noexcept : m_instance{other.m_instance} { other.m_instance = nullptr; }
+    VM(VM&& other) noexcept : m_instance{other.m_instance} { other.m_instance = nullptr; }
 
     /// Move assignment operator.
-    vm& operator=(vm&& other) noexcept
+    VM& operator=(VM&& other) noexcept
     {
-        this->~vm();
+        this->~VM();
         m_instance = other.m_instance;
         other.m_instance = nullptr;
         return *this;
@@ -370,9 +370,8 @@ public:
 
     /// The constructor that captures a VM instance and configures the instance
     /// with provided list of options.
-    vm(evmc_instance* instance,
-       std::initializer_list<std::pair<const char*, const char*>> options) noexcept
-      : m_instance{instance}
+    VM(evmc_instance* instance, std::initializer_list<std::pair<const char*, const char*>> options)
+    noexcept : m_instance{instance}
     {
         for (auto option : options)
             set_option(option.first, option.second);

@@ -257,7 +257,7 @@ TEST(cpp, result)
 
 TEST(cpp, vm)
 {
-    auto vm = evmc::vm{evmc_create_example_vm()};
+    auto vm = evmc::VM{evmc_create_example_vm()};
     EXPECT_TRUE(vm.is_abi_compatible());
 
     auto r = vm.set_option("verbose", "3");
@@ -279,13 +279,13 @@ TEST(cpp, vm_set_option)
                                   nullptr,          nullptr, nullptr, nullptr};
     raw_instance.destroy = [](evmc_instance*) {};
 
-    auto vm = evmc::vm{&raw_instance};
+    auto vm = evmc::VM{&raw_instance};
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
 TEST(cpp, vm_null)
 {
-    evmc::vm vm;
+    evmc::VM vm;
     EXPECT_FALSE(vm);
     EXPECT_TRUE(!vm);
 }
@@ -302,25 +302,25 @@ TEST(cpp, vm_move)
         auto v1 = template_instance;
         auto v2 = template_instance;
 
-        auto vm1 = evmc::vm{&v1};
+        auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
-        vm1 = evmc::vm{&v2};
+        vm1 = evmc::VM{&v2};
         EXPECT_TRUE(vm1);
     }
     EXPECT_EQ(destroy_counter, 2);
     {
         auto v1 = template_instance;
 
-        auto vm1 = evmc::vm{&v1};
+        auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
-        vm1 = evmc::vm{};
+        vm1 = evmc::VM{};
         EXPECT_FALSE(vm1);
     }
     EXPECT_EQ(destroy_counter, 3);
     {
         auto v1 = template_instance;
 
-        auto vm1 = evmc::vm{&v1};
+        auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
         auto vm2 = std::move(vm1);
         EXPECT_TRUE(vm2);
@@ -335,7 +335,7 @@ TEST(cpp, vm_move)
         // Moving to itself will destroy the VM and reset the evmc::vm.
         auto v1 = template_instance;
 
-        auto vm1 = evmc::vm{&v1};
+        auto vm1 = evmc::VM{&v1};
         auto& vm1_ref = vm1;
         vm1 = std::move(vm1_ref);
         EXPECT_EQ(destroy_counter, 5);  // Already destroyed.
