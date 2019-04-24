@@ -13,19 +13,13 @@ extern "C" fn execute(
     let is_create = unsafe { (*msg).kind == ffi::evmc_call_kind::EVMC_CREATE };
 
     if is_create {
-        evmc_vm::ExecutionResult::new(
-            ffi::evmc_status_code::EVMC_FAILURE,
-            0,
-            None,
-            ffi::evmc_address { bytes: [0u8; 20] },
-        )
-        .into()
+        evmc_vm::ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None, None).into()
     } else {
         evmc_vm::ExecutionResult::new(
             ffi::evmc_status_code::EVMC_SUCCESS,
             66,
             Some(vec![0xc0, 0xff, 0xee]),
-            ffi::evmc_address { bytes: [0u8; 20] },
+            None,
         )
         .into()
     }
