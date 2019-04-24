@@ -10,10 +10,6 @@ extern "C" fn execute(
     code: *const u8,
     code_size: usize,
 ) -> ffi::evmc_result {
-    if msg == std::ptr::null() {
-        panic!()
-    }
-
     let is_create = unsafe { (*msg).kind == ffi::evmc_call_kind::EVMC_CREATE };
 
     if is_create {
@@ -28,7 +24,7 @@ extern "C" fn execute(
         evmc_vm::ExecutionResult::new(
             ffi::evmc_status_code::EVMC_SUCCESS,
             66,
-            None,
+            Some(vec![0xc0, 0xff, 0xee]),
             ffi::evmc_address { bytes: [0u8; 20] },
         )
         .into()
