@@ -10,6 +10,24 @@
 #include <array>
 #include <cstring>
 
+namespace
+{
+// NOTE: this is to avoid compiler optimisations when reading the buffer
+uint8_t read_uint8(const volatile uint8_t* p)
+{
+    return *p;
+}
+
+void read_buffer(const uint8_t* ptr, size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        read_uint8(&ptr[i]);
+    }
+}
+
+}  // namespace
+
 TEST_F(evmc_vm_test, abi_version_match)
 {
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
@@ -45,6 +63,11 @@ TEST_F(evmc_vm_test, execute)
     if (result.output_data == NULL)
     {
         EXPECT_EQ(result.output_size, 0);
+    }
+    else
+    {
+        EXPECT_NE(result.output_size, 0);
+        read_buffer(result.output_data, result.output_size);
     }
 
     if (result.release)
