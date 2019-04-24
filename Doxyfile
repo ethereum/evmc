@@ -100,7 +100,7 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = \
-    include/evmc/evmc.h include/evmc/helpers.h include/evmc/helpers.hpp include/evmc/loader.h include/evmc/utils.h include/evmc/instructions.h \
+    include/evmc/evmc.h include/evmc/evmc.hpp include/evmc/helpers.h include/evmc/helpers.hpp include/evmc/loader.h include/evmc/utils.h include/evmc/instructions.h \
     docs/ \
     examples/example_vm.c
 INPUT_ENCODING         = UTF-8
@@ -109,7 +109,7 @@ RECURSIVE              = NO
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS        = internal
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO

@@ -653,12 +653,11 @@ struct evmc_host_interface
 /**
  * Execution context managed by the Host.
  *
- *  The Host MUST pass the pointer to the execution context to
- *  ::evmc_execute_fn. The EVM MUST pass the same pointer back to the Host in
- *  every callback function.
- *  The context MUST contain at least the function table defining the context
- *  callback interface.
- *  Optionally, The Host MAY include in the context additional data.
+ * The Host MUST pass the pointer to the execution context to ::evmc_execute_fn.
+ * The VM MUST pass the same pointer back to the Host in every callback function.
+ * The context MUST contain at least the function table defining
+ * the context callback interface.
+ * Optionally, the Host MAY include in the context additional data.
  */
 struct evmc_context
 {
@@ -912,15 +911,15 @@ typedef void (*evmc_set_tracer_fn)(struct evmc_instance* instance,
 /**
  * The EVM instance.
  *
- *  Defines the base struct of the EVM implementation.
+ * Defines the base struct of the VM implementation.
  */
 struct evmc_instance
 {
     /**
-     *  EVMC ABI version implemented by the EVM instance.
+     * EVMC ABI version implemented by the VM instance.
      *
-     *  Used to detect ABI incompatibilities. The EVMC ABI version
-     *  represented by this file is in ::EVMC_ABI_VERSION.
+     * Can be used to detect ABI incompatibilities.
+     * The EVMC ABI version represented by this file is in ::EVMC_ABI_VERSION.
      */
     const int abi_version;
 
