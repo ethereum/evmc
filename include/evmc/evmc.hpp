@@ -9,11 +9,8 @@
 #include <initializer_list>
 #include <utility>
 
-/// @defgroup cpp EVMC C++
-/// @copydoc evmc
-/// @{
-
 /// EVMC C++ API - wrappers and bindings for C++
+/// @ingroup cpp
 namespace evmc
 {
 /// @copydoc evmc_result
@@ -334,5 +331,3 @@ constexpr evmc_host_interface interface{
 inline Host::Host() noexcept : evmc_context{&internal::interface} {}
 
 }  // namespace evmc
-
-/// @}

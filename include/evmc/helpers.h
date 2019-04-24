@@ -6,7 +6,7 @@
 /**
  * EVMC Helpers
  *
- * A collection of helper functions for invoking a VM instance methods.
+ * A collection of C helper functions for invoking a VM instance methods.
  * These are convenient for languages where invoking function pointers
  * is "ugly" or impossible (such as Go).
  *
