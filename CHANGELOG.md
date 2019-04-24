@@ -4,9 +4,10 @@
 
 - Added: [[#216](https://github.com/ethereum/evmc/pull/216)]
   CMake option `EVMC_TEST_TOOLS` to build evmc-vmtester without bothering with internal unit tests.
-- Added: [[#217](https://github.com/ethereum/evmc/pull/217)]
-  The `evmc::host` C++ wrapper for EVMC host context and interface
-  to be used by VM implementations.
+- Added:
+  [[#217](https://github.com/ethereum/evmc/pull/217)]
+  [[#226](https://github.com/ethereum/evmc/pull/226)]
+  The full C++ EVMC API for both VM and Host implementations.
 - Added: [[#201](https://github.com/ethereum/evmc/pull/201), [#202](https://github.com/ethereum/evmc/pull/202), [#233](https://github.com/ethereum/evmc/pull/233)]
   Initial and rough bindings for Rust.  It is possible to implement an
   EVMC VM in Rust utilising some helpers.
@@ -14,6 +15,8 @@
   [[#230](https://github.com/ethereum/evmc/pull/230)]
   [[#232](https://github.com/ethereum/evmc/pull/232)]
   Handling of DLL loading errors greatly improved by `evmc_last_error_msg()` function.
+- Changed: [[#195](https://github.com/ethereum/evmc/pull/195)]
+  The minimum supported GCC version is 6 (bumped from undocumented version 4.8).
 - Changed: [[#197](https://github.com/ethereum/evmc/pull/197)]
   Go bindings improved by introduction of the `TxContext` struct.
 - Changed:
