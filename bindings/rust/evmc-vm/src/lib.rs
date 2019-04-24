@@ -95,25 +95,35 @@ impl From<ffi::evmc_result> for ExecutionResult {
     }
 }
 
+fn allocate_output_data(output: Option<Vec<u8>>) -> (*const u8, usize) {
+    if let Some(buf) = output {
+        let buf_len = buf.len();
+
+        // Manually allocate heap memory for the new home of the output buffer.
+        let memlayout = std::alloc::Layout::from_size_align(buf_len, 1).expect("Bad layout");
+        let new_buf = unsafe { std::alloc::alloc(memlayout) };
+        unsafe {
+            // Copy the data into the allocated buffer.
+            std::ptr::copy(buf.as_ptr(), new_buf, buf_len);
+        }
+
+        (new_buf as *const u8, buf_len)
+    } else {
+        (std::ptr::null(), 0)
+    }
+}
+
+unsafe fn deallocate_output_data(ptr: *const u8, size: usize) {
+    if !ptr.is_null() {
+        let buf_layout = std::alloc::Layout::from_size_align(size, 1).expect("Bad layout");
+        std::alloc::dealloc(ptr as *mut u8, buf_layout);
+    }
+}
+
 /// Returns a pointer to a heap-allocated evmc_result.
 impl Into<*const ffi::evmc_result> for ExecutionResult {
     fn into(self) -> *const ffi::evmc_result {
-        let (buffer, len) = if let Some(buf) = self.output {
-            let buf_len = buf.len();
-
-            // Manually allocate heap memory for the new home of the output buffer.
-            let memlayout = std::alloc::Layout::from_size_align(buf_len, 1).expect("Bad layout");
-            let new_buf = unsafe { std::alloc::alloc(memlayout) };
-            unsafe {
-                // Copy the data into the allocated buffer.
-                std::ptr::copy(buf.as_ptr(), new_buf, buf_len);
-            }
-
-            (new_buf as *const u8, buf_len)
-        } else {
-            (std::ptr::null(), 0)
-        };
-
+        let (buffer, len) = allocate_output_data(self.output);
         Box::into_raw(Box::new(ffi::evmc_result {
             status_code: self.status_code,
             gas_left: self.gas_left,
@@ -130,33 +140,14 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
 extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = Box::from_raw(result as *mut ffi::evmc_result);
-        if !tmp.output_data.is_null() {
-            let buf_layout =
-                std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
-            std::alloc::dealloc(tmp.output_data as *mut u8, buf_layout);
-        }
+        deallocate_output_data(tmp.output_data, tmp.output_size);
     }
 }
 
 /// Returns a pointer to a stack-allocated evmc_result.
 impl Into<ffi::evmc_result> for ExecutionResult {
     fn into(self) -> ffi::evmc_result {
-        let (buffer, len) = if let Some(buf) = self.output {
-            let buf_len = buf.len();
-
-            // Manually allocate heap memory for the new home of the output buffer.
-            let memlayout = std::alloc::Layout::from_size_align(buf_len, 1).expect("Bad layout");
-            let new_buf = unsafe { std::alloc::alloc(memlayout) };
-            unsafe {
-                // Copy the data into the allocated buffer.
-                std::ptr::copy(buf.as_ptr(), new_buf, buf_len);
-            }
-
-            (new_buf as *const u8, buf_len)
-        } else {
-            (std::ptr::null(), 0)
-        };
-
+        let (buffer, len) = allocate_output_data(self.output);
         ffi::evmc_result {
             status_code: self.status_code,
             gas_left: self.gas_left,
@@ -173,11 +164,7 @@ impl Into<ffi::evmc_result> for ExecutionResult {
 extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = *result;
-        if !tmp.output_data.is_null() {
-            let buf_layout =
-                std::alloc::Layout::from_size_align(tmp.output_size, 1).expect("Bad layout");
-            std::alloc::dealloc(tmp.output_data as *mut u8, buf_layout);
-        }
+        deallocate_output_data(tmp.output_data, tmp.output_size);
     }
 }
 
