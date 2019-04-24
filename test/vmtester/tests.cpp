@@ -15,6 +15,18 @@ TEST_F(evmc_vm_test, abi_version_match)
     ASSERT_EQ(vm->abi_version, EVMC_ABI_VERSION);
 }
 
+TEST_F(evmc_vm_test, name)
+{
+    ASSERT_NE(vm->name, nullptr);
+    EXPECT_GT(std::strlen(vm->name), 0) << "VM name cannot be empty";
+}
+
+TEST_F(evmc_vm_test, version)
+{
+    ASSERT_NE(vm->version, nullptr);
+    EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
+}
+
 TEST_F(evmc_vm_test, execute)
 {
     evmc_context* context = example_host_create_context();
@@ -76,18 +88,6 @@ TEST_F(evmc_vm_test, set_option_unknown_value)
         auto r3 = evmc_set_option(vm, "verbose", nullptr);
         EXPECT_EQ(r3, EVMC_SET_OPTION_INVALID_VALUE);
     }
-}
-
-TEST_F(evmc_vm_test, name)
-{
-    ASSERT_NE(vm->name, nullptr);
-    EXPECT_GT(std::strlen(vm->name), 0) << "VM name cannot be empty";
-}
-
-TEST_F(evmc_vm_test, version)
-{
-    ASSERT_NE(vm->version, nullptr);
-    EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
 }
 
 TEST_F(evmc_vm_test, set_tracer)
