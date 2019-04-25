@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.2.0] - Unreleased
+## [6.2.0] - 2019-04-25
 
 - Added: [[#216](https://github.com/ethereum/evmc/pull/216)]
   CMake option `EVMC_TEST_TOOLS` to build evmc-vmtester without bothering with internal unit tests.
@@ -143,7 +143,7 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
-[6.2.0]: https://github.com/ethereum/evmc/compare/v6.1.1...master
+[6.2.0]: https://github.com/ethereum/evmc/releases/tag/v6.2.0
 [6.1.1]: https://github.com/ethereum/evmc/releases/tag/v6.1.1
 [6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
 [6.0.2]: https://github.com/ethereum/evmc/releases/tag/v6.0.2
