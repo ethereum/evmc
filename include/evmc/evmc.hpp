@@ -3,28 +3,34 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-/// @file
-/// EVMC C++ API - wrappers and bindings for C++.
-
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
 #include <initializer_list>
 #include <utility>
 
+/// EVMC C++ API - wrappers and bindings for C++
+/// @ingroup cpp
 namespace evmc
 {
+/// @copydoc evmc_result
+///
+/// This is a RAII wrapper for evmc_result and objects of this type
+/// automatically release attached resources.
 class result : public evmc_result
 {
 public:
+    /// Converting constructor from raw evmc_result.
     explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
 
+    /// Destructor responsible for automatically releasing attached resources.
     ~result() noexcept
     {
         if (release)
             release(this);
     }
 
+    /// Move constructor.
     result(result&& other) noexcept : evmc_result{other}
     {
         // Disable releaser of the rvalue object.
@@ -33,6 +39,7 @@ public:
 
     result(result const&) = delete;
 
+    /// Move-and-swap assignment operator.
     result& operator=(result other) noexcept
     {
         std::swap(*this, other);
@@ -40,12 +47,21 @@ public:
     }
 };
 
+/// @copybrief evmc_instance
+///
+/// This is a RAII wrapper for evmc_instance and objects of this type
+/// automatically destroys the VM instance.
 class vm
 {
 public:
+    /// Converting constructor from evmc_instance.
     explicit vm(evmc_instance* instance) noexcept : m_instance{instance} {}
+
+    /// Destructor responsible for automatically destroying the VM instance.
     ~vm() noexcept { m_instance->destroy(m_instance); }
 
+    /// The constructor that captures a VM instance and configures the instance
+    /// with provided list of options.
     vm(evmc_instance* instance,
        std::initializer_list<std::pair<const char*, const char*>> options) noexcept
       : m_instance{instance}
@@ -54,17 +70,22 @@ public:
             set_option(option.first, option.second);
     }
 
+    /// Checks whenever the VM instance is ABI compatible with the current EVMC API.
     bool is_abi_compatible() const noexcept { return m_instance->abi_version == EVMC_ABI_VERSION; }
 
+    /// @copydoc evmc_instance::name
     char const* name() const noexcept { return m_instance->name; }
 
+    /// @copydoc evmc_instance::version
     char const* version() const noexcept { return m_instance->version; }
 
+    /// @copydoc evmc_set_option()
     evmc_set_option_result set_option(const char name[], const char value[]) noexcept
     {
         return evmc_set_option(m_instance, name, value);
     }
 
+    /// @copydoc evmc_execute()
     result execute(evmc_context& ctx,
                    evmc_revision rev,
                    const evmc_message& msg,
@@ -78,41 +99,53 @@ private:
     evmc_instance* const m_instance = nullptr;
 };
 
-
+/// The EVMC Host interface
 class HostInterface
 {
 public:
     virtual ~HostInterface() noexcept = default;
 
+    /// @copydoc evmc_host_interface::account_exists
     virtual bool account_exists(const evmc_address& addr) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_storage
     virtual evmc_bytes32 get_storage(const evmc_address& addr,
                                      const evmc_bytes32& key) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::set_storage
     virtual evmc_storage_status set_storage(const evmc_address& addr,
                                             const evmc_bytes32& key,
                                             const evmc_bytes32& value) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_balance
     virtual evmc_uint256be get_balance(const evmc_address& addr) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_code_size
     virtual size_t get_code_size(const evmc_address& addr) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_code_hash
     virtual evmc_bytes32 get_code_hash(const evmc_address& addr) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::copy_code
     virtual size_t copy_code(const evmc_address& addr,
                              size_t code_offset,
                              uint8_t* buffer_data,
                              size_t buffer_size) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::selfdestruct
     virtual void selfdestruct(const evmc_address& addr,
                               const evmc_address& beneficiary) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::call
     virtual result call(const evmc_message& msg) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_tx_context
     virtual evmc_tx_context get_tx_context() noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_block_hash
     virtual evmc_bytes32 get_block_hash(int64_t block_number) noexcept = 0;
 
+    /// @copydoc evmc_host_interface::emit_log
     virtual void emit_log(const evmc_address& addr,
                           const uint8_t* data,
                           size_t data_size,
@@ -130,6 +163,7 @@ class HostContext : public HostInterface
     evmc_tx_context tx_context = {};
 
 public:
+    /// Implicit converting constructor from evmc_context.
     HostContext(evmc_context* context) noexcept : context{context} {}  // NOLINT
 
     bool account_exists(const evmc_address& address) noexcept final
@@ -182,7 +216,7 @@ public:
         return result{context->host->call(context, &message)};
     }
 
-    /// Gets the transaction and block context from the Host.
+    /// @copydoc HostInterface::get_tx_context()
     ///
     /// The implementation caches the received transaction context
     /// by assuming that the block timestamp should never be zero.

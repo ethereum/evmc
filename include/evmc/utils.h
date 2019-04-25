@@ -6,6 +6,9 @@
 #pragma once
 
 /**
+ * @file
+ * A collection of helper macros to handle some non-portable features of C/C++ compilers.
+ *
  * @addtogroup helpers
  * @{
  */
