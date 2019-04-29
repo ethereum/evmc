@@ -94,10 +94,14 @@ public:
 
     evmc::result call(const evmc_message& msg) noexcept final
     {
-        (void)msg;
         // TODO: Improve C++ API for result creation.
         evmc_result res{};
-        res.status_code = EVMC_FAILURE;
+        res.status_code = EVMC_REVERT;
+        auto output = new uint8_t[msg.input_size];
+        std::copy(&msg.input_data[0], &msg.input_data[msg.input_size], output);
+        res.output_size = msg.input_size;
+        res.output_data = output;
+        res.release = [](const evmc_result* r) noexcept { delete[] r->output_data; };
         return evmc::result{res};
     }
 

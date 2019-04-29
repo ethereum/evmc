@@ -17,9 +17,15 @@ namespace evmc
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type
 /// automatically release attached resources.
-class result : public evmc_result
+class result : private evmc_result
 {
 public:
+    using evmc_result::create_address;
+    using evmc_result::gas_left;
+    using evmc_result::output_data;
+    using evmc_result::output_size;
+    using evmc_result::status_code;
+
     /// Converting constructor from raw evmc_result.
     explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
 
@@ -44,6 +50,15 @@ public:
     {
         std::swap(*this, other);
         return *this;
+    }
+
+    /// Returns the raw copy of evmc_result,
+    /// releases the ownership of the resources and invalidates this object.
+    evmc_result raw() noexcept
+    {
+        auto out = evmc_result{};
+        std::swap<evmc_result>(out, *this);
+        return out;
     }
 };
 
@@ -302,7 +317,7 @@ inline void selfdestruct(evmc_context* h,
 }
 inline evmc_result call(evmc_context* h, const evmc_message* msg) noexcept
 {
-    return static_cast<Host*>(h)->call(*msg);
+    return static_cast<Host*>(h)->call(*msg).raw();
 }
 inline evmc_tx_context get_tx_context(evmc_context* h) noexcept
 {
