@@ -66,12 +66,12 @@ jobs:
       CXX: g++-8
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
 
-  build-cxx14:
+  build-cxx14-asan:
     <<: *build
     environment:
       CC: clang-8
       CXX: clang++-8
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
 
   build-gcc6:
     <<: *build
@@ -178,7 +178,7 @@ workflows:
     jobs:
       - lint
       - build-cxx17
-      - build-cxx14
+      - build-cxx14-asan
       - build-gcc6
       - build-clang3.8
       - bindings-go-latest
