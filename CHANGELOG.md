@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.2.1] - unreleased
+## [6.2.1] - 2019-04-29
 
 - Fixed:
   [[#256](https://github.com/ethereum/evmc/issues/256),
