@@ -87,7 +87,6 @@ TEST(cpp, host)
     EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), 0);
 
     host.selfdestruct(a, a);
-    EXPECT_EQ(host.call({}).gas_left, 0);
 
     auto tx = host.get_tx_context();
     EXPECT_EQ(host.get_tx_context().block_number, tx.block_number);
@@ -95,6 +94,29 @@ TEST(cpp, host)
     EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
 
     host.emit_log(a, nullptr, 0, nullptr, 0);
+
+    example_host_destroy_context(host_context);
+}
+
+TEST(cpp, host_call)
+{
+    // Use example host to test Host::call() method.
+
+    auto* host_context = example_host_create_context();
+    auto host = evmc::HostContext{host_context};
+
+    EXPECT_EQ(host.call({}).gas_left, 0);
+
+    auto msg = evmc_message{};
+    msg.gas = 1;
+    uint8_t input[] = {0xa, 0xb, 0xc};
+    msg.input_data = input;
+    msg.input_size = sizeof(input);
+
+    auto res = host.call(msg);
+    EXPECT_EQ(res.status_code, EVMC_REVERT);
+    EXPECT_EQ(res.output_size, msg.input_size);
+    EXPECT_TRUE(std::equal(&res.output_data[0], &res.output_data[res.output_size], msg.input_data));
 
     example_host_destroy_context(host_context);
 }
