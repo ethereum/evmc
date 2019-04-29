@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.2.1] - unreleased
+
+- Fixed:
+  [[#256](https://github.com/ethereum/evmc/issues/256),
+  [#257](https://github.com/ethereum/evmc/issues/257)]
+  Disallow implicit conversion from C++ `evmc::result` to `evmc_result` 
+  causing unintendent premature releasing of resources. 
+
 ## [6.2.0] - 2019-04-25
 
 - Added: [[#216](https://github.com/ethereum/evmc/pull/216)]
