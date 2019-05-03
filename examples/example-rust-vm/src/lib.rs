@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate evmc_vm;
 
-use evmc_vm::{EvmcVM, ExecutionResult, InterfaceManager};
+use evmc_vm::{EvmcVM, ExecutionContext, ExecutionResult};
 
 // NOTE: this is lowercase because of the requirements of EVMC. will fix this later.
 #[derive(Clone)]

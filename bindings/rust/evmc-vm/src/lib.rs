@@ -17,7 +17,7 @@ pub use evmc_sys as ffi;
 pub trait EvmcVM {
     fn init() -> Self;
     // TODO: higher level API
-    fn execute(&self, code: &[u8], interface: &InterfaceManager) -> ExecutionResult;
+    fn execute(&self, code: &[u8], execution_ctx: &ExecutionContext) -> ExecutionResult;
 }
 
 /// EVMC result structure.
@@ -443,15 +443,16 @@ macro_rules! evmc_create_vm {
                 assert!(!msg.is_null());
                 assert!(!context.is_null());
                 assert!(!instance.is_null());
-                let host = unsafe {
-                    InterfaceManager::new(&rev,
-                        &*msg,
-                        &mut *context,
-                        &mut *instance)
+
+                let execution_ctx = unsafe {
+                    ExecutionContext::new(
+                        msg.as_ref().expect("tester passed nullptr as message"),
+                        context.as_mut().expect("tester passed nullptr as context"),
+                    )
                 };
 
                 let instance = unsafe { [<$__vm Instance>]::coerce_from_raw(instance) };
-                let result: ExecutionResult = instance.get_vm().execute(code_ref, &host);
+                let result: ExecutionResult = instance.get_vm().execute(code_ref, &execution_ctx);
                 result.into()
                 //ffi::evmc_result {
                 //    create_address: ffi::evmc_address { bytes: [0u8; 20] },
@@ -735,12 +736,12 @@ mod tests {
             FooVM { bar: 42, baz: 64 }
         }
 
-        fn execute(&self, code: &[u8], interface: &InterfaceManager) -> ExecutionResult {
+        fn execute(&self, code: &[u8], execution_ctx: &ExecutionContext) -> ExecutionResult {
             ExecutionResult::new(
                 ffi::evmc_status_code::EVMC_SUCCESS,
                 66,
                 None,
-                ffi::evmc_address { bytes: [0u8; 20] },
+                Some(ffi::evmc_address { bytes: [0u8; 20] }),
             )
         }
     }
