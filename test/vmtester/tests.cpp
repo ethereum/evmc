@@ -36,13 +36,13 @@ TEST_F(evmc_vm_test, abi_version_match)
 
 TEST_F(evmc_vm_test, name)
 {
-    ASSERT_NE(vm->name, nullptr);
+    ASSERT_TRUE(vm->name != nullptr);
     EXPECT_GT(std::strlen(vm->name), 0) << "VM name cannot be empty";
 }
 
 TEST_F(evmc_vm_test, version)
 {
-    ASSERT_NE(vm->version, nullptr);
+    ASSERT_TRUE(vm->version != nullptr);
     EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
 }
 

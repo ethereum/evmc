@@ -15,7 +15,7 @@ TEST(instructions, homestead_hard_fork)
 
     EXPECT_EQ(f[OP_DELEGATECALL].gas_cost, -1);
     EXPECT_EQ(h[OP_DELEGATECALL].gas_cost, 40);
-    EXPECT_EQ(fn[OP_DELEGATECALL], nullptr);
+    EXPECT_TRUE(fn[OP_DELEGATECALL] == nullptr);
     EXPECT_EQ(hn[OP_DELEGATECALL], std::string{"DELEGATECALL"});
 }
 
@@ -70,22 +70,22 @@ TEST(instructions, byzantium_hard_fork)
     EXPECT_EQ(b[OP_REVERT].num_stack_returned_items, 0);
     EXPECT_EQ(sd[OP_REVERT].gas_cost, -1);
     EXPECT_EQ(bn[OP_REVERT], std::string{"REVERT"});
-    EXPECT_EQ(sdn[OP_REVERT], nullptr);
+    EXPECT_TRUE(sdn[OP_REVERT] == nullptr);
 
     EXPECT_EQ(b[OP_RETURNDATACOPY].gas_cost, 3);
     EXPECT_EQ(sd[OP_RETURNDATACOPY].gas_cost, -1);
     EXPECT_EQ(bn[OP_RETURNDATACOPY], std::string{"RETURNDATACOPY"});
-    EXPECT_EQ(sdn[OP_RETURNDATACOPY], nullptr);
+    EXPECT_TRUE(sdn[OP_RETURNDATACOPY] == nullptr);
 
     EXPECT_EQ(b[OP_RETURNDATASIZE].gas_cost, 2);
     EXPECT_EQ(sd[OP_RETURNDATASIZE].gas_cost, -1);
     EXPECT_EQ(bn[OP_RETURNDATASIZE], std::string{"RETURNDATASIZE"});
-    EXPECT_EQ(sdn[OP_RETURNDATASIZE], nullptr);
+    EXPECT_TRUE(sdn[OP_RETURNDATASIZE] == nullptr);
 
     EXPECT_EQ(b[OP_STATICCALL].gas_cost, 700);
     EXPECT_EQ(sd[OP_STATICCALL].gas_cost, -1);
     EXPECT_EQ(bn[OP_STATICCALL], std::string{"STATICCALL"});
-    EXPECT_EQ(sdn[OP_STATICCALL], nullptr);
+    EXPECT_TRUE(sdn[OP_STATICCALL] == nullptr);
 }
 
 TEST(instructions, constantinople_hard_fork)
@@ -100,14 +100,14 @@ TEST(instructions, constantinople_hard_fork)
     EXPECT_EQ(c[OP_CREATE2].num_stack_returned_items, 1);
     EXPECT_EQ(b[OP_CREATE2].gas_cost, -1);
     EXPECT_EQ(cn[OP_CREATE2], std::string{"CREATE2"});
-    EXPECT_EQ(bn[OP_CREATE2], nullptr);
+    EXPECT_TRUE(bn[OP_CREATE2] == nullptr);
 
     EXPECT_EQ(c[OP_EXTCODEHASH].gas_cost, 400);
     EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_arguments, 1);
     EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_returned_items, 1);
     EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, -1);
     EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
-    EXPECT_EQ(bn[OP_EXTCODEHASH], nullptr);
+    EXPECT_TRUE(bn[OP_EXTCODEHASH] == nullptr);
 }
 
 
