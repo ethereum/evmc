@@ -24,7 +24,7 @@ before_build:
     if ($env:GENERATOR) {
       if (!(test-path build)) { mkdir build }
       cd build
-      cmake -Wno-dev -G "$env:GENERATOR" .. -DEVMC_TESTING=ON -DCMAKE_INSTALL_PREFIX=C:\install
+      cmake -Wno-dev -G "$env:GENERATOR" .. -DTOOLCHAIN=cxx17-pic -DEVMC_TESTING=ON -DCMAKE_INSTALL_PREFIX=C:\install
     }
 
 build_script:
