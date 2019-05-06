@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.0] - unreleased
+
+- Fixed:
+  [[#261](https://github.com/ethereum/evmc/issues/261),
+  [#263](https://github.com/ethereum/evmc/pull/263)]
+  The `vmtester` tool now builds with MSVC with `/std:c++17`.
+
 ## [6.2.1] - 2019-04-29
 
 - Fixed:
@@ -151,6 +158,8 @@
   Constantinople: Storage status is reported back from `evmc_set_storage()`.
 
 
+[6.3.0]: https://github.com/ethereum/evmc/compare/v6.2.1...master
+[6.2.1]: https://github.com/ethereum/evmc/releases/tag/v6.2.1
 [6.2.0]: https://github.com/ethereum/evmc/releases/tag/v6.2.0
 [6.1.1]: https://github.com/ethereum/evmc/releases/tag/v6.1.1
 [6.1.0]: https://github.com/ethereum/evmc/releases/tag/v6.1.0
