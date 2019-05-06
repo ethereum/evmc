@@ -27,7 +27,7 @@ include(GNUInstallDirs)
 if(HUNTER_ENABLED)
     set(HUNTER_CONFIGURATION_TYPES Release CACHE STRING "Build type of Hunter packages")
     include(HunterGate)
-    include(HunterConfig)
+    include(Hunter/init)
     include(defaults/HunterCacheServers)
 endif()
 
