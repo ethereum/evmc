@@ -18,6 +18,6 @@ protected:
     void SetUp() override
     {
         vm = get_vm_instance();
-        ASSERT_NE(vm, nullptr);
+        ASSERT_TRUE(vm != nullptr);
     }
 };
