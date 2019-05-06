@@ -17,7 +17,7 @@ environment:
 
     - GO: true
 cache:
-  - C:\.hunter\_Base\Cache -> cmake\HunterConfig.cmake
+  - C:\.hunter\_Base\Cache -> cmake\Hunter\init.cmake
 
 before_build:
 - ps: >-
