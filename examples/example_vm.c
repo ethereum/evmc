@@ -184,16 +184,10 @@ static void set_tracer(struct evmc_instance* instance,
 
 
 /// @cond internal
-
-/// Stringify the argument.
-#define STR(x) #x
-#define XSTR(x) STR(x)
-
 #if !defined(PROJECT_VERSION)
 /// The dummy project version if not provided by the build system.
-#define PROJECT_VERSION 0.0.0
+#define PROJECT_VERSION "0.0.0"
 #endif
-
 /// @endcond
 
 struct evmc_instance* evmc_create_example_vm()
@@ -201,7 +195,7 @@ struct evmc_instance* evmc_create_example_vm()
     struct evmc_instance init = {
         .abi_version = EVMC_ABI_VERSION,
         .name = "example_vm",
-        .version = XSTR(PROJECT_VERSION),
+        .version = PROJECT_VERSION,
         .destroy = destroy,
         .execute = execute,
         .get_capabilities = get_capabilities,
