@@ -19,10 +19,23 @@
 
 #include <evmc/evmc.h>
 
+#define EVMC_INLINE
+#ifdef __cplusplus
+#  undef EVMC_INLINE
+#  define EVMC_INLINE inline
+#endif
+#if __STDC__
+#  if __STDC_VERSION__ >= 199901L
+#    undef EVMC_INLINE
+#    define EVMC_INLINE inline
+#  endif
+#endif
+
+
 /**
  * Returns true if the VM instance has a compatible ABI version.
  */
-static inline int evmc_is_abi_compatible(struct evmc_instance* instance)
+static EVMC_INLINE int evmc_is_abi_compatible(struct evmc_instance* instance)
 {
     return instance->abi_version == EVMC_ABI_VERSION;
 }
@@ -30,7 +43,7 @@ static inline int evmc_is_abi_compatible(struct evmc_instance* instance)
 /**
  * Returns the name of the VM instance.
  */
-static inline const char* evmc_vm_name(struct evmc_instance* instance)
+static EVMC_INLINE const char* evmc_vm_name(struct evmc_instance* instance)
 {
     return instance->name;
 }
@@ -38,7 +51,7 @@ static inline const char* evmc_vm_name(struct evmc_instance* instance)
 /**
  * Returns the version of the VM instance.
  */
-static inline const char* evmc_vm_version(struct evmc_instance* instance)
+static EVMC_INLINE const char* evmc_vm_version(struct evmc_instance* instance)
 {
     return instance->version;
 }
@@ -48,7 +61,7 @@ static inline const char* evmc_vm_version(struct evmc_instance* instance)
  *
  * @see evmc_get_capabilities_fn
  */
-static inline bool evmc_vm_has_capability(struct evmc_instance* vm,
+static EVMC_INLINE bool evmc_vm_has_capability(struct evmc_instance* vm,
                                           enum evmc_capabilities capability)
 {
     return (vm->get_capabilities(vm) & (evmc_capabilities_flagset)capability) != 0;
@@ -59,7 +72,7 @@ static inline bool evmc_vm_has_capability(struct evmc_instance* vm,
  *
  * @see evmc_destroy_fn
  */
-static inline void evmc_destroy(struct evmc_instance* instance)
+static EVMC_INLINE void evmc_destroy(struct evmc_instance* instance)
 {
     instance->destroy(instance);
 }
@@ -69,7 +82,7 @@ static inline void evmc_destroy(struct evmc_instance* instance)
  *
  * @see evmc_set_option_fn
  */
-static inline enum evmc_set_option_result evmc_set_option(struct evmc_instance* instance,
+static EVMC_INLINE enum evmc_set_option_result evmc_set_option(struct evmc_instance* instance,
                                                           char const* name,
                                                           char const* value)
 {
@@ -83,7 +96,7 @@ static inline enum evmc_set_option_result evmc_set_option(struct evmc_instance* 
  *
  * @see evmc_set_tracer_fn
  */
-static inline void evmc_set_tracer(struct evmc_instance* instance,
+static EVMC_INLINE void evmc_set_tracer(struct evmc_instance* instance,
                                    evmc_trace_callback callback,
                                    struct evmc_tracer_context* context)
 {
@@ -96,7 +109,7 @@ static inline void evmc_set_tracer(struct evmc_instance* instance,
  *
  * @see evmc_execute_fn.
  */
-static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
+static EVMC_INLINE struct evmc_result evmc_execute(struct evmc_instance* instance,
                                               struct evmc_context* context,
                                               enum evmc_revision rev,
                                               const struct evmc_message* msg,
@@ -113,7 +126,7 @@ static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
  *
  * @see evmc_result::release() evmc_release_result_fn
  */
-static inline void evmc_release_result(struct evmc_result* result)
+static EVMC_INLINE void evmc_release_result(struct evmc_result* result)
 {
     if (result->release)
         result->release(result);
@@ -153,14 +166,14 @@ union evmc_result_optional_storage
 };
 
 /** Provides read-write access to evmc_result "optional storage". */
-static inline union evmc_result_optional_storage* evmc_get_optional_storage(
+static EVMC_INLINE union evmc_result_optional_storage* evmc_get_optional_storage(
     struct evmc_result* result)
 {
     return (union evmc_result_optional_storage*)&result->create_address;
 }
 
 /** Provides read-only access to evmc_result "optional storage". */
-static inline const union evmc_result_optional_storage* evmc_get_const_optional_storage(
+static EVMC_INLINE const union evmc_result_optional_storage* evmc_get_const_optional_storage(
     const struct evmc_result* result)
 {
     return (const union evmc_result_optional_storage*)&result->create_address;
