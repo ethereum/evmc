@@ -815,8 +815,15 @@ typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
  */
 enum evmc_capabilities
 {
-    EVMC_CAPABILITY_EVM1 = (1u << 0), /**< The VM is capable of executing EVM1 bytecode. */
-    EVMC_CAPABILITY_EWASM = (1u << 1) /**< The VM is capable of execution ewasm bytecode. */
+    /**
+     * The VM is capable of executing EVM1 bytecode.
+     */
+    EVMC_CAPABILITY_EVM1 = (1u << 0),
+
+    /**
+     * The VM is capable of executing ewasm bytecode.
+     */
+    EVMC_CAPABILITY_EWASM = (1u << 1)
 };
 
 /**
