@@ -826,7 +826,19 @@ enum evmc_capabilities
     /**
      * The VM is capable of executing ewasm bytecode.
      */
-    EVMC_CAPABILITY_EWASM = (1u << 1)
+    EVMC_CAPABILITY_EWASM = (1u << 1),
+
+    /**
+     * The VM is capable of executing the precompiled contracts
+     * defined for the range of destination addresses.
+     *
+     * The EIP-1352 (https://eips.ethereum.org/EIPS/eip-1352) specifies
+     * the range 0x000...0000 - 0x000...ffff of addresses
+     * reserved for precompiled and system contracts.
+     *
+     * This capability is **experimental** and MAY be removed without notice.
+     */
+    EVMC_CAPABILITY_PRECOMPILES = (1u << 2)
 };
 
 /**
