@@ -21,7 +21,7 @@ target_link_libraries(evmc-example-vm PRIVATE evmc)
 add_library(evmc-example-vm-static STATIC example_vm.c)
 target_link_libraries(evmc-example-vm-static PRIVATE evmc)
 
-set_source_files_properties(example_vm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION=${PROJECT_VERSION})
+set_source_files_properties(example_vm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION="${PROJECT_VERSION}")
 
 
 add_executable(evmc-example example.c)
