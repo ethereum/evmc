@@ -109,11 +109,14 @@ static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
 /**
  * Releases the resources allocated to the execution result.
  *
- * @see evmc_release_result_fn
+ * @param result  The result object to be released. MUST NOT be NULL.
+ *
+ * @see evmc_result::release() evmc_release_result_fn
  */
 static inline void evmc_release_result(struct evmc_result* result)
 {
-    result->release(result);
+    if (result->release)
+        result->release(result);
 }
 
 

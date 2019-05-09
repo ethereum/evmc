@@ -362,25 +362,23 @@ struct evmc_result
     size_t output_size;
 
     /**
-     * The pointer to a function releasing all resources associated with
-     *  the result object.
+     * The method releasing all resources associated with the result object.
      *
-     *  This function pointer is optional (MAY be NULL) and MAY be set by
-     *  the EVM implementation. If set it MUST be used by the user to
-     *  release memory and other resources associated with the result object.
-     *  After the result resources are released the result object
-     *  MUST NOT be used any more.
+     * This method (function pointer) is optional (MAY be NULL) and MAY be set
+     * by the VM implementation. If set it MUST be called by the user once to
+     * release memory and other resources associated with the result object.
+     * Once the resources are released the result object MUST NOT be used again.
      *
-     *  The suggested code pattern for releasing EVM results:
-     *  @code
-     *  struct evmc_result result = ...;
-     *  if (result.release)
-     *      result.release(&result);
-     *  @endcode
+     * The suggested code pattern for releasing execution results:
+     * @code
+     * struct evmc_result result = ...;
+     * if (result.release)
+     *     result.release(&result);
+     * @endcode
      *
-     *  @note
-     *  It works similarly to C++ virtual destructor. Attaching the release
-     *  function to the result itself allows EVM composition.
+     * @note
+     * It works similarly to C++ virtual destructor. Attaching the release
+     * function to the result itself allows VM composition.
      */
     evmc_release_result_fn release;
 

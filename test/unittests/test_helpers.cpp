@@ -61,3 +61,19 @@ TEST(helpers, is_zero)
     b.bytes[0] = 1;
     EXPECT_FALSE(is_zero(b));
 }
+
+TEST(helpers, release_result)
+{
+    auto r1 = evmc_result{};
+    evmc_release_result(&r1);
+
+    static evmc_result r2;
+    static bool e;
+
+    e = false;
+    r2 = evmc_result{};
+    r2.release = [](const evmc_result* r) { e = r == &r2; };
+    EXPECT_FALSE(e);
+    evmc_release_result(&r2);
+    EXPECT_TRUE(e);
+}
