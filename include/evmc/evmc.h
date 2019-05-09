@@ -791,18 +791,18 @@ enum evmc_revision
 
 
 /**
- * Executes the given EVM bytecode using the input in the message
+ * Executes the given code using the input from the message.
  *
- * This function MAY be invoked multiple times for a single EVM instance.
+ * This function MAY be invoked multiple times for a single VM instance.
  *
- * @param instance   The EVM instance.
+ * @param instance   The VM instance.
  * @param context    The pointer to the Client execution context to be passed
- *                   to the callback functions. @see ::evmc_context.
+ *                   to the callback functions. See ::evmc_context.
  * @param rev        Requested EVM specification revision.
- * @param msg        Call parameters. @see ::evmc_message.
- * @param code       Reference to the bytecode to be executed.
- * @param code_size  The length of the bytecode.
- * @return           All execution results.
+ * @param msg        Call parameters. See ::evmc_message.
+ * @param code       Reference to the code to be executed.
+ * @param code_size  The length of the code.
+ * @return           The execution result.
  */
 typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
                                               struct evmc_context* context,
