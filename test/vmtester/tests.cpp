@@ -168,3 +168,53 @@ TEST_F(evmc_vm_test, set_tracer)
     if (vm->set_tracer)
         vm->set_tracer(vm, tracer_callback, nullptr);
 }
+
+TEST_F(evmc_vm_test, precompile_test)
+{
+    // This logic is based on and should match the description in EIP-2003.
+
+    if (!evmc_vm_has_capability(vm, EVMC_CAPABILITY_PRECOMPILES))
+        return;
+
+    // Iterate every address (as per EIP-1352)
+    for (size_t i = 0; i < 0xffff; i++)
+    {
+        auto destination = evmc_address{};
+        destination.bytes[18] = static_cast<uint8_t>(i >> 8);
+        destination.bytes[19] = static_cast<uint8_t>(i & 0xff);
+
+        evmc_context* context = example_host_create_context();
+        evmc_message msg{
+            EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, NULL, 0, evmc_uint256be{},
+            evmc_bytes32{}};
+
+        evmc_result result = vm->execute(vm, context, EVMC_MAX_REVISION, &msg, nullptr, 0);
+
+        // Validate some constraints
+
+        // Precompiles can only return a limited subset of codes.
+        EXPECT_TRUE(result.status_code == EVMC_SUCCESS || result.status_code == EVMC_OUT_OF_GAS ||
+                    result.status_code == EVMC_FAILURE || result.status_code == EVMC_REVERT ||
+                    result.status_code == EVMC_REJECTED);
+
+        if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
+        {
+            EXPECT_EQ(result.gas_left, 0);
+        }
+
+        if (result.output_data == NULL)
+        {
+            EXPECT_EQ(result.output_size, 0);
+        }
+        else
+        {
+            EXPECT_NE(result.output_size, 0);
+            read_buffer(result.output_data, result.output_size);
+        }
+
+        if (result.release)
+            result.release(&result);
+
+        example_host_destroy_context(context);
+    }
+}
