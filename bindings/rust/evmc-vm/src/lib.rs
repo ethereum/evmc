@@ -296,16 +296,9 @@ unsafe fn deallocate_output_data(ptr: *const u8, size: usize) {
 /// Returns a pointer to a heap-allocated evmc_result.
 impl Into<*const ffi::evmc_result> for ExecutionResult {
     fn into(self) -> *const ffi::evmc_result {
-        let (buffer, len) = allocate_output_data(self.output);
-        Box::into_raw(Box::new(ffi::evmc_result {
-            status_code: self.status_code,
-            gas_left: self.gas_left,
-            output_data: buffer,
-            output_size: len,
-            release: Some(release_heap_result),
-            create_address: self.create_address,
-            padding: [0u8; 4],
-        }))
+        let mut result: ffi::evmc_result = self.into();
+        result.release = Some(release_heap_result);
+        Box::into_raw(Box::new(result))
     }
 }
 
