@@ -13,6 +13,7 @@ set_source_files_properties(vmtester.cpp PROPERTIES COMPILE_DEFINITIONS PROJECT_
 install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_test(NAME vmtester/examplevm COMMAND evmc-vmtester $<TARGET_FILE:evmc-example-vm>)
+add_test(NAME vmtester/example_precompiles_vm COMMAND evmc-vmtester $<TARGET_FILE:evmc-example-precompiles-vm>)
 
 add_test(NAME vmtester/help COMMAND evmc-vmtester --version --help)
 set_tests_properties(vmtester/help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")

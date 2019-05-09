@@ -10,6 +10,8 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 set(CMAKE_DEBUG_POSTFIX "")
 
+add_subdirectory(example_precompiles_vm)
+
 
 add_library(evmc-example-host STATIC example_host.cpp)
 target_link_libraries(evmc-example-host PRIVATE evmc)

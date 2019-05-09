@@ -50,7 +50,8 @@ TEST_F(evmc_vm_test, capabilities)
 {
     // The VM should have at least one of EVM1 or EWASM capabilities.
     EXPECT_TRUE(evmc_vm_has_capability(vm, EVMC_CAPABILITY_EVM1) ||
-                evmc_vm_has_capability(vm, EVMC_CAPABILITY_EWASM));
+                evmc_vm_has_capability(vm, EVMC_CAPABILITY_EWASM) ||
+                evmc_vm_has_capability(vm, EVMC_CAPABILITY_PRECOMPILES));
 }
 
 TEST_F(evmc_vm_test, execute_call)
