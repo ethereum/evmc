@@ -78,6 +78,8 @@ TEST_F(evmc_vm_test, execute_call)
         read_buffer(result.output_data, result.output_size);
     }
 
+    EXPECT_TRUE(is_zero(result.create_address));
+
     if (result.release)
         result.release(&result);
 
@@ -88,7 +90,7 @@ TEST_F(evmc_vm_test, execute_create)
 {
     evmc_context* context = example_host_create_context();
     evmc_message msg{
-        EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, NULL, 0, evmc_uint256be{},
+        EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, nullptr, 0, evmc_uint256be{},
         evmc_bytes32{}};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
@@ -101,7 +103,7 @@ TEST_F(evmc_vm_test, execute_create)
         EXPECT_EQ(result.gas_left, 0);
     }
 
-    if (result.output_data == NULL)
+    if (result.output_data == nullptr)
     {
         EXPECT_EQ(result.output_size, 0);
     }
@@ -111,11 +113,8 @@ TEST_F(evmc_vm_test, execute_create)
         read_buffer(result.output_data, result.output_size);
     }
 
-    if (result.status_code == EVMC_SUCCESS)
-    {
-        // This assumes that CREATE returns a non-zero address on success.
-        EXPECT_FALSE(is_zero(result.create_address));
-    }
+    // The VM will never provide the create address.
+    EXPECT_TRUE(is_zero(result.create_address));
 
     if (result.release)
         result.release(&result);

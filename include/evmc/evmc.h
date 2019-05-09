@@ -385,10 +385,13 @@ struct evmc_result
     evmc_release_result_fn release;
 
     /**
-     * The address of the contract created by CREATE opcode.
+     * The address of the contract created by create instructions.
      *
-     *  This field has valid value only if the result describes successful
-     *  CREATE (evmc_result::status_code is ::EVMC_SUCCESS).
+     * This field has valid value only if:
+     * - it is a result of the Host method evmc_host_interface::call
+     * - and the result describes successful contract creation
+     *   (evmc_result::status_code is ::EVMC_SUCCESS).
+     * In all other cases the address MUST be null bytes.
      */
     evmc_address create_address;
 

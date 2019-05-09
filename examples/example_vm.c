@@ -112,10 +112,7 @@ static struct evmc_result execute(struct evmc_instance* instance,
 
     if (msg->kind == EVMC_CREATE)
     {
-        evmc_address create_address = {
-            {1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
         ret.status_code = EVMC_SUCCESS;
-        ret.create_address = create_address;
         ret.gas_left = msg->gas / 10;
         return ret;
     }
