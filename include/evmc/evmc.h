@@ -946,10 +946,18 @@ struct evmc_instance
      */
     const char* version;
 
-    /** Pointer to function destroying the EVM instance. */
+    /**
+     * Pointer to function destroying the EVM instance.
+     *
+     * This is a mandatory method and MUST NOT be set to NULL.
+     */
     evmc_destroy_fn destroy;
 
-    /** Pointer to function executing a code by the EVM instance. */
+    /**
+     * Pointer to function executing a code by the EVM instance.
+     *
+     * This is a mandatory method and MUST NOT be set to NULL.
+     */
     evmc_execute_fn execute;
 
     /**
@@ -959,6 +967,8 @@ struct evmc_instance
      *
      * A Client SHOULD only rely on the value returned here if it has queried it after
      * it has called set_option.
+     *
+     * This is a mandatory method and MUST NOT be set to NULL.
      */
     evmc_get_capabilities_fn get_capabilities;
 

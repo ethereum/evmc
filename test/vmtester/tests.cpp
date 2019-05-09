@@ -46,6 +46,13 @@ TEST_F(evmc_vm_test, version)
     EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
 }
 
+TEST_F(evmc_vm_test, capabilities)
+{
+    // The VM should have at least one of EVM1 or EWASM capabilities.
+    EXPECT_TRUE(evmc_vm_has_capability(vm, EVMC_CAPABILITY_EVM1) ||
+                evmc_vm_has_capability(vm, EVMC_CAPABILITY_EWASM));
+}
+
 TEST_F(evmc_vm_test, execute_call)
 {
     evmc_context* context = example_host_create_context();
@@ -160,11 +167,4 @@ TEST_F(evmc_vm_test, set_tracer)
            size_t, size_t, size_t, const uint8_t*) noexcept {};
     if (vm->set_tracer)
         vm->set_tracer(vm, tracer_callback, nullptr);
-}
-
-TEST_F(evmc_vm_test, capabilities)
-{
-    // The VM should have at least one of EVM1 or EWASM capabilities.
-    EXPECT_TRUE(evmc_vm_has_capability(vm, EVMC_CAPABILITY_EVM1) ||
-                evmc_vm_has_capability(vm, EVMC_CAPABILITY_EWASM));
 }
