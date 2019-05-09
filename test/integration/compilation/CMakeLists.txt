@@ -13,6 +13,8 @@ endif()
 list(APPEND all_features ${CMAKE_CXX_COMPILE_FEATURES})
 list(APPEND all_features ${CMAKE_C_COMPILE_FEATURES})
 
+add_compile_options(-Wno-unused-function)
+
 macro(create_compilation_test STANDARD)
     if (${STANDARD} MATCHES "^(c|cxx)_std_([0-9]+)$")
         set(lang ${CMAKE_MATCH_1})
