@@ -194,4 +194,3 @@ workflows:
             branches:
               only:
                 - master
-                - docs
