@@ -94,5 +94,5 @@ Licensed under the [MIT License](LICENSE).
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
 
-[gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg?style=flat-square
-[readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square
+[gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
+[readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
