@@ -42,8 +42,6 @@ public:
         other.release = nullptr;  // Disable releasing of the rvalue object.
     }
 
-    result(result const&) = delete;
-
     /// Move assignment operator.
     ///
     /// The self-assigment MUST never happen.
