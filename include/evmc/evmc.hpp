@@ -56,8 +56,8 @@ public:
     /// releases the ownership of the resources and invalidates this object.
     evmc_result raw() noexcept
     {
-        auto out = evmc_result{};
-        std::swap<evmc_result>(out, *this);
+        const auto out = evmc_result{*this};  // Copy data.
+        this->release = nullptr;              // Disable releasing of this object.
         return out;
     }
 };
