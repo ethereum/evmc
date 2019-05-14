@@ -2,6 +2,10 @@
 // Copyright 2018-2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+// The vector is not used here, but including it was causing compilation issues
+// previously related to using explicit template argument (SFINAE disabled).
+#include <vector>
+
 #include "../../examples/example_host.h"
 #include "../../examples/example_vm.h"
 
