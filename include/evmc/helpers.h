@@ -19,18 +19,11 @@
 
 #include <evmc/evmc.h>
 
+#if defined(__cplusplus) || __STD_VERSION__ >= 199901L
+#define EVMC_INLINE inline
+#else
 #define EVMC_INLINE
-#ifdef __cplusplus
-#  undef EVMC_INLINE
-#  define EVMC_INLINE inline
 #endif
-#if __STDC__
-#  if __STDC_VERSION__ >= 199901L
-#    undef EVMC_INLINE
-#    define EVMC_INLINE inline
-#  endif
-#endif
-
 
 /**
  * Returns true if the VM instance has a compatible ABI version.
