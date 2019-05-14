@@ -102,7 +102,7 @@ public:
         res.output_size = msg.input_size;
         res.output_data = output;
         res.release = [](const evmc_result* r) noexcept { delete[] r->output_data; };
-        return evmc::result{res};
+        return res;
     }
 
     evmc_tx_context get_tx_context() noexcept final { return {}; }

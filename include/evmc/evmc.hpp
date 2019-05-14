@@ -27,7 +27,17 @@ public:
     using evmc_result::status_code;
 
     /// Converting constructor from raw evmc_result.
-    explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
+    ///
+    /// The constructed object takes ownership and is responsible for releasing
+    /// the provided result. Therefore, the rvalue reference is used to
+    /// indicate the ownership transfer and that
+    /// the raw evmc_result object MUST NOT be used after.
+    ///
+    /// @param raw_result  The rvalue reference to the evmc_result object.
+    result(evmc_result&& raw_result) noexcept : evmc_result{raw_result}  // NOLINT
+    {
+        raw_result.release = nullptr;
+    }
 
     /// Destructor responsible for automatically releasing attached resources.
     ~result() noexcept

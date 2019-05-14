@@ -30,7 +30,7 @@ TEST(cpp, result)
             ++release_called;
         };
 
-        auto res1 = evmc::result{raw_result};
+        auto res1 = evmc::result{std::move(raw_result)};
         auto res2 = std::move(res1);
 
         EXPECT_EQ(release_called, 0);
@@ -136,7 +136,7 @@ TEST(cpp, result_raii)
         raw_result.status_code = EVMC_INTERNAL_ERROR;
         raw_result.release = release_fn;
 
-        auto raii_result = evmc::result{raw_result};
+        auto raii_result = evmc::result{std::move(raw_result)};  // NOLINT
         EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
         EXPECT_EQ(raii_result.gas_left, 0);
         raii_result.gas_left = -1;
@@ -147,7 +147,7 @@ TEST(cpp, result_raii)
         EXPECT_EQ(raw_result2.gas_left, -1);
         EXPECT_EQ(raw_result.gas_left, 0);
         EXPECT_EQ(raw_result2.release, release_fn);
-        EXPECT_EQ(raw_result.release, release_fn);
+        EXPECT_EQ(raw_result.release, nullptr);  // NOLINT
     }
     EXPECT_EQ(release_called, 0);
 
@@ -156,7 +156,7 @@ TEST(cpp, result_raii)
         raw_result.status_code = EVMC_INTERNAL_ERROR;
         raw_result.release = release_fn;
 
-        auto raii_result = evmc::result{raw_result};
+        auto raii_result = evmc::result{std::move(raw_result)};  // NOLINT
         EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
     }
     EXPECT_EQ(release_called, 1);
@@ -173,11 +173,11 @@ TEST(cpp, result_move)
         raw.gas_left = -1;
         raw.release = release_fn;
 
-        auto r0 = evmc::result{raw};
-        EXPECT_EQ(r0.gas_left, raw.gas_left);
+        auto r0 = evmc::result{std::move(raw)};  // NOLINT
+        EXPECT_EQ(r0.gas_left, -1);
 
         auto r1 = std::move(r0);
-        EXPECT_EQ(r1.gas_left, raw.gas_left);
+        EXPECT_EQ(r1.gas_left, -1);
     }
     EXPECT_EQ(release_called, 1);
 
@@ -191,8 +191,8 @@ TEST(cpp, result_move)
         raw2.gas_left = 1;
         raw2.release = release_fn;
 
-        auto r1 = evmc::result{raw1};
-        auto r2 = evmc::result{raw2};
+        auto r1 = evmc::result{std::move(raw1)};  // NOLINT
+        auto r2 = evmc::result{std::move(raw2)};  // NOLINT
 
         r2 = std::move(r1);
     }
