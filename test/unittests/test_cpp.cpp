@@ -120,3 +120,40 @@ TEST(cpp, host_call)
 
     example_host_destroy_context(host_context);
 }
+
+TEST(cpp, result_raii)
+{
+    static auto release_called = 0;
+    release_called = 0;
+    auto release_fn = [](const evmc_result*) noexcept { ++release_called; };
+
+    {
+        auto raw_result = evmc_result{};
+        raw_result.status_code = EVMC_INTERNAL_ERROR;
+        raw_result.release = release_fn;
+
+        auto raii_result = evmc::result{raw_result};
+        EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
+        EXPECT_EQ(raii_result.gas_left, 0);
+        raii_result.gas_left = -1;
+
+        auto raw_result2 = raii_result.raw();
+        EXPECT_EQ(raw_result2.status_code, EVMC_INTERNAL_ERROR);
+        EXPECT_EQ(raw_result.status_code, EVMC_INTERNAL_ERROR);
+        EXPECT_EQ(raw_result2.gas_left, -1);
+        EXPECT_EQ(raw_result.gas_left, 0);
+        EXPECT_EQ(raw_result2.release, release_fn);
+        EXPECT_EQ(raw_result.release, release_fn);
+    }
+    EXPECT_EQ(release_called, 0);
+
+    {
+        auto raw_result = evmc_result{};
+        raw_result.status_code = EVMC_INTERNAL_ERROR;
+        raw_result.release = release_fn;
+
+        auto raii_result = evmc::result{raw_result};
+        EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
+    }
+    EXPECT_EQ(release_called, 1);
+}
