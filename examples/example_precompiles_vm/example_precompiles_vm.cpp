@@ -44,7 +44,7 @@ static evmc_result execute_empty(const evmc_message* msg)
 static evmc_result not_implemented()
 {
     auto result = evmc_result{};
-    result.status_code = EVMC_INTERNAL_ERROR;
+    result.status_code = EVMC_REJECTED;
     return result;
 }
 
