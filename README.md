@@ -18,14 +18,15 @@ Please visit the [documentation].
 
 ### Languages support
 
-| Language                | Supported Versions  | Supported Compilers
-| ----------------------- | ------------------- | ------------------------------
-| **C**                   | C90, C99, C11       | GCC 6+, clang 3.8+, MSVC 2015+
-| **C++**                 | C++11, C++14, C++17 | GCC 6+, clang 3.8+, MSVC 2015+
-| **Go** _(bindings)_     | 1.9 - 1.12          |
-| **Rust** _(bindings)_[^1] | 2018 edition      | 1.31.0 and newer
+| Language                      | Supported Versions    | Supported Compilers
+| ----------------------------- | --------------------- | ------------------------------
+| **C**                         | C90[¹](#n1), C99, C11 | GCC 6+, clang 3.8+, MSVC 2015+
+| **C++**                       | C++11, C++14, C++17   | GCC 6+, clang 3.8+, MSVC 2015+
+| **Go** _(bindings)_           | 1.9 - 1.12            |
+| **Rust** _(bindings)_[²](#n2) | 2018 edition          | 1.31.0 and newer
 
-[^1]: Rust support is limited and not complete yet.
+<b id="n1">1</b>. The C90 support is limited to the core `evmc.h` header only.\
+<b id="n2">2</b>. Rust support is limited and not complete yet.
 
 ## Related projects
 
@@ -93,5 +94,5 @@ Licensed under the [MIT License](LICENSE).
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
 
-[gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg?style=flat-square
-[readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square
+[gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
+[readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
