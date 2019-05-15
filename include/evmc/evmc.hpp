@@ -56,9 +56,15 @@ public:
         return *this;
     }
 
-    /// Returns the raw copy of evmc_result,
-    /// releases the ownership of the resources and invalidates this object.
-    evmc_result raw() noexcept
+    /// Releases the ownership and returns the raw copy of evmc_result.
+    ///
+    /// This method drops the ownership of the result
+    /// (result's resources are not going to be released when this object is destructed).
+    /// It is the caller's responsibility having the returned copy of the result to release it.
+    /// This object MUST NOT be used after this method is invoked.
+    ///
+    /// @return  The copy of this object converted to raw evmc_result.
+    evmc_result release_raw() noexcept
     {
         const auto out = evmc_result{*this};  // Copy data.
         this->release = nullptr;              // Disable releasing of this object.
@@ -321,7 +327,7 @@ inline void selfdestruct(evmc_context* h,
 }
 inline evmc_result call(evmc_context* h, const evmc_message* msg) noexcept
 {
-    return static_cast<Host*>(h)->call(*msg).raw();
+    return static_cast<Host*>(h)->call(*msg).release_raw();
 }
 inline evmc_tx_context get_tx_context(evmc_context* h) noexcept
 {
