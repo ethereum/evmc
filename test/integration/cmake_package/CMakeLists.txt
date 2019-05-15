@@ -11,7 +11,7 @@ file(MAKE_DIRECTORY ${build_dir} ${use_evmc_build_dir} ${use_instructions_build_
 
 add_test(
     NAME cmake_package/configure
-    COMMAND ${CMAKE_COMMAND} ${PROJECT_SOURCE_DIR} -DCMAKE_INSTALL_PREFIX=${install_dir}
+    COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${PROJECT_SOURCE_DIR} -DCMAKE_INSTALL_PREFIX=${install_dir}
     WORKING_DIRECTORY ${build_dir}
 )
 
@@ -24,7 +24,7 @@ set_tests_properties(cmake_package/install PROPERTIES DEPENDS cmake_package/conf
 
 add_test(
     NAME cmake_package/use_evmc/configure
-    COMMAND ${CMAKE_COMMAND} ${PROJECT_SOURCE_DIR}/examples/use_evmc_in_cmake -DCMAKE_PREFIX_PATH=${install_dir}
+    COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${PROJECT_SOURCE_DIR}/examples/use_evmc_in_cmake -DCMAKE_PREFIX_PATH=${install_dir}
     WORKING_DIRECTORY ${use_evmc_build_dir}
 )
 set_tests_properties(cmake_package/use_evmc/configure PROPERTIES DEPENDS cmake_package/install)
@@ -38,7 +38,7 @@ set_tests_properties(cmake_package/use_evmc/build PROPERTIES DEPENDS cmake_packa
 
 add_test(
     NAME cmake_package/use_instructions/configure
-    COMMAND ${CMAKE_COMMAND} ${PROJECT_SOURCE_DIR}/examples/use_instructions_in_cmake -DCMAKE_PREFIX_PATH=${install_dir}
+    COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${PROJECT_SOURCE_DIR}/examples/use_instructions_in_cmake -DCMAKE_PREFIX_PATH=${install_dir}
     WORKING_DIRECTORY ${use_instructions_build_dir}
 )
 set_tests_properties(cmake_package/use_instructions/configure PROPERTIES DEPENDS cmake_package/install)
