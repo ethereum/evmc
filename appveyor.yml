@@ -1,4 +1,5 @@
 version: "{build}"
+image: Visual Studio 2017
 branches:
   only:
   - master
@@ -9,28 +10,23 @@ configuration:
   - Release
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      GENERATOR: "Visual Studio 15 2017 Win64"
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      GENERATOR: "Visual Studio 14 2015 Win64"
-
+    - VS: 2015
+    - VS: 2017
     - GO: true
 cache:
   - C:\.hunter\_Base\Cache -> cmake\Hunter\init.cmake
 
 before_build:
-- ps: >-
-    if ($env:GENERATOR) {
-      if (!(test-path build)) { mkdir build }
-      cd build
-      cmake -Wno-dev -G "$env:GENERATOR" .. -DTOOLCHAIN=cxx17-pic -DEVMC_TESTING=ON -DCMAKE_INSTALL_PREFIX=C:\install
-    }
+  # Add ninja to PATH. This is done for VS2017 by vsdevcmd, but not for VS2015.
+  - set PATH=%PATH%;%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+  - if "%VS%" == "2017" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd" -arch=amd64)
+  - if "%VS%" == "2015" (call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall" x64)
+  - if defined VS cmake -S . -B build -G Ninja -Wno-dev -DCMAKE_INSTALL_PREFIX=C:\install -DTOOLCHAIN=cxx17-pic -DEVMC_TESTING=ON
 
 build_script:
 - ps: >-
-    if ($env:GENERATOR) {
-      cmake --build . --config $env:CONFIGURATION --target install
+    if ($env:VS) {
+      cmake --build build --target install
     }
     elseif ($env:GO) {
       $env:PATH = "C:\msys64\mingw64\bin;$env:PATH"
@@ -53,6 +49,7 @@ build_script:
 
 after_build:
 - ps: >-
-    if ($env:GENERATOR) {
+    if ($env:VS) {
+      cd build
       ctest -C $env:CONFIGURATION -j4 --schedule-random --output-on-failure
     }
