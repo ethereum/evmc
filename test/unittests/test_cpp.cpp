@@ -161,3 +161,40 @@ TEST(cpp, result_raii)
     }
     EXPECT_EQ(release_called, 1);
 }
+
+TEST(cpp, result_move)
+{
+    static auto release_called = 0;
+    auto release_fn = [](const evmc_result*) noexcept { ++release_called; };
+
+    release_called = 0;
+    {
+        auto raw = evmc_result{};
+        raw.gas_left = -1;
+        raw.release = release_fn;
+
+        auto r0 = evmc::result{raw};
+        EXPECT_EQ(r0.gas_left, raw.gas_left);
+
+        auto r1 = std::move(r0);
+        EXPECT_EQ(r1.gas_left, raw.gas_left);
+    }
+    EXPECT_EQ(release_called, 1);
+
+    release_called = 0;
+    {
+        auto raw1 = evmc_result{};
+        raw1.gas_left = 1;
+        raw1.release = release_fn;
+
+        auto raw2 = evmc_result{};
+        raw2.gas_left = 1;
+        raw2.release = release_fn;
+
+        auto r1 = evmc::result{raw1};
+        auto r2 = evmc::result{raw2};
+
+        r2 = std::move(r1);
+    }
+    EXPECT_EQ(release_called, 2);
+}

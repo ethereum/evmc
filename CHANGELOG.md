@@ -3,7 +3,9 @@
 ## [6.2.2] - unreleased
 
 - Fixed: [[#281](https://github.com/ethereum/evmc/pull/281)]
-  Compilation error of evmc::result::raw() in Visual Studio fixed.
+  Compilation error of `evmc::result::raw()` in Visual Studio fixed.
+- Fixed: [[#282](https://github.com/ethereum/evmc/pull/282)]
+  The `evmc::result`'s move assignment operator fixed.
 
 ## [6.2.1] - 2019-04-29
 
