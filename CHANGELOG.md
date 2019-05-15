@@ -2,6 +2,8 @@
 
 ## [6.3.0] - unreleased
 
+- Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
+  In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Fixed:
   [[#261](https://github.com/ethereum/evmc/issues/261),
   [#263](https://github.com/ethereum/evmc/pull/263)]
