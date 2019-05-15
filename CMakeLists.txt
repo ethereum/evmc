@@ -32,11 +32,10 @@ if(HUNTER_ENABLED)
 endif()
 
 cable_configure_toolchain(DEFAULT cxx11-pic)
+cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
 set(PROJECT_VERSION 6.3.0-dev)
-
-cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 
