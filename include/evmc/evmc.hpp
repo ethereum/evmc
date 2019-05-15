@@ -179,7 +179,7 @@ class HostContext : public HostInterface
 
 public:
     /// Implicit converting constructor from evmc_context.
-    HostContext(evmc_context* context) noexcept : context{context} {}  // NOLINT
+    HostContext(evmc_context* ctx) noexcept : context{ctx} {}  // NOLINT
 
     bool account_exists(const evmc_address& address) noexcept final
     {

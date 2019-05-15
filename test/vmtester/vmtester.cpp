@@ -31,18 +31,20 @@ evmc_instance* get_vm_instance()
 class cli_parser
 {
 public:
-    const char* const app_name = nullptr;
-    const char* const app_version = nullptr;
+    const char* const application_name = nullptr;
+    const char* const application_version = nullptr;
 
-    std::vector<std::string> args_names;
-    std::vector<std::string> args;
+    std::vector<std::string> arguments_names;
+    std::vector<std::string> arguments;
 
     cli_parser(const char* app_name,
                const char* app_version,
                std::vector<std::string> args_names) noexcept
-      : app_name{app_name}, app_version{app_version}, args_names{std::move(args_names)}
+      : application_name{app_name},
+        application_version{app_version},
+        arguments_names{std::move(args_names)}
     {
-        args.reserve(this->args_names.size());
+        arguments.reserve(this->arguments_names.size());
     }
 
     /// Parses the command line arguments.
@@ -67,12 +69,12 @@ public:
             if (x == 0)  // Argument.
             {
                 ++num_args;
-                if (num_args > args_names.size())
+                if (num_args > arguments_names.size())
                 {
                     err << "Unexpected argument \"" << arg << "\"\n";
                     return -1;
                 }
-                args.emplace_back(std::move(arg));
+                arguments.emplace_back(std::move(arg));
                 continue;
             }
             else if (x <= 2)
@@ -95,12 +97,12 @@ public:
             return -1;
         }
 
-        out << app_name << " " << app_version << "\n";
+        out << application_name << " " << application_version << "\n";
 
         if (help)
         {
             out << "Usage: " << argv[0];
-            for (const auto& name : args_names)
+            for (const auto& name : arguments_names)
                 out << " " << name;
             out << "\n";
             return 0;
@@ -109,10 +111,10 @@ public:
         if (version)
             return 0;
 
-        if (num_args < args_names.size())
+        if (num_args < arguments_names.size())
         {
-            for (auto i = num_args; i < args_names.size(); ++i)
-                err << "The " << args_names[i] << " argument is required.\n";
+            for (auto i = num_args; i < arguments_names.size(); ++i)
+                err << "The " << arguments_names[i] << " argument is required.\n";
             err << "Run with --help for more information.\n";
             return -1;
         }
@@ -133,7 +135,7 @@ int main(int argc, char* argv[])
         if (error_code <= 0)
             return error_code;
 
-        const auto& evmc_module = cli.args[0];
+        const auto& evmc_module = cli.arguments[0];
         std::cout << "Testing " << evmc_module << "\n";
         evmc_loader_error_code ec;
         create_fn = evmc_load(evmc_module.c_str(), &ec);
