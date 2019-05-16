@@ -39,16 +39,20 @@ public:
     /// Move constructor.
     result(result&& other) noexcept : evmc_result{other}
     {
-        // Disable releaser of the rvalue object.
-        other.release = nullptr;
+        other.release = nullptr;  // Disable releasing of the rvalue object.
     }
 
-    result(result const&) = delete;
-
-    /// Move-and-swap assignment operator.
-    result& operator=(result other) noexcept
+    /// Move assignment operator.
+    ///
+    /// The self-assigment MUST never happen.
+    ///
+    /// @param other The other result object.
+    /// @return      The reference to the left-hand side object.
+    result& operator=(result&& other) noexcept
     {
-        std::swap(*this, other);
+        this->~result();                           // Release this object.
+        static_cast<evmc_result&>(*this) = other;  // Copy data.
+        other.release = nullptr;                   // Disable releasing of the rvalue object.
         return *this;
     }
 
@@ -56,8 +60,8 @@ public:
     /// releases the ownership of the resources and invalidates this object.
     evmc_result raw() noexcept
     {
-        auto out = evmc_result{};
-        std::swap<evmc_result>(out, *this);
+        const auto out = evmc_result{*this};  // Copy data.
+        this->release = nullptr;              // Disable releasing of this object.
         return out;
     }
 };

@@ -7,6 +7,13 @@
   [#263](https://github.com/ethereum/evmc/pull/263)]
   The `vmtester` tool now builds with MSVC with `/std:c++17`.
 
+## [6.2.2] - 2019-05-16
+
+- Fixed: [[#281](https://github.com/ethereum/evmc/pull/281)]
+  Compilation error of `evmc::result::raw()` in Visual Studio fixed.
+- Fixed: [[#282](https://github.com/ethereum/evmc/pull/282)]
+  The `evmc::result`'s move assignment operator fixed.
+
 ## [6.2.1] - 2019-04-29
 
 - Fixed:
@@ -159,6 +166,7 @@
 
 
 [6.3.0]: https://github.com/ethereum/evmc/compare/v6.2.1...master
+[6.2.2]: https://github.com/ethereum/evmc/releases/tag/v6.2.2
 [6.2.1]: https://github.com/ethereum/evmc/releases/tag/v6.2.1
 [6.2.0]: https://github.com/ethereum/evmc/releases/tag/v6.2.0
 [6.1.1]: https://github.com/ethereum/evmc/releases/tag/v6.1.1
