@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.2.2] - unreleased
+## [6.2.2] - 2019-05-16
 
 - Fixed: [[#281](https://github.com/ethereum/evmc/pull/281)]
   Compilation error of `evmc::result::raw()` in Visual Studio fixed.
