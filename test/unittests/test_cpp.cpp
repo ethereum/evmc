@@ -141,7 +141,7 @@ TEST(cpp, result_raii)
         EXPECT_EQ(raii_result.gas_left, 0);
         raii_result.gas_left = -1;
 
-        auto raw_result2 = raii_result.raw();
+        auto raw_result2 = raii_result.release_raw();
         EXPECT_EQ(raw_result2.status_code, EVMC_INTERNAL_ERROR);
         EXPECT_EQ(raw_result.status_code, EVMC_INTERNAL_ERROR);
         EXPECT_EQ(raw_result2.gas_left, -1);
