@@ -19,14 +19,9 @@ extern "C" fn execute(
     let is_create = execution_ctx.get_message().kind == ffi::evmc_call_kind::EVMC_CREATE;
 
     if is_create {
-        ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None).into()
+        ExecutionResult::failure().into()
     } else {
-        ExecutionResult::new(
-            ffi::evmc_status_code::EVMC_SUCCESS,
-            66,
-            Some(vec![0xc0, 0xff, 0xee]),
-        )
-        .into()
+        ExecutionResult::success(66, Some(vec![0xc0, 0xff, 0xee])).into()
     }
 }
 

@@ -39,6 +39,14 @@ impl ExecutionResult {
         }
     }
 
+    pub fn failure() -> Self {
+        ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None)
+    }
+
+    pub fn success(_gas_left: i64, _output: Option<Vec<u8>>) -> Self {
+        ExecutionResult::new(ffi::evmc_status_code::EVMC_SUCCESS, _gas_left, _output)
+    }
+
     pub fn get_status_code(&self) -> ffi::evmc_status_code {
         self.status_code
     }
