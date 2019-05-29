@@ -105,6 +105,12 @@ public:
     /// @copydoc evmc_instance::version
     char const* version() const noexcept { return m_instance->version; }
 
+    /// @copydoc evmc::instance::get_capabilities
+    evmc_capabilities_flagset get_capabilities() const noexcept
+    {
+        return m_instance->get_capabilities(m_instance);
+    }
+
     /// @copydoc evmc_set_option()
     evmc_set_option_result set_option(const char name[], const char value[]) noexcept
     {

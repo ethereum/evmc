@@ -56,6 +56,8 @@ TEST(cpp, vm)
     auto ctx = evmc_context{};
     auto res = vm.execute(ctx, EVMC_MAX_REVISION, {}, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_FAILURE);
+
+    EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EVM1);
 }
 
 TEST(cpp, vm_set_option)
