@@ -2,6 +2,7 @@
  * Copyright 2018-2019 The EVMC Authors.
  * Licensed under the Apache License, Version 2.0.
  */
+#pragma once
 
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>

@@ -12,3 +12,12 @@
 #include <evmc/instructions.h>
 #include <evmc/loader.h>
 #include <evmc/utils.h>
+
+// Include again to check if headers have proper include guards.
+#include <evmc/evmc.h>
+#include <evmc/evmc.hpp>
+#include <evmc/helpers.h>
+#include <evmc/helpers.hpp>
+#include <evmc/instructions.h>
+#include <evmc/loader.h>
+#include <evmc/utils.h>
