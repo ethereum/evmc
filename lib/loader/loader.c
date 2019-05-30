@@ -207,6 +207,7 @@ struct evmc_instance* evmc_load_and_create(const char* filename,
 
     if (!evmc_is_abi_compatible(instance))
     {
+        evmc_destroy(instance);
         *error_code = set_error(EVMC_LOADER_ABI_VERSION_MISMATCH,
                                 "EVMC ABI version %d of %s mismatches the expected version %d",
                                 instance->abi_version, filename, EVMC_ABI_VERSION);

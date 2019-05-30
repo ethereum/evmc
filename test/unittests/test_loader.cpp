@@ -286,4 +286,5 @@ TEST_F(loader, load_and_create_abi_mismatch)
         "EVMC ABI version 1985 of abi1985.vm mismatches the expected version " +
         std::to_string(EVMC_ABI_VERSION);
     EXPECT_EQ(evmc_last_error_msg(), expected_error_msg);
+    EXPECT_EQ(destroy_count, create_count);
 }
