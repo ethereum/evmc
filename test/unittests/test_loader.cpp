@@ -118,12 +118,6 @@ static evmc_instance* create_failure()
     return nullptr;
 }
 
-static evmc_instance* create_abi42()
-{
-    static int abi_version = 42;
-    return reinterpret_cast<evmc_instance*>(&abi_version);
-}
-
 TEST_F(loader, load_nonexistent)
 {
     constexpr auto path = "nonexistent";
@@ -282,12 +276,14 @@ TEST_F(loader, load_and_create_failure)
 
 TEST_F(loader, load_and_create_abi_mismatch)
 {
-    setup("abi42.vm", "evmc_create", create_abi42);
+    setup("abi1985.vm", "evmc_create", create_vm_with_wrong_abi);
 
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_create(evmc_test_library_path, &ec);
     EXPECT_TRUE(vm == nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_ABI_VERSION_MISMATCH);
-    EXPECT_STREQ(evmc_last_error_msg(),
-                 "EVMC ABI version 42 of abi42.vm mismatches the expected version 6");
+    const auto expected_error_msg =
+        "EVMC ABI version 1985 of abi1985.vm mismatches the expected version " +
+        std::to_string(EVMC_ABI_VERSION);
+    EXPECT_EQ(evmc_last_error_msg(), expected_error_msg);
 }
