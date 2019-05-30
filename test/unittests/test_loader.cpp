@@ -20,7 +20,7 @@ extern "C" {
 #define strcpy_sx strcpy_s
 #else
 /// Declaration of internal function defined in loader.c.
-void strcpy_sx(char* dest, size_t destsz, const char* src);
+int strcpy_sx(char* dest, size_t destsz, const char* src);
 #endif
 
 /// The library path expected by mocked evmc_test_load_library().
@@ -127,13 +127,24 @@ static evmc_instance* create_failure()
 
 TEST_F(loader, strcpy_sx)
 {
-    const auto input = "12";
-    char buf[2] = {0x0f, 0x0e};
-    static_assert(sizeof(input) > sizeof(buf), "");
+    const char input_empty[] = "";
+    const char input_that_fits[] = "x";
+    const char input_too_big[] = "12";
+    char buf[2] = {0x0f, 0x0f};
+    static_assert(sizeof(input_empty) <= sizeof(buf), "");
+    static_assert(sizeof(input_that_fits) <= sizeof(buf), "");
+    static_assert(sizeof(input_too_big) > sizeof(buf), "");
 
-    strcpy_sx(buf, sizeof(buf), input);
+    EXPECT_EQ(strcpy_sx(buf, sizeof(buf), input_empty), 0);
     EXPECT_EQ(buf[0], 0);
+    EXPECT_EQ(buf[1], 0x0f);
+
+    EXPECT_EQ(strcpy_sx(buf, sizeof(buf), input_that_fits), 0);
+    EXPECT_EQ(buf[0], 'x');
     EXPECT_EQ(buf[1], 0);
+
+    EXPECT_NE(strcpy_sx(buf, sizeof(buf), input_too_big), 0);
+    EXPECT_EQ(buf[0], 0);
 }
 
 TEST_F(loader, load_nonexistent)

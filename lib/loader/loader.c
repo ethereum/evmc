@@ -54,14 +54,21 @@
 #if !defined(EVMC_LOADER_MOCK)
 static
 #endif
-    void
+    int
     strcpy_sx(char* restrict dest, size_t destsz, const char* restrict src)
 {
     size_t len = strlen(src);
-    if (len > destsz - 1)
-        len = destsz - 1;
+    if (len >= destsz)
+    {
+        // The input src will not fit into the dest buffer.
+        // Set the first byte of the dest to null to make it effectively empty string
+        // and return error.
+        dest[0] = 0;
+        return 1;
+    }
     memcpy(dest, src, len);
     dest[len] = 0;
+    return 0;
 }
 #endif
 
