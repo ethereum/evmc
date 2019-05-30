@@ -2,11 +2,12 @@
 // Copyright 2018-2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+#include <evmc/evmc.h>
 #include <evmc/loader.h>
-
 #include <gtest/gtest.h>
-
 #include <cstring>
+#include <unordered_map>
+#include <vector>
 
 #if _WIN32
 static constexpr bool is_windows = true;
@@ -15,21 +16,92 @@ static constexpr bool is_windows = false;
 #endif
 
 extern "C" {
+/// The library path expected by mocked evmc_test_load_library().
 extern const char* evmc_test_library_path;
+
+/// The symbol name expected by mocked evmc_test_get_symbol_address().
 extern const char* evmc_test_library_symbol;
+
+/// The pointer to function returned by evmc_test_get_symbol_address().
 extern evmc_create_fn evmc_test_create_fn;
 }
 
 class loader : public ::testing::Test
 {
 protected:
+    static int create_count;
+    static int destroy_count;
+    static std::unordered_map<std::string, const char*> supported_options;
+    static std::vector<std::pair<std::string, std::string>> recorded_options;
+
+    loader() noexcept
+    {
+        create_count = 0;
+        destroy_count = 0;
+        supported_options.clear();
+        recorded_options.clear();
+    }
+
     void setup(const char* path, const char* symbol, evmc_create_fn fn) noexcept
     {
         evmc_test_library_path = path;
         evmc_test_library_symbol = symbol;
         evmc_test_create_fn = fn;
     }
+
+    static void destroy(evmc_instance*) noexcept { ++destroy_count; }
+
+    static evmc_set_option_result set_option(evmc_instance*,
+                                             const char* name,
+                                             const char* value) noexcept
+    {
+        recorded_options.push_back({name, value ? value : "<null>"});  // NOLINT
+
+        auto it = supported_options.find(name);
+        if (it == supported_options.end())
+            return EVMC_SET_OPTION_INVALID_NAME;
+        if (it->second == nullptr)
+            return value == nullptr ? EVMC_SET_OPTION_SUCCESS : EVMC_SET_OPTION_INVALID_VALUE;
+        if (value == nullptr)
+            return EVMC_SET_OPTION_INVALID_VALUE;
+        return std::string{value} == it->second ? EVMC_SET_OPTION_SUCCESS :
+                                                  EVMC_SET_OPTION_INVALID_VALUE;
+    }
+
+    /// Creates a VM mock with only destroy() method.
+    static evmc_instance* create_vm_barebone()
+    {
+        static auto instance =
+            evmc_instance{EVMC_ABI_VERSION, "", "", destroy, nullptr, nullptr, nullptr, nullptr};
+        ++create_count;
+        return &instance;
+    }
+
+    /// Creates a VM mock with ABI version different than in this project.
+    static evmc_instance* create_vm_with_wrong_abi()
+    {
+        constexpr auto wrong_abi_version = 1985;
+        static_assert(wrong_abi_version != EVMC_ABI_VERSION, "");
+        static auto instance =
+            evmc_instance{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr, nullptr};
+        ++create_count;
+        return &instance;
+    }
+
+    /// Creates a VM mock with optional set_option() method.
+    static evmc_instance* create_vm_with_set_option() noexcept
+    {
+        static auto instance =
+            evmc_instance{EVMC_ABI_VERSION, "", "", destroy, nullptr, nullptr, nullptr, set_option};
+        ++create_count;
+        return &instance;
+    }
 };
+
+int loader::create_count = 0;
+int loader::destroy_count = 0;
+std::unordered_map<std::string, const char*> loader::supported_options;
+std::vector<std::pair<std::string, std::string>> loader::recorded_options;
 
 static evmc_instance* create_aaa()
 {
@@ -44,12 +116,6 @@ static evmc_instance* create_eee_bbb()
 static evmc_instance* create_failure()
 {
     return nullptr;
-}
-
-static evmc_instance* create_abi42()
-{
-    static int abi_version = 42;
-    return reinterpret_cast<evmc_instance*>(&abi_version);
 }
 
 TEST_F(loader, load_nonexistent)
@@ -210,12 +276,15 @@ TEST_F(loader, load_and_create_failure)
 
 TEST_F(loader, load_and_create_abi_mismatch)
 {
-    setup("abi42.vm", "evmc_create", create_abi42);
+    setup("abi1985.vm", "evmc_create", create_vm_with_wrong_abi);
 
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_create(evmc_test_library_path, &ec);
     EXPECT_TRUE(vm == nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_ABI_VERSION_MISMATCH);
-    EXPECT_STREQ(evmc_last_error_msg(),
-                 "EVMC ABI version 42 of abi42.vm mismatches the expected version 6");
+    const auto expected_error_msg =
+        "EVMC ABI version 1985 of abi1985.vm mismatches the expected version " +
+        std::to_string(EVMC_ABI_VERSION);
+    EXPECT_EQ(evmc_last_error_msg(), expected_error_msg);
+    EXPECT_EQ(destroy_count, create_count);
 }
