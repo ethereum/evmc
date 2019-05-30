@@ -51,7 +51,11 @@
  * Provided for C standard libraries where strcpy_s() is not available.
  * The availability check might need to adjusted for other C standard library implementations.
  */
-static void strcpy_sx(char* restrict dest, size_t destsz, const char* restrict src)
+#if !defined(EVMC_LOADER_MOCK)
+static
+#endif
+    void
+    strcpy_sx(char* restrict dest, size_t destsz, const char* restrict src)
 {
     size_t len = strlen(src);
     if (len > destsz - 1)
