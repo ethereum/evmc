@@ -8,6 +8,10 @@
   [[#261](https://github.com/ethereum/evmc/issues/261),
   [#263](https://github.com/ethereum/evmc/pull/263)]
   The `vmtester` tool now builds with MSVC with `/std:c++17`.
+- Fixed:
+  [[#305](https://github.com/ethereum/evmc/issues/305),
+  [#306](https://github.com/ethereum/evmc/pull/306)]
+  A loaded VM with incompatible ABI version is not properly destroyed.
 
 ## [6.2.2] - 2019-05-16
 
