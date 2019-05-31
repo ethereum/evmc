@@ -16,6 +16,13 @@ static constexpr bool is_windows = false;
 #endif
 
 extern "C" {
+#if _WIN32
+#define strcpy_sx strcpy_s
+#else
+/// Declaration of internal function defined in loader.c.
+int strcpy_sx(char* dest, size_t destsz, const char* src);
+#endif
+
 /// The library path expected by mocked evmc_test_load_library().
 extern const char* evmc_test_library_path;
 
@@ -116,6 +123,28 @@ static evmc_instance* create_eee_bbb()
 static evmc_instance* create_failure()
 {
     return nullptr;
+}
+
+TEST_F(loader, strcpy_sx)
+{
+    const char input_empty[] = "";
+    const char input_that_fits[] = "x";
+    const char input_too_big[] = "12";
+    char buf[2] = {0x0f, 0x0f};
+    static_assert(sizeof(input_empty) <= sizeof(buf), "");
+    static_assert(sizeof(input_that_fits) <= sizeof(buf), "");
+    static_assert(sizeof(input_too_big) > sizeof(buf), "");
+
+    EXPECT_EQ(strcpy_sx(buf, sizeof(buf), input_empty), 0);
+    EXPECT_EQ(buf[0], 0);
+    EXPECT_EQ(buf[1], 0x0f);
+
+    EXPECT_EQ(strcpy_sx(buf, sizeof(buf), input_that_fits), 0);
+    EXPECT_EQ(buf[0], 'x');
+    EXPECT_EQ(buf[1], 0);
+
+    EXPECT_NE(strcpy_sx(buf, sizeof(buf), input_too_big), 0);
+    EXPECT_EQ(buf[0], 0);
 }
 
 TEST_F(loader, load_nonexistent)
