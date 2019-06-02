@@ -183,12 +183,11 @@ TEST_F(evmc_vm_test, precompile_test)
         destination.bytes[18] = static_cast<uint8_t>(i >> 8);
         destination.bytes[19] = static_cast<uint8_t>(i & 0xff);
 
-        evmc_context* context = example_host_create_context();
         evmc_message msg{
             EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, NULL, 0, evmc_uint256be{},
             evmc_bytes32{}};
 
-        evmc_result result = vm->execute(vm, context, EVMC_MAX_REVISION, &msg, nullptr, 0);
+        evmc_result result = vm->execute(vm, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
 
         // Validate some constraints
 
@@ -214,7 +213,5 @@ TEST_F(evmc_vm_test, precompile_test)
 
         if (result.release)
             result.release(&result);
-
-        example_host_destroy_context(context);
     }
 }
