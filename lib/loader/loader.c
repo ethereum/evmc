@@ -212,22 +212,29 @@ struct evmc_instance* evmc_load_and_create(const char* filename,
     if (!create_fn)
         return NULL;
 
+    enum evmc_loader_error_code ec = EVMC_LOADER_SUCCESS;
+
     struct evmc_instance* instance = create_fn();
     if (!instance)
     {
-        *error_code = set_error(EVMC_LOADER_INSTANCE_CREATION_FAILURE,
-                                "creating EVMC instance of %s has failed", filename);
-        return NULL;
+        ec = set_error(EVMC_LOADER_INSTANCE_CREATION_FAILURE,
+                       "creating EVMC instance of %s has failed", filename);
+        goto exit;
     }
 
     if (!evmc_is_abi_compatible(instance))
     {
+        ec = set_error(EVMC_LOADER_ABI_VERSION_MISMATCH,
+                       "EVMC ABI version %d of %s mismatches the expected version %d",
+                       instance->abi_version, filename, EVMC_ABI_VERSION);
         evmc_destroy(instance);
-        *error_code = set_error(EVMC_LOADER_ABI_VERSION_MISMATCH,
-                                "EVMC ABI version %d of %s mismatches the expected version %d",
-                                instance->abi_version, filename, EVMC_ABI_VERSION);
-        return NULL;
+        instance = NULL;
+        goto exit;
     }
+
+exit:
+    if (error_code)
+        *error_code = ec;
 
     return instance;
 }
