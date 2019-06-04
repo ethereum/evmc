@@ -3,6 +3,11 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
+//! Rust bindings for EVMC (Ethereum Client-VM Connector API).
+//!
+//! Have a look at evmc-declare to declare an EVMC compatible VM.
+//! This crate documents how to use certain data types.
+
 mod container;
 
 pub use container::EvmcContainer;
