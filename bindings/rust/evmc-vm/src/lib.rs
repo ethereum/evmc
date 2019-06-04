@@ -3,11 +3,15 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-pub extern crate evmc_sys;
+mod container;
+
+pub use container::EvmcContainer;
 pub use evmc_sys as ffi;
 
-// TODO: Add convenient helpers for evmc_execute
-// TODO: Add a derive macro here for creating evmc_create
+pub trait EvmcVm {
+    fn init() -> Self;
+    fn execute(&self, code: &[u8], context: &ExecutionContext) -> ExecutionResult;
+}
 
 /// EVMC result structure.
 pub struct ExecutionResult {
@@ -338,7 +342,6 @@ extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use evmc_sys as ffi;
 
     #[test]
     fn new_result() {

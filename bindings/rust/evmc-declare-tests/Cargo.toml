@@ -3,13 +3,16 @@
 # Licensed under the Apache License, Version 2.0.
 
 [package]
-name = "evmc-vm"
+name = "evmc-declare-tests"
 version = "6.3.0-dev"
-authors = ["Alex Beregszaszi <alex@rtfs.hu>", "Jake Lang <jak3lang@gmail.com>"]
+authors = ["Jake Lang <jak3lang@gmail.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
-description = "Bindings to EVMC (VM specific)"
+description = "Bindings to EVMC (VM declare macro) -- Test crate"
 edition = "2018"
+publish = false
 
 [dependencies]
+evmc-declare = { path = "../evmc-declare" }
 evmc-sys = { path = "../evmc-sys" }
+evmc-vm = { path = "../evmc-vm" }
