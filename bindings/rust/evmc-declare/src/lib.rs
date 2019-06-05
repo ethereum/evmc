@@ -363,7 +363,15 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 ::evmc_vm::EvmcContainer::<#type_name_ident>::from_ffi_pointer(instance)
             };
 
-            let result = container.execute(code_ref, &execution_context);
+            let result = ::std::panic::catch_unwind(|| {
+                container.execute(code_ref, &execution_context)
+            });
+
+            let result = if result.is_err() {
+                ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, None)
+            } else {
+                result.unwrap()
+            };
 
             unsafe {
                 ::evmc_vm::EvmcContainer::into_ffi_pointer(container);
