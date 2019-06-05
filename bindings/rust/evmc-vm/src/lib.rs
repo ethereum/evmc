@@ -353,6 +353,20 @@ mod tests {
         assert!(r.get_create_address().is_none());
     }
 
+    // Test-specific helper to dispose of execution results in unit tests
+    extern "C" fn test_result_dispose(result: *const ffi::evmc_result) {
+        unsafe {
+            if !result.is_null() {
+                let owned = *result;
+                Vec::from_raw_parts(
+                    owned.output_data as *mut u8,
+                    owned.output_size,
+                    owned.output_size,
+                );
+            }
+        }
+    }
+
     #[test]
     fn from_ffi() {
         let f = ffi::evmc_result {
@@ -360,7 +374,7 @@ mod tests {
             gas_left: 1337,
             output_data: Box::into_raw(Box::new([0xde, 0xad, 0xbe, 0xef])) as *const u8,
             output_size: 4,
-            release: None,
+            release: Some(test_result_dispose),
             create_address: ffi::evmc_address { bytes: [0u8; 20] },
             padding: [0u8; 4],
         };
@@ -501,6 +515,14 @@ mod tests {
         }
     }
 
+    // Helper to safely dispose of the dummy context, and not bring up false positives in the
+    // sanitizers.
+    fn dummy_context_dispose(context: ffi::evmc_context) {
+        unsafe {
+            Box::from_raw(context.host as *mut ffi::evmc_host_interface);
+        }
+    }
+
     fn get_dummy_message() -> ffi::evmc_message {
         ffi::evmc_message {
             kind: ffi::evmc_call_kind::EVMC_CALL,
@@ -520,10 +542,14 @@ mod tests {
     fn execution_context() {
         let msg = get_dummy_message();
         let mut context_raw = get_dummy_context();
-        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+        // Make a copy here so we don't let get_dummy_context() go out of scope when called again
+        // in get_dummy_tx_context() and cause LLVM
+        // sanitizers to complain
+        let mut context_raw_copy = context_raw.clone();
 
+        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
         let a = exe_context.get_tx_context();
-        let b = unsafe { get_dummy_tx_context(&mut get_dummy_context() as *mut ffi::evmc_context) };
+        let b = unsafe { get_dummy_tx_context(&mut context_raw_copy as *mut ffi::evmc_context) };
 
         assert_eq!(a.block_gas_limit, b.block_gas_limit);
         assert_eq!(a.block_timestamp, b.block_timestamp);
@@ -538,6 +564,8 @@ mod tests {
         assert_eq!(c.gas, d.gas);
         assert_eq!(c.input_data, d.input_data);
         assert_eq!(c.input_size, d.input_size);
+
+        dummy_context_dispose(context_raw);
     }
 
     #[test]
@@ -553,5 +581,7 @@ mod tests {
         let b = exe_context.get_code_size(&test_addr);
 
         assert_eq!(a, b);
+
+        dummy_context_dispose(context_raw);
     }
 }
