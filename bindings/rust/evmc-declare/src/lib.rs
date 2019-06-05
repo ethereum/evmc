@@ -166,8 +166,9 @@ impl VMMetaData {
             let mut ret: u32 = 0;
             for capability in capabilities_list_pruned.split(",") {
                 match capability {
-                    "ewasm" => ret |= 0x1 << 1,
-                    "evm" => ret |= 0x1,
+                    "evm" => ret |= 1,
+                    "ewasm" => ret |= 1 << 1,
+                    "precompiles" => ret |= 1 << 2,
                     _ => panic!("Invalid capability specified."),
                 }
             }
