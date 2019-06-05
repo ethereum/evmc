@@ -301,6 +301,11 @@ TEST_F(loader, load_and_create_failure)
     EXPECT_TRUE(vm == nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_INSTANCE_CREATION_FAILURE);
     EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC instance of failure.vm has failed");
+    EXPECT_TRUE(evmc_last_error_msg() == nullptr);
+
+    vm = evmc_load_and_create(evmc_test_library_path, nullptr);
+    EXPECT_TRUE(vm == nullptr);
+    EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC instance of failure.vm has failed");
 }
 
 TEST_F(loader, load_and_create_abi_mismatch)
@@ -314,6 +319,12 @@ TEST_F(loader, load_and_create_abi_mismatch)
     const auto expected_error_msg =
         "EVMC ABI version 1985 of abi1985.vm mismatches the expected version " +
         std::to_string(EVMC_ABI_VERSION);
+    EXPECT_EQ(evmc_last_error_msg(), expected_error_msg);
+    EXPECT_TRUE(evmc_last_error_msg() == nullptr);
+    EXPECT_EQ(destroy_count, create_count);
+
+    vm = evmc_load_and_create(evmc_test_library_path, nullptr);
+    EXPECT_TRUE(vm == nullptr);
     EXPECT_EQ(evmc_last_error_msg(), expected_error_msg);
     EXPECT_EQ(destroy_count, create_count);
 }
