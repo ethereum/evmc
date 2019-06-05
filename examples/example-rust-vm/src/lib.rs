@@ -14,13 +14,13 @@ impl EvmcVm for ExampleRustVM {
         ExampleRustVM {}
     }
 
-    fn execute(&self, _code: &[u8], context: &ExecutionContext) -> ExecutionResult {
+    fn execute(&self, _code: &[u8], context: &ExecutionContext) -> Result<ExecutionResult, ()> {
         let is_create = context.get_message().kind() == evmc_sys::evmc_call_kind::EVMC_CREATE;
 
         if is_create {
-            ExecutionResult::failure()
+            Err(())
         } else {
-            ExecutionResult::success(66, Some(&[0xc0, 0xff, 0xee]))
+            Ok(ExecutionResult::success(66, Some(&[0xc0, 0xff, 0xee])))
         }
     }
 }

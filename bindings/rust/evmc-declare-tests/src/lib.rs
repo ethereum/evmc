@@ -16,7 +16,7 @@ impl EvmcVm for FooVM {
         FooVM {}
     }
 
-    fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> ExecutionResult {
-        ExecutionResult::success(1337, None)
+    fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> Result<ExecutionResult, ()> {
+        Ok(ExecutionResult::success(1337, None))
     }
 }

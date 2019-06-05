@@ -22,8 +22,8 @@
 //!             ExampleVM {}
 //!     }
 //!
-//!     fn execute(&self, code: &[u8], context: &evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
-//!             evmc_vm::ExecutionResult::success(1337, None)
+//!     fn execute(&self, code: &[u8], context: &evmc_vm::ExecutionContext) -> Result<evmc_vm::ExecutionResult, ()> {
+//!             Ok(evmc_vm::ExecutionResult::success(1337, None))
 //!     }
 //! }
 //! ```
@@ -369,7 +369,14 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
             let result = if result.is_err() {
                 // Consider a panic an internal error.
-                ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, None)
+                Ok(::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, None))
+            } else {
+                result.unwrap()
+            };
+
+            let result = if result.is_err() {
+                // Consider an error returned by execute() to be a regular failure.
+                ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_FAILURE, 0, None)
             } else {
                 result.unwrap()
             };

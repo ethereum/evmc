@@ -56,8 +56,8 @@ mod tests {
         fn init() -> Self {
             TestVm {}
         }
-        fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> ExecutionResult {
-            ExecutionResult::failure()
+        fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> Result<ExecutionResult, ()> {
+            Ok(ExecutionResult::failure())
         }
     }
 
