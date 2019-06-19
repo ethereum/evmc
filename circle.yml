@@ -176,8 +176,6 @@ jobs:
       - run:
           name: Test with evmc-vmtester
           command: |
-            # FIXME: there is a linking issue with Cargo workspaces, this is to workaround it
-            export LD_LIBRARY_PATH="$(rustc --print sysroot)/lib:$LD_LIBRARY_PATH"
             ~/build/test/evmc-vmtester target/debug/libexamplerustvm.so
 
 workflows:
