@@ -178,6 +178,38 @@ jobs:
           command: |
             ~/build/test/evmc-vmtester target/debug/libexamplerustvm.so
 
+  bindings-rust-asan-combined:
+    docker:
+      - image: rust:1
+    steps:
+      - checkout
+      - run:
+          name: Update environment
+          command: |
+            apt update
+            apt -y install libclang-dev clang
+            rustup component add rustfmt
+            rustup toolchain install nightly-x86_64-unknown-linux-gnu
+            rustup update
+      - run:
+          name: Check formatting
+          command: |
+            rustfmt --version
+            cargo fmt --all -- --check
+      - run:
+          name: Build
+          command: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS=detect_leaks=1 cargo +nightly build --target x86_64-unknown-linux-gnu
+      - run:
+          name: Test
+          command: RUSTFLAGS="-Z sanitizer=address -C opt-level=0" ASAN_OPTIONS=detect_leaks=1 cargo +nightly test --target x86_64-unknown-linux-gnu
+      - attach_workspace:
+          at: ~/build
+      - run:
+          name: Test with evmc-vmtester
+          command: |
+            # FIXME: support ASan here too
+            # ~/build/test/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
+
 workflows:
   version: 2
   evmc:
@@ -192,6 +224,9 @@ workflows:
       - bindings-rust:
           requires:
             - build-cxx17
+      - bindings-rust-asan-combined:
+          requires:
+            - build-cxx14-asan
       - test-docs
       - upload-docs:
           requires:
