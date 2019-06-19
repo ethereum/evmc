@@ -241,6 +241,27 @@ jobs:
           command: |
             ~/build/examples/evmc-example target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
 
+  bindings-rust-msan:
+    docker:
+      - image: rust:1-buster
+    steps:
+      - checkout
+      - run:
+          name: Update environment
+          command: |
+            echo 'deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main' >> /etc/apt/sources.list
+            wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+            apt -qq update
+            apt -yq  install llvm-8-dev clang-8
+            rustup toolchain install nightly-x86_64-unknown-linux-gnu
+            rustup update
+      - run:
+          name: Build
+          command: RUSTFLAGS="-Z sanitizer=memory -C opt-level=0" cargo +nightly build --target x86_64-unknown-linux-gnu
+      - run:
+          name: Test
+          command: RUSTFLAGS="-Z sanitizer=memory -C opt-level=0" cargo +nightly test --target x86_64-unknown-linux-gnu
+
 workflows:
   version: 2
   evmc:
@@ -258,6 +279,9 @@ workflows:
           requires:
             - build-gcc8-cxx17
       - bindings-rust-asan-combined:
+          requires:
+            - build-clang9-cxx14-asan
+      - bindings-rust-msan:
           requires:
             - build-clang9-cxx14-asan
       - upload-docs:
