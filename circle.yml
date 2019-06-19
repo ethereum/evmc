@@ -205,14 +205,8 @@ jobs:
             apt-key adv --keyserver keyserver.ubuntu.com --no-tty --recv-keys 6084F3CF814B57C1CF12EFD515CF4D18AF4F7421 60C317803A41BA51845E371A1E9377A2BA9EF27F
             apt -qq update
             apt -yq  install llvm-8-dev clang-8
-            rustup component add rustfmt
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
             rustup update
-      - run:
-          name: Check formatting
-          command: |
-            rustfmt --version
-            cargo fmt --all -- --check
       - run:
           name: Build
           command: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS=detect_leaks=1 cargo +nightly build --target x86_64-unknown-linux-gnu
