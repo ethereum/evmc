@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "examplerustvm"
-crate-type = ["staticlib", "dylib"]
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 evmc-sys = { path = "../../bindings/rust/evmc-sys" }
