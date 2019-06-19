@@ -186,8 +186,10 @@ jobs:
       - run:
           name: Update environment
           command: |
-            apt update
-            apt -y install libclang-dev clang
+            echo 'deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main' >> /etc/apt/sources.list
+            apt-key adv --keyserver keyserver.ubuntu.com --no-tty --recv-keys 6084F3CF814B57C1CF12EFD515CF4D18AF4F7421 60C317803A41BA51845E371A1E9377A2BA9EF27F
+            apt -qq update
+            apt -yq  install llvm-8-dev clang-8
             rustup component add rustfmt
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
             rustup update
@@ -207,8 +209,7 @@ jobs:
       - run:
           name: Test with evmc-vmtester
           command: |
-            # FIXME: support ASan here too
-            # ~/build/test/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
+            ~/build/test/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
 
 workflows:
   version: 2
