@@ -21,10 +21,23 @@ pub struct ExecutionResult {
     create_address: Option<ffi::evmc_address>,
 }
 
+/// EVMC execution message structure.
+pub struct ExecutionMessage {
+    pub kind: ffi::evmc_call_kind,
+    pub flags: u32,
+    pub depth: i32,
+    pub gas: i64,
+    pub destination: ffi::evmc_address,
+    pub sender: ffi::evmc_address,
+    pub input: Option<Vec<u8>>,
+    pub value: ffi::evmc_uint256be,
+    pub create2_salt: ffi::evmc_bytes32,
+}
+
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
-    message: &'a ffi::evmc_message,
+    message: ExecutionMessage,
     context: &'a mut ffi::evmc_context,
     tx_context: ffi::evmc_tx_context,
 }
@@ -76,13 +89,13 @@ impl<'a> ExecutionContext<'a> {
         };
 
         ExecutionContext {
-            message: _message,
+            message: _message.into(),
             context: _context,
             tx_context: _tx_context,
         }
     }
 
-    pub fn get_message(&self) -> &ffi::evmc_message {
+    pub fn get_message(&self) -> &ExecutionMessage {
         &self.message
     }
 
@@ -339,6 +352,39 @@ extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     }
 }
 
+impl From<&ffi::evmc_message> for ExecutionMessage {
+    fn from(message: &ffi::evmc_message) -> Self {
+        ExecutionMessage {
+            kind: message.kind,
+            flags: message.flags,
+            depth: message.depth,
+            gas: message.gas,
+            destination: message.destination,
+            sender: message.sender,
+            input: if message.input_data.is_null() {
+                assert!(message.input_size == 0);
+                None
+            } else {
+                // TODO: what to do if input_size is 0?
+
+                // Pre-allocate a vector.
+                let mut buf: Vec<u8> = Vec::with_capacity(message.input_size);
+
+                unsafe {
+                    // Set the len of the vec manually.
+                    buf.set_len(message.input_size);
+                    // Copy from the C struct's buffer to the vec's buffer.
+                    std::ptr::copy(message.input_data, buf.as_mut_ptr(), message.input_size);
+                }
+
+                Some(buf)
+            },
+            value: message.value,
+            create2_salt: message.create2_salt,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -562,8 +608,12 @@ mod tests {
         assert_eq!(c.flags, d.flags);
         assert_eq!(c.depth, d.depth);
         assert_eq!(c.gas, d.gas);
-        assert_eq!(c.input_data, d.input_data);
-        assert_eq!(c.input_size, d.input_size);
+        if d.input_data.is_null() {
+            assert!(c.input.is_none());
+        } else {
+            assert!(c.input.is_some());
+            assert_eq!(c.input.clone().unwrap().len(), d.input_size);
+        }
 
         dummy_context_dispose(context_raw);
     }
