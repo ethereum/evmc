@@ -6,7 +6,7 @@
 use evmc_declare::evmc_declare_vm;
 use evmc_vm::*;
 
-#[evmc_declare_vm("ExampleRustVM", "evm")]
+#[evmc_declare_vm("ExampleRustVM", "evm", "6.3.0-dev")]
 pub struct ExampleRustVM;
 
 impl EvmcVm for ExampleRustVM {

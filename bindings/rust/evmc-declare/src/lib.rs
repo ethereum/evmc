@@ -9,9 +9,8 @@
 //! evmc-declare can be used by applying its attribute to any struct which implements the `EvmcVm`
 //! trait, from the evmc-vm crate.
 //!
-//! The macro takes two or three arguments: a valid UTF-8 stylized VM name, a comma-separated list of
-//! capabilities, and an optional custom version string. If only the name and capabilities are
-//! passed, the version string will default to the crate version.
+//! The macro takes three arguments: a valid UTF-8 stylized VM name, a comma-separated list of
+//! capabilities, and a version string.
 //!
 //! # Example
 //! ```
@@ -59,7 +58,7 @@ struct VMMetaData {
     capabilities: u32,
     // Not included in VMNameSet because it is parsed from the meta-item arguments.
     name_stylized: String,
-    custom_version: Option<String>,
+    custom_version: String,
 }
 
 #[allow(dead_code)]
@@ -120,24 +119,20 @@ impl VMNameSet {
 
 impl VMMetaData {
     fn new(args: AttributeArgs) -> Self {
-        assert!(
-            args.len() == 2 || args.len() == 3,
-            "Incorrect number of arguments supplied"
-        );
+        assert!(args.len() == 3, "Incorrect number of arguments supplied");
 
         let vm_name_meta = &args[0];
         let vm_capabilities_meta = &args[1];
-
-        let vm_version_meta = if args.len() == 3 {
-            Some(&args[2])
-        } else {
-            None
-        };
+        let vm_version_meta = &args[2];
 
         let vm_name_string = match vm_name_meta {
             NestedMeta::Literal(lit) => {
                 if let Lit::Str(s) = lit {
-                    s.value()
+                    // Add a null terminator here to ensure that it is handled correctly when
+                    // converted to a C String.
+                    let mut ret = s.value().to_string();
+                    ret.push('\0');
+                    ret
                 } else {
                     panic!("Literal argument type mismatch")
                 }
@@ -175,25 +170,29 @@ impl VMMetaData {
             ret
         };
 
-        // If a custom version string was supplied, then include it in the metadata.
-        let vm_version_string_optional: Option<String> = match vm_version_meta {
-            Some(meta) => {
-                if let NestedMeta::Literal(lit) = meta {
-                    match lit {
-                        Lit::Str(s) => Some(s.value().to_string()),
-                        _ => panic!("Literal argument type mismatch"),
-                    }
-                } else {
-                    panic!("Argument 3 must be a string literal")
+        let vm_version_string: String = if let NestedMeta::Literal(lit) = vm_version_meta {
+            match lit {
+                // Add a null terminator here to ensure that it is handled correctly when
+                // converted to a C String.
+                Lit::Str(s) => {
+                    let mut ret = s.value().to_string();
+                    ret.push('\0');
+                    ret
                 }
+                _ => panic!("Literal argument type mismatch"),
             }
-            None => None,
+        } else {
+            panic!("Argument 3 must be a string literal")
         };
+
+        // Make sure that the only null byte is the terminator we inserted in each string.
+        assert_eq!(vm_name_string.matches("\0").count(), 1);
+        assert_eq!(vm_version_string.matches("\0").count(), 1);
 
         VMMetaData {
             capabilities: capabilities_flags,
             name_stylized: vm_name_string,
-            custom_version: vm_version_string_optional,
+            custom_version: vm_version_string,
         }
     }
 
@@ -201,11 +200,11 @@ impl VMMetaData {
         self.capabilities
     }
 
-    fn get_name_stylized(&self) -> &String {
+    fn get_name_stylized_nulterm(&self) -> &String {
         &self.name_stylized
     }
 
-    fn get_custom_version(&self) -> &Option<String> {
+    fn get_custom_version_nulterm(&self) -> &String {
         &self.custom_version
     }
 }
@@ -253,26 +252,17 @@ fn build_static_data(names: &VMNameSet, metadata: &VMMetaData) -> proc_macro2::T
 
     // Turn the stylized VM name and version into string literals.
     let stylized_name_literal = LitStr::new(
-        metadata.get_name_stylized().as_str(),
-        metadata.get_name_stylized().as_str().span(),
+        metadata.get_name_stylized_nulterm().as_str(),
+        metadata.get_name_stylized_nulterm().as_str().span(),
     );
 
-    // If the user supplied a custom version, use it here. Otherwise, default to crate version.
-    let version_tokens = match metadata.get_custom_version() {
-        Some(s) => {
-            let lit = LitStr::new(s.as_str(), s.as_str().span());
-            quote! {
-                #lit
-            }
-        }
-        None => quote! {
-            env!("CARGO_PKG_VERSION")
-        },
-    };
+    // Turn the version into a string literal.
+    let version_string = metadata.get_custom_version_nulterm();
+    let version_literal = LitStr::new(version_string.as_str(), version_string.as_str().span());
 
     quote! {
         static #static_name_ident: &'static str = #stylized_name_literal;
-        static #static_version_ident: &'static str = #version_tokens;
+        static #static_version_ident: &'static str = #version_literal;
     }
 }
 
@@ -296,6 +286,7 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     let static_version_ident = names.get_caps_as_ident_append("_VERSION");
     let static_name_ident = names.get_caps_as_ident_append("_NAME");
 
+    // Note: we can get CStrs unchecked because we did the checks on instantiation of VMMetaData.
     quote! {
         #[no_mangle]
         extern "C" fn #fn_ident() -> *const ::evmc_vm::ffi::evmc_instance {
@@ -306,8 +297,8 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 get_capabilities: Some(__evmc_get_capabilities),
                 set_option: None,
                 set_tracer: None,
-                name: ::std::ffi::CString::new(#static_name_ident).expect("Failed to build VM name string").into_raw() as *const i8,
-                version: ::std::ffi::CString::new(#static_version_ident).expect("Failed to build VM version string").into_raw() as *const i8,
+                name: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_name_ident.as_bytes()).as_ptr() as *const i8 },
+                version: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_version_ident.as_bytes()).as_ptr() as *const i8 },
             };
 
             unsafe {
