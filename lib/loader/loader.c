@@ -42,20 +42,14 @@
 #define ATTR_FORMAT(...)
 #endif
 
-#if _WIN32
-#define strcpy_sx strcpy_s
-#else
 /*
  * Limited variant of strcpy_s().
- *
- * Provided for C standard libraries where strcpy_s() is not available.
- * The availability check might need to adjusted for other C standard library implementations.
  */
 #if !defined(EVMC_LOADER_MOCK)
 static
 #endif
     int
-    strcpy_sx(char* restrict dest, size_t destsz, const char* restrict src)
+    strcpy_sx(char* dest, size_t destsz, const char* src)
 {
     size_t len = strlen(src);
     if (len >= destsz)
@@ -70,7 +64,6 @@ static
     dest[len] = 0;
     return 0;
 }
-#endif
 
 #define PATH_MAX_LENGTH 4096
 

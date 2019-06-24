@@ -16,12 +16,8 @@ static constexpr bool is_windows = false;
 #endif
 
 extern "C" {
-#if _WIN32
-#define strcpy_sx strcpy_s
-#else
 /// Declaration of internal function defined in loader.c.
 int strcpy_sx(char* dest, size_t destsz, const char* src);
-#endif
 
 /// The library path expected by mocked evmc_test_load_library().
 extern const char* evmc_test_library_path;
