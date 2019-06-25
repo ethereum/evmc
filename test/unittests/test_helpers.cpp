@@ -30,6 +30,13 @@ static constexpr size_t optionalDataSize =
 static_assert(optionalDataSize == sizeof(evmc_result_optional_storage), "");
 
 
+TEST(helpers, fnv1a)
+{
+    const uint8_t text[] = {'E', 'V', 'M', 'C'};
+    const auto h = fnv1a(text, sizeof(text));
+    EXPECT_EQ(h, sizeof(size_t) == 8 ? 0x15e05d6d22fed89a : 0xffaa6a9a);
+}
+
 TEST(helpers, maps)
 {
     std::map<evmc_address, bool> addresses;
