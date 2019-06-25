@@ -8,6 +8,8 @@ use crate::EvmcVm;
 use std::ops::Deref;
 
 /// Container struct for EVMC instances and user-defined data.
+// Marked repr(C) to force alignment of `instance`.
+#[repr(C)]
 pub struct EvmcContainer<T>
 where
     T: EvmcVm + Sized,
