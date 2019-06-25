@@ -9,6 +9,7 @@ use crate::ExecutionResult;
 
 /// Container struct for EVMC instances and user-defined data.
 pub struct EvmcContainer<T: EvmcVm + Sized> {
+    #[allow(dead_code)]
     instance: ::evmc_sys::evmc_instance,
     vm: T,
 }
