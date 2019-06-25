@@ -93,6 +93,30 @@ impl ExecutionResult {
 }
 
 impl ExecutionMessage {
+    pub fn new(
+        kind: ffi::evmc_call_kind,
+        flags: u32,
+        depth: i32,
+        gas: i64,
+        destination: Address,
+        sender: Address,
+        input: Option<Vec<u8>>,
+        value: Uint256,
+        create2_salt: Bytes32,
+    ) -> Self {
+        ExecutionMessage {
+            kind,
+            flags,
+            depth,
+            gas,
+            destination,
+            sender,
+            input,
+            value,
+            create2_salt,
+        }
+    }
+
     pub fn kind(&self) -> ffi::evmc_call_kind {
         self.kind
     }
@@ -245,12 +269,13 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn call(&mut self, message: &ffi::evmc_message) -> ExecutionResult {
+    pub fn call(&mut self, message: &ExecutionMessage) -> ExecutionResult {
+        let message: ffi::evmc_message = message.into();
         unsafe {
             assert!((*self.context.host).call.is_some());
             (*self.context.host).call.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                message as *const ffi::evmc_message,
+                &message as *const ffi::evmc_message,
             )
             .into()
         }
@@ -420,6 +445,12 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
     }
 }
 
+impl From<&ExecutionMessage> for ffi::evmc_message {
+    fn from(message: &ExecutionMessage) -> Self {
+        unimplemented!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -553,6 +584,38 @@ mod tests {
                 f.release.unwrap()(&f);
             }
         }
+    }
+
+    #[test]
+    fn message_new_with_input() {
+        let input = vec![0xc0, 0xff, 0xee];
+        let destination = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
+
+        let ret = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            44,
+            66,
+            4466,
+            destination,
+            sender,
+            Some(input.clone()),
+            value,
+            create2_salt,
+        );
+
+        assert_eq!(ret.kind(), ffi::evmc_call_kind::EVMC_CALL);
+        assert_eq!(ret.flags(), 44);
+        assert_eq!(ret.depth(), 66);
+        assert_eq!(ret.gas(), 4466);
+        assert_eq!(*ret.destination(), destination);
+        assert_eq!(*ret.sender(), sender);
+        assert!(ret.input().is_some());
+        assert_eq!(*ret.input().unwrap(), input);
+        assert_eq!(*ret.value(), value);
+        assert_eq!(*ret.create2_salt(), create2_salt);
     }
 
     #[test]
