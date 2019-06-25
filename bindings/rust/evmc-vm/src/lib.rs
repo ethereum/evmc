@@ -23,15 +23,15 @@ pub struct ExecutionResult {
 
 /// EVMC execution message structure.
 pub struct ExecutionMessage {
-    pub kind: ffi::evmc_call_kind,
-    pub flags: u32,
-    pub depth: i32,
-    pub gas: i64,
-    pub destination: ffi::evmc_address,
-    pub sender: ffi::evmc_address,
-    pub input: Option<Vec<u8>>,
-    pub value: ffi::evmc_uint256be,
-    pub create2_salt: ffi::evmc_bytes32,
+    kind: ffi::evmc_call_kind,
+    flags: u32,
+    depth: i32,
+    gas: i64,
+    destination: ffi::evmc_address,
+    sender: ffi::evmc_address,
+    input: Option<Vec<u8>>,
+    value: ffi::evmc_uint256be,
+    create2_salt: ffi::evmc_bytes32,
 }
 
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
@@ -78,6 +78,44 @@ impl ExecutionResult {
 
     pub fn get_create_address(&self) -> Option<&ffi::evmc_address> {
         self.create_address.as_ref()
+    }
+}
+
+impl ExecutionMessage {
+    pub fn kind(&self) -> ffi::evmc_call_kind {
+        self.kind
+    }
+
+    pub fn flags(&self) -> u32 {
+        self.flags
+    }
+
+    pub fn depth(&self) -> i32 {
+        self.depth
+    }
+
+    pub fn gas(&self) -> i64 {
+        self.gas
+    }
+
+    pub fn destination(&self) -> &ffi::evmc_address {
+        &self.destination
+    }
+
+    pub fn sender(&self) -> &ffi::evmc_address {
+        &self.sender
+    }
+
+    pub fn input(&self) -> Option<&Vec<u8>> {
+        self.input.as_ref()
+    }
+
+    pub fn value(&self) -> &ffi::evmc_uint256be {
+        &self.value
+    }
+
+    pub fn create2_salt(&self) -> &ffi::evmc_bytes32 {
+        &self.create2_salt
     }
 }
 
@@ -609,10 +647,10 @@ mod tests {
         assert_eq!(c.depth, d.depth);
         assert_eq!(c.gas, d.gas);
         if d.input_data.is_null() {
-            assert!(c.input.is_none());
+            assert!(c.input().is_none());
         } else {
-            assert!(c.input.is_some());
-            assert_eq!(c.input.clone().unwrap().len(), d.input_size);
+            assert!(c.input().is_some());
+            assert_eq!(c.input().unwrap().len(), d.input_size);
         }
 
         dummy_context_dispose(context_raw);
