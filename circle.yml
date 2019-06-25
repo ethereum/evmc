@@ -134,6 +134,16 @@ jobs:
     steps:
       - build_and_test
 
+  build-32bit:
+    executor: linux
+    environment:
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx11-32bit
+    steps:
+      - run:
+          name: "Install GCC 32-bit"
+          command: sudo apt -q update && sudo apt -qy install g++-multilib
+      - build_and_test
+
   bindings-go-latest:
     docker:
       - image: circleci/golang
@@ -225,6 +235,7 @@ workflows:
       - build-cxx14-asan
       - build-gcc6
       - build-clang38
+      - build-32bit
       - bindings-go-latest
       - bindings-go-min
       - bindings-rust:
