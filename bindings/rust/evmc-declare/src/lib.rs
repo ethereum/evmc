@@ -186,8 +186,8 @@ impl VMMetaData {
         };
 
         // Make sure that the only null byte is the terminator we inserted in each string.
-        assert_eq!(vm_name_string.matches("\0").count(), 1);
-        assert_eq!(vm_version_string.matches("\0").count(), 1);
+        assert_eq!(vm_name_string.matches('\0').count(), 1);
+        assert_eq!(vm_version_string.matches('\0').count(), 1);
 
         VMMetaData {
             capabilities: capabilities_flags,
