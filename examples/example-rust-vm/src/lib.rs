@@ -15,7 +15,7 @@ impl EvmcVm for ExampleRustVM {
     }
 
     fn execute(&self, _code: &[u8], context: &ExecutionContext) -> ExecutionResult {
-        let is_create = context.get_message().kind == evmc_sys::evmc_call_kind::EVMC_CREATE;
+        let is_create = context.get_message().kind() == evmc_sys::evmc_call_kind::EVMC_CREATE;
 
         if is_create {
             ExecutionResult::failure()
