@@ -70,6 +70,35 @@ jobs:
           bumpversion --dry-run --verbose major
           bumpversion --dry-run --verbose minor
           bumpversion --dry-run --verbose patch
+    - run:
+        name: "Test documentation"
+        command: |
+          cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
+          if [ -s doxygen.warnings ]; then
+            printf '\n\nDoxygen warnings:\n\n'
+            cat doxygen.warnings
+            exit 1
+          fi
+          cat doxygen.log
+    - store_artifacts:
+        path: ~/docs
+        destination: docs
+
+  upload-docs:
+    executor: linux
+    steps:
+      - checkout
+      - run:
+          name: "Generate documentation"
+          command: doxygen Doxyfile
+      - run:
+          name: "Upload documentation"
+          command: |
+            git config user.email "docs-bot@ethereum.org"
+            git config user.name "Documentation Bot"
+            git add --all
+            git commit -m "Update docs"
+            git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
   build-cxx17:
     executor: linux
@@ -104,40 +133,6 @@ jobs:
       CXX: clang++-3.8
     steps:
       - build_and_test
-
-  test-docs:
-    executor: linux
-    steps:
-      - checkout
-      - run:
-          name: "Test documentation"
-          command: |
-            cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
-            if [ -s doxygen.warnings ]; then
-              printf '\n\nDoxygen warnings:\n\n'
-              cat doxygen.warnings
-              exit 1
-            fi
-            cat doxygen.log
-      - store_artifacts:
-          path: ~/docs
-          destination: docs
-
-  upload-docs:
-    executor: linux
-    steps:
-      - checkout
-      - run:
-          name: "Generate documentation"
-          command: doxygen Doxyfile
-      - run:
-          name: "Upload documentation"
-          command: |
-            git config user.email "docs-bot@ethereum.org"
-            git config user.name "Documentation Bot"
-            git add --all
-            git commit -m "Update docs"
-            git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
   bindings-go-latest:
     docker:
@@ -238,10 +233,9 @@ workflows:
       - bindings-rust-asan-combined:
           requires:
             - build-cxx14-asan
-      - test-docs
       - upload-docs:
           requires:
-            - test-docs
+            - lint
           filters:
             branches:
               only:
