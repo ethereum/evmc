@@ -334,6 +334,8 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             code_size: usize
         ) -> ::evmc_vm::ffi::evmc_result
         {
+            use evmc_vm::EvmcVm;
+
             assert!(!msg.is_null());
             assert!(!context.is_null());
             assert!(!instance.is_null());

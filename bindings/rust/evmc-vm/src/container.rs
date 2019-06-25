@@ -4,8 +4,8 @@
  */
 
 use crate::EvmcVm;
-use crate::ExecutionContext;
-use crate::ExecutionResult;
+
+use std::ops::Deref;
 
 /// Container struct for EVMC instances and user-defined data.
 pub struct EvmcContainer<T: EvmcVm + Sized> {
@@ -33,9 +33,15 @@ impl<T: EvmcVm + Sized> EvmcContainer<T> {
     pub unsafe fn into_ffi_pointer(boxed: Box<Self>) -> *const ::evmc_sys::evmc_instance {
         Box::into_raw(boxed) as *const ::evmc_sys::evmc_instance
     }
+}
 
-    // TODO: Maybe this can just be done with the Deref<Target = T> trait.
-    pub fn execute(&self, code: &[u8], context: &ExecutionContext) -> ExecutionResult {
-        self.vm.execute(code, context)
+impl<T> Deref for EvmcContainer<T>
+where
+    T: EvmcVm,
+{
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.vm
     }
 }
