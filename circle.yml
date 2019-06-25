@@ -1,9 +1,14 @@
-version: 2
+version: 2.1
+
+executors:
+  linux:
+    docker:
+      - image: ethereum/cpp-build-env:10
+
 jobs:
 
   lint:
-    docker:
-    - image: ethereum/cpp-build-env:10
+    executor: linux
     steps:
     - checkout
     - run:
@@ -26,8 +31,7 @@ jobs:
           bumpversion --dry-run --verbose patch
 
   build: &build
-    docker:
-      - image: ethereum/cpp-build-env:10
+    executor: linux
     steps:
       - checkout
       - run:
@@ -87,15 +91,14 @@ jobs:
       CC: gcc-6
       CXX: g++-6
 
-  build-clang3.8:
+  build-clang38:
     <<: *build
     environment:
       CC: clang-3.8
       CXX: clang++-3.8
 
   test-docs:
-    docker:
-      - image: ethereum/cpp-build-env:10
+    executor: linux
     steps:
       - checkout
       - run:
@@ -113,8 +116,7 @@ jobs:
           destination: docs
 
   upload-docs:
-    docker:
-      - image: ethereum/cpp-build-env:10
+    executor: linux
     steps:
       - checkout
       - run:
@@ -219,7 +221,7 @@ workflows:
       - build-cxx17
       - build-cxx14-asan
       - build-gcc6
-      - build-clang3.8
+      - build-clang38
       - bindings-go-latest
       - bindings-go-min
       - bindings-rust:
