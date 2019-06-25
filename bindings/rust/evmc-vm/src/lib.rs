@@ -270,7 +270,33 @@ impl<'a> ExecutionContext<'a> {
     }
 
     pub fn call(&mut self, message: &ExecutionMessage) -> ExecutionResult {
-        let message: ffi::evmc_message = message.into();
+        // There is no need to make any kind of copies here, because the caller
+        // won't go out of scope and ensures these pointers remain valid.
+        let input = message.input();
+        let input_size = if input.is_some() {
+            input.unwrap().len()
+        } else {
+            0
+        };
+        let input_data = if input.is_some() {
+            input.unwrap().as_ptr()
+        } else {
+            std::ptr::null() as *const u8
+        };
+        // Cannot use a nice from trait here because that complicates memory management,
+        // evmc_message doesn't have a release() method we could abstract it with.
+        let message = ffi::evmc_message {
+            kind: message.kind(),
+            flags: message.flags(),
+            depth: message.depth(),
+            gas: message.gas(),
+            destination: *message.destination(),
+            sender: *message.sender(),
+            input_data: input_data,
+            input_size: input_size,
+            value: *message.value(),
+            create2_salt: *message.create2_salt(),
+        };
         unsafe {
             assert!((*self.context.host).call.is_some());
             (*self.context.host).call.unwrap()(
@@ -442,12 +468,6 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             value: message.value,
             create2_salt: message.create2_salt,
         }
-    }
-}
-
-impl From<&ExecutionMessage> for ffi::evmc_message {
-    fn from(message: &ExecutionMessage) -> Self {
-        unimplemented!()
     }
 }
 
