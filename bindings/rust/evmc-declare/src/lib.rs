@@ -308,7 +308,7 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     }
 }
 
-/// Builds a callback to dispose of the VM instance
+/// Builds a callback to dispose of the VM instance.
 fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     let type_ident = names.get_type_as_ident();
 
@@ -321,6 +321,7 @@ fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     }
 }
 
+/// Builds the main execution entry point.
 fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     let type_name_ident = names.get_type_as_ident();
 
@@ -361,6 +362,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             });
 
             let result = if result.is_err() {
+                // Consider a panic an internal error.
                 ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, None)
             } else {
                 result.unwrap()
