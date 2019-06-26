@@ -7,6 +7,8 @@
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
+#include <algorithm>
+#include <cstdlib>
 #include <functional>
 #include <initializer_list>
 #include <utility>
@@ -267,6 +269,33 @@ public:
     using evmc_result::output_data;
     using evmc_result::output_size;
     using evmc_result::status_code;
+
+    /// Creates the result from the provided arguments.
+    ///
+    /// The provided output is copied to memory allocated with malloc()
+    /// and the evmc_result::release function is set to one invoking free().
+    ///
+    /// @param _status_code  The status code.
+    /// @param _gas_left     The amount of gas left.
+    /// @param _output_data  The pointer to the output.
+    /// @param _output_size  The output size.
+    result(evmc_status_code _status_code,
+           int64_t _gas_left,
+           const uint8_t* _output_data,
+           size_t _output_size) noexcept
+      : evmc_result{_status_code, _gas_left, nullptr, _output_size, {}, {}, {}}
+    {
+        if (output_size != 0)
+        {
+            auto mem = static_cast<uint8_t*>(std::malloc(output_size));
+            std::copy_n(_output_data, output_size, mem);
+            output_data = mem;
+            release = [](const evmc_result* r) noexcept
+            {
+                std::free(const_cast<uint8_t*>(r->output_data));
+            };
+        }
+    }
 
     /// Converting constructor from raw evmc_result.
     explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
