@@ -37,13 +37,13 @@ TEST_F(evmc_vm_test, abi_version_match)
 TEST_F(evmc_vm_test, name)
 {
     ASSERT_TRUE(vm->name != nullptr);
-    EXPECT_GT(std::strlen(vm->name), 0) << "VM name cannot be empty";
+    EXPECT_NE(std::strlen(vm->name), size_t{0}) << "VM name cannot be empty";
 }
 
 TEST_F(evmc_vm_test, version)
 {
     ASSERT_TRUE(vm->version != nullptr);
-    EXPECT_GT(std::strlen(vm->version), 0) << "VM name cannot be empty";
+    EXPECT_NE(std::strlen(vm->version), size_t{0}) << "VM version cannot be empty";
 }
 
 TEST_F(evmc_vm_test, capabilities)
@@ -69,13 +69,13 @@ TEST_F(evmc_vm_test, execute_call)
         EXPECT_EQ(result.gas_left, 0);
     }
 
-    if (result.output_data == NULL)
+    if (result.output_data == nullptr)
     {
         EXPECT_EQ(result.output_size, 0);
     }
     else
     {
-        EXPECT_NE(result.output_size, 0);
+        EXPECT_NE(result.output_size, size_t{0});
         read_buffer(result.output_data, result.output_size);
     }
 
@@ -110,7 +110,7 @@ TEST_F(evmc_vm_test, execute_create)
     }
     else
     {
-        EXPECT_NE(result.output_size, 0);
+        EXPECT_NE(result.output_size, size_t{0});
         read_buffer(result.output_data, result.output_size);
     }
 
@@ -184,7 +184,7 @@ TEST_F(evmc_vm_test, precompile_test)
         destination.bytes[19] = static_cast<uint8_t>(i & 0xff);
 
         evmc_message msg{
-            EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, NULL, 0, evmc_uint256be{},
+            EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, nullptr, 0, evmc_uint256be{},
             evmc_bytes32{}};
 
         evmc_result result = vm->execute(vm, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
@@ -201,13 +201,13 @@ TEST_F(evmc_vm_test, precompile_test)
             EXPECT_EQ(result.gas_left, 0);
         }
 
-        if (result.output_data == NULL)
+        if (result.output_data == nullptr)
         {
             EXPECT_EQ(result.output_size, 0);
         }
         else
         {
-            EXPECT_NE(result.output_size, 0);
+            EXPECT_NE(result.output_size, size_t{0});
             read_buffer(result.output_data, result.output_size);
         }
 

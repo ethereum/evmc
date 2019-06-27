@@ -53,17 +53,43 @@ inline bool is_zero(const evmc_bytes32& x) noexcept
     return x == evmc_bytes32{};
 }
 
-/// FNV1a hash function with 64-bit result.
-inline uint64_t fnv1a_64(const uint8_t* ptr, size_t len)
+/// Parameters for the fnv1a hash function, specialized by the hash result size (size_t).
+///
+/// The values for the matching size are taken from
+/// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV_hash_parameters.
+///
+/// @tparam size  The size of the hash result (size_t).
+template <size_t size>
+struct fnv1_params
 {
-    constexpr uint64_t prime = 1099511628211ULL;
-    constexpr uint64_t offset_basis = 14695981039346656037ULL;
+};
 
-    uint64_t ret = offset_basis;
+/// Parameters for the fnv1a hash function, specialized for the hash result of 4 bytes.
+template <>
+struct fnv1_params<4>
+{
+    static constexpr auto prime = 0x1000193;          ///< The FNV prime.
+    static constexpr auto offset_basis = 0x811c9dc5;  ///< The FNV offset basis.
+};
+
+/// Parameters for the fnv1a hash function, specialized for the hash result of 8 bytes.
+template <>
+struct fnv1_params<8>
+{
+    static constexpr auto prime = 0x100000001b3;              ///< The FNV prime.
+    static constexpr auto offset_basis = 0xcbf29ce484222325;  ///< The FNV offset basis.
+};
+
+/// FNV1a hash function.
+inline size_t fnv1a(const uint8_t* ptr, size_t len) noexcept
+{
+    using params = fnv1_params<sizeof(size_t)>;
+
+    auto ret = size_t{params::offset_basis};
     for (size_t i = 0; i < len; i++)
     {
         ret ^= ptr[i];
-        ret *= prime;
+        ret *= params::prime;
     }
     return ret;
 }
@@ -75,10 +101,9 @@ template <>
 struct hash<evmc_address>
 {
     /// Hash operator using FNV1a.
-    std::enable_if<sizeof(size_t) == 8, std::size_t>::type operator()(const evmc_address& s) const
-        noexcept
+    size_t operator()(const evmc_address& s) const noexcept
     {
-        return fnv1a_64(s.bytes, sizeof(s.bytes));
+        return fnv1a(s.bytes, sizeof(s.bytes));
     }
 };
 
@@ -87,10 +112,9 @@ template <>
 struct hash<evmc_bytes32>
 {
     /// Hash operator using FNV1a.
-    std::enable_if<sizeof(size_t) == 8, std::size_t>::type operator()(const evmc_bytes32& s) const
-        noexcept
+    size_t operator()(const evmc_bytes32& s) const noexcept
     {
-        return fnv1a_64(s.bytes, sizeof(s.bytes));
+        return fnv1a(s.bytes, sizeof(s.bytes));
     }
 };
 }  // namespace std
