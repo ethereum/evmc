@@ -1,33 +1,12 @@
-version: 2
-jobs:
+version: 2.1
 
-  lint:
-    docker:
-    - image: ethereum/cpp-build-env:10
-    steps:
-    - checkout
-    - run:
-        name: "Check code format"
-        command: |
-          clang-format --version
-          find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
-          git diff --color --exit-code
-    - run:
-        name: "Run codespell"
-        command: |
-          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
-    - run:
-        name: "Check bumpversion"
-        command: |
-          export PATH="/home/builder/.local/bin:$PATH"
-          pip3 install bumpversion
-          bumpversion --dry-run --verbose major
-          bumpversion --dry-run --verbose minor
-          bumpversion --dry-run --verbose patch
-
-  build: &build
+executors:
+  linux:
     docker:
       - image: ethereum/cpp-build-env:10
+
+commands:
+  build_and_test:
     steps:
       - checkout
       - run:
@@ -67,54 +46,46 @@ jobs:
           paths:
             - test/evmc-vmtester
 
-  build-cxx17:
-    <<: *build
-    environment:
-      CC: gcc-8
-      CXX: g++-8
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
+jobs:
 
-  build-cxx14-asan:
-    <<: *build
-    environment:
-      CC: clang-8
-      CXX: clang++-8
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
-
-  build-gcc6:
-    <<: *build
-    environment:
-      CC: gcc-6
-      CXX: g++-6
-
-  build-clang3.8:
-    <<: *build
-    environment:
-      CC: clang-3.8
-      CXX: clang++-3.8
-
-  test-docs:
-    docker:
-      - image: ethereum/cpp-build-env:10
+  lint:
+    executor: linux
     steps:
-      - checkout
-      - run:
-          name: "Test documentation"
-          command: |
-            cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
-            if [ -s doxygen.warnings ]; then
-              printf '\n\nDoxygen warnings:\n\n'
-              cat doxygen.warnings
-              exit 1
-            fi
-            cat doxygen.log
-      - store_artifacts:
-          path: ~/docs
-          destination: docs
+    - checkout
+    - run:
+        name: "Check code format"
+        command: |
+          clang-format --version
+          find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+          git diff --color --exit-code
+    - run:
+        name: "Run codespell"
+        command: |
+          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
+    - run:
+        name: "Check bumpversion"
+        command: |
+          export PATH="/home/builder/.local/bin:$PATH"
+          pip3 install bumpversion
+          bumpversion --dry-run --verbose major
+          bumpversion --dry-run --verbose minor
+          bumpversion --dry-run --verbose patch
+    - run:
+        name: "Test documentation"
+        command: |
+          cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
+          if [ -s doxygen.warnings ]; then
+            printf '\n\nDoxygen warnings:\n\n'
+            cat doxygen.warnings
+            exit 1
+          fi
+          cat doxygen.log
+    - store_artifacts:
+        path: ~/docs
+        destination: docs
 
   upload-docs:
-    docker:
-      - image: ethereum/cpp-build-env:10
+    executor: linux
     steps:
       - checkout
       - run:
@@ -128,6 +99,40 @@ jobs:
             git add --all
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
+
+  build-cxx17:
+    executor: linux
+    environment:
+      CC: gcc-8
+      CXX: g++-8
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
+    steps:
+      - build_and_test
+
+  build-cxx14-asan:
+    executor: linux
+    environment:
+      CC: clang-8
+      CXX: clang++-8
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
+    steps:
+      - build_and_test
+
+  build-gcc6:
+    executor: linux
+    environment:
+      CC: gcc-6
+      CXX: g++-6
+    steps:
+      - build_and_test
+
+  build-clang38:
+    executor: linux
+    environment:
+      CC: clang-3.8
+      CXX: clang++-3.8
+    steps:
+      - build_and_test
 
   bindings-go-latest:
     docker:
@@ -219,7 +224,7 @@ workflows:
       - build-cxx17
       - build-cxx14-asan
       - build-gcc6
-      - build-clang3.8
+      - build-clang38
       - bindings-go-latest
       - bindings-go-min
       - bindings-rust:
@@ -228,10 +233,9 @@ workflows:
       - bindings-rust-asan-combined:
           requires:
             - build-cxx14-asan
-      - test-docs
       - upload-docs:
           requires:
-            - test-docs
+            - lint
           filters:
             branches:
               only:
