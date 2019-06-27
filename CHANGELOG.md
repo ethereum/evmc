@@ -2,6 +2,12 @@
 
 ## [6.3.0] - unreleased
 
+- Added: [[#313](https://github.com/ethereum/evmc/pull/313)]
+  The loader module introduces standardized EVMC module configuration string 
+  which contains path to the module and additional options.
+  E.g. `./modules/vm.so,engine=compiler,trace,verbosity=2`.
+  A VM can be loaded, created and configured atomically with 
+  new `evmc_load_and_configure()` function.
 - Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Changed: [[#311](https://github.com/ethereum/evmc/pull/311)]
