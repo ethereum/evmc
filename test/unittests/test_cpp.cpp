@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "../../examples/example_host.h"
-#include "../../examples/example_vm.h"
+#include "../../examples/example_vm/example_vm.h"
 
 #include <evmc/evmc.hpp>
 #include <evmc/helpers.hpp>
