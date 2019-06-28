@@ -7,8 +7,6 @@
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
-#include <algorithm>
-#include <cstdlib>
 #include <functional>
 #include <initializer_list>
 #include <utility>
@@ -257,6 +255,10 @@ constexpr bytes32 operator"" _bytes32() noexcept
 
 using namespace literals;
 
+
+/// Alias for evmc_make_result().
+constexpr auto make_result = evmc_make_result;
+
 /// @copydoc evmc_result
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type
@@ -283,19 +285,8 @@ public:
            int64_t _gas_left,
            const uint8_t* _output_data,
            size_t _output_size) noexcept
-      : evmc_result{_status_code, _gas_left, nullptr, _output_size, {}, {}, {}}
-    {
-        if (output_size != 0)
-        {
-            auto mem = static_cast<uint8_t*>(std::malloc(output_size));
-            std::copy_n(_output_data, output_size, mem);
-            output_data = mem;
-            release = [](const evmc_result* r) noexcept
-            {
-                std::free(const_cast<uint8_t*>(r->output_data));
-            };
-        }
-    }
+      : evmc_result{make_result(_status_code, _gas_left, _output_data, _output_size)}
+    {}
 
     /// Converting constructor from raw evmc_result.
     explicit result(evmc_result const& res) noexcept : evmc_result{res} {}

@@ -492,4 +492,13 @@ TEST(cpp, result_create)
     ASSERT_EQ(r.output_size, 2);
     EXPECT_EQ(r.output_data[0], 1);
     EXPECT_EQ(r.output_data[1], 2);
+
+    auto c = evmc::make_result(r.status_code, r.gas_left, r.output_data, r.output_size);
+    EXPECT_EQ(c.status_code, r.status_code);
+    EXPECT_EQ(c.gas_left, r.gas_left);
+    ASSERT_EQ(c.output_size, r.output_size);
+    EXPECT_EQ(evmc::address{c.create_address}, evmc::address{r.create_address});
+    ASSERT_TRUE(c.release);
+    EXPECT_TRUE(std::memcmp(c.output_data, r.output_data, c.output_size) == 0);
+    c.release(&c);
 }
