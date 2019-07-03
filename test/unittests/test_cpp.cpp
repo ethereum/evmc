@@ -118,6 +118,17 @@ TEST(cpp, vm_move)
         EXPECT_FALSE(vm1);
     }
     EXPECT_EQ(destroy_counter, 4);
+    {
+        // Moving to itself will destroy the VM and reset the evmc::vm.
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        auto& vm1_ref = vm1;
+        vm1 = std::move(vm1_ref);
+        EXPECT_EQ(destroy_counter, 5);  // Already destroyed.
+        EXPECT_FALSE(vm1);              // Null.
+    }
+    EXPECT_EQ(destroy_counter, 5);
 }
 
 TEST(cpp, host)
