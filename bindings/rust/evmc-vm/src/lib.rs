@@ -25,7 +25,7 @@ pub struct ExecutionResult {
     status_code: ffi::evmc_status_code,
     gas_left: i64,
     output: Option<Vec<u8>>,
-    create_address: Option<ffi::evmc_address>,
+    create_address: Option<Address>,
 }
 
 /// EVMC execution message structure.
@@ -34,11 +34,11 @@ pub struct ExecutionMessage {
     flags: u32,
     depth: i32,
     gas: i64,
-    destination: ffi::evmc_address,
-    sender: ffi::evmc_address,
+    destination: Address,
+    sender: Address,
     input: Option<Vec<u8>>,
-    value: ffi::evmc_uint256be,
-    create2_salt: ffi::evmc_bytes32,
+    value: Uint256,
+    create2_salt: Bytes32,
 }
 
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
@@ -87,7 +87,7 @@ impl ExecutionResult {
         self.output.as_ref()
     }
 
-    pub fn get_create_address(&self) -> Option<&ffi::evmc_address> {
+    pub fn get_create_address(&self) -> Option<&Address> {
         self.create_address.as_ref()
     }
 }
@@ -109,11 +109,11 @@ impl ExecutionMessage {
         self.gas
     }
 
-    pub fn destination(&self) -> &ffi::evmc_address {
+    pub fn destination(&self) -> &Address {
         &self.destination
     }
 
-    pub fn sender(&self) -> &ffi::evmc_address {
+    pub fn sender(&self) -> &Address {
         &self.sender
     }
 
@@ -121,11 +121,11 @@ impl ExecutionMessage {
         self.input.as_ref()
     }
 
-    pub fn value(&self) -> &ffi::evmc_uint256be {
+    pub fn value(&self) -> &Uint256 {
         &self.value
     }
 
-    pub fn create2_salt(&self) -> &ffi::evmc_bytes32 {
+    pub fn create2_salt(&self) -> &Bytes32 {
         &self.create2_salt
     }
 }
@@ -152,89 +152,80 @@ impl<'a> ExecutionContext<'a> {
         &self.tx_context
     }
 
-    pub fn account_exists(&mut self, address: &ffi::evmc_address) -> bool {
+    pub fn account_exists(&mut self, address: &Address) -> bool {
         unsafe {
             assert!((*self.context.host).account_exists.is_some());
             (*self.context.host).account_exists.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
             )
         }
     }
 
-    pub fn get_storage(
-        &mut self,
-        address: &ffi::evmc_address,
-        key: &ffi::evmc_bytes32,
-    ) -> ffi::evmc_bytes32 {
+    pub fn get_storage(&mut self, address: &Address, key: &Bytes32) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_storage.is_some());
             (*self.context.host).get_storage.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
-                key as *const ffi::evmc_bytes32,
+                address as *const Address,
+                key as *const Bytes32,
             )
         }
     }
 
     pub fn set_storage(
         &mut self,
-        address: &ffi::evmc_address,
-        key: &ffi::evmc_bytes32,
-        value: &ffi::evmc_bytes32,
+        address: &Address,
+        key: &Bytes32,
+        value: &Bytes32,
     ) -> ffi::evmc_storage_status {
         unsafe {
             assert!((*self.context.host).set_storage.is_some());
             (*self.context.host).set_storage.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
-                key as *const ffi::evmc_bytes32,
-                value as *const ffi::evmc_bytes32,
+                address as *const Address,
+                key as *const Bytes32,
+                value as *const Bytes32,
             )
         }
     }
 
-    pub fn get_balance(&mut self, address: &ffi::evmc_address) -> ffi::evmc_uint256be {
+    pub fn get_balance(&mut self, address: &Address) -> Uint256 {
         unsafe {
             assert!((*self.context.host).get_balance.is_some());
             (*self.context.host).get_balance.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
             )
         }
     }
 
-    pub fn get_code_size(&mut self, address: &ffi::evmc_address) -> usize {
+    pub fn get_code_size(&mut self, address: &Address) -> usize {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
             (*self.context.host).get_code_size.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
             )
         }
     }
 
-    pub fn get_code_hash(&mut self, address: &ffi::evmc_address) -> ffi::evmc_bytes32 {
+    pub fn get_code_hash(&mut self, address: &Address) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
             (*self.context.host).get_code_hash.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
             )
         }
     }
 
-    pub fn copy_code(
-        &mut self,
-        address: &ffi::evmc_address,
-        code_offset: usize,
-        buffer: &mut [u8],
-    ) -> usize {
+    pub fn copy_code(&mut self, address: &Address, code_offset: usize, buffer: &mut [u8]) -> usize {
         unsafe {
             assert!((*self.context.host).copy_code.is_some());
             (*self.context.host).copy_code.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
                 code_offset,
                 // FIXME: ensure that alignment of the array elements is OK
                 buffer.as_mut_ptr(),
@@ -243,13 +234,13 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn selfdestruct(&mut self, address: &ffi::evmc_address, beneficiary: &ffi::evmc_address) {
+    pub fn selfdestruct(&mut self, address: &Address, beneficiary: &Address) {
         unsafe {
             assert!((*self.context.host).selfdestruct.is_some());
             (*self.context.host).selfdestruct.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
-                beneficiary as *const ffi::evmc_address,
+                address as *const Address,
+                beneficiary as *const Address,
             )
         }
     }
@@ -265,7 +256,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn get_block_hash(&mut self, num: i64) -> ffi::evmc_bytes32 {
+    pub fn get_block_hash(&mut self, num: i64) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_block_hash.is_some());
             (*self.context.host).get_block_hash.unwrap()(
@@ -275,17 +266,12 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn emit_log(
-        &mut self,
-        address: &ffi::evmc_address,
-        data: &[u8],
-        topics: &[ffi::evmc_bytes32],
-    ) {
+    pub fn emit_log(&mut self, address: &Address, data: &[u8], topics: &[Bytes32]) {
         unsafe {
             assert!((*self.context.host).emit_log.is_some());
             (*self.context.host).emit_log.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                address as *const ffi::evmc_address,
+                address as *const Address,
                 // FIXME: ensure that alignment of the array elements is OK
                 data.as_ptr(),
                 data.len(),
@@ -386,7 +372,7 @@ impl Into<ffi::evmc_result> for ExecutionResult {
             create_address: if self.create_address.is_some() {
                 self.create_address.unwrap()
             } else {
-                ffi::evmc_address { bytes: [0u8; 20] }
+                Address { bytes: [0u8; 20] }
             },
             padding: [0u8; 4],
         }
@@ -470,7 +456,7 @@ mod tests {
             output_data: Box::into_raw(Box::new([0xde, 0xad, 0xbe, 0xef])) as *const u8,
             output_size: 4,
             release: Some(test_result_dispose),
-            create_address: ffi::evmc_address { bytes: [0u8; 20] },
+            create_address: Address { bytes: [0u8; 20] },
             padding: [0u8; 4],
         };
 
@@ -571,10 +557,10 @@ mod tests {
 
     #[test]
     fn message_from_ffi() {
-        let destination = ffi::evmc_address { bytes: [32u8; 20] };
-        let sender = ffi::evmc_address { bytes: [128u8; 20] };
-        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
-        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+        let destination = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
 
         let msg = ffi::evmc_message {
             kind: ffi::evmc_call_kind::EVMC_CALL,
@@ -605,10 +591,10 @@ mod tests {
     #[test]
     fn message_from_ffi_with_input() {
         let input = vec![0xc0, 0xff, 0xee];
-        let destination = ffi::evmc_address { bytes: [32u8; 20] };
-        let sender = ffi::evmc_address { bytes: [128u8; 20] };
-        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
-        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+        let destination = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
 
         let msg = ffi::evmc_message {
             kind: ffi::evmc_call_kind::EVMC_CALL,
@@ -641,19 +627,19 @@ mod tests {
         _context: *mut ffi::evmc_context,
     ) -> ffi::evmc_tx_context {
         ffi::evmc_tx_context {
-            tx_gas_price: ffi::evmc_uint256be { bytes: [0u8; 32] },
-            tx_origin: ffi::evmc_address { bytes: [0u8; 20] },
-            block_coinbase: ffi::evmc_address { bytes: [0u8; 20] },
+            tx_gas_price: Uint256 { bytes: [0u8; 32] },
+            tx_origin: Address { bytes: [0u8; 20] },
+            block_coinbase: Address { bytes: [0u8; 20] },
             block_number: 42,
             block_timestamp: 235117,
             block_gas_limit: 105023,
-            block_difficulty: ffi::evmc_uint256be { bytes: [0xaa; 32] },
+            block_difficulty: Uint256 { bytes: [0xaa; 32] },
         }
     }
 
     unsafe extern "C" fn get_dummy_code_size(
         _context: *mut ffi::evmc_context,
-        _addr: *const ffi::evmc_address,
+        _addr: *const Address,
     ) -> usize {
         105023 as usize
     }
@@ -692,12 +678,12 @@ mod tests {
             flags: 0,
             depth: 123,
             gas: 105023,
-            destination: ffi::evmc_address { bytes: [0u8; 20] },
-            sender: ffi::evmc_address { bytes: [0u8; 20] },
+            destination: Address { bytes: [0u8; 20] },
+            sender: Address { bytes: [0u8; 20] },
             input_data: std::ptr::null() as *const u8,
             input_size: 0,
-            value: ffi::evmc_uint256be { bytes: [0u8; 32] },
-            create2_salt: ffi::evmc_uint256be { bytes: [0u8; 32] },
+            value: Uint256 { bytes: [0u8; 32] },
+            create2_salt: Uint256 { bytes: [0u8; 32] },
         }
     }
 
@@ -740,7 +726,7 @@ mod tests {
         let msg = get_dummy_message();
 
         // This address is useless. Just a dummy parameter for the interface function.
-        let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
+        let test_addr = Address { bytes: [0u8; 20] };
         let mut context_raw = get_dummy_context();
         let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
 
