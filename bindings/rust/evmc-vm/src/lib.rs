@@ -325,7 +325,7 @@ impl From<ffi::evmc_result> for ExecutionResult {
     }
 }
 
-fn allocate_output_data(output: Option<Vec<u8>>) -> (*const u8, usize) {
+fn allocate_output_data(output: Option<&Vec<u8>>) -> (*const u8, usize) {
     if let Some(buf) = output {
         let buf_len = buf.len();
 
@@ -370,7 +370,7 @@ extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
 /// Returns a pointer to a stack-allocated evmc_result.
 impl Into<ffi::evmc_result> for ExecutionResult {
     fn into(self) -> ffi::evmc_result {
-        let (buffer, len) = allocate_output_data(self.output);
+        let (buffer, len) = allocate_output_data(self.output.as_ref());
         ffi::evmc_result {
             status_code: self.status_code,
             gas_left: self.gas_left,
