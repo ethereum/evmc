@@ -9,9 +9,11 @@
 //! This crate documents how to use certain data types.
 
 mod container;
+mod types;
 
 pub use container::EvmcContainer;
 pub use evmc_sys as ffi;
+pub use types::*;
 
 pub trait EvmcVm {
     fn init() -> Self;
