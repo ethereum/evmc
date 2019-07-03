@@ -70,6 +70,67 @@ TEST(cpp, vm_set_option)
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
+TEST(cpp, vm_null)
+{
+    evmc::vm vm;
+    EXPECT_FALSE(vm);
+    EXPECT_TRUE(!vm);
+}
+
+TEST(cpp, vm_move)
+{
+    static int destroy_counter = 0;
+    const auto template_instance =
+        evmc_instance{EVMC_ABI_VERSION, "",      "",      [](evmc_instance*) { ++destroy_counter; },
+                      nullptr,          nullptr, nullptr, nullptr};
+
+    EXPECT_EQ(destroy_counter, 0);
+    {
+        auto v1 = template_instance;
+        auto v2 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
+        vm1 = evmc::vm{&v2};
+        EXPECT_TRUE(vm1);
+    }
+    EXPECT_EQ(destroy_counter, 2);
+    {
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
+        vm1 = evmc::vm{};
+        EXPECT_FALSE(vm1);
+    }
+    EXPECT_EQ(destroy_counter, 3);
+    {
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
+        auto vm2 = std::move(vm1);
+        EXPECT_TRUE(vm2);
+        EXPECT_FALSE(vm1);  // NOLINT
+        auto vm3 = std::move(vm2);
+        EXPECT_TRUE(vm3);
+        EXPECT_FALSE(vm2);  // NOLINT
+        EXPECT_FALSE(vm1);
+    }
+    EXPECT_EQ(destroy_counter, 4);
+    {
+        // Moving to itself will destroy the VM and reset the evmc::vm.
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        auto& vm1_ref = vm1;
+        vm1 = std::move(vm1_ref);
+        EXPECT_EQ(destroy_counter, 5);  // Already destroyed.
+        EXPECT_FALSE(vm1);              // Null.
+    }
+    EXPECT_EQ(destroy_counter, 5);
+}
+
 TEST(cpp, host)
 {
     // Use example host to execute all methods from the C++ host wrapper.
