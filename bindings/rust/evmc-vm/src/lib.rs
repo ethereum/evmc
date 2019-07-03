@@ -731,6 +731,36 @@ mod tests {
         105023 as usize
     }
 
+    unsafe extern "C" fn execute_call(
+        _context: *mut ffi::evmc_context,
+        _msg: *const ffi::evmc_message,
+    ) -> ffi::evmc_result {
+        // Some dumb validation for testing.
+        let msg = *_msg;
+        let success = if msg.input_size != 0 && msg.input_data == std::ptr::null() {
+            false
+        } else if msg.input_size == 0 && msg.input_data != std::ptr::null() {
+            false
+        } else {
+            true
+        };
+
+        ffi::evmc_result {
+            status_code: if success {
+                ffi::evmc_status_code::EVMC_SUCCESS
+            } else {
+                ffi::evmc_status_code::EVMC_INTERNAL_ERROR
+            },
+            gas_left: 2,
+            // NOTE: we are passing the input pointer here, but for testing the lifetime is ok
+            output_data: msg.input_data,
+            output_size: msg.input_size,
+            release: None,
+            create_address: ffi::evmc_address::default(),
+            padding: [0u8; 4],
+        }
+    }
+
     // Update these when needed for tests
     fn get_dummy_context() -> ffi::evmc_context {
         ffi::evmc_context {
@@ -743,7 +773,7 @@ mod tests {
                 get_code_hash: None,
                 copy_code: None,
                 selfdestruct: None,
-                call: None,
+                call: Some(execute_call),
                 get_tx_context: Some(get_dummy_tx_context),
                 get_block_hash: None,
                 emit_log: None,
@@ -821,6 +851,79 @@ mod tests {
         let b = exe_context.get_code_size(&test_addr);
 
         assert_eq!(a, b);
+
+        dummy_context_dispose(context_raw);
+    }
+
+    #[test]
+    fn test_call_empty_data() {
+        let msg = get_dummy_message();
+
+        // This address is useless. Just a dummy parameter for the interface function.
+        let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
+        let mut context_raw = get_dummy_context();
+        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+
+        let message = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            0,
+            0,
+            6566,
+            test_addr,
+            test_addr,
+            None,
+            ffi::evmc_uint256be::default(),
+            ffi::evmc_bytes32::default(),
+        );
+
+        let b = exe_context.call(&message);
+
+        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.get_gas_left(), 2);
+        assert!(b.get_output().is_none());
+        assert!(b.get_create_address().is_some());
+        assert_eq!(
+            b.get_create_address().unwrap(),
+            &ffi::evmc_address::default()
+        );
+
+        dummy_context_dispose(context_raw);
+    }
+
+    #[test]
+    fn test_call_with_data() {
+        let msg = get_dummy_message();
+
+        // This address is useless. Just a dummy parameter for the interface function.
+        let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
+        let mut context_raw = get_dummy_context();
+        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+
+        let data = vec![0xc0, 0xff, 0xfe];
+
+        let message = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            0,
+            0,
+            6566,
+            test_addr,
+            test_addr,
+            Some(&data),
+            ffi::evmc_uint256be::default(),
+            ffi::evmc_bytes32::default(),
+        );
+
+        let b = exe_context.call(&message);
+
+        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.get_gas_left(), 2);
+        assert!(b.get_output().is_some());
+        assert_eq!(b.get_output().unwrap(), &data);
+        assert!(b.get_create_address().is_some());
+        assert_eq!(
+            b.get_create_address().unwrap(),
+            &ffi::evmc_address::default()
+        );
 
         dummy_context_dispose(context_raw);
     }
