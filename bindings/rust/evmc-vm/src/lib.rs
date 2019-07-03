@@ -100,7 +100,7 @@ impl ExecutionMessage {
         gas: i64,
         destination: Address,
         sender: Address,
-        input: Option<Vec<u8>>,
+        input: Option<&[u8]>,
         value: Uint256,
         create2_salt: Bytes32,
     ) -> Self {
@@ -111,7 +111,11 @@ impl ExecutionMessage {
             gas,
             destination,
             sender,
-            input,
+            input: if input.is_some() {
+                Some(input.unwrap().to_vec())
+            } else {
+                None
+            },
             value,
             create2_salt,
         }
@@ -621,7 +625,7 @@ mod tests {
             4466,
             destination,
             sender,
-            Some(input.clone()),
+            Some(&input),
             value,
             create2_salt,
         );
