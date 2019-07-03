@@ -20,6 +20,8 @@ fn gen_bindings() {
         .constified_enum("")
         // generate Rust enums for each evmc enum
         .rustified_enum("*")
+        // force deriving the Hash trait on basic types (address, bytes32)
+        .derive_hash(true)
         .generate()
         .expect("Unable to generate bindings");
 
