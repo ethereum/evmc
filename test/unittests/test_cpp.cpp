@@ -70,6 +70,42 @@ TEST(cpp, vm_set_option)
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
+TEST(cpp, vm_move)
+{
+    static int destroy_counter = 0;
+    const auto template_instance =
+        evmc_instance{EVMC_ABI_VERSION, "",      "",      [](evmc_instance*) { ++destroy_counter; },
+                      nullptr,          nullptr, nullptr, nullptr};
+
+    EXPECT_EQ(destroy_counter, 0);
+    {
+        auto v1 = template_instance;
+        auto v2 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        vm1 = evmc::vm{&v2};
+        (void)vm1;
+    }
+    EXPECT_EQ(destroy_counter, 2);
+    {
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        vm1 = evmc::vm{};
+        (void)vm1;
+    }
+    EXPECT_EQ(destroy_counter, 3);
+    {
+        auto v1 = template_instance;
+
+        auto vm1 = evmc::vm{&v1};
+        auto vm2 = std::move(vm1);
+        auto vm3 = std::move(vm2);
+        (void)vm3;
+    }
+    EXPECT_EQ(destroy_counter, 4);
+}
+
 TEST(cpp, host)
 {
     // Use example host to execute all methods from the C++ host wrapper.

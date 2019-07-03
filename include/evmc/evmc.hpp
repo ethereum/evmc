@@ -80,11 +80,32 @@ public:
 class vm
 {
 public:
+    vm() noexcept = default;
+
     /// Converting constructor from evmc_instance.
     explicit vm(evmc_instance* instance) noexcept : m_instance{instance} {}
 
     /// Destructor responsible for automatically destroying the VM instance.
-    ~vm() noexcept { m_instance->destroy(m_instance); }
+    ~vm() noexcept
+    {
+        if (m_instance)
+            m_instance->destroy(m_instance);
+    }
+
+    vm(const vm&) = delete;
+    vm& operator=(const vm&) = delete;
+
+    /// Move constructor.
+    vm(vm&& other) noexcept : m_instance{other.m_instance} { other.m_instance = nullptr; }
+
+    /// Move assignment operator.
+    vm& operator=(vm&& other) noexcept
+    {
+        this->~vm();
+        m_instance = other.m_instance;
+        other.m_instance = nullptr;
+        return *this;
+    }
 
     /// The constructor that captures a VM instance and configures the instance
     /// with provided list of options.
@@ -128,7 +149,7 @@ public:
     }
 
 private:
-    evmc_instance* const m_instance = nullptr;
+    evmc_instance* m_instance = nullptr;
 };
 
 /// The EVMC Host interface
