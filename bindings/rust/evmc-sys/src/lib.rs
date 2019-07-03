@@ -23,3 +23,15 @@ impl PartialEq for evmc_bytes32 {
         self.bytes == other.bytes
     }
 }
+
+impl Default for evmc_address {
+    fn default() -> Self {
+        evmc_address { bytes: [0u8; 20] }
+    }
+}
+
+impl Default for evmc_bytes32 {
+    fn default() -> Self {
+        evmc_bytes32 { bytes: [0u8; 32] }
+    }
+}
