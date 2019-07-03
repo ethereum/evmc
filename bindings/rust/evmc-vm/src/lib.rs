@@ -51,13 +51,13 @@ impl ExecutionResult {
     pub fn new(
         _status_code: ffi::evmc_status_code,
         _gas_left: i64,
-        _output: Option<&Vec<u8>>,
+        _output: Option<&[u8]>,
     ) -> Self {
         ExecutionResult {
             status_code: _status_code,
             gas_left: _gas_left,
             output: if _output.is_some() {
-                Some(_output.unwrap().clone())
+                Some(_output.unwrap().to_vec())
             } else {
                 None
             },
@@ -69,7 +69,7 @@ impl ExecutionResult {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None)
     }
 
-    pub fn success(_gas_left: i64, _output: Option<&Vec<u8>>) -> Self {
+    pub fn success(_gas_left: i64, _output: Option<&[u8]>) -> Self {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_SUCCESS, _gas_left, _output)
     }
 
@@ -486,7 +486,7 @@ mod tests {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
-            Some(&vec![0xc0, 0xff, 0xee, 0x71, 0x75]),
+            Some(&[0xc0, 0xff, 0xee, 0x71, 0x75]),
         );
 
         let f: *const ffi::evmc_result = r.into();
@@ -530,7 +530,7 @@ mod tests {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
-            Some(&vec![0xc0, 0xff, 0xee, 0x71, 0x75]),
+            Some(&[0xc0, 0xff, 0xee, 0x71, 0x75]),
         );
 
         let f: ffi::evmc_result = r.into();

@@ -20,7 +20,7 @@ impl EvmcVm for ExampleRustVM {
         if is_create {
             ExecutionResult::failure()
         } else {
-            ExecutionResult::success(66, Some(&vec![0xc0, 0xff, 0xee]))
+            ExecutionResult::success(66, Some(&[0xc0, 0xff, 0xee]))
         }
     }
 }
