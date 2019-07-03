@@ -117,6 +117,9 @@ public:
             set_option(option.first, option.second);
     }
 
+    /// Checks if contains a valid pointer to the VM instance.
+    explicit operator bool() const noexcept { return m_instance != nullptr; }
+
     /// Checks whenever the VM instance is ABI compatible with the current EVMC API.
     bool is_abi_compatible() const noexcept { return m_instance->abi_version == EVMC_ABI_VERSION; }
 

@@ -70,6 +70,13 @@ TEST(cpp, vm_set_option)
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
+TEST(cpp, vm_null)
+{
+    evmc::vm vm;
+    EXPECT_FALSE(vm);
+    EXPECT_TRUE(!vm);
+}
+
 TEST(cpp, vm_move)
 {
     static int destroy_counter = 0;
@@ -83,25 +90,32 @@ TEST(cpp, vm_move)
         auto v2 = template_instance;
 
         auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
         vm1 = evmc::vm{&v2};
-        (void)vm1;
+        EXPECT_TRUE(vm1);
     }
     EXPECT_EQ(destroy_counter, 2);
     {
         auto v1 = template_instance;
 
         auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
         vm1 = evmc::vm{};
-        (void)vm1;
+        EXPECT_FALSE(vm1);
     }
     EXPECT_EQ(destroy_counter, 3);
     {
         auto v1 = template_instance;
 
         auto vm1 = evmc::vm{&v1};
+        EXPECT_TRUE(vm1);
         auto vm2 = std::move(vm1);
+        EXPECT_TRUE(vm2);
+        EXPECT_FALSE(vm1);  // NOLINT
         auto vm3 = std::move(vm2);
-        (void)vm3;
+        EXPECT_TRUE(vm3);
+        EXPECT_FALSE(vm2);  // NOLINT
+        EXPECT_FALSE(vm1);
     }
     EXPECT_EQ(destroy_counter, 4);
 }
