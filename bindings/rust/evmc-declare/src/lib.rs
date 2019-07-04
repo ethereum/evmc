@@ -337,10 +337,10 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
         {
             use evmc_vm::EvmcVm;
 
-            assert!(!msg.is_null());
-            assert!(!context.is_null());
             assert!(!instance.is_null());
-            assert!(!code.is_null());
+            // TODO: context is optional in case of the "precompiles" capability
+            assert!(!context.is_null());
+            assert!(!msg.is_null());
 
             let execution_context = unsafe {
                 ::evmc_vm::ExecutionContext::new(
@@ -349,8 +349,14 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 )
             };
 
-            let code_ref: &[u8] = unsafe {
-                ::std::slice::from_raw_parts(code, code_size)
+            let empty_code = [0u8;0];
+            let code_ref: &[u8] = if code.is_null() {
+                assert_eq!(code_size, 0);
+                &empty_code
+            } else {
+                unsafe {
+                    ::std::slice::from_raw_parts(code, code_size)
+                }
             };
 
             let container = unsafe {
