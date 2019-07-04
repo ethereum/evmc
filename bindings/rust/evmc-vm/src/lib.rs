@@ -17,7 +17,12 @@ pub use types::*;
 
 pub trait EvmcVm {
     fn init() -> Self;
-    fn execute(&self, code: &[u8], context: &ExecutionContext) -> ExecutionResult;
+    fn execute(
+        &self,
+        code: &[u8],
+        message: &ExecutionMessage,
+        context: &ExecutionContext,
+    ) -> ExecutionResult;
 }
 
 /// EVMC result structure.
@@ -44,7 +49,6 @@ pub struct ExecutionMessage {
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
-    message: ExecutionMessage,
     context: &'a mut ffi::evmc_context,
     tx_context: ffi::evmc_tx_context,
 }
@@ -159,21 +163,16 @@ impl ExecutionMessage {
 }
 
 impl<'a> ExecutionContext<'a> {
-    pub fn new(_message: &'a ffi::evmc_message, _context: &'a mut ffi::evmc_context) -> Self {
+    pub fn new(_context: &'a mut ffi::evmc_context) -> Self {
         let _tx_context = unsafe {
             assert!((*(_context.host)).get_tx_context.is_some());
             (*(_context.host)).get_tx_context.unwrap()(_context as *mut ffi::evmc_context)
         };
 
         ExecutionContext {
-            message: _message.into(),
             context: _context,
             tx_context: _tx_context,
         }
-    }
-
-    pub fn get_message(&self) -> &ExecutionMessage {
-        &self.message
     }
 
     pub fn get_tx_context(&mut self) -> &ffi::evmc_tx_context {
@@ -789,31 +788,15 @@ mod tests {
         }
     }
 
-    fn get_dummy_message() -> ffi::evmc_message {
-        ffi::evmc_message {
-            kind: ffi::evmc_call_kind::EVMC_CALL,
-            flags: 0,
-            depth: 123,
-            gas: 105023,
-            destination: Address { bytes: [0u8; 20] },
-            sender: Address { bytes: [0u8; 20] },
-            input_data: std::ptr::null() as *const u8,
-            input_size: 0,
-            value: Uint256 { bytes: [0u8; 32] },
-            create2_salt: Uint256 { bytes: [0u8; 32] },
-        }
-    }
-
     #[test]
     fn execution_context() {
-        let msg = get_dummy_message();
         let mut context_raw = get_dummy_context();
         // Make a copy here so we don't let get_dummy_context() go out of scope when called again
         // in get_dummy_tx_context() and cause LLVM
         // sanitizers to complain
         let mut context_raw_copy = context_raw.clone();
 
-        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+        let mut exe_context = ExecutionContext::new(&mut context_raw);
         let a = exe_context.get_tx_context();
         let b = unsafe { get_dummy_tx_context(&mut context_raw_copy as *mut ffi::evmc_context) };
 
@@ -821,31 +804,15 @@ mod tests {
         assert_eq!(a.block_timestamp, b.block_timestamp);
         assert_eq!(a.block_number, b.block_number);
 
-        let c = exe_context.get_message();
-        let d = get_dummy_message();
-
-        assert_eq!(c.kind, d.kind);
-        assert_eq!(c.flags, d.flags);
-        assert_eq!(c.depth, d.depth);
-        assert_eq!(c.gas, d.gas);
-        if d.input_data.is_null() {
-            assert!(c.input().is_none());
-        } else {
-            assert!(c.input().is_some());
-            assert_eq!(c.input().unwrap().len(), d.input_size);
-        }
-
         dummy_context_dispose(context_raw);
     }
 
     #[test]
     fn get_code_size() {
-        let msg = get_dummy_message();
-
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = Address { bytes: [0u8; 20] };
         let mut context_raw = get_dummy_context();
-        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+        let mut exe_context = ExecutionContext::new(&mut context_raw);
 
         let a: usize = 105023;
         let b = exe_context.get_code_size(&test_addr);
@@ -857,12 +824,10 @@ mod tests {
 
     #[test]
     fn test_call_empty_data() {
-        let msg = get_dummy_message();
-
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
         let mut context_raw = get_dummy_context();
-        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+        let mut exe_context = ExecutionContext::new(&mut context_raw);
 
         let message = ExecutionMessage::new(
             ffi::evmc_call_kind::EVMC_CALL,
@@ -892,12 +857,10 @@ mod tests {
 
     #[test]
     fn test_call_with_data() {
-        let msg = get_dummy_message();
-
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
         let mut context_raw = get_dummy_context();
-        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+        let mut exe_context = ExecutionContext::new(&mut context_raw);
 
         let data = vec![0xc0, 0xff, 0xfe];
 

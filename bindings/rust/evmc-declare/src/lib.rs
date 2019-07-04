@@ -22,7 +22,7 @@
 //!             ExampleVM {}
 //!     }
 //!
-//!     fn execute(&self, code: &[u8], context: &evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
+//!     fn execute(&self, code: &[u8], message: &evmc_vm::ExecutionMessage, context: &evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
 //!             evmc_vm::ExecutionResult::success(1337, None)
 //!     }
 //! }
@@ -342,11 +342,12 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             assert!(!context.is_null());
             assert!(!msg.is_null());
 
+            let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
+                msg.as_ref().expect("EVMC message is null").into()
+            };
+
             let execution_context = unsafe {
-                ::evmc_vm::ExecutionContext::new(
-                    msg.as_ref().expect("EVMC message is null"),
-                    context.as_mut().expect("EVMC context is null")
-                )
+                ::evmc_vm::ExecutionContext::new(context.as_mut().expect("EVMC context is null"))
             };
 
             let empty_code = [0u8;0];
@@ -364,7 +365,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             };
 
             let result = ::std::panic::catch_unwind(|| {
-                container.execute(code_ref, &execution_context)
+                container.execute(code_ref, &execution_message, &execution_context)
             });
 
             let result = if result.is_err() {

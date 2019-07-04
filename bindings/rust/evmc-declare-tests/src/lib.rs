@@ -6,6 +6,7 @@
 use evmc_declare::evmc_declare_vm;
 use evmc_vm::EvmcVm;
 use evmc_vm::ExecutionContext;
+use evmc_vm::ExecutionMessage;
 use evmc_vm::ExecutionResult;
 
 #[evmc_declare_vm("Foo VM", "ewasm, evm", "1.42-alpha.gamma.starship")]
@@ -16,7 +17,12 @@ impl EvmcVm for FooVM {
         FooVM {}
     }
 
-    fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> ExecutionResult {
+    fn execute(
+        &self,
+        _code: &[u8],
+        _message: &ExecutionMessage,
+        _context: &ExecutionContext,
+    ) -> ExecutionResult {
         ExecutionResult::success(1337, None)
     }
 }
