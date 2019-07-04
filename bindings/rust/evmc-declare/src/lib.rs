@@ -22,7 +22,7 @@
 //!             ExampleVM {}
 //!     }
 //!
-//!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, code: &[u8], message: &evmc_vm::ExecutionMessage, context: &mut evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
+//!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, code: &[u8], message: &evmc_vm::ExecutionMessage, context: Option<&mut evmc_vm::ExecutionContext>) -> evmc_vm::ExecutionResult {
 //!             evmc_vm::ExecutionResult::success(1337, None)
 //!     }
 //! }
@@ -346,14 +346,12 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             use evmc_vm::EvmcVm;
 
             // TODO: context is optional in case of the "precompiles" capability
-            if instance.is_null() || host.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
+            if instance.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
                 // These are irrecoverable errors that violate the EVMC spec.
                 std::process::abort();
             }
 
             assert!(!instance.is_null());
-            // TODO: host is optional in case of the "precompiles" capability
-            assert!(!host.is_null());
             assert!(!msg.is_null());
 
             let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
@@ -376,13 +374,17 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             };
 
             let result = ::std::panic::catch_unwind(|| {
-                let mut execution_context = unsafe {
-                    ::evmc_vm::ExecutionContext::new(
-                        host.as_ref().expect("EVMC host is null"),
-                        context,
-                    )
-                };
-                container.execute(revision, code_ref, &execution_message, &mut execution_context)
+                if host.is_null() {
+                    container.execute(revision, code_ref, &execution_message, None)
+                } else {
+                    let mut execution_context = unsafe {
+                        ::evmc_vm::ExecutionContext::new(
+                            host.as_ref().expect("EVMC host is null"),
+                            context,
+                        )
+                    };
+                    container.execute(revision, code_ref, &execution_message, Some(&mut execution_context))
+                }
             });
 
             let result = if result.is_err() {

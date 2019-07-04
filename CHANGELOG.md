@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning].
 - The helper function `evmc_is_abi_compatible()` returns now `bool`
   instead of `int`.
   [[#442](https://github.com/ethereum/evmc/pull/442)]
+- In the Rust bindings make `ExecutionContext` optional within `execute`.
+  [[#350](https://github.com/ethereum/evmc/pull/350)]
 
 
 ## [6.3.1] - 2019-08-19
