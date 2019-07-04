@@ -567,6 +567,74 @@ mod tests {
         }
     }
 
+    #[test]
+    fn message_from_ffi() {
+        let destination = ffi::evmc_address { bytes: [32u8; 20] };
+        let sender = ffi::evmc_address { bytes: [128u8; 20] };
+        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
+        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+
+        let msg = ffi::evmc_message {
+            kind: ffi::evmc_call_kind::EVMC_CALL,
+            flags: 44,
+            depth: 66,
+            gas: 4466,
+            destination: destination,
+            sender: sender,
+            input_data: std::ptr::null(),
+            input_size: 0,
+            value: value,
+            create2_salt: create2_salt,
+        };
+
+        let ret: ExecutionMessage = (&msg).into();
+
+        assert_eq!(ret.kind(), msg.kind);
+        assert_eq!(ret.flags(), msg.flags);
+        assert_eq!(ret.depth(), msg.depth);
+        assert_eq!(ret.gas(), msg.gas);
+        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.sender(), msg.sender);
+        assert!(ret.input().is_none());
+        assert_eq!(*ret.value(), msg.value);
+        assert_eq!(*ret.create2_salt(), msg.create2_salt);
+    }
+
+    #[test]
+    fn message_from_ffi_with_input() {
+        let input = vec![0xc0, 0xff, 0xee];
+        let destination = ffi::evmc_address { bytes: [32u8; 20] };
+        let sender = ffi::evmc_address { bytes: [128u8; 20] };
+        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
+        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+
+        let msg = ffi::evmc_message {
+            kind: ffi::evmc_call_kind::EVMC_CALL,
+            flags: 44,
+            depth: 66,
+            gas: 4466,
+            destination: destination,
+            sender: sender,
+            input_data: input.as_ptr(),
+            input_size: input.len(),
+            value: value,
+            create2_salt: create2_salt,
+        };
+
+        let ret: ExecutionMessage = (&msg).into();
+
+        assert_eq!(ret.kind(), msg.kind);
+        assert_eq!(ret.flags(), msg.flags);
+        assert_eq!(ret.depth(), msg.depth);
+        assert_eq!(ret.gas(), msg.gas);
+        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.sender(), msg.sender);
+        assert!(ret.input().is_some());
+        assert_eq!(*ret.input().unwrap(), input);
+        assert_eq!(*ret.value(), msg.value);
+        assert_eq!(*ret.create2_salt(), msg.create2_salt);
+    }
+
     unsafe extern "C" fn get_dummy_tx_context(
         _context: *mut ffi::evmc_context,
     ) -> ffi::evmc_tx_context {
