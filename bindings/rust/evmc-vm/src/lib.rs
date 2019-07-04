@@ -93,6 +93,34 @@ impl ExecutionResult {
 }
 
 impl ExecutionMessage {
+    pub fn new(
+        kind: ffi::evmc_call_kind,
+        flags: u32,
+        depth: i32,
+        gas: i64,
+        destination: Address,
+        sender: Address,
+        input: Option<&[u8]>,
+        value: Uint256,
+        create2_salt: Bytes32,
+    ) -> Self {
+        ExecutionMessage {
+            kind,
+            flags,
+            depth,
+            gas,
+            destination,
+            sender,
+            input: if input.is_some() {
+                Some(input.unwrap().to_vec())
+            } else {
+                None
+            },
+            value,
+            create2_salt,
+        }
+    }
+
     pub fn kind(&self) -> ffi::evmc_call_kind {
         self.kind
     }
@@ -245,12 +273,39 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn call(&mut self, message: &ffi::evmc_message) -> ExecutionResult {
+    pub fn call(&mut self, message: &ExecutionMessage) -> ExecutionResult {
+        // There is no need to make any kind of copies here, because the caller
+        // won't go out of scope and ensures these pointers remain valid.
+        let input = message.input();
+        let input_size = if input.is_some() {
+            input.unwrap().len()
+        } else {
+            0
+        };
+        let input_data = if input.is_some() {
+            input.unwrap().as_ptr()
+        } else {
+            std::ptr::null() as *const u8
+        };
+        // Cannot use a nice from trait here because that complicates memory management,
+        // evmc_message doesn't have a release() method we could abstract it with.
+        let message = ffi::evmc_message {
+            kind: message.kind(),
+            flags: message.flags(),
+            depth: message.depth(),
+            gas: message.gas(),
+            destination: *message.destination(),
+            sender: *message.sender(),
+            input_data: input_data,
+            input_size: input_size,
+            value: *message.value(),
+            create2_salt: *message.create2_salt(),
+        };
         unsafe {
             assert!((*self.context.host).call.is_some());
             (*self.context.host).call.unwrap()(
                 self.context as *mut ffi::evmc_context,
-                message as *const ffi::evmc_message,
+                &message as *const ffi::evmc_message,
             )
             .into()
         }
@@ -556,6 +611,38 @@ mod tests {
     }
 
     #[test]
+    fn message_new_with_input() {
+        let input = vec![0xc0, 0xff, 0xee];
+        let destination = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
+
+        let ret = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            44,
+            66,
+            4466,
+            destination,
+            sender,
+            Some(&input),
+            value,
+            create2_salt,
+        );
+
+        assert_eq!(ret.kind(), ffi::evmc_call_kind::EVMC_CALL);
+        assert_eq!(ret.flags(), 44);
+        assert_eq!(ret.depth(), 66);
+        assert_eq!(ret.gas(), 4466);
+        assert_eq!(*ret.destination(), destination);
+        assert_eq!(*ret.sender(), sender);
+        assert!(ret.input().is_some());
+        assert_eq!(*ret.input().unwrap(), input);
+        assert_eq!(*ret.value(), value);
+        assert_eq!(*ret.create2_salt(), create2_salt);
+    }
+
+    #[test]
     fn message_from_ffi() {
         let destination = Address { bytes: [32u8; 20] };
         let sender = Address { bytes: [128u8; 20] };
@@ -644,6 +731,36 @@ mod tests {
         105023 as usize
     }
 
+    unsafe extern "C" fn execute_call(
+        _context: *mut ffi::evmc_context,
+        _msg: *const ffi::evmc_message,
+    ) -> ffi::evmc_result {
+        // Some dumb validation for testing.
+        let msg = *_msg;
+        let success = if msg.input_size != 0 && msg.input_data == std::ptr::null() {
+            false
+        } else if msg.input_size == 0 && msg.input_data != std::ptr::null() {
+            false
+        } else {
+            true
+        };
+
+        ffi::evmc_result {
+            status_code: if success {
+                ffi::evmc_status_code::EVMC_SUCCESS
+            } else {
+                ffi::evmc_status_code::EVMC_INTERNAL_ERROR
+            },
+            gas_left: 2,
+            // NOTE: we are passing the input pointer here, but for testing the lifetime is ok
+            output_data: msg.input_data,
+            output_size: msg.input_size,
+            release: None,
+            create_address: ffi::evmc_address::default(),
+            padding: [0u8; 4],
+        }
+    }
+
     // Update these when needed for tests
     fn get_dummy_context() -> ffi::evmc_context {
         ffi::evmc_context {
@@ -656,7 +773,7 @@ mod tests {
                 get_code_hash: None,
                 copy_code: None,
                 selfdestruct: None,
-                call: None,
+                call: Some(execute_call),
                 get_tx_context: Some(get_dummy_tx_context),
                 get_block_hash: None,
                 emit_log: None,
@@ -734,6 +851,79 @@ mod tests {
         let b = exe_context.get_code_size(&test_addr);
 
         assert_eq!(a, b);
+
+        dummy_context_dispose(context_raw);
+    }
+
+    #[test]
+    fn test_call_empty_data() {
+        let msg = get_dummy_message();
+
+        // This address is useless. Just a dummy parameter for the interface function.
+        let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
+        let mut context_raw = get_dummy_context();
+        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+
+        let message = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            0,
+            0,
+            6566,
+            test_addr,
+            test_addr,
+            None,
+            ffi::evmc_uint256be::default(),
+            ffi::evmc_bytes32::default(),
+        );
+
+        let b = exe_context.call(&message);
+
+        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.get_gas_left(), 2);
+        assert!(b.get_output().is_none());
+        assert!(b.get_create_address().is_some());
+        assert_eq!(
+            b.get_create_address().unwrap(),
+            &ffi::evmc_address::default()
+        );
+
+        dummy_context_dispose(context_raw);
+    }
+
+    #[test]
+    fn test_call_with_data() {
+        let msg = get_dummy_message();
+
+        // This address is useless. Just a dummy parameter for the interface function.
+        let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
+        let mut context_raw = get_dummy_context();
+        let mut exe_context = ExecutionContext::new(&msg, &mut context_raw);
+
+        let data = vec![0xc0, 0xff, 0xfe];
+
+        let message = ExecutionMessage::new(
+            ffi::evmc_call_kind::EVMC_CALL,
+            0,
+            0,
+            6566,
+            test_addr,
+            test_addr,
+            Some(&data),
+            ffi::evmc_uint256be::default(),
+            ffi::evmc_bytes32::default(),
+        );
+
+        let b = exe_context.call(&message);
+
+        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.get_gas_left(), 2);
+        assert!(b.get_output().is_some());
+        assert_eq!(b.get_output().unwrap(), &data);
+        assert!(b.get_create_address().is_some());
+        assert_eq!(
+            b.get_create_address().unwrap(),
+            &ffi::evmc_address::default()
+        );
 
         dummy_context_dispose(context_raw);
     }
