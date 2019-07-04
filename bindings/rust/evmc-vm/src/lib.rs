@@ -437,7 +437,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new_result() {
+    fn result_new() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         assert!(r.get_status_code() == ffi::evmc_status_code::EVMC_FAILURE);
@@ -461,7 +461,7 @@ mod tests {
     }
 
     #[test]
-    fn from_ffi() {
+    fn result_from_ffi() {
         let f = ffi::evmc_result {
             status_code: ffi::evmc_status_code::EVMC_SUCCESS,
             gas_left: 1337,
@@ -482,7 +482,7 @@ mod tests {
     }
 
     #[test]
-    fn into_heap_ffi() {
+    fn result_into_heap_ffi() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -508,7 +508,7 @@ mod tests {
     }
 
     #[test]
-    fn into_heap_ffi_empty_data() {
+    fn result_into_heap_ffi_empty_data() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         let f: *const ffi::evmc_result = r.into();
@@ -526,7 +526,7 @@ mod tests {
     }
 
     #[test]
-    fn into_stack_ffi() {
+    fn result_into_stack_ffi() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -551,7 +551,7 @@ mod tests {
     }
 
     #[test]
-    fn into_stack_ffi_empty_data() {
+    fn result_into_stack_ffi_empty_data() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         let f: ffi::evmc_result = r.into();
