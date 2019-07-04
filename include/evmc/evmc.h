@@ -303,7 +303,10 @@ enum evmc_status_code
      * For example, the Client tries running a code in the EVM 1.5. If the
      * code is not supported there, the execution falls back to the EVM 1.0.
      */
-    EVMC_REJECTED = -2
+    EVMC_REJECTED = -2,
+
+    /** The VM failed to allocate the amount of memory needed for execution. */
+    EVMC_OUT_OF_MEMORY = -3
 };
 
 /* Forward declaration. */
