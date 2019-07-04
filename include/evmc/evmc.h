@@ -795,13 +795,15 @@ enum evmc_revision
  *
  * This function MAY be invoked multiple times for a single VM instance.
  *
- * @param instance   The VM instance.
- * @param context    The pointer to the Client execution context to be passed
- *                   to the callback functions. See ::evmc_context.
- * @param rev        Requested EVM specification revision.
- * @param msg        Call parameters. See ::evmc_message.
- * @param code       Reference to the code to be executed.
- * @param code_size  The length of the code.
+ * @param instance   The VM instance. This argument MUST NOT be NULL.
+ * @param context    The pointer to the Host execution context to be passed
+ *                   to the Host interface methods (::evmc_host_interface).
+ *                   This argument MUST NOT be NULL unless
+ *                   the @p instance has the ::EVMC_CAPABILITY_PRECOMPILES capability.
+ * @param rev        The requested EVM specification revision.
+ * @param msg        The call parameters. See ::evmc_message. This argument MUST NOT be NULL.
+ * @param code       The reference to the code to be executed. This argument MAY be NULL.
+ * @param code_size  The length of the code. If @p code is NULL this argument MUST be 0.
  * @return           The execution result.
  */
 typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
