@@ -437,7 +437,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new_result() {
+    fn result_new() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         assert!(r.get_status_code() == ffi::evmc_status_code::EVMC_FAILURE);
@@ -461,7 +461,7 @@ mod tests {
     }
 
     #[test]
-    fn from_ffi() {
+    fn result_from_ffi() {
         let f = ffi::evmc_result {
             status_code: ffi::evmc_status_code::EVMC_SUCCESS,
             gas_left: 1337,
@@ -482,7 +482,7 @@ mod tests {
     }
 
     #[test]
-    fn into_heap_ffi() {
+    fn result_into_heap_ffi() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -508,7 +508,7 @@ mod tests {
     }
 
     #[test]
-    fn into_heap_ffi_empty_data() {
+    fn result_into_heap_ffi_empty_data() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         let f: *const ffi::evmc_result = r.into();
@@ -526,7 +526,7 @@ mod tests {
     }
 
     #[test]
-    fn into_stack_ffi() {
+    fn result_into_stack_ffi() {
         let r = ExecutionResult::new(
             ffi::evmc_status_code::EVMC_FAILURE,
             420,
@@ -551,7 +551,7 @@ mod tests {
     }
 
     #[test]
-    fn into_stack_ffi_empty_data() {
+    fn result_into_stack_ffi_empty_data() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
         let f: ffi::evmc_result = r.into();
@@ -565,6 +565,74 @@ mod tests {
                 f.release.unwrap()(&f);
             }
         }
+    }
+
+    #[test]
+    fn message_from_ffi() {
+        let destination = ffi::evmc_address { bytes: [32u8; 20] };
+        let sender = ffi::evmc_address { bytes: [128u8; 20] };
+        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
+        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+
+        let msg = ffi::evmc_message {
+            kind: ffi::evmc_call_kind::EVMC_CALL,
+            flags: 44,
+            depth: 66,
+            gas: 4466,
+            destination: destination,
+            sender: sender,
+            input_data: std::ptr::null(),
+            input_size: 0,
+            value: value,
+            create2_salt: create2_salt,
+        };
+
+        let ret: ExecutionMessage = (&msg).into();
+
+        assert_eq!(ret.kind(), msg.kind);
+        assert_eq!(ret.flags(), msg.flags);
+        assert_eq!(ret.depth(), msg.depth);
+        assert_eq!(ret.gas(), msg.gas);
+        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.sender(), msg.sender);
+        assert!(ret.input().is_none());
+        assert_eq!(*ret.value(), msg.value);
+        assert_eq!(*ret.create2_salt(), msg.create2_salt);
+    }
+
+    #[test]
+    fn message_from_ffi_with_input() {
+        let input = vec![0xc0, 0xff, 0xee];
+        let destination = ffi::evmc_address { bytes: [32u8; 20] };
+        let sender = ffi::evmc_address { bytes: [128u8; 20] };
+        let value = ffi::evmc_uint256be { bytes: [0u8; 32] };
+        let create2_salt = ffi::evmc_bytes32 { bytes: [255u8; 32] };
+
+        let msg = ffi::evmc_message {
+            kind: ffi::evmc_call_kind::EVMC_CALL,
+            flags: 44,
+            depth: 66,
+            gas: 4466,
+            destination: destination,
+            sender: sender,
+            input_data: input.as_ptr(),
+            input_size: input.len(),
+            value: value,
+            create2_salt: create2_salt,
+        };
+
+        let ret: ExecutionMessage = (&msg).into();
+
+        assert_eq!(ret.kind(), msg.kind);
+        assert_eq!(ret.flags(), msg.flags);
+        assert_eq!(ret.depth(), msg.depth);
+        assert_eq!(ret.gas(), msg.gas);
+        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.sender(), msg.sender);
+        assert!(ret.input().is_some());
+        assert_eq!(*ret.input().unwrap(), input);
+        assert_eq!(*ret.value(), msg.value);
+        assert_eq!(*ret.create2_salt(), msg.create2_salt);
     }
 
     unsafe extern "C" fn get_dummy_tx_context(
