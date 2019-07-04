@@ -125,6 +125,9 @@ static void evmc_free_result_memory(const struct evmc_result* result)
 /// The provided output is copied to memory allocated with malloc()
 /// and the evmc_result::release function is set to one invoking free().
 ///
+/// In case of memory allocation failure, the result has all fields zeroed
+/// and only evmc_result::status_code is set to ::EVMC_OUT_OF_MEMORY internal error.
+///
 /// @param status_code  The status code.
 /// @param gas_left     The amount of gas left.
 /// @param output_data  The pointer to the output.
@@ -136,16 +139,25 @@ static inline struct evmc_result evmc_make_result(enum evmc_status_code status_c
 {
     struct evmc_result result;
     memset(&result, 0, sizeof(result));
-    result.status_code = status_code;
-    result.gas_left = gas_left;
-    result.output_size = output_size;
+
     if (output_size != 0)
     {
         uint8_t* buffer = (uint8_t*)malloc(output_size);
+
+        if (!buffer)
+        {
+            result.status_code = EVMC_OUT_OF_MEMORY;
+            return result;
+        }
+
         memcpy(buffer, output_data, output_size);
         result.output_data = buffer;
+        result.output_size = output_size;
         result.release = evmc_free_result_memory;
     }
+
+    result.status_code = status_code;
+    result.gas_left = gas_left;
     return result;
 }
 
