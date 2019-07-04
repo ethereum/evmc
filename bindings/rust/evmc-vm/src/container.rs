@@ -49,6 +49,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::*;
     use crate::{ExecutionContext, ExecutionResult};
 
     struct TestVm {}
@@ -58,6 +59,20 @@ mod tests {
         }
         fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> ExecutionResult {
             ExecutionResult::failure()
+        }
+    }
+
+    unsafe extern "C" fn get_dummy_tx_context(
+        _context: *mut evmc_sys::evmc_context,
+    ) -> evmc_sys::evmc_tx_context {
+        evmc_sys::evmc_tx_context {
+            tx_gas_price: Uint256::default(),
+            tx_origin: Address::default(),
+            block_coinbase: Address::default(),
+            block_number: 0,
+            block_timestamp: 0,
+            block_gas_limit: 0,
+            block_difficulty: Uint256::default(),
         }
     }
 
@@ -74,10 +89,48 @@ mod tests {
             set_option: None,
         };
 
+        let code = [0u8; 0];
+        let message = ::evmc_sys::evmc_message {
+            kind: ::evmc_sys::evmc_call_kind::EVMC_CALL,
+            flags: 0,
+            depth: 0,
+            gas: 0,
+            destination: ::evmc_sys::evmc_address::default(),
+            sender: ::evmc_sys::evmc_address::default(),
+            input_data: std::ptr::null(),
+            input_size: 0,
+            value: ::evmc_sys::evmc_uint256be::default(),
+            create2_salt: ::evmc_sys::evmc_bytes32::default(),
+        };
+        let host = ::evmc_sys::evmc_host_interface {
+            account_exists: None,
+            get_storage: None,
+            set_storage: None,
+            get_balance: None,
+            get_code_size: None,
+            get_code_hash: None,
+            copy_code: None,
+            selfdestruct: None,
+            call: None,
+            get_tx_context: Some(get_dummy_tx_context),
+            get_block_hash: None,
+            emit_log: None,
+        };
+        let mut backing_context = ::evmc_sys::evmc_context { host: &host };
+        let context = ExecutionContext::new(&message, &mut backing_context);
+
         let container = EvmcContainer::<TestVm>::new(instance);
+        assert_eq!(
+            container.execute(&code, &context).get_status_code(),
+            ::evmc_sys::evmc_status_code::EVMC_FAILURE
+        );
 
         let ptr = unsafe { EvmcContainer::into_ffi_pointer(Box::new(container)) };
 
-        unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
+        let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
+        assert_eq!(
+            container.execute(&code, &context).get_status_code(),
+            ::evmc_sys::evmc_status_code::EVMC_FAILURE
+        );
     }
 }
