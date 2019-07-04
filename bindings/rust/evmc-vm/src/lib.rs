@@ -192,7 +192,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn get_balance(&mut self, address: &ffi::evmc_address) -> ffi::evmc_bytes32 {
+    pub fn get_balance(&mut self, address: &ffi::evmc_address) -> ffi::evmc_uint256be {
         unsafe {
             assert!((*self.context.host).get_balance.is_some());
             (*self.context.host).get_balance.unwrap()(
