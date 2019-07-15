@@ -12,6 +12,9 @@
   new `evmc_load_and_configure()` function.
 - Added: [[#327](https://github.com/ethereum/evmc/pull/327)]
   Full support for 32-bit architectures has been added.
+- Added: [[#333](https://github.com/ethereum/evmc/pull/333)]
+  The C/C++ API for creating execution results in VMs has been extended 
+  to handle common usage cases.
 - Added: [[#341](https://github.com/ethereum/evmc/pull/341)]
   Support for moving `evmc::vm` objects in C++ API.
 - Added: [[#357](https://github.com/ethereum/evmc/pull/357)]
