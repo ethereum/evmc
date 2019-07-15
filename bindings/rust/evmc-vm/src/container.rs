@@ -50,14 +50,19 @@ where
 mod tests {
     use super::*;
     use crate::types::*;
-    use crate::{ExecutionContext, ExecutionResult};
+    use crate::{ExecutionContext, ExecutionMessage, ExecutionResult};
 
     struct TestVm {}
     impl EvmcVm for TestVm {
         fn init() -> Self {
             TestVm {}
         }
-        fn execute(&self, _code: &[u8], _context: &ExecutionContext) -> ExecutionResult {
+        fn execute(
+            &self,
+            _code: &[u8],
+            _message: &ExecutionMessage,
+            _context: &ExecutionContext,
+        ) -> ExecutionResult {
             ExecutionResult::failure()
         }
     }
@@ -90,6 +95,7 @@ mod tests {
         };
 
         let code = [0u8; 0];
+
         let message = ::evmc_sys::evmc_message {
             kind: ::evmc_sys::evmc_call_kind::EVMC_CALL,
             flags: 0,
@@ -102,6 +108,8 @@ mod tests {
             value: ::evmc_sys::evmc_uint256be::default(),
             create2_salt: ::evmc_sys::evmc_bytes32::default(),
         };
+        let message: ExecutionMessage = (&message).into();
+
         let host = ::evmc_sys::evmc_host_interface {
             account_exists: None,
             get_storage: None,
@@ -117,11 +125,13 @@ mod tests {
             emit_log: None,
         };
         let mut backing_context = ::evmc_sys::evmc_context { host: &host };
-        let context = ExecutionContext::new(&message, &mut backing_context);
+        let context = ExecutionContext::new(&mut backing_context);
 
         let container = EvmcContainer::<TestVm>::new(instance);
         assert_eq!(
-            container.execute(&code, &context).get_status_code(),
+            container
+                .execute(&code, &message, &context)
+                .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
 
@@ -129,7 +139,9 @@ mod tests {
 
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
         assert_eq!(
-            container.execute(&code, &context).get_status_code(),
+            container
+                .execute(&code, &message, &context)
+                .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
     }
