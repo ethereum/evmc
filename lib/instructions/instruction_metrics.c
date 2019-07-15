@@ -8,6 +8,9 @@
 /** Marks an instruction as undefined. */
 #define UNDEFINED -1
 
+/** Marks stack requirements as variadic */
+#define VARIADIC -1
+
 /**
  * Gas price tiers, names from Yellow Paper.
  * @{
@@ -198,10 +201,15 @@ static struct evmc_instruction_metrics istanbul_metrics[256] = {
     /*                = 0xad */ {UNDEFINED, 0, 0},
     /*                = 0xae */ {UNDEFINED, 0, 0},
     /*                = 0xaf */ {UNDEFINED, 0, 0},
-    /*                = 0xb0 */ {UNDEFINED, 0, 0},
-    /*                = 0xb1 */ {UNDEFINED, 0, 0},
-    /*                = 0xb2 */ {UNDEFINED, 0, 0},
-    /*                = 0xb3 */ {UNDEFINED, 0, 0},
+
+    /* If we change metrics from (num_stack_arguments, num_stack_returned_items)
+       to (stack_required, stack_change) we will have less "variadic" values here
+       because the stack change is +1 for DUPs and 0 for SWAPs. */
+    /*           DUPN = 0xb0 */ {VERYLOW, VARIADIC, VARIADIC},
+    /*          SWAPN = 0xb1 */ {VERYLOW, VARIADIC, VARIADIC},
+    /*          DUPSN = 0xb2 */ {VERYLOW, VARIADIC, VARIADIC},
+    /*         SWAPSN = 0xb3 */ {VERYLOW, VARIADIC, VARIADIC},
+
     /*                = 0xb4 */ {UNDEFINED, 0, 0},
     /*                = 0xb5 */ {UNDEFINED, 0, 0},
     /*                = 0xb6 */ {UNDEFINED, 0, 0},
