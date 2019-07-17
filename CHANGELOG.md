@@ -2,6 +2,8 @@
 
 ## [6.3.0] - unreleased
 
+- Added: [[#303](https://github.com/ethereum/evmc/pull/303)]
+  A CMake helper for running evmc-vmtester.
 - Added: [[#313](https://github.com/ethereum/evmc/pull/313)]
   The loader module introduces standardized EVMC module configuration string 
   which contains path to the module and additional options.
