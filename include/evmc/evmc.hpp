@@ -150,6 +150,108 @@ constexpr bytes32::operator bool() const noexcept
     return !is_zero(*this);
 }
 
+namespace literals
+{
+namespace internal
+{
+template <typename T, T... Ints>
+struct integer_sequence
+{
+};
+
+template <uint8_t... Bytes>
+using byte_sequence = integer_sequence<uint8_t, Bytes...>;
+
+template <char... Chars>
+using char_sequence = integer_sequence<char, Chars...>;
+
+
+template <typename, typename>
+struct concatenate;
+
+template <uint8_t... Bytes1, uint8_t... Bytes2>
+struct concatenate<byte_sequence<Bytes1...>, byte_sequence<Bytes2...>>
+{
+    using type = byte_sequence<Bytes1..., Bytes2...>;
+};
+
+
+constexpr uint8_t parse_hex_digit(uint8_t d) noexcept
+{
+    return static_cast<uint8_t>(
+        (d >= '0' && d <= '9') ? d - '0' : (d >= 'a' && d <= 'f') ? d - 'a' + 10 : d - 'A' + 10);
+}
+
+
+template <typename>
+struct parse_digits;
+
+template <uint8_t Digit1, uint8_t Digit2>
+struct parse_digits<byte_sequence<Digit1, Digit2>>
+{
+    using type =
+        byte_sequence<static_cast<uint8_t>(parse_hex_digit(Digit1) << 4) | parse_hex_digit(Digit2)>;
+};
+
+template <uint8_t Digit1, uint8_t Digit2, uint8_t... Rest>
+struct parse_digits<byte_sequence<Digit1, Digit2, Rest...>>
+{
+    using type = typename concatenate<typename parse_digits<byte_sequence<Digit1, Digit2>>::type,
+                                      typename parse_digits<byte_sequence<Rest...>>::type>::type;
+};
+
+
+template <typename, typename>
+struct parse_literal;
+
+template <typename T, char Prefix1, char Prefix2, char... Literal>
+struct parse_literal<T, char_sequence<Prefix1, Prefix2, Literal...>>
+{
+    static_assert(Prefix1 == '0' && Prefix2 == 'x', "literal must be in hexadecimal notation");
+    static_assert(sizeof...(Literal) == sizeof(T) * 2, "literal must match the result type size");
+
+    template <uint8_t... Bytes>
+    static constexpr T create_from(byte_sequence<Bytes...>) noexcept
+    {
+        return T{{{Bytes...}}};
+    }
+
+    static constexpr T get() noexcept
+    {
+        return create_from(typename parse_digits<byte_sequence<Literal...>>::type{});
+    }
+};
+
+template <typename T, char Digit>
+struct parse_literal<T, char_sequence<Digit>>
+{
+    static_assert(Digit == '0', "only 0 is allowed as a single digit literal");
+    static constexpr T get() noexcept { return {}; }
+};
+
+template <typename T, char... Literal>
+constexpr T parse() noexcept
+{
+    return parse_literal<T, char_sequence<Literal...>>::get();
+}
+}  // namespace internal
+
+/// Literal for evmc::address.
+template <char... Literal>
+constexpr address operator"" _addr() noexcept
+{
+    return internal::parse<address, Literal...>();
+}
+
+/// Literal for evmc::bytes32.
+template <char... Literal>
+constexpr bytes32 operator"" _b32() noexcept
+{
+    return internal::parse<bytes32, Literal...>();
+}
+}  // namespace literals
+
+using namespace literals;
 
 /// @copydoc evmc_result
 ///
@@ -521,7 +623,7 @@ constexpr evmc_host_interface interface{
 };
 }  // namespace internal
 
-inline Host::Host() noexcept : evmc_context{&internal::interface} {}
+inline Host::Host() noexcept : evmc_context{&evmc::internal::interface} {}
 
 }  // namespace evmc
 
