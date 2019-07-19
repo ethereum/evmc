@@ -14,6 +14,28 @@
 /// @ingroup cpp
 namespace evmc
 {
+/// The big-endian 160-bit hash suitable for keeping an Ethereum address.
+///
+/// This type wraps C ::evmc_address to make sure objects of this type are always initialized.
+struct address : evmc_address
+{
+    /// Default and converting constructor.
+    ///
+    /// Initializes bytes to zeros if not other @p init value provided.
+    constexpr address(evmc_address init = {}) noexcept : evmc_address{init} {}
+};
+
+/// The fixed size array of 32 bytes for storing 256-bit EVM values.
+///
+/// This type wraps C ::evmc_bytes32 to make sure objects of this type are always initialized.
+struct bytes32 : evmc_bytes32
+{
+    /// Default and converting constructor.
+    ///
+    /// Initializes bytes to zeros if not other @p init value provided.
+    constexpr bytes32(evmc_bytes32 init = {}) noexcept : evmc_bytes32{init} {}
+};
+
 /// @copydoc evmc_result
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type

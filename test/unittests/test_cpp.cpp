@@ -16,6 +16,37 @@
 
 #include <cstring>
 
+TEST(cpp, address)
+{
+    evmc::address a;
+    EXPECT_EQ(std::count(std::begin(a.bytes), std::end(a.bytes), 0), sizeof(a));
+
+    auto other = evmc_address{};
+    other.bytes[19] = 0xfe;
+    a = other;
+    EXPECT_TRUE(std::equal(std::begin(a.bytes), std::end(a.bytes), std::begin(other.bytes)));
+
+    a.bytes[0] = 1;
+    other = a;
+    EXPECT_TRUE(std::equal(std::begin(a.bytes), std::end(a.bytes), std::begin(other.bytes)));
+}
+
+TEST(cpp, bytes32)
+{
+    evmc::bytes32 b;
+    EXPECT_EQ(std::count(std::begin(b.bytes), std::end(b.bytes), 0), sizeof(b));
+
+    auto other = evmc_bytes32{};
+    other.bytes[31] = 0xfe;
+    b = other;
+    EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+
+    b.bytes[0] = 1;
+    other = b;
+    EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+}
+
+
 TEST(cpp, result)
 {
     static int release_called = 0;
