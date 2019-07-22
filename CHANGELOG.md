@@ -16,8 +16,15 @@
   Support for moving `evmc::vm` objects in C++ API.
 - Added: [[#357](https://github.com/ethereum/evmc/pull/357)]
   The basic types `address` and `bytes32` have received their C++ wrappers 
-  to assure they are always initialized. They also have convenient operator
-  overloadings for comparison and usage as keys in standard containers.
+  to assure they are always initialized. 
+  They also have convenient overloaded operators for comparison 
+  and usage as keys in standard containers.
+- Added: [[#359](https://github.com/ethereum/evmc/pull/359)]
+  The C++ EVMC basic types `address` and `bytes32` have user defined literals.
+  ```cpp
+  auto a = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359_addr;
+  auto b = 0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3_b32;
+  ```
 - Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Changed: [[#311](https://github.com/ethereum/evmc/pull/311)]
