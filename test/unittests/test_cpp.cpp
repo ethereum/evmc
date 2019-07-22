@@ -16,6 +16,7 @@
 
 #include <cstring>
 
+
 TEST(cpp, address)
 {
     evmc::address a;
@@ -44,6 +45,31 @@ TEST(cpp, bytes32)
     b.bytes[0] = 1;
     other = b;
     EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+}
+
+TEST(cpp, std_hash)
+{
+#pragma warning(push)
+#pragma warning(disable : 4307 /* integral constant overflow */)
+#pragma warning(disable : 4309 /* 'static_cast': truncation of constant value */)
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
+    static_assert(std::hash<evmc::address>{}({}) == static_cast<size_t>(0xd94d12186c0f2fb7), "");
+    static_assert(std::hash<evmc::bytes32>{}({}) == static_cast<size_t>(0x4d25767f9dce13f5), "");
+#endif
+
+    EXPECT_EQ(std::hash<evmc::address>{}({}), static_cast<size_t>(0xd94d12186c0f2fb7));
+    EXPECT_EQ(std::hash<evmc::bytes32>{}({}), static_cast<size_t>(0x4d25767f9dce13f5));
+
+    auto ea = evmc::address{};
+    std::fill_n(ea.bytes, sizeof(ea), uint8_t{0xee});
+    EXPECT_EQ(std::hash<evmc::address>{}(ea), static_cast<size_t>(0x41dc0178e01b7cd9));
+
+    auto eb = evmc::bytes32{};
+    std::fill_n(eb.bytes, sizeof(eb), uint8_t{0xee});
+    EXPECT_EQ(std::hash<evmc::bytes32>{}(eb), static_cast<size_t>(0xbb14e5c56b477375));
+
+#pragma warning(pop)
 }
 
 TEST(cpp, address_comparison)

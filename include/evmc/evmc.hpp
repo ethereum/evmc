@@ -7,6 +7,7 @@
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
+#include <functional>
 #include <initializer_list>
 #include <utility>
 
@@ -51,6 +52,18 @@ constexpr inline uint32_t load32be(const uint8_t* bytes) noexcept
     return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
            uint32_t{bytes[3]};
 }
+
+namespace fnv
+{
+constexpr auto prime = 0x100000001b3;              ///< The 64-bit FNV prime number.
+constexpr auto offset_basis = 0xcbf29ce484222325;  ///< The 64-bit FNV offset basis.
+
+/// The hashing transformation for 64-bit inputs based on the FNV-1a formula.
+constexpr inline uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
+{
+    return (h ^ x) * prime;
+}
+}  // namespace fnv
 
 
 /// The "equal" comparison operator for the evmc::address type.
@@ -479,3 +492,39 @@ constexpr evmc_host_interface interface{
 inline Host::Host() noexcept : evmc_context{&internal::interface} {}
 
 }  // namespace evmc
+
+
+namespace std
+{
+/// Hash operator template specialization for evmc::address. Needed for unordered containers.
+template <>
+struct hash<evmc::address>
+{
+    /// Hash operator using FNV1a-based folding.
+    constexpr size_t operator()(const evmc::address& s) const noexcept
+    {
+        using namespace evmc;
+        using namespace fnv;
+        return static_cast<size_t>(fnv1a_by64(
+            fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])), load64be(&s.bytes[8])),
+            load32be(&s.bytes[16])));
+    }
+};
+
+/// Hash operator template specialization for evmc::bytes32. Needed for unordered containers.
+template <>
+struct hash<evmc::bytes32>
+{
+    /// Hash operator using FNV1a-based folding.
+    constexpr size_t operator()(const evmc::bytes32& s) const noexcept
+    {
+        using namespace evmc;
+        using namespace fnv;
+        return static_cast<size_t>(
+            fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])),
+                                             load64be(&s.bytes[8])),
+                                  load64be(&s.bytes[16])),
+                       load64be(&s.bytes[24])));
+    }
+};
+}  // namespace std
