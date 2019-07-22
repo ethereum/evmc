@@ -14,6 +14,8 @@
 #include <gtest/gtest.h>
 
 #include <cstring>
+#include <map>
+#include <unordered_map>
 
 
 TEST(cpp, address)
@@ -81,6 +83,31 @@ TEST(cpp, std_hash)
     EXPECT_EQ(std::hash<evmc::bytes32>{}(eb), static_cast<size_t>(0xbb14e5c56b477375));
 
 #pragma warning(pop)
+}
+
+TEST(cpp, std_maps)
+{
+    std::map<evmc::address, bool> addresses;
+    addresses[{}] = true;
+    ASSERT_EQ(addresses.size(), 1);
+    EXPECT_EQ(addresses.begin()->first, evmc::address{});
+
+    std::unordered_map<evmc::address, bool> unordered_addresses;
+    unordered_addresses.emplace(*addresses.begin());
+    addresses.clear();
+    EXPECT_EQ(unordered_addresses.size(), 1);
+    EXPECT_FALSE(unordered_addresses.begin()->first);
+
+    std::map<evmc::bytes32, bool> storage;
+    storage[{}] = true;
+    ASSERT_EQ(storage.size(), 1);
+    EXPECT_EQ(storage.begin()->first, evmc::bytes32{});
+
+    std::unordered_map<evmc::bytes32, bool> unordered_storage;
+    unordered_storage.emplace(*storage.begin());
+    storage.clear();
+    EXPECT_EQ(unordered_storage.size(), 1);
+    EXPECT_FALSE(unordered_storage.begin()->first);
 }
 
 TEST(cpp, address_comparison)
