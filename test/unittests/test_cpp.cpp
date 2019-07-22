@@ -10,7 +10,6 @@
 #include "../../examples/example_vm/example_vm.h"
 
 #include <evmc/evmc.hpp>
-#include <evmc/helpers.hpp>
 
 #include <gtest/gtest.h>
 
@@ -286,8 +285,8 @@ TEST(cpp, host)
     auto* host_context = example_host_create_context();
     auto host = evmc::HostContext{host_context};
 
-    auto a = evmc_address{{1}};
-    auto v = evmc_bytes32{{7, 7, 7}};
+    const auto a = evmc::address{{{1}}};
+    const auto v = evmc::bytes32{{{7, 7, 7}}};
 
     EXPECT_FALSE(host.account_exists(a));
 
@@ -295,10 +294,10 @@ TEST(cpp, host)
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_UNCHANGED);
     EXPECT_EQ(host.get_storage(a, {}), v);
 
-    EXPECT_TRUE(is_zero(host.get_balance(a)));
+    EXPECT_TRUE(evmc::is_zero(host.get_balance(a)));
 
     EXPECT_EQ(host.get_code_size(a), 0);
-    EXPECT_EQ(host.get_code_hash(a), evmc_bytes32{});
+    EXPECT_EQ(host.get_code_hash(a), evmc::bytes32{});
     EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), 0);
 
     host.selfdestruct(a, a);
@@ -306,7 +305,7 @@ TEST(cpp, host)
     auto tx = host.get_tx_context();
     EXPECT_EQ(host.get_tx_context().block_number, tx.block_number);
 
-    EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
+    EXPECT_EQ(host.get_block_hash(0), evmc::bytes32{});
 
     host.emit_log(a, nullptr, 0, nullptr, 0);
 
