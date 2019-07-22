@@ -43,6 +43,10 @@ struct bytes32 : evmc_bytes32
     constexpr inline explicit operator bool() const noexcept;
 };
 
+/// The alias for evmc::bytes32 to represent a big-endian 256-bit integer.
+using uint256be = bytes32;
+
+
 /// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
 constexpr inline uint64_t load64be(const uint8_t* bytes) noexcept
 {
