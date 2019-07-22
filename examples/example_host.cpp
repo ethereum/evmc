@@ -9,21 +9,20 @@
 #include "example_host.h"
 
 #include <evmc/evmc.hpp>
-#include <evmc/helpers.hpp>
 
 #include <map>
 
 struct account
 {
-    evmc_uint256be balance = {};
+    evmc::uint256be balance = {};
     size_t code_size = 0;
-    evmc_bytes32 code_hash = {};
-    std::map<evmc_bytes32, evmc_bytes32> storage;
+    evmc::bytes32 code_hash = {};
+    std::map<evmc::bytes32, evmc::bytes32> storage;
 };
 
 class ExampleHost : public evmc::Host
 {
-    std::map<evmc_address, account> accounts;
+    std::map<evmc::address, account> accounts;
 
 public:
     bool account_exists(const evmc_address& addr) noexcept final
@@ -111,9 +110,9 @@ public:
     {
         int64_t current_block_number = get_tx_context().block_number;
 
-        auto example_block_hash = evmc_bytes32{};
+        auto example_block_hash = evmc::bytes32{};
         if (number < current_block_number && number >= current_block_number - 256)
-            example_block_hash = {{1, 1, 1, 1}};
+            example_block_hash = evmc::bytes32{{{1, 1, 1, 1}}};
         return example_block_hash;
     }
 
