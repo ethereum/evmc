@@ -46,6 +46,85 @@ TEST(cpp, bytes32)
     EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
 }
 
+TEST(cpp, address_comparison)
+{
+    const auto zero = evmc::address{};
+    for (size_t i = 0; i < sizeof(evmc::address); ++i)
+    {
+        auto t = evmc::address{};
+        t.bytes[i] = 1;
+        auto u = evmc::address{};
+        u.bytes[i] = 2;
+        auto f = evmc::address{};
+        f.bytes[i] = 0xff;
+
+        EXPECT_TRUE(zero < t);
+        EXPECT_TRUE(zero < u);
+        EXPECT_TRUE(zero < f);
+        EXPECT_TRUE(zero != t);
+        EXPECT_TRUE(zero != u);
+        EXPECT_TRUE(zero != f);
+
+        EXPECT_TRUE(t < u);
+        EXPECT_TRUE(t < f);
+        EXPECT_TRUE(u < f);
+
+        EXPECT_FALSE(u < t);
+        EXPECT_FALSE(f < t);
+        EXPECT_FALSE(f < u);
+
+        EXPECT_TRUE(t != u);
+        EXPECT_TRUE(t != f);
+        EXPECT_TRUE(u != t);
+        EXPECT_TRUE(u != f);
+        EXPECT_TRUE(f != t);
+        EXPECT_TRUE(f != u);
+
+        EXPECT_TRUE(t == t);
+        EXPECT_TRUE(u == u);
+        EXPECT_TRUE(f == f);
+    }
+}
+
+TEST(cpp, bytes32_comparison)
+{
+    const auto zero = evmc::bytes32{};
+    for (size_t i = 0; i < sizeof(evmc::bytes32); ++i)
+    {
+        auto t = evmc::bytes32{};
+        t.bytes[i] = 1;
+        auto u = evmc::bytes32{};
+        u.bytes[i] = 2;
+        auto f = evmc::bytes32{};
+        f.bytes[i] = 0xff;
+
+        EXPECT_TRUE(zero < t);
+        EXPECT_TRUE(zero < u);
+        EXPECT_TRUE(zero < f);
+        EXPECT_TRUE(zero != t);
+        EXPECT_TRUE(zero != u);
+        EXPECT_TRUE(zero != f);
+
+        EXPECT_TRUE(t < u);
+        EXPECT_TRUE(t < f);
+        EXPECT_TRUE(u < f);
+
+        EXPECT_FALSE(u < t);
+        EXPECT_FALSE(f < t);
+        EXPECT_FALSE(f < u);
+
+        EXPECT_TRUE(t != u);
+        EXPECT_TRUE(t != f);
+        EXPECT_TRUE(u != t);
+        EXPECT_TRUE(u != f);
+        EXPECT_TRUE(f != t);
+        EXPECT_TRUE(f != u);
+
+        EXPECT_TRUE(t == t);
+        EXPECT_TRUE(u == u);
+        EXPECT_TRUE(f == f);
+    }
+}
 
 TEST(cpp, result)
 {

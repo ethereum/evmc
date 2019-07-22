@@ -36,6 +36,76 @@ struct bytes32 : evmc_bytes32
     constexpr bytes32(evmc_bytes32 init = {}) noexcept : evmc_bytes32{init} {}
 };
 
+/// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
+constexpr inline uint64_t load64be(const uint8_t* bytes) noexcept
+{
+    // TODO: Report bug in clang incorrectly optimizing this with AVX2 enabled.
+    return (uint64_t{bytes[0]} << 56) | (uint64_t{bytes[1]} << 48) | (uint64_t{bytes[2]} << 40) |
+           (uint64_t{bytes[3]} << 32) | (uint64_t{bytes[4]} << 24) | (uint64_t{bytes[5]} << 16) |
+           (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
+}
+
+/// Loads 32 bits / 4 bytes of data from the given @p bytes array in big-endian order.
+constexpr inline uint32_t load32be(const uint8_t* bytes) noexcept
+{
+    return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
+           uint32_t{bytes[3]};
+}
+
+
+/// The "equal" comparison operator for the evmc::address type.
+constexpr bool operator==(const address& a, const address& b) noexcept
+{
+    // TODO: Report bug in clang keeping unnecessary bswap.
+    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+           load32be(&a.bytes[16]) == load32be(&b.bytes[16]);
+}
+
+/// The "not equal" comparison operator for the evmc::address type.
+constexpr bool operator!=(const address& a, const address& b) noexcept
+{
+    return !(a == b);
+}
+
+/// The "less" comparison operator for the evmc::address type.
+constexpr bool operator<(const address& a, const address& b) noexcept
+{
+    return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
+           (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+            load64be(&a.bytes[8]) < load64be(&b.bytes[8])) ||
+           (load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+            load32be(&a.bytes[16]) < load32be(&b.bytes[16]));
+}
+
+/// The "equal" comparison operator for the evmc::bytes32 type.
+constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
+{
+    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+           load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
+           load64be(&a.bytes[24]) == load64be(&b.bytes[24]);
+}
+
+/// The "not equal" comparison operator for the evmc::bytes32 type.
+constexpr bool operator!=(const bytes32& a, const bytes32& b) noexcept
+{
+    return !(a == b);
+}
+
+/// The "less" comparison operator for the evmc::bytes32 type.
+constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
+{
+    return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
+           (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+            load64be(&a.bytes[8]) < load64be(&b.bytes[8])) ||
+           (load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+            load64be(&a.bytes[16]) < load64be(&b.bytes[16])) ||
+           (load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
+            load64be(&a.bytes[24]) < load64be(&b.bytes[24]));
+}
+
+
 /// @copydoc evmc_result
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type
