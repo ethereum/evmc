@@ -21,6 +21,9 @@ TEST(cpp, address)
 {
     evmc::address a;
     EXPECT_EQ(std::count(std::begin(a.bytes), std::end(a.bytes), 0), sizeof(a));
+    EXPECT_TRUE(is_zero(a));
+    EXPECT_FALSE(a);
+    EXPECT_TRUE(!a);
 
     auto other = evmc_address{};
     other.bytes[19] = 0xfe;
@@ -30,12 +33,18 @@ TEST(cpp, address)
     a.bytes[0] = 1;
     other = a;
     EXPECT_TRUE(std::equal(std::begin(a.bytes), std::end(a.bytes), std::begin(other.bytes)));
+    EXPECT_FALSE(is_zero(a));
+    EXPECT_TRUE(a);
+    EXPECT_FALSE(!a);
 }
 
 TEST(cpp, bytes32)
 {
     evmc::bytes32 b;
     EXPECT_EQ(std::count(std::begin(b.bytes), std::end(b.bytes), 0), sizeof(b));
+    EXPECT_TRUE(is_zero(b));
+    EXPECT_FALSE(b);
+    EXPECT_TRUE(!b);
 
     auto other = evmc_bytes32{};
     other.bytes[31] = 0xfe;
@@ -45,6 +54,9 @@ TEST(cpp, bytes32)
     b.bytes[0] = 1;
     other = b;
     EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+    EXPECT_FALSE(is_zero(b));
+    EXPECT_TRUE(b);
+    EXPECT_FALSE(!b);
 }
 
 TEST(cpp, std_hash)

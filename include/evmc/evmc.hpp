@@ -24,6 +24,9 @@ struct address : evmc_address
     ///
     /// Initializes bytes to zeros if not other @p init value provided.
     constexpr address(evmc_address init = {}) noexcept : evmc_address{init} {}
+
+    /// Explicit operator converting to bool.
+    constexpr inline explicit operator bool() const noexcept;
 };
 
 /// The fixed size array of 32 bytes for storing 256-bit EVM values.
@@ -35,6 +38,9 @@ struct bytes32 : evmc_bytes32
     ///
     /// Initializes bytes to zeros if not other @p init value provided.
     constexpr bytes32(evmc_bytes32 init = {}) noexcept : evmc_bytes32{init} {}
+
+    /// Explicit operator converting to bool.
+    constexpr inline explicit operator bool() const noexcept;
 };
 
 /// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
@@ -116,6 +122,28 @@ constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
             load64be(&a.bytes[16]) < load64be(&b.bytes[16])) ||
            (load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
             load64be(&a.bytes[24]) < load64be(&b.bytes[24]));
+}
+
+/// Checks if the given address is the zero address.
+constexpr inline bool is_zero(const address& a) noexcept
+{
+    return a == address{};
+}
+
+constexpr address::operator bool() const noexcept
+{
+    return !is_zero(*this);
+}
+
+/// Checks if the given bytes32 object has all zero bytes.
+constexpr inline bool is_zero(const bytes32& a) noexcept
+{
+    return a == bytes32{};
+}
+
+constexpr bytes32::operator bool() const noexcept
+{
+    return !is_zero(*this);
 }
 
 
