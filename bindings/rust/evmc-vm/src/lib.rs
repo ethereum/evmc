@@ -20,6 +20,7 @@ pub trait EvmcVm {
     fn init() -> Self;
     fn execute(
         &self,
+        revision: ffi::evmc_revision,
         code: &[u8],
         message: &ExecutionMessage,
         context: &ExecutionContext,

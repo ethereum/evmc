@@ -22,7 +22,7 @@
 //!             ExampleVM {}
 //!     }
 //!
-//!     fn execute(&self, code: &[u8], message: &evmc_vm::ExecutionMessage, context: &evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
+//!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, code: &[u8], message: &evmc_vm::ExecutionMessage, context: &evmc_vm::ExecutionContext) -> evmc_vm::ExecutionResult {
 //!             evmc_vm::ExecutionResult::success(1337, None)
 //!     }
 //! }
@@ -329,7 +329,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
         extern "C" fn __evmc_execute(
             instance: *mut ::evmc_vm::ffi::evmc_instance,
             context: *mut ::evmc_vm::ffi::evmc_context,
-            rev: ::evmc_vm::ffi::evmc_revision,
+            revision: ::evmc_vm::ffi::evmc_revision,
             msg: *const ::evmc_vm::ffi::evmc_message,
             code: *const u8,
             code_size: usize
@@ -365,7 +365,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             };
 
             let result = ::std::panic::catch_unwind(|| {
-                container.execute(code_ref, &execution_message, &execution_context)
+                container.execute(revision, code_ref, &execution_message, &execution_context)
             });
 
             let result = if result.is_err() {

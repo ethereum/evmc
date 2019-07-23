@@ -19,6 +19,7 @@ impl EvmcVm for FooVM {
 
     fn execute(
         &self,
+        _revision: evmc_sys::evmc_revision,
         _code: &[u8],
         _message: &ExecutionMessage,
         _context: &ExecutionContext,
