@@ -79,6 +79,10 @@ impl ExecutionResult {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None)
     }
 
+    pub fn revert(_output: Option<&[u8]>) -> Self {
+        ExecutionResult::new(ffi::evmc_status_code::EVMC_REVERT, 0, _output)
+    }
+
     pub fn success(_gas_left: i64, _output: Option<&[u8]>) -> Self {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_SUCCESS, _gas_left, _output)
     }
