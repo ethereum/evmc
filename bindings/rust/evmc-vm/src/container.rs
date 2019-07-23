@@ -59,6 +59,7 @@ mod tests {
         }
         fn execute(
             &self,
+            _revision: evmc_sys::evmc_revision,
             _code: &[u8],
             _message: &ExecutionMessage,
             _context: &ExecutionContext,
@@ -130,7 +131,12 @@ mod tests {
         let container = EvmcContainer::<TestVm>::new(instance);
         assert_eq!(
             container
-                .execute(&code, &message, &context)
+                .execute(
+                    evmc_sys::evmc_revision::EVMC_PETERSBURG,
+                    &code,
+                    &message,
+                    &context
+                )
                 .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
@@ -140,7 +146,12 @@ mod tests {
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
         assert_eq!(
             container
-                .execute(&code, &message, &context)
+                .execute(
+                    evmc_sys::evmc_revision::EVMC_PETERSBURG,
+                    &code,
+                    &message,
+                    &context
+                )
                 .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );

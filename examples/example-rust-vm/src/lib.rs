@@ -16,6 +16,7 @@ impl EvmcVm for ExampleRustVM {
 
     fn execute(
         &self,
+        _revision: evmc_sys::evmc_revision,
         _code: &[u8],
         message: &ExecutionMessage,
         _context: &ExecutionContext,
