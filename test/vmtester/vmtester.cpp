@@ -3,30 +3,12 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include "vmtester.hpp"
-
 #include <evmc/loader.h>
-
+#include <evmc/evmc.hpp>
 #include <iostream>
 #include <memory>
 
-namespace
-{
-evmc_create_fn create_fn;
-
-std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
-{
-    auto vm = create_fn();
-    if (vm == nullptr)
-        return {nullptr, nullptr};
-    return {vm, vm->destroy};
-}
-}  // namespace
-
-evmc_instance* get_vm_instance()
-{
-    static auto vm = create_vm();
-    return vm.get();
-}
+evmc_instance* evmc_vm_test::vm = nullptr;
 
 class cli_parser
 {
@@ -137,8 +119,12 @@ int main(int argc, char* argv[])
 
         const auto& evmc_module = cli.arguments[0];
         std::cout << "Testing " << evmc_module << "\n";
+
         evmc_loader_error_code ec;
-        create_fn = evmc_load(evmc_module.c_str(), &ec);
+        evmc_vm_test::vm = evmc_load_and_create(evmc_module.c_str(), &ec);
+
+        // The safe C++ wrapper is used to make sure VM is destroyed properly.
+        static const evmc::vm loaded_vm{evmc_vm_test::vm};
 
         if (ec != EVMC_LOADER_SUCCESS)
         {
