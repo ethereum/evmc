@@ -18,4 +18,6 @@ target_include_directories(loader PUBLIC
 )
 target_link_libraries(loader INTERFACE ${CMAKE_DL_LIBS})
 
-install(TARGETS loader EXPORT evmcTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+if(EVMC_INSTALL)
+    install(TARGETS loader EXPORT evmcTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()

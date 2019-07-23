@@ -29,9 +29,10 @@ set_source_files_properties(example_vm.c PROPERTIES COMPILE_DEFINITIONS PROJECT_
 add_executable(evmc-example example.c)
 target_link_libraries(evmc-example PRIVATE evmc-example-host evmc-example-vm evmc)
 
-
-install(TARGETS evmc-example-vm
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+if(EVMC_INSTALL)
+    install(TARGETS evmc-example-vm
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+endif()
