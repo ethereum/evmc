@@ -9,6 +9,7 @@ if(TARGET evmc)
     return()
 endif()
 
+option(EVMC_INSTALL "Enable EVMC installation (e.g. make install)" ON)
 option(EVMC_TESTING "Build EVMC examples, tests and test tools (i.e. everything)" OFF)
 option(EVMC_TEST_TOOLS "Build EVMC test tools" ${EVMC_TESTING})
 if(EVMC_TESTING OR EVMC_TEST_TOOLS)
@@ -44,9 +45,6 @@ set(include_dir ${PROJECT_SOURCE_DIR}/include)
 add_library(evmc INTERFACE)
 add_library(evmc::evmc ALIAS evmc)
 target_include_directories(evmc INTERFACE $<BUILD_INTERFACE:${include_dir}>$<INSTALL_INTERFACE:include>)
-install(TARGETS evmc EXPORT evmcTargets)
-
-install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 add_subdirectory(lib)
 
@@ -70,18 +68,23 @@ configure_package_config_file(
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
 )
 
-install(
-    EXPORT evmcTargets
-    NAMESPACE evmc::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
-)
-install(
-    FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/evmcConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/evmcConfigVersion.cmake
-    cmake/EVMC.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
-)
+if(EVMC_INSTALL)
+    install(TARGETS evmc EXPORT evmcTargets)
+    install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+    install(
+        EXPORT evmcTargets
+        NAMESPACE evmc::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
+    )
+    install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/evmcConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/evmcConfigVersion.cmake
+        cmake/EVMC.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
+    )
+endif()
 
 if(WIN32)
     set(CPACK_GENERATOR ZIP)

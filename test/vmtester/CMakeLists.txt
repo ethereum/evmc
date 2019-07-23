@@ -12,7 +12,9 @@ set_source_files_properties(vmtester.cpp PROPERTIES COMPILE_DEFINITIONS PROJECT_
 add_executable(evmc::evmc-vmtester ALIAS evmc-vmtester)
 
 
-install(TARGETS evmc-vmtester EXPORT evmcTargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(EVMC_INSTALL)
+    install(TARGETS evmc-vmtester EXPORT evmcTargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 
 set(prefix ${PROJECT_NAME}/vmtester)
 
