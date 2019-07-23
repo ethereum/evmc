@@ -238,14 +238,14 @@ constexpr T parse() noexcept
 
 /// Literal for evmc::address.
 template <char... Literal>
-constexpr address operator"" _addr() noexcept
+constexpr address operator"" _address() noexcept
 {
     return internal::parse<address, Literal...>();
 }
 
 /// Literal for evmc::bytes32.
 template <char... Literal>
-constexpr bytes32 operator"" _b32() noexcept
+constexpr bytes32 operator"" _bytes32() noexcept
 {
     return internal::parse<bytes32, Literal...>();
 }

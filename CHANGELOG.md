@@ -22,8 +22,8 @@
 - Added: [[#359](https://github.com/ethereum/evmc/pull/359)]
   The C++ EVMC basic types `address` and `bytes32` have user defined literals.
   ```cpp
-  auto a = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359_addr;
-  auto b = 0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3_b32;
+  auto a = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359_address;
+  auto b = 0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3_bytes32;
   ```
 - Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.

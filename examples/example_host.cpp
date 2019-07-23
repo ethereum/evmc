@@ -113,8 +113,8 @@ public:
         const int64_t current_block_number = get_tx_context().block_number;
 
         return (number < current_block_number && number >= current_block_number - 256) ?
-                   0xb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5f_b32 :
-                   0_b32;
+                   0xb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5f_bytes32 :
+                   0_bytes32;
     }
 
     void emit_log(const evmc_address& addr,
