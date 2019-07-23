@@ -21,12 +21,33 @@ impl EvmcVm for ExampleRustVM {
         message: &ExecutionMessage,
         _context: &mut ExecutionContext,
     ) -> ExecutionResult {
-        let is_create = message.kind() == evmc_sys::evmc_call_kind::EVMC_CREATE;
-
-        if is_create {
-            ExecutionResult::failure()
-        } else {
-            ExecutionResult::success(66, Some(&[0xc0, 0xff, 0xee]))
+        if message.kind() != evmc_sys::evmc_call_kind::EVMC_CALL {
+            return ExecutionResult::failure();
         }
+
+        if _code.len() == 0 {
+            return ExecutionResult::failure();
+        }
+
+        let tx_context = _context.get_tx_context().clone();
+
+        let save_return_block_number: Vec<u8> = vec![
+            0x43, 0x60, 0x00, 0x55, 0x43, 0x60, 0x00, 0x52, 0x59, 0x60, 0x00, 0xf3,
+        ];
+
+        if save_return_block_number != _code {
+            return ExecutionResult::failure();
+        }
+
+        assert!(tx_context.block_number <= 255);
+        let block_number = tx_context.block_number as u8;
+
+        let storage_key = Bytes32::default();
+        let mut storage_value = Bytes32::default();
+        storage_value.bytes[31] = block_number;
+        _context.set_storage(&message.destination(), &storage_key, &storage_value);
+
+        let ret = format!("{}", block_number).into_bytes();
+        ExecutionResult::success(message.gas() / 2, Some(&ret))
     }
 }
