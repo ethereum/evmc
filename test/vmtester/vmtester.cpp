@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
         std::cout << "Testing " << evmc_module << "\n";
 
         evmc_loader_error_code ec;
-        evmc_vm_test::vm = evmc_load_and_create(evmc_module.c_str(), &ec);
+        evmc_vm_test::vm = evmc_load_and_configure(evmc_module.c_str(), &ec);
 
         // The safe C++ wrapper is used to make sure VM is destroyed properly.
         static const evmc::vm loaded_vm{evmc_vm_test::vm};
