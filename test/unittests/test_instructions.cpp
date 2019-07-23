@@ -241,3 +241,17 @@ TEST(instructions, petersburg_hard_fork)
         EXPECT_STREQ(pn[op], cn[op]) << op;
     }
 }
+
+TEST(instructions, istanbul_hard_fork)
+{
+    const auto i = evmc_get_instruction_metrics_table(EVMC_ISTANBUL);
+    const auto p = evmc_get_instruction_metrics_table(EVMC_PETERSBURG);
+    const auto in = evmc_get_instruction_names_table(EVMC_ISTANBUL);
+    const auto pn = evmc_get_instruction_names_table(EVMC_PETERSBURG);
+
+    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    {
+        EXPECT_EQ(i[op], p[op]) << op;
+        EXPECT_STREQ(in[op], pn[op]) << op;
+    }
+}
