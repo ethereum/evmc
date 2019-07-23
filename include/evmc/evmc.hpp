@@ -7,6 +7,7 @@
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
+#include <functional>
 #include <initializer_list>
 #include <utility>
 
@@ -14,6 +15,142 @@
 /// @ingroup cpp
 namespace evmc
 {
+/// The big-endian 160-bit hash suitable for keeping an Ethereum address.
+///
+/// This type wraps C ::evmc_address to make sure objects of this type are always initialized.
+struct address : evmc_address
+{
+    /// Default and converting constructor.
+    ///
+    /// Initializes bytes to zeros if not other @p init value provided.
+    constexpr address(evmc_address init = {}) noexcept : evmc_address{init} {}
+
+    /// Explicit operator converting to bool.
+    constexpr inline explicit operator bool() const noexcept;
+};
+
+/// The fixed size array of 32 bytes for storing 256-bit EVM values.
+///
+/// This type wraps C ::evmc_bytes32 to make sure objects of this type are always initialized.
+struct bytes32 : evmc_bytes32
+{
+    /// Default and converting constructor.
+    ///
+    /// Initializes bytes to zeros if not other @p init value provided.
+    constexpr bytes32(evmc_bytes32 init = {}) noexcept : evmc_bytes32{init} {}
+
+    /// Explicit operator converting to bool.
+    constexpr inline explicit operator bool() const noexcept;
+};
+
+/// The alias for evmc::bytes32 to represent a big-endian 256-bit integer.
+using uint256be = bytes32;
+
+
+/// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
+constexpr inline uint64_t load64be(const uint8_t* bytes) noexcept
+{
+    // TODO: Report bug in clang incorrectly optimizing this with AVX2 enabled.
+    return (uint64_t{bytes[0]} << 56) | (uint64_t{bytes[1]} << 48) | (uint64_t{bytes[2]} << 40) |
+           (uint64_t{bytes[3]} << 32) | (uint64_t{bytes[4]} << 24) | (uint64_t{bytes[5]} << 16) |
+           (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
+}
+
+/// Loads 32 bits / 4 bytes of data from the given @p bytes array in big-endian order.
+constexpr inline uint32_t load32be(const uint8_t* bytes) noexcept
+{
+    return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
+           uint32_t{bytes[3]};
+}
+
+namespace fnv
+{
+constexpr auto prime = 0x100000001b3;              ///< The 64-bit FNV prime number.
+constexpr auto offset_basis = 0xcbf29ce484222325;  ///< The 64-bit FNV offset basis.
+
+/// The hashing transformation for 64-bit inputs based on the FNV-1a formula.
+constexpr inline uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
+{
+    return (h ^ x) * prime;
+}
+}  // namespace fnv
+
+
+/// The "equal" comparison operator for the evmc::address type.
+constexpr bool operator==(const address& a, const address& b) noexcept
+{
+    // TODO: Report bug in clang keeping unnecessary bswap.
+    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+           load32be(&a.bytes[16]) == load32be(&b.bytes[16]);
+}
+
+/// The "not equal" comparison operator for the evmc::address type.
+constexpr bool operator!=(const address& a, const address& b) noexcept
+{
+    return !(a == b);
+}
+
+/// The "less" comparison operator for the evmc::address type.
+constexpr bool operator<(const address& a, const address& b) noexcept
+{
+    return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
+           (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+            load64be(&a.bytes[8]) < load64be(&b.bytes[8])) ||
+           (load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+            load32be(&a.bytes[16]) < load32be(&b.bytes[16]));
+}
+
+/// The "equal" comparison operator for the evmc::bytes32 type.
+constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
+{
+    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+           load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
+           load64be(&a.bytes[24]) == load64be(&b.bytes[24]);
+}
+
+/// The "not equal" comparison operator for the evmc::bytes32 type.
+constexpr bool operator!=(const bytes32& a, const bytes32& b) noexcept
+{
+    return !(a == b);
+}
+
+/// The "less" comparison operator for the evmc::bytes32 type.
+constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
+{
+    return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
+           (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
+            load64be(&a.bytes[8]) < load64be(&b.bytes[8])) ||
+           (load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
+            load64be(&a.bytes[16]) < load64be(&b.bytes[16])) ||
+           (load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
+            load64be(&a.bytes[24]) < load64be(&b.bytes[24]));
+}
+
+/// Checks if the given address is the zero address.
+constexpr inline bool is_zero(const address& a) noexcept
+{
+    return a == address{};
+}
+
+constexpr address::operator bool() const noexcept
+{
+    return !is_zero(*this);
+}
+
+/// Checks if the given bytes32 object has all zero bytes.
+constexpr inline bool is_zero(const bytes32& a) noexcept
+{
+    return a == bytes32{};
+}
+
+constexpr bytes32::operator bool() const noexcept
+{
+    return !is_zero(*this);
+}
+
+
 /// @copydoc evmc_result
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type
@@ -387,3 +524,39 @@ constexpr evmc_host_interface interface{
 inline Host::Host() noexcept : evmc_context{&internal::interface} {}
 
 }  // namespace evmc
+
+
+namespace std
+{
+/// Hash operator template specialization for evmc::address. Needed for unordered containers.
+template <>
+struct hash<evmc::address>
+{
+    /// Hash operator using FNV1a-based folding.
+    constexpr size_t operator()(const evmc::address& s) const noexcept
+    {
+        using namespace evmc;
+        using namespace fnv;
+        return static_cast<size_t>(fnv1a_by64(
+            fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])), load64be(&s.bytes[8])),
+            load32be(&s.bytes[16])));
+    }
+};
+
+/// Hash operator template specialization for evmc::bytes32. Needed for unordered containers.
+template <>
+struct hash<evmc::bytes32>
+{
+    /// Hash operator using FNV1a-based folding.
+    constexpr size_t operator()(const evmc::bytes32& s) const noexcept
+    {
+        using namespace evmc;
+        using namespace fnv;
+        return static_cast<size_t>(
+            fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])),
+                                             load64be(&s.bytes[8])),
+                                  load64be(&s.bytes[16])),
+                       load64be(&s.bytes[24])));
+    }
+};
+}  // namespace std

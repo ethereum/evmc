@@ -10,11 +10,185 @@
 #include "../../examples/example_vm/example_vm.h"
 
 #include <evmc/evmc.hpp>
-#include <evmc/helpers.hpp>
 
 #include <gtest/gtest.h>
 
 #include <cstring>
+#include <map>
+#include <unordered_map>
+
+
+TEST(cpp, address)
+{
+    evmc::address a;
+    EXPECT_EQ(std::count(std::begin(a.bytes), std::end(a.bytes), 0), sizeof(a));
+    EXPECT_TRUE(is_zero(a));
+    EXPECT_FALSE(a);
+    EXPECT_TRUE(!a);
+
+    auto other = evmc_address{};
+    other.bytes[19] = 0xfe;
+    a = other;
+    EXPECT_TRUE(std::equal(std::begin(a.bytes), std::end(a.bytes), std::begin(other.bytes)));
+
+    a.bytes[0] = 1;
+    other = a;
+    EXPECT_TRUE(std::equal(std::begin(a.bytes), std::end(a.bytes), std::begin(other.bytes)));
+    EXPECT_FALSE(is_zero(a));
+    EXPECT_TRUE(a);
+    EXPECT_FALSE(!a);
+}
+
+TEST(cpp, bytes32)
+{
+    evmc::bytes32 b;
+    EXPECT_EQ(std::count(std::begin(b.bytes), std::end(b.bytes), 0), sizeof(b));
+    EXPECT_TRUE(is_zero(b));
+    EXPECT_FALSE(b);
+    EXPECT_TRUE(!b);
+
+    auto other = evmc_bytes32{};
+    other.bytes[31] = 0xfe;
+    b = other;
+    EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+
+    b.bytes[0] = 1;
+    other = b;
+    EXPECT_TRUE(std::equal(std::begin(b.bytes), std::end(b.bytes), std::begin(other.bytes)));
+    EXPECT_FALSE(is_zero(b));
+    EXPECT_TRUE(b);
+    EXPECT_FALSE(!b);
+}
+
+TEST(cpp, std_hash)
+{
+#pragma warning(push)
+#pragma warning(disable : 4307 /* integral constant overflow */)
+#pragma warning(disable : 4309 /* 'static_cast': truncation of constant value */)
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
+    static_assert(std::hash<evmc::address>{}({}) == static_cast<size_t>(0xd94d12186c0f2fb7), "");
+    static_assert(std::hash<evmc::bytes32>{}({}) == static_cast<size_t>(0x4d25767f9dce13f5), "");
+#endif
+
+    EXPECT_EQ(std::hash<evmc::address>{}({}), static_cast<size_t>(0xd94d12186c0f2fb7));
+    EXPECT_EQ(std::hash<evmc::bytes32>{}({}), static_cast<size_t>(0x4d25767f9dce13f5));
+
+    auto ea = evmc::address{};
+    std::fill_n(ea.bytes, sizeof(ea), uint8_t{0xee});
+    EXPECT_EQ(std::hash<evmc::address>{}(ea), static_cast<size_t>(0x41dc0178e01b7cd9));
+
+    auto eb = evmc::bytes32{};
+    std::fill_n(eb.bytes, sizeof(eb), uint8_t{0xee});
+    EXPECT_EQ(std::hash<evmc::bytes32>{}(eb), static_cast<size_t>(0xbb14e5c56b477375));
+
+#pragma warning(pop)
+}
+
+TEST(cpp, std_maps)
+{
+    std::map<evmc::address, bool> addresses;
+    addresses[{}] = true;
+    ASSERT_EQ(addresses.size(), 1);
+    EXPECT_EQ(addresses.begin()->first, evmc::address{});
+
+    std::unordered_map<evmc::address, bool> unordered_addresses;
+    unordered_addresses.emplace(*addresses.begin());
+    addresses.clear();
+    EXPECT_EQ(unordered_addresses.size(), 1);
+    EXPECT_FALSE(unordered_addresses.begin()->first);
+
+    std::map<evmc::bytes32, bool> storage;
+    storage[{}] = true;
+    ASSERT_EQ(storage.size(), 1);
+    EXPECT_EQ(storage.begin()->first, evmc::bytes32{});
+
+    std::unordered_map<evmc::bytes32, bool> unordered_storage;
+    unordered_storage.emplace(*storage.begin());
+    storage.clear();
+    EXPECT_EQ(unordered_storage.size(), 1);
+    EXPECT_FALSE(unordered_storage.begin()->first);
+}
+
+TEST(cpp, address_comparison)
+{
+    const auto zero = evmc::address{};
+    for (size_t i = 0; i < sizeof(evmc::address); ++i)
+    {
+        auto t = evmc::address{};
+        t.bytes[i] = 1;
+        auto u = evmc::address{};
+        u.bytes[i] = 2;
+        auto f = evmc::address{};
+        f.bytes[i] = 0xff;
+
+        EXPECT_TRUE(zero < t);
+        EXPECT_TRUE(zero < u);
+        EXPECT_TRUE(zero < f);
+        EXPECT_TRUE(zero != t);
+        EXPECT_TRUE(zero != u);
+        EXPECT_TRUE(zero != f);
+
+        EXPECT_TRUE(t < u);
+        EXPECT_TRUE(t < f);
+        EXPECT_TRUE(u < f);
+
+        EXPECT_FALSE(u < t);
+        EXPECT_FALSE(f < t);
+        EXPECT_FALSE(f < u);
+
+        EXPECT_TRUE(t != u);
+        EXPECT_TRUE(t != f);
+        EXPECT_TRUE(u != t);
+        EXPECT_TRUE(u != f);
+        EXPECT_TRUE(f != t);
+        EXPECT_TRUE(f != u);
+
+        EXPECT_TRUE(t == t);
+        EXPECT_TRUE(u == u);
+        EXPECT_TRUE(f == f);
+    }
+}
+
+TEST(cpp, bytes32_comparison)
+{
+    const auto zero = evmc::bytes32{};
+    for (size_t i = 0; i < sizeof(evmc::bytes32); ++i)
+    {
+        auto t = evmc::bytes32{};
+        t.bytes[i] = 1;
+        auto u = evmc::bytes32{};
+        u.bytes[i] = 2;
+        auto f = evmc::bytes32{};
+        f.bytes[i] = 0xff;
+
+        EXPECT_TRUE(zero < t);
+        EXPECT_TRUE(zero < u);
+        EXPECT_TRUE(zero < f);
+        EXPECT_TRUE(zero != t);
+        EXPECT_TRUE(zero != u);
+        EXPECT_TRUE(zero != f);
+
+        EXPECT_TRUE(t < u);
+        EXPECT_TRUE(t < f);
+        EXPECT_TRUE(u < f);
+
+        EXPECT_FALSE(u < t);
+        EXPECT_FALSE(f < t);
+        EXPECT_FALSE(f < u);
+
+        EXPECT_TRUE(t != u);
+        EXPECT_TRUE(t != f);
+        EXPECT_TRUE(u != t);
+        EXPECT_TRUE(u != f);
+        EXPECT_TRUE(f != t);
+        EXPECT_TRUE(f != u);
+
+        EXPECT_TRUE(t == t);
+        EXPECT_TRUE(u == u);
+        EXPECT_TRUE(f == f);
+    }
+}
 
 TEST(cpp, result)
 {
@@ -138,8 +312,8 @@ TEST(cpp, host)
     auto* host_context = example_host_create_context();
     auto host = evmc::HostContext{host_context};
 
-    auto a = evmc_address{{1}};
-    auto v = evmc_bytes32{{7, 7, 7}};
+    const auto a = evmc::address{{{1}}};
+    const auto v = evmc::bytes32{{{7, 7, 7}}};
 
     EXPECT_FALSE(host.account_exists(a));
 
@@ -147,10 +321,10 @@ TEST(cpp, host)
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_UNCHANGED);
     EXPECT_EQ(host.get_storage(a, {}), v);
 
-    EXPECT_TRUE(is_zero(host.get_balance(a)));
+    EXPECT_TRUE(evmc::is_zero(host.get_balance(a)));
 
     EXPECT_EQ(host.get_code_size(a), 0);
-    EXPECT_EQ(host.get_code_hash(a), evmc_bytes32{});
+    EXPECT_EQ(host.get_code_hash(a), evmc::bytes32{});
     EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), 0);
 
     host.selfdestruct(a, a);
@@ -158,7 +332,7 @@ TEST(cpp, host)
     auto tx = host.get_tx_context();
     EXPECT_EQ(host.get_tx_context().block_number, tx.block_number);
 
-    EXPECT_EQ(host.get_block_hash(0), evmc_bytes32{});
+    EXPECT_EQ(host.get_block_hash(0), evmc::bytes32{});
 
     host.emit_log(a, nullptr, 0, nullptr, 0);
 
