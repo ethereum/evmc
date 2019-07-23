@@ -15,6 +15,7 @@ pub use container::EvmcContainer;
 pub use evmc_sys as ffi;
 pub use types::*;
 
+/// Trait EVMC VMs have to implement.
 pub trait EvmcVm {
     fn init() -> Self;
     fn execute(
@@ -46,11 +47,14 @@ pub struct ExecutionMessage {
     create2_salt: Bytes32,
 }
 
+/// EVMC transaction context structure.
+pub type ExecutionTxContext = ffi::evmc_tx_context;
+
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
     context: &'a mut ffi::evmc_context,
-    tx_context: ffi::evmc_tx_context,
+    tx_context: ExecutionTxContext,
 }
 
 impl ExecutionResult {
@@ -175,7 +179,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn get_tx_context(&mut self) -> &ffi::evmc_tx_context {
+    pub fn get_tx_context(&mut self) -> &ExecutionTxContext {
         &self.tx_context
     }
 
