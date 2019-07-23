@@ -12,3 +12,10 @@ find_package(evmc CONFIG REQUIRED)
 
 add_executable(use_evmc_in_cmake use_evmc_in_cmake.c)
 target_link_libraries(use_evmc_in_cmake PRIVATE evmc::evmc)
+
+
+
+# Only for integration tests.
+if(NOT COMMAND evmc_add_vm_test)
+    message(FATAL_ERROR "Function evmc_add_vm_test() not in EVMC.cmake module")
+endif()

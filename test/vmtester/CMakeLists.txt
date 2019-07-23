@@ -2,20 +2,22 @@
 # Copyright 2018-2019 The EVMC Authors.
 # Licensed under the Apache License, Version 2.0.
 
+include(EVMC)
 include(GNUInstallDirs)
 
 add_executable(evmc-vmtester vmtester.hpp vmtester.cpp tests.cpp)
 set_target_properties(evmc-vmtester PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 target_link_libraries(evmc-vmtester PRIVATE evmc loader evmc-example-host GTest::gtest)
 set_source_files_properties(vmtester.cpp PROPERTIES COMPILE_DEFINITIONS PROJECT_VERSION="${PROJECT_VERSION}")
+add_executable(evmc::evmc-vmtester ALIAS evmc-vmtester)
 
 
-install(TARGETS evmc-vmtester RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS evmc-vmtester EXPORT evmcTargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 set(prefix ${PROJECT_NAME}/vmtester)
 
-add_test(NAME ${prefix}/examplevm COMMAND evmc-vmtester $<TARGET_FILE:evmc-example-vm>)
-add_test(NAME ${prefix}/example_precompiles_vm COMMAND evmc-vmtester $<TARGET_FILE:evmc-example-precompiles-vm>)
+evmc_add_vm_test(NAME ${prefix}/examplevm TARGET evmc-example-vm)
+evmc_add_vm_test(NAME ${prefix}/example_precompiles_vm TARGET evmc-example-precompiles-vm)
 
 add_test(NAME ${prefix}/help COMMAND evmc-vmtester --version --help)
 set_tests_properties(${prefix}/help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")

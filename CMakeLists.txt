@@ -79,6 +79,7 @@ install(
     FILES
     ${CMAKE_CURRENT_BINARY_DIR}/evmcConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/evmcConfigVersion.cmake
+    cmake/EVMC.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/evmc
 )
 
