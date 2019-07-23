@@ -175,11 +175,13 @@ struct concatenate<byte_sequence<Bytes1...>, byte_sequence<Bytes2...>>
     using type = byte_sequence<Bytes1..., Bytes2...>;
 };
 
-
-constexpr uint8_t parse_hex_digit(uint8_t d) noexcept
+template <uint8_t D>
+constexpr uint8_t parse_hex_digit() noexcept
 {
+    static_assert((D >= '0' && D <= '9') || (D >= 'a' && D <= 'f') || (D >= 'A' && D <= 'F'),
+                  "literal must be hexadecimal integer");
     return static_cast<uint8_t>(
-        (d >= '0' && d <= '9') ? d - '0' : (d >= 'a' && d <= 'f') ? d - 'a' + 10 : d - 'A' + 10);
+        (D >= '0' && D <= '9') ? D - '0' : (D >= 'a' && D <= 'f') ? D - 'a' + 10 : D - 'A' + 10);
 }
 
 
@@ -189,8 +191,8 @@ struct parse_digits;
 template <uint8_t Digit1, uint8_t Digit2>
 struct parse_digits<byte_sequence<Digit1, Digit2>>
 {
-    using type =
-        byte_sequence<static_cast<uint8_t>(parse_hex_digit(Digit1) << 4) | parse_hex_digit(Digit2)>;
+    using type = byte_sequence<static_cast<uint8_t>(parse_hex_digit<Digit1>() << 4) |
+                               parse_hex_digit<Digit2>()>;
 };
 
 template <uint8_t Digit1, uint8_t Digit2, uint8_t... Rest>
