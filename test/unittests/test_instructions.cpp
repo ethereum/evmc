@@ -227,3 +227,17 @@ TEST(instructions, constantinople_hard_fork)
     EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
     EXPECT_TRUE(bn[OP_EXTCODEHASH] == nullptr);
 }
+
+TEST(instructions, petersburg_hard_fork)
+{
+    const auto p = evmc_get_instruction_metrics_table(EVMC_PETERSBURG);
+    const auto c = evmc_get_instruction_metrics_table(EVMC_CONSTANTINOPLE);
+    const auto pn = evmc_get_instruction_names_table(EVMC_PETERSBURG);
+    const auto cn = evmc_get_instruction_names_table(EVMC_CONSTANTINOPLE);
+
+    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    {
+        EXPECT_EQ(p[op], c[op]) << op;
+        EXPECT_STREQ(pn[op], cn[op]) << op;
+    }
+}
