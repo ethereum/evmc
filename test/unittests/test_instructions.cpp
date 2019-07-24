@@ -254,6 +254,7 @@ TEST(instructions, istanbul_hard_fork)
         switch (op)
         {
         case OP_CHAINID:
+        case OP_SELFBALANCE:
             continue;
         default:
             EXPECT_EQ(i[op], p[op]) << op;
@@ -268,6 +269,13 @@ TEST(instructions, istanbul_hard_fork)
     EXPECT_EQ(p[OP_CHAINID].gas_cost, -1);
     EXPECT_EQ(in[OP_CHAINID], std::string{"CHAINID"});
     EXPECT_TRUE(pn[OP_CHAINID] == nullptr);
+
+    EXPECT_EQ(i[OP_SELFBALANCE].gas_cost, 5);
+    EXPECT_EQ(i[OP_SELFBALANCE].num_stack_arguments, 0);
+    EXPECT_EQ(i[OP_SELFBALANCE].num_stack_returned_items, 1);
+    EXPECT_EQ(p[OP_SELFBALANCE].gas_cost, -1);
+    EXPECT_EQ(in[OP_SELFBALANCE], std::string{"SELFBALANCE"});
+    EXPECT_TRUE(pn[OP_SELFBALANCE] == nullptr);
 }
 
 TEST(instructions, berlin_hard_fork)
