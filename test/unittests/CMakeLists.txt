@@ -12,6 +12,7 @@ add_executable(
     evmc-unittests
     loader_mock.h
     test_cpp.cpp
+    test_deprecated.cpp
     test_helpers.cpp
     test_instructions.cpp
     test_loader.cpp
