@@ -12,6 +12,8 @@
 
 #include <map>
 
+using namespace evmc::literals;
+
 struct account
 {
     evmc::uint256be balance = {};
@@ -108,12 +110,11 @@ public:
 
     evmc_bytes32 get_block_hash(int64_t number) noexcept final
     {
-        int64_t current_block_number = get_tx_context().block_number;
+        const int64_t current_block_number = get_tx_context().block_number;
 
-        auto example_block_hash = evmc::bytes32{};
-        if (number < current_block_number && number >= current_block_number - 256)
-            example_block_hash = evmc::bytes32{{{1, 1, 1, 1}}};
-        return example_block_hash;
+        return (number < current_block_number && number >= current_block_number - 256) ?
+                   0xb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5f_bytes32 :
+                   0_bytes32;
     }
 
     void emit_log(const evmc_address& addr,
