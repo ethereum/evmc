@@ -253,8 +253,11 @@ TEST(instructions, istanbul_hard_fork)
     {
         switch (op)
         {
+        case OP_BALANCE:
+        case OP_EXTCODEHASH:
         case OP_CHAINID:
         case OP_SELFBALANCE:
+        case OP_SLOAD:
             continue;
         default:
             EXPECT_EQ(i[op], p[op]) << op;
@@ -276,6 +279,11 @@ TEST(instructions, istanbul_hard_fork)
     EXPECT_EQ(p[OP_SELFBALANCE].gas_cost, -1);
     EXPECT_EQ(in[OP_SELFBALANCE], std::string{"SELFBALANCE"});
     EXPECT_TRUE(pn[OP_SELFBALANCE] == nullptr);
+
+    // Repricings
+    EXPECT_EQ(i[OP_BALANCE].gas_cost, 700);
+    EXPECT_EQ(i[OP_EXTCODEHASH].gas_cost, 700);
+    EXPECT_EQ(i[OP_SLOAD].gas_cost, 800);
 }
 
 TEST(instructions, berlin_hard_fork)
