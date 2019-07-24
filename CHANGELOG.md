@@ -22,6 +22,9 @@
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Changed: [[#311](https://github.com/ethereum/evmc/pull/311)]
   In `evmc_load_and_create()` the `error_code` is optional (can be `NULL`).
+- Deprecated: [[#358](https://github.com/ethereum/evmc/pull/358)]
+  The usage of `evmc/helpers.hpp` has been deprecated. Use `evmc/evmc.hpp`
+  which provides the same features.
 - Fixed:
   [[#261](https://github.com/ethereum/evmc/issues/261),
   [#263](https://github.com/ethereum/evmc/pull/263)]

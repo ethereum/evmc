@@ -3,7 +3,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include <evmc/helpers.h>
-#include <evmc/helpers.hpp>
 
 #include <gtest/gtest.h>
 
@@ -26,27 +25,6 @@ static constexpr size_t optionalDataSize =
     sizeof(evmc_result) - offsetof(evmc_result, create_address);
 static_assert(optionalDataSize >= sizeof(evmc_result_optional_storage),
               "evmc_result's optional data space is too small");
-
-
-TEST(helpers, fnv1a)
-{
-    const uint8_t text[] = {'E', 'V', 'M', 'C'};
-    const auto h = fnv1a(text, sizeof(text));
-    EXPECT_EQ(h, sizeof(size_t) == 8 ? 0x15e05d6d22fed89a : 0xffaa6a9a);
-}
-
-TEST(helpers, is_zero)
-{
-    auto a = evmc_address{};
-    EXPECT_TRUE(is_zero(a));
-    a.bytes[0] = 1;
-    EXPECT_FALSE(is_zero(a));
-
-    auto b = evmc_bytes32{};
-    EXPECT_TRUE(is_zero(b));
-    b.bytes[0] = 1;
-    EXPECT_FALSE(is_zero(b));
-}
 
 TEST(helpers, release_result)
 {

@@ -18,39 +18,47 @@
 #include <functional>
 
 /// The comparator for std::map<evmc_address, ...>.
+EVMC_DEPRECATED
 inline bool operator<(const evmc_address& a, const evmc_address& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) < 0;
 }
 
 /// The comparator for std::map<evmc_bytes32, ...>.
+EVMC_DEPRECATED
 inline bool operator<(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) < 0;
 }
 
 /// The comparator for equality.
+EVMC_DEPRECATED
 inline bool operator==(const evmc_address& a, const evmc_address& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
 }
 
 /// The comparator for equality.
+EVMC_DEPRECATED
 inline bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
 }
 
 /// Check if the address is zero (all bytes are zeros).
+EVMC_DEPRECATED
 inline bool is_zero(const evmc_address& address) noexcept
 {
-    return address == evmc_address{};
+    constexpr auto zero = evmc_address{};
+    return std::memcmp(address.bytes, zero.bytes, sizeof(zero.bytes)) == 0;
 }
 
 /// Check if the hash is zero (all bytes are zeros).
+EVMC_DEPRECATED
 inline bool is_zero(const evmc_bytes32& x) noexcept
 {
-    return x == evmc_bytes32{};
+    constexpr auto zero = evmc_bytes32{};
+    return std::memcmp(x.bytes, zero.bytes, sizeof(zero.bytes)) == 0;
 }
 
 /// Parameters for the fnv1a hash function, specialized by the hash result size (size_t).
@@ -98,7 +106,7 @@ namespace std
 {
 /// Hash operator template specialization for evmc_address needed for unordered containers.
 template <>
-struct hash<evmc_address>
+struct EVMC_DEPRECATED hash<evmc_address>
 {
     /// Hash operator using FNV1a.
     size_t operator()(const evmc_address& s) const noexcept
@@ -109,7 +117,7 @@ struct hash<evmc_address>
 
 /// Hash operator template needed for std::unordered_set and others using hashes.
 template <>
-struct hash<evmc_bytes32>
+struct EVMC_DEPRECATED hash<evmc_bytes32>
 {
     /// Hash operator using FNV1a.
     size_t operator()(const evmc_bytes32& s) const noexcept
