@@ -62,7 +62,7 @@ mod tests {
             _revision: evmc_sys::evmc_revision,
             _code: &[u8],
             _message: &ExecutionMessage,
-            _context: &ExecutionContext,
+            _context: &mut ExecutionContext,
         ) -> ExecutionResult {
             ExecutionResult::failure()
         }
@@ -126,7 +126,7 @@ mod tests {
             emit_log: None,
         };
         let mut backing_context = ::evmc_sys::evmc_context { host: &host };
-        let context = ExecutionContext::new(&mut backing_context);
+        let mut context = ExecutionContext::new(&mut backing_context);
 
         let container = EvmcContainer::<TestVm>::new(instance);
         assert_eq!(
@@ -135,7 +135,7 @@ mod tests {
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
                     &code,
                     &message,
-                    &context
+                    &mut context
                 )
                 .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
@@ -150,7 +150,7 @@ mod tests {
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
                     &code,
                     &message,
-                    &context
+                    &mut context
                 )
                 .get_status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE

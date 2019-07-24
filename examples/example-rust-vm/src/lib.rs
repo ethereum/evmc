@@ -19,7 +19,7 @@ impl EvmcVm for ExampleRustVM {
         _revision: evmc_sys::evmc_revision,
         _code: &[u8],
         message: &ExecutionMessage,
-        _context: &ExecutionContext,
+        _context: &mut ExecutionContext,
     ) -> ExecutionResult {
         let is_create = message.kind() == evmc_sys::evmc_call_kind::EVMC_CREATE;
 
