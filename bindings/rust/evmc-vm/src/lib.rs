@@ -184,7 +184,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
-    pub fn get_tx_context(&mut self) -> &ExecutionTxContext {
+    pub fn get_tx_context(&self) -> &ExecutionTxContext {
         &self.tx_context
     }
 
