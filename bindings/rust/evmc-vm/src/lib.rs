@@ -173,6 +173,7 @@ impl ExecutionMessage {
 
 impl<'a> ExecutionContext<'a> {
     pub fn new(_context: &'a mut ffi::evmc_context) -> Self {
+        assert!(_context.host != std::ptr::null());
         let _tx_context = unsafe {
             assert!((*(_context.host)).get_tx_context.is_some());
             (*(_context.host)).get_tx_context.unwrap()(_context as *mut ffi::evmc_context)
