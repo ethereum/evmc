@@ -153,6 +153,7 @@ struct evmc_tx_context
     int64_t block_timestamp;         /**< The block timestamp. */
     int64_t block_gas_limit;         /**< The block gas limit. */
     evmc_uint256be block_difficulty; /**< The block difficulty. */
+    evmc_uint256be chain_id;         /**< The blockchain's ChainID. */
 };
 
 struct evmc_context;

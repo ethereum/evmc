@@ -251,7 +251,21 @@ TEST(instructions, istanbul_hard_fork)
 
     for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
     {
-        EXPECT_EQ(i[op], p[op]) << op;
-        EXPECT_STREQ(in[op], pn[op]) << op;
+        switch (op)
+        {
+        case OP_CHAINID:
+            continue;
+        default:
+            EXPECT_EQ(i[op], p[op]) << op;
+            EXPECT_STREQ(in[op], pn[op]) << op;
+            break;
+        }
     }
+
+    EXPECT_EQ(i[OP_CHAINID].gas_cost, 2);
+    EXPECT_EQ(i[OP_CHAINID].num_stack_arguments, 0);
+    EXPECT_EQ(i[OP_CHAINID].num_stack_returned_items, 1);
+    EXPECT_EQ(p[OP_CHAINID].gas_cost, -1);
+    EXPECT_EQ(in[OP_CHAINID], std::string{"CHAINID"});
+    EXPECT_TRUE(pn[OP_CHAINID] == nullptr);
 }
