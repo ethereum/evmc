@@ -759,6 +759,7 @@ mod tests {
             block_timestamp: 235117,
             block_gas_limit: 105023,
             block_difficulty: Uint256 { bytes: [0xaa; 32] },
+            chain_id: Uint256::default(),
         }
     }
 

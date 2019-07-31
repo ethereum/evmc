@@ -85,6 +85,7 @@ mod tests {
             block_timestamp: 0,
             block_gas_limit: 0,
             block_difficulty: Uint256::default(),
+            chain_id: Uint256::default(),
         }
     }
 
