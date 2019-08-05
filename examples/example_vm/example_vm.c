@@ -22,10 +22,8 @@
 /// The example VM instance struct extending the evmc_instance.
 struct example_vm
 {
-    struct evmc_instance instance;               ///< The base struct.
-    int verbose;                                 ///< The verbosity level.
-    evmc_trace_callback trace_callback;          ///< The trace callback.
-    struct evmc_tracer_context* tracer_context;  ///< The tracer context.
+    struct evmc_instance instance;  ///< The base struct.
+    int verbose;                    ///< The verbosity level.
 };
 
 /// The implementation of the evmc_instance::destroy() method.
@@ -169,16 +167,6 @@ static struct evmc_result execute(struct evmc_instance* instance,
     return ret;
 }
 
-/// The implementation of the optional evmc_instance::set_tracer() method.
-static void set_tracer(struct evmc_instance* instance,
-                       evmc_trace_callback callback,
-                       struct evmc_tracer_context* context)
-{
-    struct example_vm* vm = (struct example_vm*)instance;
-    vm->trace_callback = callback;
-    vm->tracer_context = context;
-}
-
 
 /// @cond internal
 #if !defined(PROJECT_VERSION)
@@ -197,7 +185,6 @@ struct evmc_instance* evmc_create_example_vm()
         .execute = execute,
         .get_capabilities = get_capabilities,
         .set_option = set_option,
-        .set_tracer = set_tracer,
     };
     struct example_vm* vm = calloc(1, sizeof(struct example_vm));
     struct evmc_instance* interface = &vm->instance;

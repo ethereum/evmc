@@ -859,7 +859,11 @@ typedef uint32_t evmc_capabilities_flagset;
  */
 typedef evmc_capabilities_flagset (*evmc_get_capabilities_fn)(struct evmc_instance* instance);
 
-/** The opaque type representing a Client-side tracer object. */
+/**
+ * The opaque type representing a Client-side tracer object.
+ *
+ * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
+ */
 struct evmc_tracer_context;
 
 /**
@@ -870,6 +874,8 @@ struct evmc_tracer_context;
  * The message level information (like call depth, destination address, etc.) are not provided here.
  * This piece of information can be acquired by inspecting messages being sent to the EVM in
  * ::evmc_execute_fn and the results of the messages execution.
+ *
+ * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
  *
  * @param context                The pointer to the Client-side tracing context. This allows to
  *                               implement the tracer in OOP manner.
@@ -917,6 +923,8 @@ typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
  * @see ::evmc_trace_callback.
  *
  * This will overwrite the previous settings (the callback and the context).
+ *
+ * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
  *
  * @param instance    The EVM instance.
  * @param callback    The tracer callback function. This argument MAY be NULL to disable previously
@@ -991,6 +999,10 @@ struct evmc_instance
      * Optional pointer to function setting the EVM instruction tracer.
      *
      * If the EVM does not support this feature the pointer can be NULL.
+     *
+     * @deprecated
+     * Since EVMC 6.3, the tracing API has been deprecated as there have been some
+     * design flaws discovered. New API is expected to be introduced in future.
      */
     evmc_set_tracer_fn set_tracer;
 

@@ -32,6 +32,9 @@
 - Deprecated: [[#358](https://github.com/ethereum/evmc/pull/358)]
   The usage of `evmc/helpers.hpp` has been deprecated. Use `evmc/evmc.hpp`
   which provides the same features.
+- Deprecated: [[#376](https://github.com/ethereum/evmc/pull/376)]
+  The tracing API has been deprecated as there have been some design flaws discovered. 
+  New API is expected to be introduced in future.
 - Fixed:
   [[#261](https://github.com/ethereum/evmc/issues/261),
   [#263](https://github.com/ethereum/evmc/pull/263)]
