@@ -83,6 +83,7 @@ static inline enum evmc_set_option_result evmc_set_option(struct evmc_instance* 
  *
  * @see evmc_set_tracer_fn
  */
+EVMC_DEPRECATED
 static inline void evmc_set_tracer(struct evmc_instance* instance,
                                    evmc_trace_callback callback,
                                    struct evmc_tracer_context* context)
