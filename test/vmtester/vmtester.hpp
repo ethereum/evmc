@@ -3,8 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 #pragma once
 
-#include <gtest/gtest.h>
 #include <evmc/evmc.hpp>
+#include <gtest/gtest.h>
 
 class evmc_vm_test : public ::testing::Test
 {
