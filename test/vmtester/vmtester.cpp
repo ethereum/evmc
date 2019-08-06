@@ -3,29 +3,18 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include "vmtester.hpp"
-
 #include <evmc/loader.h>
-
+#include <evmc/evmc.hpp>
 #include <iostream>
 #include <memory>
 
-namespace
-{
-evmc_create_fn create_fn;
+evmc_instance* evmc_vm_test::vm;
+evmc::vm evmc_vm_test::owned_vm;
 
-std::unique_ptr<evmc_instance, evmc_destroy_fn> create_vm()
+void evmc_vm_test::init_vm(evmc_instance* owned_vm_instance) noexcept
 {
-    auto vm = create_fn();
-    if (vm == nullptr)
-        return {nullptr, nullptr};
-    return {vm, vm->destroy};
-}
-}  // namespace
-
-evmc_instance* get_vm_instance()
-{
-    static auto vm = create_vm();
-    return vm.get();
+    vm = owned_vm_instance;
+    owned_vm = evmc::vm{owned_vm_instance};
 }
 
 class cli_parser
@@ -137,9 +126,9 @@ int main(int argc, char* argv[])
 
         const auto& evmc_module = cli.arguments[0];
         std::cout << "Testing " << evmc_module << "\n";
-        evmc_loader_error_code ec;
-        create_fn = evmc_load(evmc_module.c_str(), &ec);
 
+        evmc_loader_error_code ec;
+        auto vm_instance = evmc_load_and_configure(evmc_module.c_str(), &ec);
         if (ec != EVMC_LOADER_SUCCESS)
         {
             const auto error = evmc_last_error_msg();
@@ -149,6 +138,8 @@ int main(int argc, char* argv[])
                 std::cerr << "Loading error " << ec << "\n";
             return static_cast<int>(ec);
         }
+
+        evmc_vm_test::init_vm(vm_instance);
 
         std::cout << std::endl;
         return RUN_ALL_TESTS();

@@ -28,6 +28,9 @@
   auto a = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359_address;
   auto b = 0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3_bytes32;
   ```
+- Added: [[#366](https://github.com/ethereum/evmc/pull/366)]
+  The `evmc-vmtester` tool received support for EVMC module configuration.
+  E.g. `evmc-vmtester ./my_vm,mode=interpreter`.
 - Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Changed: [[#311](https://github.com/ethereum/evmc/pull/311)]

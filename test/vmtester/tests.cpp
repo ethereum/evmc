@@ -37,12 +37,16 @@ TEST_F(evmc_vm_test, name)
 {
     ASSERT_TRUE(vm->name != nullptr);
     EXPECT_NE(std::strlen(vm->name), size_t{0}) << "VM name cannot be empty";
+
+    EXPECT_STREQ(owned_vm.name(), vm->name);
 }
 
 TEST_F(evmc_vm_test, version)
 {
     ASSERT_TRUE(vm->version != nullptr);
     EXPECT_NE(std::strlen(vm->version), size_t{0}) << "VM version cannot be empty";
+
+    EXPECT_STREQ(owned_vm.version(), vm->version);
 }
 
 TEST_F(evmc_vm_test, capabilities)
