@@ -3,8 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include "vmtester.hpp"
-#include <evmc/loader.h>
 #include <evmc/evmc.hpp>
+#include <evmc/loader.h>
 #include <iostream>
 #include <memory>
 

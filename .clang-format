@@ -21,16 +21,37 @@ BreakBeforeTernaryOperators: false
 ColumnLimit:     100
 ConstructorInitializerIndentWidth: 2
 IncludeCategories:
+
+  # Local includes "":
   - Regex:           '^".*'
     Priority:        1
-  - Regex:           '^<boost.*'
-    Priority:        98
-  - Regex:           '^<.*\.h>'
+
+  # Third party libraries:
+  - Regex:           '^<cryptopp/.*'
+    Priority:        70
+
+  # Standard library extensions / common generic purpose libraries:
+  - Regex:           '^<boost/.*'
+    Priority:        80
+
+  # Testing libraries:
+  - Regex:           '^<benchmark/.*'
+    Priority:        90
+  - Regex:           '^<gtest/.*'
+    Priority:        90
+
+  # Public includes <>:
+  - Regex:           '^<.*\.h|hpp>'
     Priority:        2
-  - Regex:           '^<.*'
-    Priority:        99
+
+  # C++ standard library:
+  - Regex:           '^<[^.]*>$'
+    Priority:        100
+
+  # Anything else:
   - Regex:           '.*'
     Priority:        4
+
 IncludeIsMainRegex: '(Test)?$'
 IndentCaseLabels: false
 IndentWidth:     4
