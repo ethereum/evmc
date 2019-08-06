@@ -8,7 +8,14 @@
 #include <iostream>
 #include <memory>
 
-evmc_instance* evmc_vm_test::vm = nullptr;
+evmc_instance* evmc_vm_test::vm;
+evmc::vm evmc_vm_test::owned_vm;
+
+void evmc_vm_test::init_vm(evmc_instance* owned_vm_instance) noexcept
+{
+    vm = owned_vm_instance;
+    owned_vm = evmc::vm{owned_vm_instance};
+}
 
 class cli_parser
 {
@@ -121,11 +128,7 @@ int main(int argc, char* argv[])
         std::cout << "Testing " << evmc_module << "\n";
 
         evmc_loader_error_code ec;
-        evmc_vm_test::vm = evmc_load_and_configure(evmc_module.c_str(), &ec);
-
-        // The safe C++ wrapper is used to make sure VM is destroyed properly.
-        static const evmc::vm loaded_vm{evmc_vm_test::vm};
-
+        auto vm_instance = evmc_load_and_configure(evmc_module.c_str(), &ec);
         if (ec != EVMC_LOADER_SUCCESS)
         {
             const auto error = evmc_last_error_msg();
@@ -135,6 +138,8 @@ int main(int argc, char* argv[])
                 std::cerr << "Loading error " << ec << "\n";
             return static_cast<int>(ec);
         }
+
+        evmc_vm_test::init_vm(vm_instance);
 
         std::cout << std::endl;
         return RUN_ALL_TESTS();
