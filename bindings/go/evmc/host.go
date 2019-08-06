@@ -8,14 +8,13 @@ package evmc
 #cgo CFLAGS:  -I${SRCDIR}/.. -Wall -Wextra -Wno-unused-parameter
 
 #include <evmc/evmc.h>
+#include <evmc/helpers.h>
 
 struct extended_context
 {
     struct evmc_context context;
     int64_t index;
 };
-
-void evmc_go_free_result_output(const struct evmc_result* result);
 
 */
 import "C"
@@ -224,18 +223,12 @@ func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result 
 		statusCode = C.enum_evmc_status_code(err.(Error))
 	}
 
-	result := C.struct_evmc_result{}
-	result.status_code = statusCode
-	result.gas_left = C.int64_t(gasLeft)
-	result.create_address = evmcAddress(createAddr)
-
+	outputData := (*C.uint8_t)(nil)
 	if len(output) > 0 {
-		// TODO: We could pass it directly to the caller without a copy. The caller should release it. Check depth.
-		cOutput := C.CBytes(output)
-		result.output_data = (*C.uint8_t)(cOutput)
-		result.output_size = C.size_t(len(output))
-		result.release = (C.evmc_release_result_fn)(C.evmc_go_free_result_output)
+		outputData = (*C.uint8_t)(&output[0])
 	}
 
+	result := C.evmc_make_result(statusCode, C.int64_t(gasLeft), outputData, C.size_t(len(output)))
+	result.create_address = evmcAddress(createAddr)
 	return result
 }

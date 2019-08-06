@@ -7,13 +7,6 @@
 
 #include <stdlib.h>
 
-
-void evmc_go_free_result_output(const struct evmc_result* result)
-{
-    free((void*)result->output_data);
-}
-
-
 /* Go does not support exporting functions with parameters with const modifiers,
  * so we have to cast function pointers to the function types defined in EVMC.
  * This disables any type checking of exported Go functions. To mitigate this
