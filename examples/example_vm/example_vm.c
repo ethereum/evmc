@@ -108,6 +108,9 @@ static struct evmc_result execute(struct evmc_instance* instance,
     // Assembly: `{ mstore(0, number()) return(0, msize()) }`
     const char return_block_number[] = "\x43\x60\x00\x52\x59\x60\x00\xf3";
 
+    // Assembly: PUSH(0) 6x DUP1 CALL
+    const char make_a_call[] = "\x60\x00\x80\x80\x80\x80\x80\x80\xf1";
+
     if (msg->kind == EVMC_CREATE)
     {
         ret.status_code = EVMC_SUCCESS;
@@ -156,6 +159,17 @@ static struct evmc_result execute(struct evmc_instance* instance,
         ret.output_size = output_size;
         ret.release = &free_result_output_data;
         return ret;
+    }
+    else if (code_size == (sizeof(make_a_call) - 1) &&
+             strncmp((const char*)code, make_a_call, code_size) == 0)
+    {
+        struct evmc_message call_msg;
+        memset(&call_msg, 0, sizeof(call_msg));
+        call_msg.kind = EVMC_CALL;
+        call_msg.depth = msg->depth + 1;
+        call_msg.gas = msg->gas - (msg->gas / 64);
+        call_msg.sender = msg->destination;
+        return context->host->call(context, &call_msg);
     }
 
     ret.status_code = EVMC_FAILURE;
