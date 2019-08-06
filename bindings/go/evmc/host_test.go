@@ -61,7 +61,8 @@ func (host *testHostContext) EmitLog(addr common.Address, topics []common.Hash, 
 func (host *testHostContext) Call(kind CallKind,
 	destination common.Address, sender common.Address, value *big.Int, input []byte, gas int64, depth int,
 	static bool, salt *big.Int) (output []byte, gasLeft int64, createAddr common.Address, err error) {
-	return nil, gas, common.Address{}, nil
+	output = []byte("output from testHostContext.Call()")
+	return output, gas, common.Address{}, nil
 }
 
 func TestGetTxContext(t *testing.T) {
@@ -82,7 +83,29 @@ func TestGetTxContext(t *testing.T) {
 		t.Errorf("execution unexpected output: %s", output)
 	}
 	if gasLeft != 50 {
-		t.Errorf("execution gas left is incorrect: %x", gasLeft)
+		t.Errorf("execution gas left is incorrect: %d", gasLeft)
+	}
+	if err != nil {
+		t.Error("execution returned unexpected error")
+	}
+}
+
+func TestCall(t *testing.T) {
+	vm, _ := Load(modulePath)
+	defer vm.Destroy()
+
+	host := &testHostContext{}
+	code := []byte("\x60\x00\x80\x80\x80\x80\x80\x80\xf1")
+
+	addr := common.Address{}
+	h := common.Hash{}
+	output, gasLeft, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code, h)
+
+	if bytes.Compare(output, []byte("output from testHostContext.Call()")) != 0 {
+		t.Errorf("execution unexpected output: %s", output)
+	}
+	if gasLeft != 99 {
+		t.Errorf("execution gas left is incorrect: %d", gasLeft)
 	}
 	if err != nil {
 		t.Error("execution returned unexpected error")

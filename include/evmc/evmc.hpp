@@ -255,6 +255,10 @@ constexpr bytes32 operator"" _bytes32() noexcept
 
 using namespace literals;
 
+
+/// Alias for evmc_make_result().
+constexpr auto make_result = evmc_make_result;
+
 /// @copydoc evmc_result
 ///
 /// This is a RAII wrapper for evmc_result and objects of this type
@@ -267,6 +271,22 @@ public:
     using evmc_result::output_data;
     using evmc_result::output_size;
     using evmc_result::status_code;
+
+    /// Creates the result from the provided arguments.
+    ///
+    /// The provided output is copied to memory allocated with malloc()
+    /// and the evmc_result::release function is set to one invoking free().
+    ///
+    /// @param _status_code  The status code.
+    /// @param _gas_left     The amount of gas left.
+    /// @param _output_data  The pointer to the output.
+    /// @param _output_size  The output size.
+    result(evmc_status_code _status_code,
+           int64_t _gas_left,
+           const uint8_t* _output_data,
+           size_t _output_size) noexcept
+      : evmc_result{make_result(_status_code, _gas_left, _output_data, _output_size)}
+    {}
 
     /// Converting constructor from raw evmc_result.
     explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
