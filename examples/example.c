@@ -15,10 +15,11 @@ int main()
 {
     struct evmc_instance* vm = evmc_create_example_vm();
     if (!evmc_is_abi_compatible(vm))
-        return 1;
+        return -1;
+
     // EVM bytecode goes here. This is one of the examples.
     const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
-    const size_t code_size = sizeof(code);
+    const size_t code_size = sizeof(code) - 1;
     const uint8_t input[] = "Hello World!";
     const evmc_uint256be value = {{1, 0}};
     const evmc_address addr = {{0, 1, 2}};
@@ -34,9 +35,11 @@ int main()
     msg.depth = 0;
     struct evmc_result result = evmc_execute(vm, ctx, EVMC_HOMESTEAD, &msg, code, code_size);
     printf("Execution result:\n");
+    int exit_code = 0;
     if (result.status_code != EVMC_SUCCESS)
     {
         printf("  EVM execution failure: %d\n", result.status_code);
+        exit_code = result.status_code;
     }
     else
     {
@@ -46,11 +49,11 @@ int main()
         printf("  Output: ");
         size_t i = 0;
         for (i = 0; i < result.output_size; i++)
-            printf("%02x ", result.output_data[i]);
+            printf("%02x", result.output_data[i]);
         printf("\n");
     }
     evmc_release_result(&result);
     example_host_destroy_context(ctx);
     evmc_destroy(vm);
-    return 0;
+    return exit_code;
 }

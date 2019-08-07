@@ -28,7 +28,9 @@ commands:
           command: cmake --build ~/build
       - run:
           name: "Test"
-          command: cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
+          command: |
+            cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
+            ~/build/examples/evmc-example
       - run:
           name: "Install"
           command: cmake --build ~/build --target install
