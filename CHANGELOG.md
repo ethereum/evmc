@@ -2,6 +2,13 @@
 
 ## [6.3.0] - unreleased
 
+- Added: [[#267](https://github.com/ethereum/evmc/pull/267)]
+  Experimental support for _Precompiles_ - 
+  EVMC modules containing implementations of Ethereum precompiled contracts.
+  To learn more read
+  the [EVMC Precompiles](https://github.com/ethereum/evmc/issues/259) feature description.
+- Added: [[#301](https://github.com/ethereum/evmc/pull/301)]
+  The `vm::get_capabilities()` method has been added in C++ API.
 - Added: [[#303](https://github.com/ethereum/evmc/pull/303)]
   A CMake helper for running evmc-vmtester.
 - Added: [[#313](https://github.com/ethereum/evmc/pull/313)]
@@ -28,9 +35,19 @@
   auto a = 0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359_address;
   auto b = 0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3_bytes32;
   ```
+- Added: [[#360](https://github.com/ethereum/evmc/pull/360)]
+  CMake option `EVMC_INSTALL` (`ON` by default) to disable installing EVMC targets.
+  This may be useful when EVMC is included in other project as git submodule or subtree.
 - Added: [[#366](https://github.com/ethereum/evmc/pull/366)]
   The `evmc-vmtester` tool received support for EVMC module configuration.
   E.g. `evmc-vmtester ./my_vm,mode=interpreter`.
+- Changed:
+  [[#271](https://github.com/ethereum/evmc/pull/271),
+  [#272](https://github.com/ethereum/evmc/pull/272),
+  [#276](https://github.com/ethereum/evmc/pull/276),
+  [#280](https://github.com/ethereum/evmc/pull/280),
+  [#345](https://github.com/ethereum/evmc/pull/345)]
+  A lot of documentation fixes, improvements and cleanups.
 - Changed: [[#293](https://github.com/ethereum/evmc/pull/293)]
   In C++ API `evmc::result::raw()` renamed to `evmc::result::release_raw()`.
 - Changed: [[#311](https://github.com/ethereum/evmc/pull/311)]
@@ -45,6 +62,13 @@
   [[#261](https://github.com/ethereum/evmc/issues/261),
   [#263](https://github.com/ethereum/evmc/pull/263)]
   The `vmtester` tool now builds with MSVC with `/std:c++17`.
+- Fixed:
+  [[#266](https://github.com/ethereum/evmc/issues/266),
+  [#279](https://github.com/ethereum/evmc/pull/279)]
+  The `evmc_release_result()` helper has been fixed.
+- Fixed:
+  [[#300](https://github.com/ethereum/evmc/pull/300)]
+  The missing include guard in `evmc.hpp` has been fixed.
 - Fixed:
   [[#305](https://github.com/ethereum/evmc/issues/305),
   [#306](https://github.com/ethereum/evmc/pull/306)]
