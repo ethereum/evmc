@@ -27,12 +27,12 @@ class ExampleHost : public evmc::Host
     std::map<evmc::address, account> accounts;
 
 public:
-    bool account_exists(const evmc_address& addr) noexcept final
+    bool account_exists(const evmc::address& addr) noexcept final
     {
         return accounts.find(addr) != accounts.end();
     }
 
-    evmc_bytes32 get_storage(const evmc_address& addr, const evmc_bytes32& key) noexcept final
+    evmc::bytes32 get_storage(const evmc::address& addr, const evmc::bytes32& key) noexcept final
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
@@ -40,9 +40,9 @@ public:
         return {};
     }
 
-    evmc_storage_status set_storage(const evmc_address& addr,
-                                    const evmc_bytes32& key,
-                                    const evmc_bytes32& value) noexcept final
+    evmc_storage_status set_storage(const evmc::address& addr,
+                                    const evmc::bytes32& key,
+                                    const evmc::bytes32& value) noexcept final
     {
         auto& account = accounts[addr];
         auto prev_value = account.storage[key];
@@ -51,7 +51,7 @@ public:
         return (prev_value == value) ? EVMC_STORAGE_UNCHANGED : EVMC_STORAGE_MODIFIED;
     }
 
-    evmc_uint256be get_balance(const evmc_address& addr) noexcept final
+    evmc_uint256be get_balance(const evmc::address& addr) noexcept final
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
@@ -59,7 +59,7 @@ public:
         return {};
     }
 
-    size_t get_code_size(const evmc_address& addr) noexcept final
+    size_t get_code_size(const evmc::address& addr) noexcept final
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
@@ -67,7 +67,7 @@ public:
         return 0;
     }
 
-    evmc_bytes32 get_code_hash(const evmc_address& addr) noexcept final
+    evmc::bytes32 get_code_hash(const evmc::address& addr) noexcept final
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
@@ -75,7 +75,7 @@ public:
         return {};
     }
 
-    size_t copy_code(const evmc_address& addr,
+    size_t copy_code(const evmc::address& addr,
                      size_t code_offset,
                      uint8_t* buffer_data,
                      size_t buffer_size) noexcept final
@@ -87,7 +87,7 @@ public:
         return 0;
     }
 
-    void selfdestruct(const evmc_address& addr, const evmc_address& beneficiary) noexcept final
+    void selfdestruct(const evmc::address& addr, const evmc::address& beneficiary) noexcept final
     {
         (void)addr;
         (void)beneficiary;
@@ -100,7 +100,7 @@ public:
 
     evmc_tx_context get_tx_context() noexcept final { return {}; }
 
-    evmc_bytes32 get_block_hash(int64_t number) noexcept final
+    evmc::bytes32 get_block_hash(int64_t number) noexcept final
     {
         const int64_t current_block_number = get_tx_context().block_number;
 
@@ -109,10 +109,10 @@ public:
                    0_bytes32;
     }
 
-    void emit_log(const evmc_address& addr,
+    void emit_log(const evmc::address& addr,
                   const uint8_t* data,
                   size_t data_size,
-                  const evmc_bytes32 topics[],
+                  const evmc::bytes32 topics[],
                   size_t topics_count) noexcept final
     {
         (void)addr;
