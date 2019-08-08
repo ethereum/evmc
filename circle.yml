@@ -199,6 +199,9 @@ jobs:
           name: Test with evmc-vmtester
           command: |
             ~/build/test/evmc-vmtester target/debug/libexamplerustvm.so
+      - run:
+          name: Test with evmc-example
+          command: |
             ~/build/examples/evmc-example target/debug/libexamplerustvm.so
 
   bindings-rust-asan-combined:
@@ -227,6 +230,9 @@ jobs:
           name: Test with evmc-vmtester
           command: |
             ~/build/test/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
+      - run:
+          name: Test with evmc-example
+          command: |
             ~/build/examples/evmc-example target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
 
 workflows:
