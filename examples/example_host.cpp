@@ -48,6 +48,8 @@ class ExampleHost : public evmc::Host
 public:
     ExampleHost() = default;
     explicit ExampleHost(evmc_tx_context& _tx_context) noexcept : tx_context{_tx_context} {};
+    ExampleHost(evmc_tx_context& _tx_context, evmc::accounts& _accounts) noexcept
+      : accounts{_accounts}, tx_context{_tx_context} {};
 
     bool account_exists(const evmc::address& addr) noexcept final
     {
