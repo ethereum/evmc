@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
     tx_context.block_gas_limit = gas * 2;
     struct evmc_context* ctx = example_host_create_context(tx_context);
     struct evmc_message msg;
+    msg.kind = EVMC_CALL;
     msg.sender = addr;
     msg.destination = addr;
     msg.value = value;
