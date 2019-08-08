@@ -11,6 +11,7 @@
 #include <evmc/evmc.hpp>
 
 #include <map>
+#include <vector>
 
 using namespace evmc::literals;
 
@@ -19,6 +20,7 @@ struct account
     evmc::uint256be balance = {};
     size_t code_size = 0;
     evmc::bytes32 code_hash = {};
+    std::vector<uint8_t> code;
     std::map<evmc::bytes32, evmc::bytes32> storage;
 };
 
@@ -84,11 +86,21 @@ public:
                      uint8_t* buffer_data,
                      size_t buffer_size) noexcept final
     {
-        (void)addr;
-        (void)code_offset;
-        (void)buffer_data;
-        (void)buffer_size;
-        return 0;
+        auto it = accounts.find(addr);
+        if (it == accounts.end())
+            return 0;
+        auto code = it->second.code;
+        if (code_offset >= code.size())
+            return 0;
+        // TODO: implement this more nicely?
+        auto begin = code.begin();
+        auto end = code.end();
+        std::advance(begin, static_cast<long>(code_offset));
+        auto len = std::distance(begin, end);
+        if (len > static_cast<long>(buffer_size))
+            std::advance(end, len - static_cast<long>(buffer_size));
+        std::copy(begin, end, buffer_data);
+        return static_cast<size_t>(len);
     }
 
     void selfdestruct(const evmc::address& addr, const evmc::address& beneficiary) noexcept final
