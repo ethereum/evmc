@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 #endif
 
     // EVM bytecode goes here. This is one of the examples.
-    const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
+    const uint8_t code[] = "\x43\x60\x00\x55\x43\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code) - 1;
     const uint8_t input[] = "Hello World!";
     const evmc_uint256be value = {{1, 0}};
