@@ -36,11 +36,13 @@ struct account
     }
 };
 
+using accounts = std::map<evmc::address, account>;
+
 }  // namespace evmc
 
 class ExampleHost : public evmc::Host
 {
-    std::map<evmc::address, evmc::account> accounts;
+    evmc::accounts accounts;
     evmc_tx_context tx_context{};
 
 public:
