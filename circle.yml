@@ -33,8 +33,7 @@ commands:
             # Test statically linked end-to-end example
             ~/build/examples/evmc-example-static
             # Test dynamically loaded end-to-end example
-            ln -s ~/build/examples/example_vm/libevmc-example-vm.so ~/build/examples/example-vm.so
-            ~/build/examples/evmc-example
+            ~/build/examples/evmc-example ~/build/examples/example_vm/libevmc-example-vm.so
       - run:
           name: "Install"
           command: cmake --build ~/build --target install
