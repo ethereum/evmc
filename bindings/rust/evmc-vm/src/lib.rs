@@ -23,7 +23,7 @@ pub trait EvmcVm {
         revision: ffi::evmc_revision,
         code: &[u8],
         message: &ExecutionMessage,
-        context: &ExecutionContext,
+        context: &mut ExecutionContext,
     ) -> ExecutionResult;
 }
 
