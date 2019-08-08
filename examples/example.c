@@ -45,6 +45,9 @@ int main(int argc, char* argv[])
     const int64_t gas = 200000;
     struct evmc_tx_context tx_context;
     memset(&tx_context, 0, sizeof(tx_context));
+    tx_context.block_number = 42;
+    tx_context.block_timestamp = 66;
+    tx_context.block_gas_limit = gas * 2;
     struct evmc_context* ctx = example_host_create_context(tx_context);
     struct evmc_message msg;
     msg.sender = addr;
