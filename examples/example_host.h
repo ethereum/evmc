@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-struct evmc_context* example_host_create_context();
+struct evmc_context* example_host_create_context(struct evmc_tx_context tx_context);
 
 void example_host_destroy_context(struct evmc_context* context);
 

@@ -108,6 +108,9 @@ static struct evmc_result execute(struct evmc_instance* instance,
     // Assembly: `{ mstore(0, number()) return(0, msize()) }`
     const char return_block_number[] = "\x43\x60\x00\x52\x59\x60\x00\xf3";
 
+    // Assembly: `{ sstore(0, number()) mstore(0, number()) return(0, msize()) }`
+    const char save_return_block_number[] = "\x43\x60\x00\x55\x43\x60\x00\x52\x59\x60\x00\xf3";
+
     // Assembly: PUSH(0) 6x DUP1 CALL
     const char make_a_call[] = "\x60\x00\x80\x80\x80\x80\x80\x80\xf1";
 
@@ -151,6 +154,29 @@ static struct evmc_result execute(struct evmc_instance* instance,
         const struct evmc_tx_context tx_context = context->host->get_tx_context(context);
         const size_t output_size = 20;
 
+        uint8_t* output_data = (uint8_t*)calloc(1, output_size);
+        snprintf((char*)output_data, output_size, "%u", (unsigned)tx_context.block_number);
+        ret.status_code = EVMC_SUCCESS;
+        ret.gas_left = msg->gas / 2;
+        ret.output_data = output_data;
+        ret.output_size = output_size;
+        ret.release = &free_result_output_data;
+        return ret;
+    }
+    else if (code_size == (sizeof(save_return_block_number) - 1) &&
+             strncmp((const char*)code, save_return_block_number, code_size) == 0)
+    {
+        const struct evmc_tx_context tx_context = context->host->get_tx_context(context);
+        const size_t output_size = 20;
+
+        // Store block number.
+        const evmc_bytes32 key = {{0}};
+        evmc_bytes32 value = {{0}};
+        // NOTE: assume block number is <= 255
+        value.bytes[31] = (uint8_t)tx_context.block_number;
+        context->host->set_storage(context, &msg->destination, &key, &value);
+
+        // Return block number.
         uint8_t* output_data = (uint8_t*)calloc(1, output_size);
         snprintf((char*)output_data, output_size, "%u", (unsigned)tx_context.block_number);
         ret.status_code = EVMC_SUCCESS;

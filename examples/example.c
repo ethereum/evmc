@@ -37,13 +37,18 @@ int main(int argc, char* argv[])
 #endif
 
     // EVM bytecode goes here. This is one of the examples.
-    const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
+    const uint8_t code[] = "\x43\x60\x00\x55\x43\x60\x00\x52\x59\x60\x00\xf3";
     const size_t code_size = sizeof(code) - 1;
     const uint8_t input[] = "Hello World!";
     const evmc_uint256be value = {{1, 0}};
     const evmc_address addr = {{0, 1, 2}};
     const int64_t gas = 200000;
-    struct evmc_context* ctx = example_host_create_context();
+    struct evmc_tx_context tx_context;
+    memset(&tx_context, 0, sizeof(tx_context));
+    tx_context.block_number = 42;
+    tx_context.block_timestamp = 66;
+    tx_context.block_gas_limit = gas * 2;
+    struct evmc_context* ctx = example_host_create_context(tx_context);
     struct evmc_message msg;
     msg.sender = addr;
     msg.destination = addr;
@@ -69,6 +74,12 @@ int main(int argc, char* argv[])
         size_t i = 0;
         for (i = 0; i < result.output_size; i++)
             printf("%02x", result.output_data[i]);
+        printf("\n");
+        const evmc_bytes32 storage_key = {{0}};
+        evmc_bytes32 storage_value = ctx->host->get_storage(ctx, &msg.destination, &storage_key);
+        printf("  Storage at 0x00..00: ");
+        for (i = 0; i < sizeof(storage_value.bytes) / sizeof(storage_value.bytes[0]); i++)
+            printf("%02x", storage_value.bytes[i]);
         printf("\n");
     }
     evmc_release_result(&result);
