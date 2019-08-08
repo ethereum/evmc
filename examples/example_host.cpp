@@ -25,8 +25,12 @@ struct account
 class ExampleHost : public evmc::Host
 {
     std::map<evmc::address, account> accounts;
+    evmc_tx_context tx_context{};
 
 public:
+    ExampleHost() = default;
+    explicit ExampleHost(evmc_tx_context& _tx_context) noexcept : tx_context{_tx_context} {};
+
     bool account_exists(const evmc::address& addr) noexcept final
     {
         return accounts.find(addr) != accounts.end();
@@ -98,7 +102,7 @@ public:
         return {EVMC_REVERT, msg.gas, msg.input_data, msg.input_size};
     }
 
-    evmc_tx_context get_tx_context() noexcept final { return {}; }
+    evmc_tx_context get_tx_context() noexcept final { return tx_context; }
 
     evmc::bytes32 get_block_hash(int64_t number) noexcept final
     {
@@ -126,9 +130,9 @@ public:
 
 extern "C" {
 
-evmc_context* example_host_create_context()
+evmc_context* example_host_create_context(evmc_tx_context tx_context)
 {
-    return new ExampleHost;
+    return new ExampleHost(tx_context);
 }
 
 void example_host_destroy_context(evmc_context* context)

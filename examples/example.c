@@ -43,7 +43,9 @@ int main(int argc, char* argv[])
     const evmc_uint256be value = {{1, 0}};
     const evmc_address addr = {{0, 1, 2}};
     const int64_t gas = 200000;
-    struct evmc_context* ctx = example_host_create_context();
+    struct evmc_tx_context tx_context;
+    memset(&tx_context, 0, sizeof(tx_context));
+    struct evmc_context* ctx = example_host_create_context(tx_context);
     struct evmc_message msg;
     msg.sender = addr;
     msg.destination = addr;
