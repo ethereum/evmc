@@ -14,12 +14,12 @@ impl EvmcVm for ExampleRustVM {
         ExampleRustVM {}
     }
 
-    fn execute(
+    fn execute<'a>(
         &self,
         _revision: evmc_sys::evmc_revision,
-        _code: &[u8],
-        message: &ExecutionMessage,
-        _context: &mut ExecutionContext,
+        _code: &'a [u8],
+        message: &'a ExecutionMessage,
+        _context: &'a mut ExecutionContext<'a>,
     ) -> ExecutionResult {
         if message.kind() != evmc_sys::evmc_call_kind::EVMC_CALL {
             return ExecutionResult::failure();

@@ -18,12 +18,12 @@ pub use types::*;
 /// Trait EVMC VMs have to implement.
 pub trait EvmcVm {
     fn init() -> Self;
-    fn execute(
+    fn execute<'a>(
         &self,
         revision: ffi::evmc_revision,
-        code: &[u8],
-        message: &ExecutionMessage,
-        context: &mut ExecutionContext,
+        code: &'a [u8],
+        message: &'a ExecutionMessage,
+        context: &'a mut ExecutionContext<'a>,
     ) -> ExecutionResult;
 }
 
@@ -806,7 +806,7 @@ mod tests {
         // sanitizers to complain
         let mut context_raw_copy = context_raw.clone();
 
-        let mut exe_context = ExecutionContext::new(&mut context_raw);
+        let exe_context = ExecutionContext::new(&mut context_raw);
         let a = exe_context.get_tx_context();
         let b = unsafe { get_dummy_tx_context(&mut context_raw_copy as *mut ffi::evmc_context) };
 
