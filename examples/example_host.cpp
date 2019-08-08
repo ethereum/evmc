@@ -15,6 +15,8 @@
 
 using namespace evmc::literals;
 
+namespace evmc
+{
 struct account
 {
     evmc::uint256be balance = {};
@@ -34,9 +36,11 @@ struct account
     }
 };
 
+}  // namespace evmc
+
 class ExampleHost : public evmc::Host
 {
-    std::map<evmc::address, account> accounts;
+    std::map<evmc::address, evmc::account> accounts;
     evmc_tx_context tx_context{};
 
 public:
