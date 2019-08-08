@@ -30,7 +30,7 @@ commands:
           name: "Test"
           command: |
             cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
-            ~/build/examples/evmc-example
+            ~/build/examples/evmc-example-static
       - run:
           name: "Install"
           command: cmake --build ~/build --target install

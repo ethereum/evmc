@@ -4,18 +4,34 @@
  */
 
 #include "example_host.h"
+#ifdef STATICALLY_LINKED_EXAMPLE
 #include "example_vm/example_vm.h"
+#endif
 
 #include <evmc/helpers.h>
+#include <evmc/loader.h>
 
 #include <inttypes.h>
 #include <stdio.h>
 
 int main()
 {
+#ifdef STATICALLY_LINKED_EXAMPLE
     struct evmc_instance* vm = evmc_create_example_vm();
+    if (!vm)
+        return EVMC_LOADER_INSTANCE_CREATION_FAILURE;
     if (!evmc_is_abi_compatible(vm))
-        return -1;
+        return EVMC_LOADER_ABI_VERSION_MISMATCH;
+#else
+    enum evmc_loader_error_code error_code;
+    struct evmc_instance* vm = evmc_load_and_configure("example-vm.so", &error_code);
+    if (!vm)
+    {
+        printf("Loading error: %d\n", error_code);
+        // NOTE: the values are small enough for casting
+        return (int)error_code;
+    }
+#endif
 
     // EVM bytecode goes here. This is one of the examples.
     const uint8_t code[] = "\x30\x60\x00\x52\x59\x60\x00\xf3";
