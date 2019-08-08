@@ -18,10 +18,20 @@ using namespace evmc::literals;
 struct account
 {
     evmc::uint256be balance = {};
-    size_t code_size = 0;
-    evmc::bytes32 code_hash = {};
     std::vector<uint8_t> code;
     std::map<evmc::bytes32, evmc::bytes32> storage;
+
+    virtual evmc::bytes32 code_hash()
+    {
+        // Extremely dumb "hash" function.
+        evmc::bytes32 ret{};
+        for (std::vector<uint8_t>::size_type i = 0; i != code.size(); i++)
+        {
+            auto v = code[i];
+            ret.bytes[v % sizeof(ret.bytes)] ^= v;
+        }
+        return ret;
+    }
 };
 
 class ExampleHost : public evmc::Host
@@ -69,7 +79,7 @@ public:
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
-            return it->second.code_size;
+            return it->second.code.size();
         return 0;
     }
 
@@ -77,7 +87,7 @@ public:
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
-            return it->second.code_hash;
+            return it->second.code_hash();
         return {};
     }
 
