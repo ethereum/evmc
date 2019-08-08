@@ -30,7 +30,11 @@ commands:
           name: "Test"
           command: |
             cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
+            # Test statically linked end-to-end example
             ~/build/examples/evmc-example-static
+            # Test dynamically loaded end-to-end example
+            ln -s ~/build/examples/example_vm/libevmc-example-vm.so ~/build/examples/example-vm.so
+            ~/build/examples/evmc-example
       - run:
           name: "Install"
           command: cmake --build ~/build --target install
