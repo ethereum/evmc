@@ -88,11 +88,27 @@ endif()
 
 if(WIN32)
     set(CPACK_GENERATOR ZIP)
+    set(CPACK_SOURCE_GENERATOR ZIP)
 else()
     set(CPACK_GENERATOR TGZ)
+    set(CPACK_SOURCE_GENERATOR TGZ)
 endif()
 string(TOLOWER ${CMAKE_SYSTEM_NAME} system_name)
 set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-${PROJECT_VERSION}-${system_name})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PROJECT_NAME}-${PROJECT_VERSION}-source)
 set(CPACK_PACKAGE_CHECKSUM SHA256)
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY FALSE)
+
+set(
+    CPACK_SOURCE_IGNORE_FILES
+    /\\\\.git/
+    /\\\\.idea/
+    /build/
+    /cmake-build-.*/
+    /bindings/
+    /Cargo.lock
+    /Cargo.toml
+    /target/
+)
+
 include(CPack)
