@@ -17,7 +17,9 @@ pub use types::*;
 
 /// Trait EVMC VMs have to implement.
 pub trait EvmcVm {
+    /// This is called once at initialisation time.
     fn init() -> Self;
+    /// This is called for every incoming message.
     fn execute<'a>(
         &self,
         revision: ffi::evmc_revision,
@@ -59,6 +61,7 @@ pub struct ExecutionContext<'a> {
 }
 
 impl ExecutionResult {
+    /// Manually create a result.
     pub fn new(
         _status_code: ffi::evmc_status_code,
         _gas_left: i64,
@@ -76,30 +79,38 @@ impl ExecutionResult {
         }
     }
 
+    /// Create failure result.
     pub fn failure() -> Self {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 0, None)
     }
 
+    /// Create a revert result.
     pub fn revert(_gas_left: i64, _output: Option<&[u8]>) -> Self {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_REVERT, _gas_left, _output)
     }
 
+    /// Create a successful result.
     pub fn success(_gas_left: i64, _output: Option<&[u8]>) -> Self {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_SUCCESS, _gas_left, _output)
     }
 
+    /// Read the status code.
     pub fn status_code(&self) -> ffi::evmc_status_code {
         self.status_code
     }
 
+    /// Read the amount of gas left.
     pub fn gas_left(&self) -> i64 {
         self.gas_left
     }
 
+    /// Read the output returned.
     pub fn output(&self) -> Option<&Vec<u8>> {
         self.output.as_ref()
     }
 
+    /// Read the address of the created account. This will likely be set when
+    /// returned from a CREATE/CREATE2.
     pub fn create_address(&self) -> Option<&Address> {
         self.create_address.as_ref()
     }
@@ -134,38 +145,47 @@ impl ExecutionMessage {
         }
     }
 
+    /// Read the message kind.
     pub fn kind(&self) -> ffi::evmc_call_kind {
         self.kind
     }
 
+    /// Read the message flags.
     pub fn flags(&self) -> u32 {
         self.flags
     }
 
+    /// Read the call depth.
     pub fn depth(&self) -> i32 {
         self.depth
     }
 
+    /// Read the gas limit supplied with the message.
     pub fn gas(&self) -> i64 {
         self.gas
     }
 
+    /// Read the destination address of the message.
     pub fn destination(&self) -> &Address {
         &self.destination
     }
 
+    /// Read the sender address of the message.
     pub fn sender(&self) -> &Address {
         &self.sender
     }
 
+    /// Read the optional input message.
     pub fn input(&self) -> Option<&Vec<u8>> {
         self.input.as_ref()
     }
 
+    /// Read the value of the message.
     pub fn value(&self) -> &Uint256 {
         &self.value
     }
 
+    /// Read the salt for CREATE2. Only valid if the message kind is CREATE2.
     pub fn create2_salt(&self) -> &Bytes32 {
         &self.create2_salt
     }
@@ -185,10 +205,12 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Retrieve the transaction context.
     pub fn get_tx_context(&self) -> &ExecutionTxContext {
         &self.tx_context
     }
 
+    /// Check if an account exists.
     pub fn account_exists(&mut self, address: &Address) -> bool {
         unsafe {
             assert!((*self.context.host).account_exists.is_some());
@@ -199,6 +221,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Read from a storage key.
     pub fn get_storage(&mut self, address: &Address, key: &Bytes32) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_storage.is_some());
@@ -210,6 +233,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Set value of a storage key.
     pub fn set_storage(
         &mut self,
         address: &Address,
@@ -227,6 +251,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Get balance of an account.
     pub fn get_balance(&mut self, address: &Address) -> Uint256 {
         unsafe {
             assert!((*self.context.host).get_balance.is_some());
@@ -237,6 +262,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Get code size of an account.
     pub fn get_code_size(&mut self, address: &Address) -> usize {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
@@ -247,6 +273,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Get code hash of an account.
     pub fn get_code_hash(&mut self, address: &Address) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
@@ -257,6 +284,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Copy code of an account.
     pub fn copy_code(&mut self, address: &Address, code_offset: usize, buffer: &mut [u8]) -> usize {
         unsafe {
             assert!((*self.context.host).copy_code.is_some());
@@ -271,6 +299,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Self-destruct the current account.
     pub fn selfdestruct(&mut self, address: &Address, beneficiary: &Address) {
         unsafe {
             assert!((*self.context.host).selfdestruct.is_some());
@@ -282,6 +311,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Call to another account.
     pub fn call(&mut self, message: &ExecutionMessage) -> ExecutionResult {
         // There is no need to make any kind of copies here, because the caller
         // won't go out of scope and ensures these pointers remain valid.
@@ -320,6 +350,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Get block hash of an account.
     pub fn get_block_hash(&mut self, num: i64) -> Bytes32 {
         unsafe {
             assert!((*self.context.host).get_block_hash.is_some());
@@ -330,6 +361,7 @@ impl<'a> ExecutionContext<'a> {
         }
     }
 
+    /// Emit a log.
     pub fn emit_log(&mut self, address: &Address, data: &[u8], topics: &[Bytes32]) {
         unsafe {
             assert!((*self.context.host).emit_log.is_some());
