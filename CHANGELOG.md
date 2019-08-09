@@ -48,6 +48,17 @@ and this project adheres to [Semantic Versioning].
 - The `evmc-vmtester` tool received support for EVMC module configuration.
   E.g. `evmc-vmtester ./my_vm,mode=interpreter`.
   [[#366](https://github.com/ethereum/evmc/pull/366)]
+- In `evmc-vm` Rust crate, `ExecutionResult` now has `success`, `failure` and `revert` helpers.
+  [[#297](https://github.com/ethereum/evmc/pull/297),
+   [#368](https://github.com/ethereum/evmc/pull/368)]
+- Introduction of `evmc-declare` Rust crate with a procedural macro for easy VM declaration.
+  [[#262](https://github.com/ethereum/evmc/pull/262),
+   [#316](https://github.com/ethereum/evmc/pull/316)]
+- Introduction of `ExecutionMessage` wrapper in the `evmc-vm` Rust crate.
+  [[#324](https://github.com/ethereum/evmc/pull/324)]
+- Added type aliases and traits on basic types in the `evmc-vm` Rust crate.
+  [[#342](https://github.com/ethereum/evmc/pull/342),
+   [#343](https://github.com/ethereum/evmc/pull/343)]
 
 ### Changed
 

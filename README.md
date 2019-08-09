@@ -26,7 +26,7 @@ Please visit the [documentation].
 | **Rust** _(bindings)_[²](#n2) | 2018 edition          | 1.31.0 and newer
 
 <b id="n1">1</b>. The C90 support is limited to the core `evmc.h` header only.\
-<b id="n2">2</b>. Rust support is limited and not complete yet.
+<b id="n2">2</b>. Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
 
 ## Related projects
 
