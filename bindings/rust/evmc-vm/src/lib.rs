@@ -351,7 +351,12 @@ impl From<ffi::evmc_result> for ExecutionResult {
         let ret = ExecutionResult {
             status_code: result.status_code,
             gas_left: result.gas_left,
-            output: if !result.output_data.is_null() {
+            output: if result.output_data.is_null() {
+                assert!(result.output_size == 0);
+                None
+            } else if result.output_size == 0 {
+                None
+            } else {
                 // Pre-allocate a vector.
                 let mut buf: Vec<u8> = Vec::with_capacity(result.output_size);
 
@@ -363,8 +368,6 @@ impl From<ffi::evmc_result> for ExecutionResult {
                 }
 
                 Some(buf)
-            } else {
-                None
             },
             // Consider it is always valid.
             create_address: Some(result.create_address),
@@ -463,9 +466,9 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             input: if message.input_data.is_null() {
                 assert!(message.input_size == 0);
                 None
+            } else if message.input_size == 0 {
+                None
             } else {
-                // TODO: what to do if input_size is 0?
-
                 // Pre-allocate a vector.
                 let mut buf: Vec<u8> = Vec::with_capacity(message.input_size);
 
