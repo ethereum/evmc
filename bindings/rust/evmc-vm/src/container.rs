@@ -8,13 +8,19 @@ use crate::EvmcVm;
 use std::ops::Deref;
 
 /// Container struct for EVMC instances and user-defined data.
-pub struct EvmcContainer<T: EvmcVm + Sized> {
+pub struct EvmcContainer<T>
+where
+    T: EvmcVm + Sized,
+{
     #[allow(dead_code)]
     instance: ::evmc_sys::evmc_instance,
     vm: T,
 }
 
-impl<T: EvmcVm + Sized> EvmcContainer<T> {
+impl<T> EvmcContainer<T>
+where
+    T: EvmcVm + Sized,
+{
     /// Basic constructor.
     pub fn new(_instance: ::evmc_sys::evmc_instance) -> Self {
         Self {
@@ -126,8 +132,8 @@ mod tests {
             emit_log: None,
         };
         let mut backing_context = ::evmc_sys::evmc_context { host: &host };
-        let mut context = ExecutionContext::new(&mut backing_context);
 
+        let mut context = ExecutionContext::new(&mut backing_context);
         let container = EvmcContainer::<TestVm>::new(instance);
         assert_eq!(
             container
@@ -143,6 +149,7 @@ mod tests {
 
         let ptr = unsafe { EvmcContainer::into_ffi_pointer(Box::new(container)) };
 
+        let mut context = ExecutionContext::new(&mut backing_context);
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
         assert_eq!(
             container
