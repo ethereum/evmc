@@ -88,19 +88,19 @@ impl ExecutionResult {
         ExecutionResult::new(ffi::evmc_status_code::EVMC_SUCCESS, _gas_left, _output)
     }
 
-    pub fn get_status_code(&self) -> ffi::evmc_status_code {
+    pub fn status_code(&self) -> ffi::evmc_status_code {
         self.status_code
     }
 
-    pub fn get_gas_left(&self) -> i64 {
+    pub fn gas_left(&self) -> i64 {
         self.gas_left
     }
 
-    pub fn get_output(&self) -> Option<&Vec<u8>> {
+    pub fn output(&self) -> Option<&Vec<u8>> {
         self.output.as_ref()
     }
 
-    pub fn get_create_address(&self) -> Option<&Address> {
+    pub fn create_address(&self) -> Option<&Address> {
         self.create_address.as_ref()
     }
 }
@@ -487,10 +487,10 @@ mod tests {
     fn result_new() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
-        assert!(r.get_status_code() == ffi::evmc_status_code::EVMC_FAILURE);
-        assert!(r.get_gas_left() == 420);
-        assert!(r.get_output().is_none());
-        assert!(r.get_create_address().is_none());
+        assert!(r.status_code() == ffi::evmc_status_code::EVMC_FAILURE);
+        assert!(r.gas_left() == 420);
+        assert!(r.output().is_none());
+        assert!(r.create_address().is_none());
     }
 
     // Test-specific helper to dispose of execution results in unit tests
@@ -521,11 +521,11 @@ mod tests {
 
         let r: ExecutionResult = f.into();
 
-        assert!(r.get_status_code() == ffi::evmc_status_code::EVMC_SUCCESS);
-        assert!(r.get_gas_left() == 1337);
-        assert!(r.get_output().is_some());
-        assert!(r.get_output().unwrap().len() == 4);
-        assert!(r.get_create_address().is_some());
+        assert!(r.status_code() == ffi::evmc_status_code::EVMC_SUCCESS);
+        assert!(r.gas_left() == 1337);
+        assert!(r.output().is_some());
+        assert!(r.output().unwrap().len() == 4);
+        assert!(r.create_address().is_some());
     }
 
     #[test]
@@ -848,14 +848,11 @@ mod tests {
 
         let b = exe_context.call(&message);
 
-        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
-        assert_eq!(b.get_gas_left(), 2);
-        assert!(b.get_output().is_none());
-        assert!(b.get_create_address().is_some());
-        assert_eq!(
-            b.get_create_address().unwrap(),
-            &ffi::evmc_address::default()
-        );
+        assert_eq!(b.status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.gas_left(), 2);
+        assert!(b.output().is_none());
+        assert!(b.create_address().is_some());
+        assert_eq!(b.create_address().unwrap(), &ffi::evmc_address::default());
 
         dummy_context_dispose(context_raw);
     }
@@ -883,15 +880,12 @@ mod tests {
 
         let b = exe_context.call(&message);
 
-        assert_eq!(b.get_status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
-        assert_eq!(b.get_gas_left(), 2);
-        assert!(b.get_output().is_some());
-        assert_eq!(b.get_output().unwrap(), &data);
-        assert!(b.get_create_address().is_some());
-        assert_eq!(
-            b.get_create_address().unwrap(),
-            &ffi::evmc_address::default()
-        );
+        assert_eq!(b.status_code(), ffi::evmc_status_code::EVMC_SUCCESS);
+        assert_eq!(b.gas_left(), 2);
+        assert!(b.output().is_some());
+        assert_eq!(b.output().unwrap(), &data);
+        assert!(b.create_address().is_some());
+        assert_eq!(b.create_address().unwrap(), &ffi::evmc_address::default());
 
         dummy_context_dispose(context_raw);
     }

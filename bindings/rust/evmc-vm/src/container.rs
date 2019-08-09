@@ -143,7 +143,7 @@ mod tests {
                     &message,
                     &mut context
                 )
-                .get_status_code(),
+                .status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
 
@@ -159,7 +159,7 @@ mod tests {
                     &message,
                     &mut context
                 )
-                .get_status_code(),
+                .status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
     }
