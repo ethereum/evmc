@@ -357,17 +357,7 @@ impl From<ffi::evmc_result> for ExecutionResult {
             } else if result.output_size == 0 {
                 None
             } else {
-                // Pre-allocate a vector.
-                let mut buf: Vec<u8> = Vec::with_capacity(result.output_size);
-
-                unsafe {
-                    // Set the len of the vec manually.
-                    buf.set_len(result.output_size);
-                    // Copy from the C struct's buffer to the vec's buffer.
-                    std::ptr::copy(result.output_data, buf.as_mut_ptr(), result.output_size);
-                }
-
-                Some(buf)
+                Some(from_buf_raw::<u8>(result.output_data, result.output_size))
             },
             // Consider it is always valid.
             create_address: Some(result.create_address),
@@ -469,22 +459,24 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             } else if message.input_size == 0 {
                 None
             } else {
-                // Pre-allocate a vector.
-                let mut buf: Vec<u8> = Vec::with_capacity(message.input_size);
-
-                unsafe {
-                    // Set the len of the vec manually.
-                    buf.set_len(message.input_size);
-                    // Copy from the C struct's buffer to the vec's buffer.
-                    std::ptr::copy(message.input_data, buf.as_mut_ptr(), message.input_size);
-                }
-
-                Some(buf)
+                Some(from_buf_raw::<u8>(message.input_data, message.input_size))
             },
             value: message.value,
             create2_salt: message.create2_salt,
         }
     }
+}
+
+fn from_buf_raw<T>(ptr: *const T, size: usize) -> Vec<T> {
+    // Pre-allocate a vector.
+    let mut buf = Vec::with_capacity(size);
+    unsafe {
+        // Set the len of the vec manually.
+        buf.set_len(size);
+        // Copy from the C buffer to the vec's buffer.
+        std::ptr::copy(ptr, buf.as_mut_ptr(), size);
+    }
+    buf
 }
 
 #[cfg(test)]
