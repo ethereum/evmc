@@ -8,13 +8,19 @@ use crate::EvmcVm;
 use std::ops::Deref;
 
 /// Container struct for EVMC instances and user-defined data.
-pub struct EvmcContainer<T: EvmcVm + Sized> {
+pub struct EvmcContainer<T>
+where
+    T: EvmcVm + Sized,
+{
     #[allow(dead_code)]
     instance: ::evmc_sys::evmc_instance,
     vm: T,
 }
 
-impl<T: EvmcVm + Sized> EvmcContainer<T> {
+impl<T> EvmcContainer<T>
+where
+    T: EvmcVm + Sized,
+{
     /// Basic constructor.
     pub fn new(_instance: ::evmc_sys::evmc_instance) -> Self {
         Self {
