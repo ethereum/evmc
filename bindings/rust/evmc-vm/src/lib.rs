@@ -30,6 +30,7 @@ pub trait EvmcVm {
 }
 
 /// EVMC result structure.
+#[derive(Debug)]
 pub struct ExecutionResult {
     status_code: ffi::evmc_status_code,
     gas_left: i64,
@@ -38,6 +39,7 @@ pub struct ExecutionResult {
 }
 
 /// EVMC execution message structure.
+#[derive(Debug)]
 pub struct ExecutionMessage {
     kind: ffi::evmc_call_kind,
     flags: u32,
