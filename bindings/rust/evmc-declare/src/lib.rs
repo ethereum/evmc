@@ -29,7 +29,7 @@
 //! ```
 
 // Set a higher recursion limit because parsing certain token trees might fail with the default of 64.
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 
 extern crate proc_macro;
 
@@ -314,6 +314,10 @@ fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
     quote! {
         extern "C" fn __evmc_destroy(instance: *mut ::evmc_vm::ffi::evmc_instance) {
+            if instance.is_null() {
+                // This is an irrecoverable error that violates the EVMC spec.
+                std::process::abort();
+            }
             unsafe {
                 ::evmc_vm::EvmcContainer::<#type_ident>::from_ffi_pointer(instance);
             }
@@ -336,6 +340,12 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
         ) -> ::evmc_vm::ffi::evmc_result
         {
             use evmc_vm::EvmcVm;
+
+            // TODO: context is optional in case of the "precompiles" capability
+            if instance.is_null() || context.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
+                // These are irrecoverable errors that violate the EVMC spec.
+                std::process::abort();
+            }
 
             assert!(!instance.is_null());
             // TODO: context is optional in case of the "precompiles" capability
