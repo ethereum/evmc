@@ -29,7 +29,7 @@
 //! ```
 
 // Set a higher recursion limit because parsing certain token trees might fail with the default of 64.
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 
 extern crate proc_macro;
 
@@ -314,6 +314,10 @@ fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
     quote! {
         extern "C" fn __evmc_destroy(instance: *mut ::evmc_vm::ffi::evmc_instance) {
+            if instance.is_null() {
+                // This is an irrecoverable error that violates the EVMC spec.
+                std::process::abort();
+            }
             unsafe {
                 ::evmc_vm::EvmcContainer::<#type_ident>::from_ffi_pointer(instance);
             }
@@ -337,40 +341,40 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
         {
             use evmc_vm::EvmcVm;
 
+            // TODO: context is optional in case of the "precompiles" capability
+            if instance.is_null() || context.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
+                // These are irrecoverable errors that violate the EVMC spec.
+                std::process::abort();
+            }
+
+            assert!(!instance.is_null());
+            // TODO: context is optional in case of the "precompiles" capability
+            assert!(!context.is_null());
+            assert!(!msg.is_null());
+
+            let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
+                msg.as_ref().expect("EVMC message is null").into()
+            };
+
+            let empty_code = [0u8;0];
+            let code_ref: &[u8] = if code.is_null() {
+                assert_eq!(code_size, 0);
+                &empty_code
+            } else {
+                unsafe {
+                    ::std::slice::from_raw_parts(code, code_size)
+                }
+            };
+
+            let container = unsafe {
+                ::evmc_vm::EvmcContainer::<#type_name_ident>::from_ffi_pointer(instance)
+            };
+
             let result = ::std::panic::catch_unwind(|| {
-                assert!(!instance.is_null());
-                // TODO: context is optional in case of the "precompiles" capability
-                assert!(!context.is_null());
-                assert!(!msg.is_null());
-
-                let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
-                    msg.as_ref().expect("EVMC message is null").into()
-                };
-
-                let empty_code = [0u8;0];
-                let code_ref: &[u8] = if code.is_null() {
-                    assert_eq!(code_size, 0);
-                    &empty_code
-                } else {
-                    unsafe {
-                        ::std::slice::from_raw_parts(code, code_size)
-                    }
-                };
-
-                let container = unsafe {
-                    ::evmc_vm::EvmcContainer::<#type_name_ident>::from_ffi_pointer(instance)
-                };
-
                 let mut execution_context = unsafe {
                   ::evmc_vm::ExecutionContext::new(context.as_mut().expect("EVMC context is null"))
                 };
-                let result = container.execute(revision, code_ref, &execution_message, &mut execution_context);
-
-                unsafe {
-                    ::evmc_vm::EvmcContainer::into_ffi_pointer(container);
-                }
-
-                result
+                container.execute(revision, code_ref, &execution_message, &mut execution_context)
             });
 
             let result = if result.is_err() {
@@ -379,6 +383,10 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             } else {
                 result.unwrap()
             };
+
+            unsafe {
+                ::evmc_vm::EvmcContainer::into_ffi_pointer(container);
+            }
 
             result.into()
         }
