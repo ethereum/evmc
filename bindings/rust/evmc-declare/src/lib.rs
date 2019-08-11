@@ -301,8 +301,11 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 version: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_version_ident.as_bytes()).as_ptr() as *const i8 },
             };
 
+            let container = ::evmc_vm::EvmcContainer::<#type_ident>::new(new_instance);
+
             unsafe {
-                ::evmc_vm::EvmcContainer::into_ffi_pointer(Box::new(::evmc_vm::EvmcContainer::<#type_ident>::new(new_instance)))
+                // Release ownership to EVMC.
+                ::evmc_vm::EvmcContainer::into_ffi_pointer(container)
             }
         }
     }
@@ -319,6 +322,7 @@ fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 std::process::abort();
             }
             unsafe {
+                // Acquire ownership from EVMC. This will deallocate it also at the end of the scope.
                 ::evmc_vm::EvmcContainer::<#type_ident>::from_ffi_pointer(instance);
             }
         }
@@ -367,6 +371,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             };
 
             let container = unsafe {
+                // Acquire ownership from EVMC.
                 ::evmc_vm::EvmcContainer::<#type_name_ident>::from_ffi_pointer(instance)
             };
 
@@ -385,6 +390,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             };
 
             unsafe {
+                // Release ownership to EVMC.
                 ::evmc_vm::EvmcContainer::into_ffi_pointer(container);
             }
 

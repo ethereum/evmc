@@ -22,11 +22,11 @@ where
     T: EvmcVm + Sized,
 {
     /// Basic constructor.
-    pub fn new(_instance: ::evmc_sys::evmc_instance) -> Self {
-        Self {
+    pub fn new(_instance: ::evmc_sys::evmc_instance) -> Box<Self> {
+        Box::new(Self {
             instance: _instance,
             vm: T::init(),
-        }
+        })
     }
 
     /// Take ownership of the given pointer and return a box.
@@ -147,7 +147,7 @@ mod tests {
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
 
-        let ptr = unsafe { EvmcContainer::into_ffi_pointer(Box::new(container)) };
+        let ptr = unsafe { EvmcContainer::into_ffi_pointer(container) };
 
         let mut context = ExecutionContext::new(&mut backing_context);
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
