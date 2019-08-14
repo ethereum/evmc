@@ -434,7 +434,7 @@ public:
                                             const bytes32& value) noexcept = 0;
 
     /// @copydoc evmc_host_interface::get_balance
-    virtual evmc_uint256be get_balance(const address& addr) noexcept = 0;
+    virtual uint256be get_balance(const address& addr) noexcept = 0;
 
     /// @copydoc evmc_host_interface::get_code_size
     virtual size_t get_code_size(const address& addr) noexcept = 0;
@@ -498,7 +498,7 @@ public:
         return context->host->set_storage(context, &address, &key, &value);
     }
 
-    evmc_uint256be get_balance(const address& address) noexcept final
+    uint256be get_balance(const address& address) noexcept final
     {
         return context->host->get_balance(context, &address);
     }
