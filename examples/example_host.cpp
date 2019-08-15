@@ -55,7 +55,7 @@ public:
         return (prev_value == value) ? EVMC_STORAGE_UNCHANGED : EVMC_STORAGE_MODIFIED;
     }
 
-    evmc_uint256be get_balance(const evmc::address& addr) noexcept final
+    evmc::uint256be get_balance(const evmc::address& addr) noexcept final
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
