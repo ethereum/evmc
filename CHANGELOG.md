@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning].
 - In C++ API the `get_balance()` method now returns expected `evmc::uint256be` 
   instead of `evmc_uint256be`.
   [[#403](https://github.com/ethereum/evmc/pull/403)]
+- [Cable] upgraded to 0.4.4 to fix incompatibility with older versions.
+  [[#405](https://github.com/ethereum/evmc/pull/405)]
 
 ## [6.3.0] - 2019-08-12
 
