@@ -1581,6 +1581,7 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
     switch (revision)
     {
     case EVMC_ISTANBUL:
+    case EVMC_BERLIN:
         return istanbul_metrics;
     case EVMC_PETERSBURG:
     case EVMC_CONSTANTINOPLE:
