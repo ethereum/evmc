@@ -168,6 +168,26 @@ func Load(filename string) (instance *Instance, err error) {
 	return instance, err
 }
 
+func LoadAndConfigure(config string) (instance *Instance, err error) {
+	cconfig := C.CString(config)
+	var loaderErr C.enum_evmc_loader_error_code
+	handle := C.evmc_load_and_configure(cconfig, &loaderErr)
+	C.free(unsafe.Pointer(cconfig))
+
+	if loaderErr == C.EVMC_LOADER_SUCCESS {
+		instance = &Instance{handle}
+	} else {
+		errMsg := C.evmc_last_error_msg()
+		if errMsg != nil {
+			err = fmt.Errorf("EVMC loading error: %s", C.GoString(errMsg))
+		} else {
+			err = fmt.Errorf("EVMC loading error %d", int(loaderErr))
+		}
+	}
+
+	return instance, err
+}
+
 func (instance *Instance) Destroy() {
 	C.evmc_destroy(instance.handle)
 }

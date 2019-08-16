@@ -29,6 +29,20 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func TestLoadConfigure(t *testing.T) {
+	i, err := LoadAndConfigure(modulePath)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	defer i.Destroy()
+	if i.Name() != "example_vm" {
+		t.Fatalf("name is %s", i.Name())
+	}
+	if i.Version()[0] < '0' || i.Version()[0] > '9' {
+		t.Fatalf("version number is weird: %s", i.Version())
+	}
+}
+
 func TestExecute(t *testing.T) {
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()

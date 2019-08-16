@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [6.3.1] - unreleased
 
+### Added
+
+- Added `LoadAndConfigure` method to the Go API.
+  [[#404](https://github.com/ethereum/evmc/pull/404)]
+
 ### Fixed
 
 - In C++ API the `get_balance()` method now returns expected `evmc::uint256be` 
   instead of `evmc_uint256be`.
   [[#403](https://github.com/ethereum/evmc/pull/403)]
-
 
 ## [6.3.0] - 2019-08-12
 
