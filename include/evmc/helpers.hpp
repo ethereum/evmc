@@ -12,10 +12,12 @@
  */
 #pragma once
 
-#include <evmc/evmc.h>
+#include <evmc/evmc.hpp>
 
 #include <cstring>
 #include <functional>
+
+using evmc::is_zero;
 
 /// The comparator for std::map<evmc_address, ...>.
 EVMC_DEPRECATED
@@ -43,22 +45,6 @@ EVMC_DEPRECATED
 inline bool operator==(const evmc_bytes32& a, const evmc_bytes32& b)
 {
     return std::memcmp(a.bytes, b.bytes, sizeof(a.bytes)) == 0;
-}
-
-/// Check if the address is zero (all bytes are zeros).
-EVMC_DEPRECATED
-inline bool is_zero(const evmc_address& address) noexcept
-{
-    constexpr auto zero = evmc_address{};
-    return std::memcmp(address.bytes, zero.bytes, sizeof(zero.bytes)) == 0;
-}
-
-/// Check if the hash is zero (all bytes are zeros).
-EVMC_DEPRECATED
-inline bool is_zero(const evmc_bytes32& x) noexcept
-{
-    constexpr auto zero = evmc_bytes32{};
-    return std::memcmp(x.bytes, zero.bytes, sizeof(zero.bytes)) == 0;
 }
 
 /// Parameters for the fnv1a hash function, specialized by the hash result size (size_t).

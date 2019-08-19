@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning].
 
 - Added `LoadAndConfigure` method to the Go API.
   [[#404](https://github.com/ethereum/evmc/pull/404)]
+  
+### Deprecated
+
+- Previously deprecated `is_zero()` helper has been removed, 
+  but replaced with new `evmc::is_zero()` in API compatible way.
+  [[#406](https://github.com/ethereum/evmc/pull/406)]
 
 ### Fixed
 
