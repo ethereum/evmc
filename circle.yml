@@ -206,7 +206,7 @@ jobs:
 
   bindings-rust-asan-combined:
     docker:
-      - image: rust:1
+      - image: rust:1-buster
     steps:
       - checkout
       - run:
