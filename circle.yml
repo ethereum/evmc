@@ -215,7 +215,8 @@ jobs:
             echo 'deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main' >> /etc/apt/sources.list
             wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
             apt -qq update
-            apt -yq  install llvm-8-dev clang-8
+            apt list --upgradable
+            apt -yq install llvm-8-dev clang-8
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
             rustup update
       - run:
