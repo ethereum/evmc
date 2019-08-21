@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning].
   [[#372](https://github.com/ethereum/evmc/pull/372)]
 - The **Berlin** EVM revision has been added.
   [[#407](https://github.com/ethereum/evmc/pull/407)]
+  
+### Changed
+
+- Previously deprecated `helpers.hpp` header file has been removed.
+  [[#410](https://github.com/ethereum/evmc/pull/410)]
 
 ## [6.3.1] - 2019-08-19
 
