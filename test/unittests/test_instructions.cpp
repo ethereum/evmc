@@ -269,3 +269,17 @@ TEST(instructions, istanbul_hard_fork)
     EXPECT_EQ(in[OP_CHAINID], std::string{"CHAINID"});
     EXPECT_TRUE(pn[OP_CHAINID] == nullptr);
 }
+
+TEST(instructions, berlin_hard_fork)
+{
+    const auto b = evmc_get_instruction_metrics_table(EVMC_BERLIN);
+    const auto i = evmc_get_instruction_metrics_table(EVMC_ISTANBUL);
+    const auto bn = evmc_get_instruction_names_table(EVMC_BERLIN);
+    const auto in = evmc_get_instruction_names_table(EVMC_ISTANBUL);
+
+    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    {
+        EXPECT_EQ(b[op], i[op]) << op;
+        EXPECT_STREQ(bn[op], in[op]) << op;
+    }
+}

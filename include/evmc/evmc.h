@@ -763,6 +763,7 @@ enum evmc_revision
      * The Petersburg revision.
      *
      * Other names: Constantinople2, ConstantinopleFix.
+     *
      * https://eips.ethereum.org/EIPS/eip-1716
      */
     EVMC_PETERSBURG = 6,
@@ -774,8 +775,15 @@ enum evmc_revision
      */
     EVMC_ISTANBUL = 7,
 
+    /**
+     * The Berlin revision.
+     *
+     * The spec draft: https://eips.ethereum.org/EIPS/eip-2070.
+     */
+    EVMC_BERLIN = 8,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_ISTANBUL,
+    EVMC_MAX_REVISION = EVMC_BERLIN,
 
 
     /**

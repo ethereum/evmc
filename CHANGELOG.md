@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning].
 
 - Support for Istanbul CHAINID opcode. `chain_id` added to `evmc_tx_context` struct.
   [[#375](https://github.com/ethereum/evmc/pull/375)]
+- The **Berlin** EVM revision has been added.
+  [[#407](https://github.com/ethereum/evmc/pull/407)]
 
 ## [6.3.1] - 2019-08-19
 
