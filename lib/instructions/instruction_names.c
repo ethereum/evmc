@@ -76,7 +76,7 @@ static const char* istanbul_names[256] = {
     /* 0x43 */ "NUMBER",
     /* 0x44 */ "DIFFICULTY",
     /* 0x45 */ "GASLIMIT",
-    /* 0x46 */ NULL,
+    /* 0x46 */ "CHAINID",
     /* 0x47 */ NULL,
     /* 0x48 */ NULL,
     /* 0x49 */ NULL,

@@ -640,8 +640,7 @@ inline void emit_log(evmc_context* h,
 
 constexpr evmc_host_interface interface{
     account_exists, get_storage,  set_storage, get_balance,    get_code_size,  get_code_hash,
-    copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log,
-};
+    copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log};
 }  // namespace internal
 
 inline Host::Host() noexcept : evmc_context{&evmc::internal::interface} {}

@@ -78,6 +78,7 @@ enum evmc_opcode
     OP_NUMBER = 0x43,
     OP_DIFFICULTY = 0x44,
     OP_GASLIMIT = 0x45,
+    OP_CHAINID = 0x46,
 
     OP_POP = 0x50,
     OP_MLOAD = 0x51,
