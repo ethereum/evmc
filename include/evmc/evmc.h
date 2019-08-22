@@ -783,22 +783,7 @@ enum evmc_revision
     EVMC_BERLIN = 8,
 
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_BERLIN,
-
-
-    /**
-     * Reserved for the post-Constantinople upgrade.
-     *
-     * @deprecated Replaced with ::EVMC_PETERSBURG.
-     */
-    EVMC_CONSTANTINOPLE2 EVMC_DEPRECATED = EVMC_PETERSBURG,
-
-    /**
-     * The latests EVM revision supported.
-     *
-     * @deprecated Replaced with ::EVMC_MAX_REVISION.
-     */
-    EVMC_LATEST_REVISION EVMC_DEPRECATED = EVMC_MAX_REVISION
+    EVMC_MAX_REVISION = EVMC_BERLIN
 };
 
 
