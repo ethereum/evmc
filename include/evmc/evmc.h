@@ -351,6 +351,17 @@ struct evmc_result
     int64_t gas_left;
 
     /**
+     * The amount of gas refunded during the execution.
+     *
+     * This field represents the EVM refund mechanism. This is cumulative (includes refunds from all
+     * internal calls) amount of gas refunded during EVM execution. Because of the way it affects
+     * the final transaction gas usage, this is separated from the evmc_result::gas_left.
+     * For internal calls the value MAY be negative but MUST be non-negative for 0-depth messages.
+     * If evmc_result::status_code is not ::EVMC_SUCCESS the value MUST be 0.
+     */
+    int64_t gas_refunded;
+
+    /**
      * The reference to output data.
      *
      *  The output contains data coming from RETURN opcode (iff evmc_result::code
