@@ -8,10 +8,12 @@
 
 // Compile time checks:
 
+constexpr size_t cache_line_size = 64;
+
 static_assert(sizeof(evmc_bytes32) == 32, "evmc_bytes32 is too big");
 static_assert(sizeof(evmc_address) == 20, "evmc_address is too big");
-static_assert(sizeof(evmc_result) <= 64, "evmc_result does not fit cache line");
-static_assert(sizeof(evmc_vm) <= 64, "evmc_vm does not fit cache line");
+static_assert(sizeof(evmc_result) <= 2 * cache_line_size, "evmc_result does not fit 2 cache lines");
+static_assert(sizeof(evmc_vm) <= cache_line_size, "evmc_vm does not fit cache line");
 static_assert(offsetof(evmc_message, value) % sizeof(size_t) == 0,
               "evmc_message.value not aligned");
 
