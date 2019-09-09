@@ -77,7 +77,7 @@ type TxContext struct {
 	Timestamp  int64
 	GasLimit   int64
 	Difficulty common.Hash
-	ChainID    common.Hash
+	ChainID    uint64
 }
 
 type HostContext interface {
@@ -182,7 +182,7 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		C.int64_t(txContext.Timestamp),
 		C.int64_t(txContext.GasLimit),
 		evmcBytes32(txContext.Difficulty),
-		evmcBytes32(txContext.ChainID),
+		C.uint64_t(txContext.ChainID),
 	}
 }
 
