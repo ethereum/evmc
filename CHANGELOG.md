@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning].
 ### Added
 
 - Support for Istanbul EIP-1344 (CHAINID opcode). `chain_id` added to `evmc_tx_context` struct.
-  [[#375](https://github.com/ethereum/evmc/pull/375)]
+  [[#375](https://github.com/ethereum/evmc/pull/375),
+   [#420](https://github.com/ethereum/evmc/pull/420)]
 - Support for Istanbul EIP-1884 (Repricing for trie-size-dependent opcodes).
   [[#372](https://github.com/ethereum/evmc/pull/372)]
 - The **Berlin** EVM revision has been added.
