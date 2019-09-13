@@ -74,7 +74,7 @@ TEST_F(evmc_vm_test, execute_call)
 
     if (result.output_data == nullptr)
     {
-        EXPECT_EQ(result.output_size, 0);
+        EXPECT_EQ(result.output_size, size_t{0});
     }
     else
     {
@@ -109,7 +109,7 @@ TEST_F(evmc_vm_test, execute_create)
 
     if (result.output_data == nullptr)
     {
-        EXPECT_EQ(result.output_size, 0);
+        EXPECT_EQ(result.output_size, size_t{0});
     }
     else
     {
@@ -206,7 +206,7 @@ TEST_F(evmc_vm_test, precompile_test)
 
         if (result.output_data == nullptr)
         {
-            EXPECT_EQ(result.output_size, 0);
+            EXPECT_EQ(result.output_size, size_t{0});
         }
         else
         {

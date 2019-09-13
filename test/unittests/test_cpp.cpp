@@ -89,24 +89,24 @@ TEST(cpp, std_maps)
 {
     std::map<evmc::address, bool> addresses;
     addresses[{}] = true;
-    ASSERT_EQ(addresses.size(), 1);
+    ASSERT_EQ(addresses.size(), size_t{1});
     EXPECT_EQ(addresses.begin()->first, evmc::address{});
 
     std::unordered_map<evmc::address, bool> unordered_addresses;
     unordered_addresses.emplace(*addresses.begin());
     addresses.clear();
-    EXPECT_EQ(unordered_addresses.size(), 1);
+    EXPECT_EQ(unordered_addresses.size(), size_t{1});
     EXPECT_FALSE(unordered_addresses.begin()->first);
 
     std::map<evmc::bytes32, bool> storage;
     storage[{}] = true;
-    ASSERT_EQ(storage.size(), 1);
+    ASSERT_EQ(storage.size(), size_t{1});
     EXPECT_EQ(storage.begin()->first, evmc::bytes32{});
 
     std::unordered_map<evmc::bytes32, bool> unordered_storage;
     unordered_storage.emplace(*storage.begin());
     storage.clear();
-    EXPECT_EQ(unordered_storage.size(), 1);
+    EXPECT_EQ(unordered_storage.size(), size_t{1});
     EXPECT_FALSE(unordered_storage.begin()->first);
 }
 
@@ -360,9 +360,9 @@ TEST(cpp, host)
 
     EXPECT_TRUE(evmc::is_zero(host.get_balance(a)));
 
-    EXPECT_EQ(host.get_code_size(a), 0);
+    EXPECT_EQ(host.get_code_size(a), size_t{0});
     EXPECT_EQ(host.get_code_hash(a), evmc::bytes32{});
-    EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), 0);
+    EXPECT_EQ(host.copy_code(a, 0, nullptr, 0), size_t{0});
 
     host.selfdestruct(a, a);
 
@@ -479,7 +479,7 @@ TEST(cpp, result_create_no_output)
     EXPECT_EQ(r.status_code, EVMC_REVERT);
     EXPECT_EQ(r.gas_left, 1);
     EXPECT_FALSE(r.output_data);
-    EXPECT_EQ(r.output_size, 0);
+    EXPECT_EQ(r.output_size, size_t{0});
 }
 
 TEST(cpp, result_create)
@@ -489,7 +489,7 @@ TEST(cpp, result_create)
     EXPECT_EQ(r.status_code, EVMC_FAILURE);
     EXPECT_EQ(r.gas_left, -1);
     ASSERT_TRUE(r.output_data);
-    ASSERT_EQ(r.output_size, 2);
+    ASSERT_EQ(r.output_size, size_t{2});
     EXPECT_EQ(r.output_data[0], 1);
     EXPECT_EQ(r.output_data[1], 2);
 
