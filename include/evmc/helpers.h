@@ -115,7 +115,7 @@ static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
 /// but may be also used in other case if convenient.
 ///
 /// @param result The result object.
-static void evmc_free_result_memory(const struct evmc_result* result)
+static void evmc_free_result_memory(struct evmc_result* result)
 {
     free((uint8_t*)result->output_data);
 }

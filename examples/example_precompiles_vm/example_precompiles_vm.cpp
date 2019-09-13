@@ -28,7 +28,7 @@ static evmc_result execute_identity(const evmc_message* msg)
     result.status_code = EVMC_SUCCESS;
     result.output_data = data;
     result.output_size = msg->input_size;
-    result.release = [](const evmc_result* r) { delete[] r->output_data; };
+    result.release = [](evmc_result* r) { delete[] r->output_data; };
     result.gas_left = gas_left;
     return result;
 }

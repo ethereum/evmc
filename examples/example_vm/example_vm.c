@@ -68,7 +68,7 @@ static enum evmc_set_option_result set_option(struct evmc_instance* instance,
 
 /// The implementation of the evmc_result::release() method that frees
 /// the output buffer attached to the result object.
-static void free_result_output_data(const struct evmc_result* result)
+static void free_result_output_data(struct evmc_result* result)
 {
     free((uint8_t*)result->output_data);
 }

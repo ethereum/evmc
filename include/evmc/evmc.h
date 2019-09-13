@@ -319,9 +319,8 @@ struct evmc_result;
  * This function releases memory (and other resources, if any) assigned to the
  * specified execution result making the result object invalid.
  *
- * @param result  The execution result which resources are to be released. The
- *                result itself it not modified by this function, but becomes
- *                invalid and user MUST discard it as well.
+ * @param result  The execution result which resources are to be released.
+ *                The result object becomes invalid and MUST be discarded.
  *                This MUST NOT be NULL.
  *
  * @note
@@ -329,7 +328,7 @@ struct evmc_result;
  * struct. Think of this as the best possible C language approximation to
  * passing objects by reference.
  */
-typedef void (*evmc_release_result_fn)(const struct evmc_result* result);
+typedef void (*evmc_release_result_fn)(struct evmc_result* result);
 
 /** The EVM code execution result. */
 struct evmc_result

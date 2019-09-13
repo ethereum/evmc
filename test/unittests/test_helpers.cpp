@@ -36,7 +36,7 @@ TEST(helpers, release_result)
 
     e = false;
     r2 = evmc_result{};
-    r2.release = [](const evmc_result* r) { e = r == &r2; };
+    r2.release = [](evmc_result* r) { e = r == &r2; };
     EXPECT_FALSE(e);
     evmc_release_result(&r2);
     EXPECT_TRUE(e);

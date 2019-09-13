@@ -238,7 +238,7 @@ TEST(cpp, result)
         EXPECT_EQ(release_called, 0);
         auto raw_result = evmc_result{};
         raw_result.output_data = static_cast<uint8_t*>(std::malloc(13));
-        raw_result.release = [](const evmc_result* r) {
+        raw_result.release = [](evmc_result* r) {
             std::free(const_cast<uint8_t*>(r->output_data));
             ++release_called;
         };
@@ -405,7 +405,7 @@ TEST(cpp, result_raii)
 {
     static auto release_called = 0;
     release_called = 0;
-    auto release_fn = [](const evmc_result*) noexcept { ++release_called; };
+    auto release_fn = [](evmc_result*) noexcept { ++release_called; };
 
     {
         auto raw_result = evmc_result{};
@@ -441,7 +441,7 @@ TEST(cpp, result_raii)
 TEST(cpp, result_move)
 {
     static auto release_called = 0;
-    auto release_fn = [](const evmc_result*) noexcept { ++release_called; };
+    auto release_fn = [](evmc_result*) noexcept { ++release_called; };
 
     release_called = 0;
     {
