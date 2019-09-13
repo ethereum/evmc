@@ -97,7 +97,7 @@ TEST(cpp, std_maps)
     std::unordered_map<evmc::address, bool> unordered_addresses;
     unordered_addresses.emplace(*addresses.begin());
     addresses.clear();
-    EXPECT_EQ(unordered_addresses.size(), size_t{1});
+    ASSERT_EQ(unordered_addresses.size(), size_t{1});
     EXPECT_FALSE(unordered_addresses.begin()->first);
 
     std::map<evmc::bytes32, bool> storage;
@@ -108,7 +108,7 @@ TEST(cpp, std_maps)
     std::unordered_map<evmc::bytes32, bool> unordered_storage;
     unordered_storage.emplace(*storage.begin());
     storage.clear();
-    EXPECT_EQ(unordered_storage.size(), size_t{1});
+    ASSERT_EQ(unordered_storage.size(), size_t{1});
     EXPECT_FALSE(unordered_storage.begin()->first);
 }
 
