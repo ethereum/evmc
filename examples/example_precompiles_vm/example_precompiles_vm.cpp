@@ -47,13 +47,13 @@ static evmc_result not_implemented()
     return result;
 }
 
-static evmc_result execute(evmc_vm* /*unused*/,
-                           const evmc_host_interface* /*unused*/,
-                           evmc_host_context* /*unused*/,
+static evmc_result execute(evmc_vm*,
+                           const evmc_host_interface*,
+                           evmc_host_context*,
                            enum evmc_revision rev,
                            const evmc_message* msg,
-                           const uint8_t*,
-                           size_t)
+                           const uint8_t* /*code*/,
+                           size_t /*code_size*/)
 {
     // The EIP-1352 (https://eips.ethereum.org/EIPS/eip-1352) defines
     // the range 0 - 0xffff (2 bytes) of addresses reserved for precompiled contracts.
@@ -75,11 +75,7 @@ static evmc_result execute(evmc_vm* /*unused*/,
     switch (id)
     {
     case 0x0001:  // ECDSARECOVER
-        return not_implemented();
-
     case 0x0002:  // SHA256
-        return not_implemented();
-
     case 0x0003:  // RIPEMD160
         return not_implemented();
 
@@ -87,20 +83,8 @@ static evmc_result execute(evmc_vm* /*unused*/,
         return execute_identity(msg);
 
     case 0x0005:  // EXPMOD
-        if (rev < EVMC_BYZANTIUM)
-            return execute_empty(msg);
-        return not_implemented();
-
     case 0x0006:  // SNARKV
-        if (rev < EVMC_BYZANTIUM)
-            return execute_empty(msg);
-        return not_implemented();
-
     case 0x0007:  // BNADD
-        if (rev < EVMC_BYZANTIUM)
-            return execute_empty(msg);
-        return not_implemented();
-
     case 0x0008:  // BNMUL
         if (rev < EVMC_BYZANTIUM)
             return execute_empty(msg);

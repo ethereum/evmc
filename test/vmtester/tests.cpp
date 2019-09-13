@@ -85,7 +85,7 @@ TEST_F(evmc_vm_test, execute_call)
 
     EXPECT_TRUE(evmc::is_zero(result.create_address));
 
-    if (result.release)
+    if (result.release != nullptr)
         result.release(&result);
 
     example_host_destroy_context(context);
@@ -122,7 +122,7 @@ TEST_F(evmc_vm_test, execute_create)
     // The VM will never provide the create address.
     EXPECT_TRUE(evmc::is_zero(result.create_address));
 
-    if (result.release)
+    if (result.release != nullptr)
         result.release(&result);
 
     example_host_destroy_context(context);
@@ -130,7 +130,7 @@ TEST_F(evmc_vm_test, execute_create)
 
 TEST_F(evmc_vm_test, set_option_unknown_name)
 {
-    if (vm->set_option)
+    if (vm->set_option != nullptr)
     {
         evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", "v");
         EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
@@ -141,7 +141,7 @@ TEST_F(evmc_vm_test, set_option_unknown_name)
 
 TEST_F(evmc_vm_test, set_option_empty_value)
 {
-    if (vm->set_option)
+    if (vm->set_option != nullptr)
     {
         evmc_set_option_result r = vm->set_option(vm, "unknown_option_csk9twq", nullptr);
         EXPECT_EQ(r, EVMC_SET_OPTION_INVALID_NAME);
@@ -206,7 +206,7 @@ TEST_F(evmc_vm_test, precompile_test)
             read_buffer(result.output_data, result.output_size);
         }
 
-        if (result.release)
+        if (result.release != nullptr)
             result.release(&result);
     }
 }
