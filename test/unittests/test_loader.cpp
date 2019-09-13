@@ -201,14 +201,16 @@ TEST_F(loader, load_prefix_aaa)
         "unittests/double_prefix_aaa.evm",
     };
 
+    const auto expected_vm_ptr = reinterpret_cast<evmc_instance*>(0xaaa);
+
     for (auto& path : paths)
     {
         setup(path, "evmc_create_aaa", create_aaa);
         evmc_loader_error_code ec;
-        auto fn = evmc_load(path, &ec);
+        const auto fn = evmc_load(path, &ec);
         EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
         ASSERT_TRUE(fn != nullptr);
-        EXPECT_EQ((uintptr_t)fn(), 0xaaa);
+        EXPECT_EQ(fn(), expected_vm_ptr);
         EXPECT_TRUE(evmc_last_error_msg() == nullptr);
     }
 }
@@ -218,9 +220,10 @@ TEST_F(loader, load_eee_bbb)
     setup("unittests/eee-bbb.dll", "evmc_create_eee_bbb", create_eee_bbb);
     evmc_loader_error_code ec;
     auto fn = evmc_load(evmc_test_library_path, &ec);
+    const auto expected_vm_ptr = reinterpret_cast<evmc_instance*>(0xeeebbb);
     ASSERT_TRUE(fn != nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
-    EXPECT_EQ((uintptr_t)fn(), 0xeeebbb);
+    EXPECT_EQ(fn(), expected_vm_ptr);
     EXPECT_TRUE(evmc_last_error_msg() == nullptr);
 }
 
@@ -353,7 +356,7 @@ TEST_F(loader, load_and_configure_single_option)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,o=1", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "o");
     EXPECT_EQ(recorded_options[0].second, "1");
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
@@ -361,7 +364,7 @@ TEST_F(loader, load_and_configure_single_option)
     recorded_options.clear();
     vm = evmc_load_and_configure("path,O=2", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "O");
     EXPECT_EQ(recorded_options[0].second, "2");
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
@@ -376,7 +379,7 @@ TEST_F(loader, load_and_configure_uknown_option)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,z=1", &ec);
     EXPECT_FALSE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "z");
     EXPECT_EQ(recorded_options[0].second, "1");
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_OPTION_NAME);
@@ -386,7 +389,7 @@ TEST_F(loader, load_and_configure_uknown_option)
     recorded_options.clear();
     vm = evmc_load_and_configure("path,x=2,", &ec);
     EXPECT_FALSE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "x");
     EXPECT_EQ(recorded_options[0].second, "2");
     EXPECT_EQ(ec, EVMC_LOADER_INVALID_OPTION_VALUE);
@@ -406,7 +409,7 @@ TEST_F(loader, load_and_configure_multiple_options)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,a=_a,b=_b1,c=_c,b=_b2", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 4);
+    ASSERT_EQ(recorded_options.size(), size_t{4});
     EXPECT_EQ(recorded_options[0].first, "a");
     EXPECT_EQ(recorded_options[0].second, "_a");
     EXPECT_EQ(recorded_options[1].first, "b");
@@ -420,7 +423,7 @@ TEST_F(loader, load_and_configure_multiple_options)
     recorded_options.clear();
     vm = evmc_load_and_configure("path,a=_a,b=_b2,a=_c,", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 3);
+    ASSERT_EQ(recorded_options.size(), size_t{3});
     EXPECT_EQ(recorded_options[0].first, "a");
     EXPECT_EQ(recorded_options[0].second, "_a");
     EXPECT_EQ(recorded_options[1].first, "b");
@@ -441,7 +444,7 @@ TEST_F(loader, load_and_configure_uknown_option_in_sequence)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,a=_a,b=_b,c=_b,", &ec);
     EXPECT_FALSE(vm);
-    ASSERT_EQ(recorded_options.size(), 3);
+    ASSERT_EQ(recorded_options.size(), size_t{3});
     EXPECT_EQ(recorded_options[0].first, "a");
     EXPECT_EQ(recorded_options[0].second, "_a");
     EXPECT_EQ(recorded_options[1].first, "b");
@@ -456,7 +459,7 @@ TEST_F(loader, load_and_configure_uknown_option_in_sequence)
     recorded_options.clear();
     vm = evmc_load_and_configure("path,a=_a,x=_b,c=_c", &ec);
     EXPECT_FALSE(vm);
-    ASSERT_EQ(recorded_options.size(), 2);
+    ASSERT_EQ(recorded_options.size(), size_t{2});
     EXPECT_EQ(recorded_options[0].first, "a");
     EXPECT_EQ(recorded_options[0].second, "_a");
     EXPECT_EQ(recorded_options[1].first, "x");
@@ -476,7 +479,7 @@ TEST_F(loader, load_and_configure_empty_values)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,flag,e=,flag=,e", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 4);
+    ASSERT_EQ(recorded_options.size(), size_t{4});
     EXPECT_EQ(recorded_options[0].first, "flag");
     EXPECT_EQ(recorded_options[0].second, "");
     EXPECT_EQ(recorded_options[1].first, "e");
@@ -499,7 +502,7 @@ TEST_F(loader, load_and_configure_degenerated_names)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,,,=,,=xxx", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 5);
+    ASSERT_EQ(recorded_options.size(), size_t{5});
     EXPECT_EQ(recorded_options[0].first, "");
     EXPECT_EQ(recorded_options[0].second, "");
     EXPECT_EQ(recorded_options[1].first, "");
@@ -526,7 +529,7 @@ TEST_F(loader, load_and_configure_comma_at_the_end)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_configure("path,x=x,", &ec);
     EXPECT_TRUE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "x");
     EXPECT_EQ(recorded_options[0].second, "x");
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
@@ -587,7 +590,7 @@ TEST_F(loader, load_and_configure_error_not_wanted)
 
     auto vm = evmc_load_and_configure("path,f=1", nullptr);
     EXPECT_FALSE(vm);
-    ASSERT_EQ(recorded_options.size(), 1);
+    ASSERT_EQ(recorded_options.size(), size_t{1});
     EXPECT_EQ(recorded_options[0].first, "f");
     EXPECT_EQ(recorded_options[0].second, "1");
     EXPECT_EQ(destroy_count, create_count);
