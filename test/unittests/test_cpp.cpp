@@ -21,7 +21,8 @@
 TEST(cpp, address)
 {
     evmc::address a;
-    EXPECT_EQ(std::count(std::begin(a.bytes), std::end(a.bytes), 0), sizeof(a));
+    EXPECT_EQ(std::count(std::begin(a.bytes), std::end(a.bytes), 0), int{sizeof(a)});
+    EXPECT_EQ(a, evmc::address{});
     EXPECT_TRUE(is_zero(a));
     EXPECT_FALSE(a);
     EXPECT_TRUE(!a);
@@ -42,7 +43,8 @@ TEST(cpp, address)
 TEST(cpp, bytes32)
 {
     evmc::bytes32 b;
-    EXPECT_EQ(std::count(std::begin(b.bytes), std::end(b.bytes), 0), sizeof(b));
+    EXPECT_EQ(std::count(std::begin(b.bytes), std::end(b.bytes), 0), int{sizeof(b)});
+    EXPECT_EQ(b, evmc::bytes32{});
     EXPECT_TRUE(is_zero(b));
     EXPECT_FALSE(b);
     EXPECT_TRUE(!b);
