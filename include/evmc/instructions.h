@@ -181,11 +181,11 @@ enum evmc_opcode
 /**
  * Metrics for an EVM 1 instruction.
  *
- * Small integer types are used here to make the tables of metrics cache friendly.
+ * Small integer types are used here to make the tables of metrics smaller.
  */
 struct evmc_instruction_metrics
 {
-    /** The instruction gas cost. Value -1 indicates an undefined instruction. */
+    /** The instruction gas cost. */
     int16_t gas_cost;
 
     /** The number of items the instruction pops from the EVM stack before execution. */

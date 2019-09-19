@@ -28,7 +28,7 @@ TEST(instructions, name_gas_cost_equivalence)
             if (name != nullptr)
                 EXPECT_GE(gas_cost, 0);
             else
-                EXPECT_EQ(gas_cost, -1);
+                EXPECT_EQ(gas_cost, 0);
         }
     }
 }
@@ -53,7 +53,7 @@ TEST(instructions, homestead_hard_fork)
         }
     }
 
-    EXPECT_EQ(f[OP_DELEGATECALL].gas_cost, -1);
+    EXPECT_EQ(f[OP_DELEGATECALL].gas_cost, 0);
     EXPECT_EQ(h[OP_DELEGATECALL].gas_cost, 40);
     EXPECT_TRUE(fn[OP_DELEGATECALL] == nullptr);
     EXPECT_EQ(hn[OP_DELEGATECALL], std::string{"DELEGATECALL"});
@@ -161,22 +161,22 @@ TEST(instructions, byzantium_hard_fork)
     EXPECT_EQ(b[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(b[OP_REVERT].num_stack_arguments, 2);
     EXPECT_EQ(b[OP_REVERT].num_stack_returned_items, 0);
-    EXPECT_EQ(sd[OP_REVERT].gas_cost, -1);
+    EXPECT_EQ(sd[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(bn[OP_REVERT], std::string{"REVERT"});
     EXPECT_TRUE(sdn[OP_REVERT] == nullptr);
 
     EXPECT_EQ(b[OP_RETURNDATACOPY].gas_cost, 3);
-    EXPECT_EQ(sd[OP_RETURNDATACOPY].gas_cost, -1);
+    EXPECT_EQ(sd[OP_RETURNDATACOPY].gas_cost, 0);
     EXPECT_EQ(bn[OP_RETURNDATACOPY], std::string{"RETURNDATACOPY"});
     EXPECT_TRUE(sdn[OP_RETURNDATACOPY] == nullptr);
 
     EXPECT_EQ(b[OP_RETURNDATASIZE].gas_cost, 2);
-    EXPECT_EQ(sd[OP_RETURNDATASIZE].gas_cost, -1);
+    EXPECT_EQ(sd[OP_RETURNDATASIZE].gas_cost, 0);
     EXPECT_EQ(bn[OP_RETURNDATASIZE], std::string{"RETURNDATASIZE"});
     EXPECT_TRUE(sdn[OP_RETURNDATASIZE] == nullptr);
 
     EXPECT_EQ(b[OP_STATICCALL].gas_cost, 700);
-    EXPECT_EQ(sd[OP_STATICCALL].gas_cost, -1);
+    EXPECT_EQ(sd[OP_STATICCALL].gas_cost, 0);
     EXPECT_EQ(bn[OP_STATICCALL], std::string{"STATICCALL"});
     EXPECT_TRUE(sdn[OP_STATICCALL] == nullptr);
 }
@@ -216,14 +216,14 @@ TEST(instructions, constantinople_hard_fork)
     EXPECT_EQ(c[OP_CREATE2].gas_cost, 32000);
     EXPECT_EQ(c[OP_CREATE2].num_stack_arguments, 4);
     EXPECT_EQ(c[OP_CREATE2].num_stack_returned_items, 1);
-    EXPECT_EQ(b[OP_CREATE2].gas_cost, -1);
+    EXPECT_EQ(b[OP_CREATE2].gas_cost, 0);
     EXPECT_EQ(cn[OP_CREATE2], std::string{"CREATE2"});
     EXPECT_TRUE(bn[OP_CREATE2] == nullptr);
 
     EXPECT_EQ(c[OP_EXTCODEHASH].gas_cost, 400);
     EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_arguments, 1);
     EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_returned_items, 1);
-    EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, -1);
+    EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, 0);
     EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
     EXPECT_TRUE(bn[OP_EXTCODEHASH] == nullptr);
 }
@@ -269,14 +269,14 @@ TEST(instructions, istanbul_hard_fork)
     EXPECT_EQ(i[OP_CHAINID].gas_cost, 2);
     EXPECT_EQ(i[OP_CHAINID].num_stack_arguments, 0);
     EXPECT_EQ(i[OP_CHAINID].num_stack_returned_items, 1);
-    EXPECT_EQ(p[OP_CHAINID].gas_cost, -1);
+    EXPECT_EQ(p[OP_CHAINID].gas_cost, 0);
     EXPECT_EQ(in[OP_CHAINID], std::string{"CHAINID"});
     EXPECT_TRUE(pn[OP_CHAINID] == nullptr);
 
     EXPECT_EQ(i[OP_SELFBALANCE].gas_cost, 5);
     EXPECT_EQ(i[OP_SELFBALANCE].num_stack_arguments, 0);
     EXPECT_EQ(i[OP_SELFBALANCE].num_stack_returned_items, 1);
-    EXPECT_EQ(p[OP_SELFBALANCE].gas_cost, -1);
+    EXPECT_EQ(p[OP_SELFBALANCE].gas_cost, 0);
     EXPECT_EQ(in[OP_SELFBALANCE], std::string{"SELFBALANCE"});
     EXPECT_TRUE(pn[OP_SELFBALANCE] == nullptr);
 

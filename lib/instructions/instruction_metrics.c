@@ -5,8 +5,13 @@
 
 #include <evmc/instructions.h>
 
-/** Marks an instruction as undefined. */
-#define UNDEFINED -1
+/**
+ * Marks an instruction as undefined.
+ *
+ * The gas cost for undefined instructions is 0 because this is the cost of executing them
+ * in practice in EVM implementations.
+ */
+#define UNDEFINED 0
 
 /**
  * Gas price tiers, names from Yellow Paper.
@@ -277,7 +282,7 @@ static struct evmc_instruction_metrics istanbul_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*         REVERT = 0xfd */ {ZERO, 2, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {5000, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {5000, 1, 0},
 };
 
 static struct evmc_instruction_metrics constantinople_metrics[256] = {
@@ -536,7 +541,7 @@ static struct evmc_instruction_metrics constantinople_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*         REVERT = 0xfd */ {ZERO, 2, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {5000, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {5000, 1, 0},
 };
 
 static struct evmc_instruction_metrics byzantium_metrics[256] = {
@@ -795,7 +800,7 @@ static struct evmc_instruction_metrics byzantium_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*         REVERT = 0xfd */ {ZERO, 2, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {5000, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {5000, 1, 0},
 };
 
 static struct evmc_instruction_metrics tangerine_whistle_metrics[256] = {
@@ -1054,7 +1059,7 @@ static struct evmc_instruction_metrics tangerine_whistle_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*                = 0xfd */ {UNDEFINED, 0, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {5000, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {5000, 1, 0},
 };
 
 static struct evmc_instruction_metrics homestead_metrics[256] = {
@@ -1313,7 +1318,7 @@ static struct evmc_instruction_metrics homestead_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*                = 0xfd */ {UNDEFINED, 0, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {ZERO, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {ZERO, 1, 0},
 };
 
 static struct evmc_instruction_metrics frontier_metrics[256] = {
@@ -1572,7 +1577,7 @@ static struct evmc_instruction_metrics frontier_metrics[256] = {
     /*                = 0xfc */ {UNDEFINED, 0, 0},
     /*                = 0xfd */ {UNDEFINED, 0, 0},
     /*        INVALID = 0xfe */ {ZERO, 0, 0},
-    /*        SUICIDE = 0xff */ {ZERO, 1, 0},
+    /*   SELFDESTRUCT = 0xff */ {ZERO, 1, 0},
 };
 
 const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
