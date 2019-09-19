@@ -5,8 +5,13 @@
 
 #include <evmc/instructions.h>
 
-/** Marks an instruction as undefined. */
-#define UNDEFINED -1
+/**
+ * Marks an instruction as undefined.
+ *
+ * The gas cost for undefined instructions is 0 because this is the cost of executing them
+ * in practice in EVM implementations.
+ */
+#define UNDEFINED 0
 
 /**
  * Gas price tiers, names from Yellow Paper.
