@@ -370,12 +370,8 @@ public:
 
     /// The constructor that captures a VM instance and configures the instance
     /// with provided list of options.
-    VM(evmc_instance* instance, std::initializer_list<std::pair<const char*, const char*>> options)
-    noexcept : m_instance{instance}
-    {
-        for (auto option : options)
-            set_option(option.first, option.second);
-    }
+    inline VM(evmc_instance* instance,
+              std::initializer_list<std::pair<const char*, const char*>> options) noexcept;
 
     /// Checks if contains a valid pointer to the VM instance.
     explicit operator bool() const noexcept { return m_instance != nullptr; }
@@ -414,6 +410,15 @@ public:
 private:
     evmc_instance* m_instance = nullptr;
 };
+
+inline VM::VM(evmc_instance* instance,
+              std::initializer_list<std::pair<const char*, const char*>> options) noexcept
+  : m_instance{instance}
+{
+    for (const auto& option : options)
+        set_option(option.first, option.second);
+}
+
 
 /// The EVMC Host interface
 class HostInterface
