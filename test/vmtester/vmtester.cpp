@@ -9,12 +9,12 @@
 #include <memory>
 
 evmc_instance* evmc_vm_test::vm;
-evmc::vm evmc_vm_test::owned_vm;
+evmc::VM evmc_vm_test::owned_vm;
 
 void evmc_vm_test::init_vm(evmc_instance* owned_vm_instance) noexcept
 {
     vm = owned_vm_instance;
-    owned_vm = evmc::vm{owned_vm_instance};
+    owned_vm = evmc::VM{owned_vm_instance};
 }
 
 class cli_parser

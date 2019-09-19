@@ -17,7 +17,7 @@ protected:
     static evmc_instance* vm;
 
     /// The C++ RAII wrapper of the loaded VM instance.
-    static evmc::vm owned_vm;
+    static evmc::VM owned_vm;
 
     void SetUp() override { ASSERT_TRUE(vm != nullptr) << "VM instance not loaded"; }
 };

@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning].
   
 ### Changed
 
+- The `evmc::vm` renamed to `evmc::VM` in C++ API.
+  [[#252](https://github.com/ethereum/evmc/pull/252)]
 - Previously deprecated `helpers.hpp` header file has been removed.
   [[#410](https://github.com/ethereum/evmc/pull/410)]
 - Previously deprecated `EVMC_CONSTANTINOPLE2` and `EVMC_LATEST_REVISION` revisions have been removed.
