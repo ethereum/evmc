@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning].
   [[#410](https://github.com/ethereum/evmc/pull/410)]
 - Previously deprecated `EVMC_CONSTANTINOPLE2` and `EVMC_LATEST_REVISION` revisions have been removed.
   [[#411](https://github.com/ethereum/evmc/pull/411)]
+- In `evmc::instructions` library the undefined instructions have `0` gas cost
+  instead of previous `-1` value.
+  [[#425](https://github.com/ethereum/evmc/pull/425)]
 
 ## [6.3.1] - 2019-08-19
 
