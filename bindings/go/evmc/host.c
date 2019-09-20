@@ -32,7 +32,7 @@ const struct evmc_host_interface evmc_go_host = {
 #pragma GCC diagnostic error "-Wconversion"
 static inline void go_exported_functions_type_checks()
 {
-    struct evmc_context* context = NULL;
+    struct evmc_host_context* context = NULL;
     evmc_address* address = NULL;
     evmc_bytes32 bytes32;
     uint8_t* data = NULL;

@@ -266,7 +266,7 @@ TEST(cpp, vm)
     EXPECT_EQ(vm.name(), std::string{"example_vm"});
     EXPECT_NE(vm.version()[0], 0);
 
-    auto ctx = evmc_context{};
+    auto ctx = evmc_host_context{};
     auto res = vm.execute(ctx, EVMC_MAX_REVISION, {}, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_FAILURE);
 

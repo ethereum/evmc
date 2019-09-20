@@ -10,7 +10,7 @@ allows VMs to query and modify Ethereum state during the execution.
 The implementation can be done in object-oriented manner. 
 The ::evmc_host_interface lists the methods any Host must implement.
 
-Moreover, each of the methods has a pointer to ::evmc_context 
+Moreover, each of the methods has a pointer to ::evmc_host_context 
 as a parameter. The context is owned entirely by the Host allowing a Host instance 
 to behave as an object with data.
 
@@ -35,7 +35,7 @@ When Host implementation is ready it's time to start using EVMC VMs.
    You will need:
    - the code to execute,
    - the message (::evmc_message) object that describes the execution context,
-   - the Host instance, passed as ::evmc_context pointer.
+   - the Host instance, passed as ::evmc_host_context pointer.
    
 5. When execution finishes you will receive ::evmc_result object that describes
    the results of the execution.

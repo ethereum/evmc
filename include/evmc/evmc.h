@@ -156,7 +156,7 @@ struct evmc_tx_context
     evmc_uint256be chain_id;         /**< The blockchain's ChainID. */
 };
 
-struct evmc_context;
+struct evmc_host_context;
 
 /**
  * Get transaction context callback function.
@@ -167,7 +167,7 @@ struct evmc_context;
  *  @param      context  The pointer to the Host execution context.
  *  @return              The transaction context.
  */
-typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* context);
+typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_host_context* context);
 
 /**
  * Get block hash callback function.
@@ -181,7 +181,7 @@ typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_context* co
  * @return         The block hash or null bytes
  *                 if the information about the block is not available.
  */
-typedef evmc_bytes32 (*evmc_get_block_hash_fn)(struct evmc_context* context, int64_t number);
+typedef evmc_bytes32 (*evmc_get_block_hash_fn)(struct evmc_host_context* context, int64_t number);
 
 /**
  * The execution status code.
@@ -421,7 +421,8 @@ struct evmc_result
  * @param address  The address of the account the query is about.
  * @return         true if exists, false otherwise.
  */
-typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_address* address);
+typedef bool (*evmc_account_exists_fn)(struct evmc_host_context* context,
+                                       const evmc_address* address);
 
 /**
  * Get storage callback function.
@@ -434,7 +435,7 @@ typedef bool (*evmc_account_exists_fn)(struct evmc_context* context, const evmc_
  * @return         The storage value at the given storage key or null bytes
  *                 if the account does not exist.
  */
-typedef evmc_bytes32 (*evmc_get_storage_fn)(struct evmc_context* context,
+typedef evmc_bytes32 (*evmc_get_storage_fn)(struct evmc_host_context* context,
                                             const evmc_address* address,
                                             const evmc_bytes32* key);
 
@@ -493,7 +494,7 @@ enum evmc_storage_status
  * @param value    The value to be stored.
  * @return         The effect on the storage item.
  */
-typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* context,
+typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_host_context* context,
                                                         const evmc_address* address,
                                                         const evmc_bytes32* key,
                                                         const evmc_bytes32* value);
@@ -507,7 +508,7 @@ typedef enum evmc_storage_status (*evmc_set_storage_fn)(struct evmc_context* con
  * @param address  The address of the account.
  * @return         The balance of the given account or 0 if the account does not exist.
  */
-typedef evmc_uint256be (*evmc_get_balance_fn)(struct evmc_context* context,
+typedef evmc_uint256be (*evmc_get_balance_fn)(struct evmc_host_context* context,
                                               const evmc_address* address);
 
 /**
@@ -520,7 +521,8 @@ typedef evmc_uint256be (*evmc_get_balance_fn)(struct evmc_context* context,
  * @param address  The address of the account.
  * @return         The size of the code in the account or 0 if the account does not exist.
  */
-typedef size_t (*evmc_get_code_size_fn)(struct evmc_context* context, const evmc_address* address);
+typedef size_t (*evmc_get_code_size_fn)(struct evmc_host_context* context,
+                                        const evmc_address* address);
 
 /**
  * Get code size callback function.
@@ -533,28 +535,27 @@ typedef size_t (*evmc_get_code_size_fn)(struct evmc_context* context, const evmc
  * @param address  The address of the account.
  * @return         The hash of the code in the account or null bytes if the account does not exist.
  */
-typedef evmc_bytes32 (*evmc_get_code_hash_fn)(struct evmc_context* context,
+typedef evmc_bytes32 (*evmc_get_code_hash_fn)(struct evmc_host_context* context,
                                               const evmc_address* address);
 
 /**
  * Copy code callback function.
  *
- *  This callback function is used by an EVM to request a copy of the code
- *  of the given account to the memory buffer provided by the EVM.
- *  The Client MUST copy the requested code, starting with the given offset,
- *  to the provided memory buffer up to the size of the buffer or the size of
- *  the code, whichever is smaller.
+ * This callback function is used by an EVM to request a copy of the code
+ * of the given account to the memory buffer provided by the EVM.
+ * The Client MUST copy the requested code, starting with the given offset,
+ * to the provided memory buffer up to the size of the buffer or the size of
+ * the code, whichever is smaller.
  *
- *  @param context      The pointer to the Client execution context.
- *                           @see ::evmc_context.
- *  @param address      The address of the account.
- *  @param code_offset  The offset of the code to copy.
- *  @param buffer_data  The pointer to the memory buffer allocated by the EVM
- *                      to store a copy of the requested code.
- *  @param buffer_size  The size of the memory buffer.
- *  @return             The number of bytes copied to the buffer by the Client.
+ * @param context      The pointer to the Host execution context. See ::evmc_host_context.
+ * @param address      The address of the account.
+ * @param code_offset  The offset of the code to copy.
+ * @param buffer_data  The pointer to the memory buffer allocated by the EVM
+ *                     to store a copy of the requested code.
+ * @param buffer_size  The size of the memory buffer.
+ * @return             The number of bytes copied to the buffer by the Client.
  */
-typedef size_t (*evmc_copy_code_fn)(struct evmc_context* context,
+typedef size_t (*evmc_copy_code_fn)(struct evmc_host_context* context,
                                     const evmc_address* address,
                                     size_t code_offset,
                                     uint8_t* buffer_data,
@@ -563,34 +564,31 @@ typedef size_t (*evmc_copy_code_fn)(struct evmc_context* context,
 /**
  * Selfdestruct callback function.
  *
- *  This callback function is used by an EVM to SELFDESTRUCT given contract.
- *  The execution of the contract will not be stopped, that is up to the EVM.
+ * This callback function is used by an EVM to SELFDESTRUCT given contract.
+ * The execution of the contract will not be stopped, that is up to the EVM.
  *
- *  @param context      The pointer to the Host execution context.
- *                      @see ::evmc_context.
- *  @param address      The address of the contract to be selfdestructed.
- *  @param beneficiary  The address where the remaining ETH is going to be
- *                      transferred.
+ * @param context      The pointer to the Host execution context. See ::evmc_host_context.
+ * @param address      The address of the contract to be selfdestructed.
+ * @param beneficiary  The address where the remaining ETH is going to be transferred.
  */
-typedef void (*evmc_selfdestruct_fn)(struct evmc_context* context,
+typedef void (*evmc_selfdestruct_fn)(struct evmc_host_context* context,
                                      const evmc_address* address,
                                      const evmc_address* beneficiary);
 
 /**
  * Log callback function.
  *
- *  This callback function is used by an EVM to inform about a LOG that happened
- *  during an EVM bytecode execution.
- *  @param context       The pointer to the Host execution context.
- *                       @see ::evmc_context.
- *  @param address       The address of the contract that generated the log.
- *  @param data          The pointer to unindexed data attached to the log.
- *  @param data_size     The length of the data.
- *  @param topics        The pointer to the array of topics attached to the log.
- *  @param topics_count  The number of the topics. Valid values are between
- *                       0 and 4 inclusively.
+ * This callback function is used by an EVM to inform about a LOG that happened
+ * during an EVM bytecode execution.
+ *
+ * @param context       The pointer to the Host execution context. See ::evmc_host_context.
+ * @param address       The address of the contract that generated the log.
+ * @param data          The pointer to unindexed data attached to the log.
+ * @param data_size     The length of the data.
+ * @param topics        The pointer to the array of topics attached to the log.
+ * @param topics_count  The number of the topics. Valid values are between 0 and 4 inclusively.
  */
-typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
+typedef void (*evmc_emit_log_fn)(struct evmc_host_context* context,
                                  const evmc_address* address,
                                  const uint8_t* data,
                                  size_t data_size,
@@ -600,11 +598,11 @@ typedef void (*evmc_emit_log_fn)(struct evmc_context* context,
 /**
  * Pointer to the callback function supporting EVM calls.
  *
- * @param  context The pointer to the Host execution context.
- * @param  msg     The call parameters.
+ * @param context  The pointer to the Host execution context.
+ * @param msg      The call parameters.
  * @return         The result of the call.
  */
-typedef struct evmc_result (*evmc_call_fn)(struct evmc_context* context,
+typedef struct evmc_result (*evmc_call_fn)(struct evmc_host_context* context,
                                            const struct evmc_message* msg);
 
 /**
@@ -664,7 +662,7 @@ struct evmc_host_interface
  * the context callback interface.
  * Optionally, the Host MAY include in the context additional data.
  */
-struct evmc_context
+struct evmc_host_context
 {
     /** The Host interface. */
     const struct evmc_host_interface* host;
@@ -804,7 +802,7 @@ enum evmc_revision
  * @return           The execution result.
  */
 typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
-                                              struct evmc_context* context,
+                                              struct evmc_host_context* context,
                                               enum evmc_revision rev,
                                               const struct evmc_message* msg,
                                               uint8_t const* code,

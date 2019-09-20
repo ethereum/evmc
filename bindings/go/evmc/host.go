@@ -12,7 +12,7 @@ package evmc
 
 struct extended_context
 {
-    struct evmc_context context;
+    struct evmc_host_context context;
     int64_t index;
 };
 

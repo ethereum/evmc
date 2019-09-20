@@ -130,12 +130,12 @@ public:
 
 extern "C" {
 
-evmc_context* example_host_create_context(evmc_tx_context tx_context)
+evmc_host_context* example_host_create_context(evmc_tx_context tx_context)
 {
     return new ExampleHost(tx_context);
 }
 
-void example_host_destroy_context(evmc_context* context)
+void example_host_destroy_context(evmc_host_context* context)
 {
     delete static_cast<ExampleHost*>(context);
 }

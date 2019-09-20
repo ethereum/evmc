@@ -59,7 +59,7 @@ TEST_F(evmc_vm_test, capabilities)
 
 TEST_F(evmc_vm_test, execute_call)
 {
-    evmc_context* context = example_host_create_context(evmc_tx_context{});
+    evmc_host_context* context = example_host_create_context(evmc_tx_context{});
     evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
@@ -92,7 +92,7 @@ TEST_F(evmc_vm_test, execute_call)
 
 TEST_F(evmc_vm_test, execute_create)
 {
-    evmc_context* context = example_host_create_context(evmc_tx_context{});
+    evmc_host_context* context = example_host_create_context(evmc_tx_context{});
     evmc_message msg{
         EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, nullptr, 0, evmc_uint256be{},
         evmc_bytes32{}};
