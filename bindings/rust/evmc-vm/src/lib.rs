@@ -58,7 +58,7 @@ pub type ExecutionTxContext = ffi::evmc_tx_context;
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
-    context: &'a mut ffi::evmc_context,
+    context: &'a mut ffi::evmc_host_context,
     tx_context: ExecutionTxContext,
 }
 
@@ -194,11 +194,11 @@ impl ExecutionMessage {
 }
 
 impl<'a> ExecutionContext<'a> {
-    pub fn new(_context: &'a mut ffi::evmc_context) -> Self {
+    pub fn new(_context: &'a mut ffi::evmc_host_context) -> Self {
         assert!(_context.host != std::ptr::null());
         let _tx_context = unsafe {
             assert!((*(_context.host)).get_tx_context.is_some());
-            (*(_context.host)).get_tx_context.unwrap()(_context as *mut ffi::evmc_context)
+            (*(_context.host)).get_tx_context.unwrap()(_context as *mut ffi::evmc_host_context)
         };
 
         ExecutionContext {
@@ -217,7 +217,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).account_exists.is_some());
             (*self.context.host).account_exists.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
             )
         }
@@ -228,7 +228,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).get_storage.is_some());
             (*self.context.host).get_storage.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
                 key as *const Bytes32,
             )
@@ -245,7 +245,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).set_storage.is_some());
             (*self.context.host).set_storage.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
                 key as *const Bytes32,
                 value as *const Bytes32,
@@ -258,7 +258,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).get_balance.is_some());
             (*self.context.host).get_balance.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
             )
         }
@@ -269,7 +269,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
             (*self.context.host).get_code_size.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
             )
         }
@@ -280,7 +280,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).get_code_size.is_some());
             (*self.context.host).get_code_hash.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
             )
         }
@@ -291,7 +291,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).copy_code.is_some());
             (*self.context.host).copy_code.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
                 code_offset,
                 // FIXME: ensure that alignment of the array elements is OK
@@ -306,7 +306,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).selfdestruct.is_some());
             (*self.context.host).selfdestruct.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
                 beneficiary as *const Address,
             )
@@ -345,7 +345,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).call.is_some());
             (*self.context.host).call.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 &message as *const ffi::evmc_message,
             )
             .into()
@@ -357,7 +357,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).get_block_hash.is_some());
             (*self.context.host).get_block_hash.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 num,
             )
         }
@@ -368,7 +368,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.context.host).emit_log.is_some());
             (*self.context.host).emit_log.unwrap()(
-                self.context as *mut ffi::evmc_context,
+                self.context as *mut ffi::evmc_host_context,
                 address as *const Address,
                 // FIXME: ensure that alignment of the array elements is OK
                 data.as_ptr(),
@@ -749,7 +749,7 @@ mod tests {
     }
 
     unsafe extern "C" fn get_dummy_tx_context(
-        _context: *mut ffi::evmc_context,
+        _context: *mut ffi::evmc_host_context,
     ) -> ffi::evmc_tx_context {
         ffi::evmc_tx_context {
             tx_gas_price: Uint256 { bytes: [0u8; 32] },
@@ -764,14 +764,14 @@ mod tests {
     }
 
     unsafe extern "C" fn get_dummy_code_size(
-        _context: *mut ffi::evmc_context,
+        _context: *mut ffi::evmc_host_context,
         _addr: *const Address,
     ) -> usize {
         105023 as usize
     }
 
     unsafe extern "C" fn execute_call(
-        _context: *mut ffi::evmc_context,
+        _context: *mut ffi::evmc_host_context,
         _msg: *const ffi::evmc_message,
     ) -> ffi::evmc_result {
         // Some dumb validation for testing.
@@ -801,8 +801,8 @@ mod tests {
     }
 
     // Update these when needed for tests
-    fn get_dummy_context() -> ffi::evmc_context {
-        ffi::evmc_context {
+    fn get_dummy_context() -> ffi::evmc_host_context {
+        ffi::evmc_host_context {
             host: Box::into_raw(Box::new(ffi::evmc_host_interface {
                 account_exists: None,
                 get_storage: None,
@@ -822,7 +822,7 @@ mod tests {
 
     // Helper to safely dispose of the dummy context, and not bring up false positives in the
     // sanitizers.
-    fn dummy_context_dispose(context: ffi::evmc_context) {
+    fn dummy_context_dispose(context: ffi::evmc_host_context) {
         unsafe {
             Box::from_raw(context.host as *mut ffi::evmc_host_interface);
         }
@@ -838,7 +838,8 @@ mod tests {
 
         let exe_context = ExecutionContext::new(&mut context_raw);
         let a = exe_context.get_tx_context();
-        let b = unsafe { get_dummy_tx_context(&mut context_raw_copy as *mut ffi::evmc_context) };
+        let b =
+            unsafe { get_dummy_tx_context(&mut context_raw_copy as *mut ffi::evmc_host_context) };
 
         assert_eq!(a.block_gas_limit, b.block_gas_limit);
         assert_eq!(a.block_timestamp, b.block_timestamp);

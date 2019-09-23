@@ -336,7 +336,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     quote! {
         extern "C" fn __evmc_execute(
             instance: *mut ::evmc_vm::ffi::evmc_instance,
-            context: *mut ::evmc_vm::ffi::evmc_context,
+            context: *mut ::evmc_vm::ffi::evmc_host_context,
             revision: ::evmc_vm::ffi::evmc_revision,
             msg: *const ::evmc_vm::ffi::evmc_message,
             code: *const u8,

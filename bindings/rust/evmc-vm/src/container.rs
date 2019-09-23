@@ -75,7 +75,7 @@ mod tests {
     }
 
     unsafe extern "C" fn get_dummy_tx_context(
-        _context: *mut evmc_sys::evmc_context,
+        _context: *mut evmc_sys::evmc_host_context,
     ) -> evmc_sys::evmc_tx_context {
         evmc_sys::evmc_tx_context {
             tx_gas_price: Uint256::default(),
@@ -132,7 +132,7 @@ mod tests {
             get_block_hash: None,
             emit_log: None,
         };
-        let mut backing_context = ::evmc_sys::evmc_context { host: &host };
+        let mut backing_context = ::evmc_sys::evmc_host_context { host: &host };
 
         let mut context = ExecutionContext::new(&mut backing_context);
         let container = EvmcContainer::<TestVm>::new(instance);

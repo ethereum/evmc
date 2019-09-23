@@ -398,7 +398,7 @@ public:
     }
 
     /// @copydoc evmc_execute()
-    result execute(evmc_context& ctx,
+    result execute(evmc_host_context& ctx,
                    evmc_revision rev,
                    const evmc_message& msg,
                    const uint8_t* code,
@@ -475,15 +475,15 @@ public:
 
 /// Wrapper around EVMC host context / host interface.
 ///
-/// To be used by VM implementations as better alternative to using ::evmc_context directly.
+/// To be used by VM implementations as better alternative to using ::evmc_host_context directly.
 class HostContext : public HostInterface
 {
-    evmc_context* context = nullptr;
+    evmc_host_context* context = nullptr;
     evmc_tx_context tx_context = {};
 
 public:
-    /// Implicit converting constructor from evmc_context.
-    HostContext(evmc_context* ctx) noexcept : context{ctx} {}  // NOLINT
+    /// Implicit converting constructor from evmc_host_context.
+    HostContext(evmc_host_context* ctx) noexcept : context{ctx} {}  // NOLINT
 
     bool account_exists(const address& address) noexcept final
     {
@@ -567,8 +567,8 @@ public:
 ///
 /// When implementing EVMC Host, you can directly inherit from the evmc::Host class.
 /// This way your implementation will be simpler by avoiding manual handling
-/// of the ::evmc_context and the ::evmc_context::host.
-class Host : public HostInterface, public evmc_context
+/// of the ::evmc_host_context and the ::evmc_host_context::host.
+class Host : public HostInterface, public evmc_host_context
 {
 public:
     inline Host() noexcept;
@@ -576,36 +576,36 @@ public:
 
 namespace internal
 {
-inline bool account_exists(evmc_context* h, const evmc_address* addr) noexcept
+inline bool account_exists(evmc_host_context* h, const evmc_address* addr) noexcept
 {
     return static_cast<Host*>(h)->account_exists(*addr);
 }
-inline evmc_bytes32 get_storage(evmc_context* h,
+inline evmc_bytes32 get_storage(evmc_host_context* h,
                                 const evmc_address* addr,
                                 const evmc_bytes32* key) noexcept
 {
     return static_cast<Host*>(h)->get_storage(*addr, *key);
 }
-inline evmc_storage_status set_storage(evmc_context* h,
+inline evmc_storage_status set_storage(evmc_host_context* h,
                                        const evmc_address* addr,
                                        const evmc_bytes32* key,
                                        const evmc_bytes32* value) noexcept
 {
     return static_cast<Host*>(h)->set_storage(*addr, *key, *value);
 }
-inline evmc_uint256be get_balance(evmc_context* h, const evmc_address* addr) noexcept
+inline evmc_uint256be get_balance(evmc_host_context* h, const evmc_address* addr) noexcept
 {
     return static_cast<Host*>(h)->get_balance(*addr);
 }
-inline size_t get_code_size(evmc_context* h, const evmc_address* addr) noexcept
+inline size_t get_code_size(evmc_host_context* h, const evmc_address* addr) noexcept
 {
     return static_cast<Host*>(h)->get_code_size(*addr);
 }
-inline evmc_bytes32 get_code_hash(evmc_context* h, const evmc_address* addr) noexcept
+inline evmc_bytes32 get_code_hash(evmc_host_context* h, const evmc_address* addr) noexcept
 {
     return static_cast<Host*>(h)->get_code_hash(*addr);
 }
-inline size_t copy_code(evmc_context* h,
+inline size_t copy_code(evmc_host_context* h,
                         const evmc_address* addr,
                         size_t code_offset,
                         uint8_t* buffer_data,
@@ -613,25 +613,25 @@ inline size_t copy_code(evmc_context* h,
 {
     return static_cast<Host*>(h)->copy_code(*addr, code_offset, buffer_data, buffer_size);
 }
-inline void selfdestruct(evmc_context* h,
+inline void selfdestruct(evmc_host_context* h,
                          const evmc_address* addr,
                          const evmc_address* beneficiary) noexcept
 {
     static_cast<Host*>(h)->selfdestruct(*addr, *beneficiary);
 }
-inline evmc_result call(evmc_context* h, const evmc_message* msg) noexcept
+inline evmc_result call(evmc_host_context* h, const evmc_message* msg) noexcept
 {
     return static_cast<Host*>(h)->call(*msg).release_raw();
 }
-inline evmc_tx_context get_tx_context(evmc_context* h) noexcept
+inline evmc_tx_context get_tx_context(evmc_host_context* h) noexcept
 {
     return static_cast<Host*>(h)->get_tx_context();
 }
-inline evmc_bytes32 get_block_hash(evmc_context* h, int64_t block_number) noexcept
+inline evmc_bytes32 get_block_hash(evmc_host_context* h, int64_t block_number) noexcept
 {
     return static_cast<Host*>(h)->get_block_hash(block_number);
 }
-inline void emit_log(evmc_context* h,
+inline void emit_log(evmc_host_context* h,
                      const evmc_address* addr,
                      const uint8_t* data,
                      size_t data_size,
@@ -647,7 +647,7 @@ constexpr evmc_host_interface interface{
     copy_code,      selfdestruct, call,        get_tx_context, get_block_hash, emit_log};
 }  // namespace internal
 
-inline Host::Host() noexcept : evmc_context{&evmc::internal::interface} {}
+inline Host::Host() noexcept : evmc_host_context{&evmc::internal::interface} {}
 
 }  // namespace evmc
 

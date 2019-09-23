@@ -49,7 +49,7 @@ static evmc_result not_implemented()
 }
 
 static evmc_result execute(evmc_instance*,
-                           evmc_context*,
+                           evmc_host_context*,
                            enum evmc_revision rev,
                            const evmc_message* msg,
                            const uint8_t*,

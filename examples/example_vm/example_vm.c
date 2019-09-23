@@ -75,7 +75,7 @@ static void free_result_output_data(const struct evmc_result* result)
 
 /// The example implementation of the evmc_instance::execute() method.
 static struct evmc_result execute(struct evmc_instance* instance,
-                                  struct evmc_context* context,
+                                  struct evmc_host_context* context,
                                   enum evmc_revision rev,
                                   const struct evmc_message* msg,
                                   const uint8_t* code,

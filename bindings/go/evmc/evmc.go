@@ -25,7 +25,7 @@ static inline enum evmc_set_option_result set_option(struct evmc_instance* insta
 
 struct extended_context
 {
-	struct evmc_context context;
+	struct evmc_host_context context;
 	int64_t index;
 };
 

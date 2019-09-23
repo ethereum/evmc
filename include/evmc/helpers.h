@@ -100,7 +100,7 @@ static inline void evmc_set_tracer(struct evmc_instance* instance,
  * @see evmc_execute_fn.
  */
 static inline struct evmc_result evmc_execute(struct evmc_instance* instance,
-                                              struct evmc_context* context,
+                                              struct evmc_host_context* context,
                                               enum evmc_revision rev,
                                               const struct evmc_message* msg,
                                               uint8_t const* code,
