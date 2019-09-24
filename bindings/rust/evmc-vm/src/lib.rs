@@ -400,7 +400,10 @@ impl From<ffi::evmc_result> for ExecutionResult {
         // Release allocated ffi struct.
         if result.release.is_some() {
             unsafe {
-                result.release.unwrap()(&result as *const ffi::evmc_result);
+                // FIXME: find a better way
+                result.release.unwrap()(
+                    (&result as *const ffi::evmc_result) as *mut ffi::evmc_result,
+                );
             }
         }
 
@@ -434,8 +437,8 @@ unsafe fn deallocate_output_data(ptr: *const u8, size: usize) {
 }
 
 /// Returns a pointer to a heap-allocated evmc_result.
-impl Into<*const ffi::evmc_result> for ExecutionResult {
-    fn into(self) -> *const ffi::evmc_result {
+impl Into<*mut ffi::evmc_result> for ExecutionResult {
+    fn into(self) -> *mut ffi::evmc_result {
         let mut result: ffi::evmc_result = self.into();
         result.release = Some(release_heap_result);
         Box::into_raw(Box::new(result))
@@ -443,9 +446,9 @@ impl Into<*const ffi::evmc_result> for ExecutionResult {
 }
 
 /// Callback to pass across FFI, de-allocating the optional output_data.
-extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
+extern "C" fn release_heap_result(result: *mut ffi::evmc_result) {
     unsafe {
-        let tmp = Box::from_raw(result as *mut ffi::evmc_result);
+        let tmp = Box::from_raw(result);
         deallocate_output_data(tmp.output_data, tmp.output_size);
     }
 }
@@ -471,7 +474,7 @@ impl Into<ffi::evmc_result> for ExecutionResult {
 }
 
 /// Callback to pass across FFI, de-allocating the optional output_data.
-extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
+extern "C" fn release_stack_result(result: *mut ffi::evmc_result) {
     unsafe {
         let tmp = *result;
         deallocate_output_data(tmp.output_data, tmp.output_size);
@@ -528,7 +531,7 @@ mod tests {
     }
 
     // Test-specific helper to dispose of execution results in unit tests
-    extern "C" fn test_result_dispose(result: *const ffi::evmc_result) {
+    extern "C" fn test_result_dispose(result: *mut ffi::evmc_result) {
         unsafe {
             if !result.is_null() {
                 let owned = *result;
@@ -570,7 +573,7 @@ mod tests {
             Some(&[0xc0, 0xff, 0xee, 0x71, 0x75]),
         );
 
-        let f: *const ffi::evmc_result = r.into();
+        let f: *mut ffi::evmc_result = r.into();
         assert!(!f.is_null());
         unsafe {
             assert!((*f).status_code == ffi::evmc_status_code::EVMC_FAILURE);
@@ -592,7 +595,7 @@ mod tests {
     fn result_into_heap_ffi_empty_data() {
         let r = ExecutionResult::new(ffi::evmc_status_code::EVMC_FAILURE, 420, None);
 
-        let f: *const ffi::evmc_result = r.into();
+        let f: *mut ffi::evmc_result = r.into();
         assert!(!f.is_null());
         unsafe {
             assert!((*f).status_code == ffi::evmc_status_code::EVMC_FAILURE);
@@ -626,7 +629,7 @@ mod tests {
             );
             assert!(f.create_address.bytes == [0u8; 20]);
             if f.release.is_some() {
-                f.release.unwrap()(&f);
+                f.release.unwrap()((&f as *const ffi::evmc_result) as *mut ffi::evmc_result);
             }
         }
     }
@@ -643,7 +646,7 @@ mod tests {
             assert!(f.output_size == 0);
             assert!(f.create_address.bytes == [0u8; 20]);
             if f.release.is_some() {
-                f.release.unwrap()(&f);
+                f.release.unwrap()((&f as *const ffi::evmc_result) as *mut ffi::evmc_result);
             }
         }
     }
