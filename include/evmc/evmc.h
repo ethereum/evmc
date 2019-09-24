@@ -854,84 +854,6 @@ typedef uint32_t evmc_capabilities_flagset;
  */
 typedef evmc_capabilities_flagset (*evmc_get_capabilities_fn)(struct evmc_instance* instance);
 
-/**
- * The opaque type representing a Client-side tracer object.
- *
- * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
- */
-struct evmc_tracer_context;
-
-/**
- * The callback to trace instructions execution in an EVM.
- *
- * This function informs the Client what instruction has been executed in the EVM implementation
- * and what are the results of executing this particular instruction.
- * The message level information (like call depth, destination address, etc.) are not provided here.
- * This piece of information can be acquired by inspecting messages being sent to the EVM in
- * ::evmc_execute_fn and the results of the messages execution.
- *
- * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
- *
- * @param context                The pointer to the Client-side tracing context. This allows to
- *                               implement the tracer in OOP manner.
- * @param code_offset            The current instruction position in the code.
- * @param status_code            The status code of the instruction execution.
- * @param gas_left               The amount of the gas left after the instruction execution.
- * @param stack_num_items        The current EVM stack height after the instruction execution.
- * @param pushed_stack_item      The top EVM stack item pushed as the result of the instruction
- *                               execution. This value is null when the instruction does not push
- *                               anything to the stack.
- * @param memory_size            The size of the EVM memory after the instruction execution.
- * @param changed_memory_offset  The offset in number of bytes of the beginning of the memory area
- *                               modified as the result of the instruction execution.
- *                               The Client MAY use this information together with
- *                               @p changed_memory_size and @p changed_memory to incrementally
- *                               update the copy of the full VM's memory.
- * @param changed_memory_size    The size of the memory area modified as the result of
- *                               the instruction execution.
- * @param changed_memory         The pointer to the memory area modified as the result of
- *                               the instruction execution.
- *                               The Client MAY access the pointed memory area
- *                               (limited by the @p changed_memory_size) only during the current
- *                               execution of the evmc_trace_callback().
- *                               The pointer MUST NOT be stored by the Client.
- *                               The Client MUST NOT assume that
- *                               `changed_memory - changed_memory_offset` is a valid base pointer
- *                               of the VM memory.
- */
-typedef void (*evmc_trace_callback)(struct evmc_tracer_context* context,
-                                    size_t code_offset,
-                                    enum evmc_status_code status_code,
-                                    int64_t gas_left,
-                                    size_t stack_num_items,
-                                    const evmc_uint256be* pushed_stack_item,
-                                    size_t memory_size,
-                                    size_t changed_memory_offset,
-                                    size_t changed_memory_size,
-                                    const uint8_t* changed_memory);
-
-/**
- * Sets the EVM instruction tracer.
- *
- * When the tracer is set in the EVM instance, the EVM SHOULD call back the tracer with information
- * about instructions execution in the EVM.
- * @see ::evmc_trace_callback.
- *
- * This will overwrite the previous settings (the callback and the context).
- *
- * @deprecated Deprecated since EVMC 6.3, see evmc_instance::set_tracer().
- *
- * @param instance    The EVM instance.
- * @param callback    The tracer callback function. This argument MAY be NULL to disable previously
- *                    set tracer.
- * @param context     The Client-side tracer context. This argument MAY be NULL in case the tracer
- *                    does not require any context. This argument MUST be NULL if the callback
- *                    argument is NULL.
- */
-typedef void (*evmc_set_tracer_fn)(struct evmc_instance* instance,
-                                   evmc_trace_callback callback,
-                                   struct evmc_tracer_context* context);
-
 
 /**
  * The EVM instance.
@@ -989,17 +911,6 @@ struct evmc_instance
      * This is a mandatory method and MUST NOT be set to NULL.
      */
     evmc_get_capabilities_fn get_capabilities;
-
-    /**
-     * Optional pointer to function setting the EVM instruction tracer.
-     *
-     * If the EVM does not support this feature the pointer can be NULL.
-     *
-     * @deprecated
-     * Since EVMC 6.3, the tracing API has been deprecated as there have been some
-     * design flaws discovered. New API is expected to be introduced in future.
-     */
-    evmc_set_tracer_fn set_tracer;
 
     /**
      * Optional pointer to function modifying VM's options.

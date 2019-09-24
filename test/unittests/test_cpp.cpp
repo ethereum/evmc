@@ -275,8 +275,7 @@ TEST(cpp, vm)
 
 TEST(cpp, vm_set_option)
 {
-    evmc_instance raw_instance = {EVMC_ABI_VERSION, "",      "",      nullptr,
-                                  nullptr,          nullptr, nullptr, nullptr};
+    evmc_instance raw_instance = {EVMC_ABI_VERSION, "", "", nullptr, nullptr, nullptr, nullptr};
     raw_instance.destroy = [](evmc_instance*) {};
 
     auto vm = evmc::VM{&raw_instance};
@@ -294,8 +293,8 @@ TEST(cpp, vm_move)
 {
     static int destroy_counter = 0;
     const auto template_instance =
-        evmc_instance{EVMC_ABI_VERSION, "",      "",      [](evmc_instance*) { ++destroy_counter; },
-                      nullptr,          nullptr, nullptr, nullptr};
+        evmc_instance{EVMC_ABI_VERSION, "",      "",     [](evmc_instance*) { ++destroy_counter; },
+                      nullptr,          nullptr, nullptr};
 
     EXPECT_EQ(destroy_counter, 0);
     {

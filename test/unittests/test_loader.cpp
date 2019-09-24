@@ -73,8 +73,8 @@ protected:
     /// Creates a VM mock with only destroy() method.
     static evmc_instance* create_vm_barebone()
     {
-        static auto instance = evmc_instance{EVMC_ABI_VERSION, "vm_barebone", "",      destroy,
-                                             nullptr,          nullptr,       nullptr, nullptr};
+        static auto instance =
+            evmc_instance{EVMC_ABI_VERSION, "vm_barebone", "", destroy, nullptr, nullptr, nullptr};
         ++create_count;
         return &instance;
     }
@@ -85,7 +85,7 @@ protected:
         constexpr auto wrong_abi_version = 1985;
         static_assert(wrong_abi_version != EVMC_ABI_VERSION, "");
         static auto instance =
-            evmc_instance{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr, nullptr};
+            evmc_instance{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr};
         ++create_count;
         return &instance;
     }
@@ -94,8 +94,7 @@ protected:
     static evmc_instance* create_vm_with_set_option() noexcept
     {
         static auto instance = evmc_instance{
-            EVMC_ABI_VERSION, "vm_with_set_option", "", destroy, nullptr, nullptr, nullptr,
-            set_option};
+            EVMC_ABI_VERSION, "vm_with_set_option", "", destroy, nullptr, nullptr, set_option};
         ++create_count;
         return &instance;
     }

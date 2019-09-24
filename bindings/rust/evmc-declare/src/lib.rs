@@ -296,7 +296,6 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 execute: Some(__evmc_execute),
                 get_capabilities: Some(__evmc_get_capabilities),
                 set_option: None,
-                set_tracer: None,
                 name: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_name_ident.as_bytes()).as_ptr() as *const i8 },
                 version: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_version_ident.as_bytes()).as_ptr() as *const i8 },
             };
