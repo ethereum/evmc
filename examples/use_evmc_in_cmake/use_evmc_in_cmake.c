@@ -9,6 +9,6 @@
 
 int main()
 {
-    struct evmc_instance instance = {.abi_version = EVMC_ABI_VERSION};
-    return instance.abi_version - EVMC_ABI_VERSION;
+    struct evmc_vm vm = {.abi_version = EVMC_ABI_VERSION};
+    return vm.abi_version - EVMC_ABI_VERSION;
 }

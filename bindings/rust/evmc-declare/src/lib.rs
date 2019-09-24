@@ -272,7 +272,7 @@ fn build_capabilities_fn(capabilities: u32) -> proc_macro2::TokenStream {
         LitInt::new(capabilities as u64, IntSuffix::U32, capabilities.span());
 
     quote! {
-        extern "C" fn __evmc_get_capabilities(instance: *mut ::evmc_vm::ffi::evmc_instance) -> ::evmc_vm::ffi::evmc_capabilities_flagset {
+        extern "C" fn __evmc_get_capabilities(instance: *mut ::evmc_vm::ffi::evmc_vm) -> ::evmc_vm::ffi::evmc_capabilities_flagset {
             #capabilities_literal
         }
     }
@@ -289,8 +289,8 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     // Note: we can get CStrs unchecked because we did the checks on instantiation of VMMetaData.
     quote! {
         #[no_mangle]
-        extern "C" fn #fn_ident() -> *const ::evmc_vm::ffi::evmc_instance {
-            let new_instance = ::evmc_vm::ffi::evmc_instance {
+        extern "C" fn #fn_ident() -> *const ::evmc_vm::ffi::evmc_vm {
+            let new_instance = ::evmc_vm::ffi::evmc_vm {
                 abi_version: ::evmc_vm::ffi::EVMC_ABI_VERSION as i32,
                 destroy: Some(__evmc_destroy),
                 execute: Some(__evmc_execute),
@@ -315,7 +315,7 @@ fn build_destroy_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     let type_ident = names.get_type_as_ident();
 
     quote! {
-        extern "C" fn __evmc_destroy(instance: *mut ::evmc_vm::ffi::evmc_instance) {
+        extern "C" fn __evmc_destroy(instance: *mut ::evmc_vm::ffi::evmc_vm) {
             if instance.is_null() {
                 // This is an irrecoverable error that violates the EVMC spec.
                 std::process::abort();
@@ -334,7 +334,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
     quote! {
         extern "C" fn __evmc_execute(
-            instance: *mut ::evmc_vm::ffi::evmc_instance,
+            instance: *mut ::evmc_vm::ffi::evmc_vm,
             context: *mut ::evmc_vm::ffi::evmc_host_context,
             revision: ::evmc_vm::ffi::evmc_revision,
             msg: *const ::evmc_vm::ffi::evmc_message,

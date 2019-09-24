@@ -8,7 +8,7 @@ You can start with [the example implementation of EVMC VM interface in C](@ref e
 
 ## VM instance
 
-The VM instance is described by the ::evmc_instance struct. It contains the
+The VM instance is described by the ::evmc_vm struct. It contains the
 basic static information about the VM like name and version. The struct also
 includes the VM methods (in form of function pointers) to allow the Host
 to interact with the VM.
@@ -25,17 +25,17 @@ e.g. ::evmc_create_example_vm().
 
 ## VM methods implementation
 
-Each VM methods takes the pointer to the ::evmc_instance as the first argument.
-The VM implementation can extend the ::evmc_instance struct for storing internal
+Each VM methods takes the pointer to the ::evmc_vm as the first argument.
+The VM implementation can extend the ::evmc_vm struct for storing internal
 data. This allow implementing the VM in object-oriented manner.
 
-The most important method is ::evmc_instance::execute() because it executes EVM code.
+The most important method is ::evmc_vm::execute() because it executes EVM code.
 Remember that the Host is allowed to invoke the execute method concurrently
 so do not store data related to a particular execution context in the VM instance.
 
 Before a client can actually execute a VM, it is important to implement the three
-basic fields for querying name (::evmc_instance::name), version (::evmc_instance::version)
-and capabilities (::evmc_instance::get_capabilities()) as well as the ::evmc_instance::destroy()
+basic fields for querying name (::evmc_vm::name), version (::evmc_vm::version)
+and capabilities (::evmc_vm::get_capabilities()) as well as the ::evmc_vm::destroy()
 method to wind the VM down.
 
 Other methods are optional.

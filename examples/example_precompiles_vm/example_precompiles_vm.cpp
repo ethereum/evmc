@@ -48,7 +48,7 @@ static evmc_result not_implemented()
     return result;
 }
 
-static evmc_result execute(evmc_instance*,
+static evmc_result execute(evmc_vm*,
                            evmc_host_context*,
                            enum evmc_revision rev,
                            const evmc_message* msg,
@@ -111,16 +111,16 @@ static evmc_result execute(evmc_instance*,
     }
 }
 
-extern "C" EVMC_EXPORT evmc_instance* evmc_create_example_precompiles_vm()
+extern "C" EVMC_EXPORT evmc_vm* evmc_create_example_precompiles_vm()
 {
-    static struct evmc_instance instance = {
+    static struct evmc_vm vm = {
         EVMC_ABI_VERSION,
         "example_precompiles_vm",
         PROJECT_VERSION,
-        [](evmc_instance*) {},
+        [](evmc_vm*) {},
         execute,
-        [](evmc_instance*) { return evmc_capabilities_flagset{EVMC_CAPABILITY_PRECOMPILES}; },
+        [](evmc_vm*) { return evmc_capabilities_flagset{EVMC_CAPABILITY_PRECOMPILES}; },
         nullptr,
     };
-    return &instance;
+    return &vm;
 }

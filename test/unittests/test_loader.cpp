@@ -53,11 +53,9 @@ protected:
         evmc_test_create_fn = fn;
     }
 
-    static void destroy(evmc_instance*) noexcept { ++destroy_count; }
+    static void destroy(evmc_vm*) noexcept { ++destroy_count; }
 
-    static evmc_set_option_result set_option(evmc_instance*,
-                                             const char* name,
-                                             const char* value) noexcept
+    static evmc_set_option_result set_option(evmc_vm*, const char* name, const char* value) noexcept
     {
         recorded_options.push_back({name, value});  // NOLINT
 
@@ -71,29 +69,29 @@ protected:
     }
 
     /// Creates a VM mock with only destroy() method.
-    static evmc_instance* create_vm_barebone()
+    static evmc_vm* create_vm_barebone()
     {
         static auto instance =
-            evmc_instance{EVMC_ABI_VERSION, "vm_barebone", "", destroy, nullptr, nullptr, nullptr};
+            evmc_vm{EVMC_ABI_VERSION, "vm_barebone", "", destroy, nullptr, nullptr, nullptr};
         ++create_count;
         return &instance;
     }
 
     /// Creates a VM mock with ABI version different than in this project.
-    static evmc_instance* create_vm_with_wrong_abi()
+    static evmc_vm* create_vm_with_wrong_abi()
     {
         constexpr auto wrong_abi_version = 1985;
         static_assert(wrong_abi_version != EVMC_ABI_VERSION, "");
         static auto instance =
-            evmc_instance{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr};
+            evmc_vm{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr};
         ++create_count;
         return &instance;
     }
 
     /// Creates a VM mock with optional set_option() method.
-    static evmc_instance* create_vm_with_set_option() noexcept
+    static evmc_vm* create_vm_with_set_option() noexcept
     {
-        static auto instance = evmc_instance{
+        static auto instance = evmc_vm{
             EVMC_ABI_VERSION, "vm_with_set_option", "", destroy, nullptr, nullptr, set_option};
         ++create_count;
         return &instance;
@@ -105,17 +103,17 @@ int loader::destroy_count = 0;
 std::unordered_map<std::string, std::vector<std::string>> loader::supported_options;
 std::vector<std::pair<std::string, std::string>> loader::recorded_options;
 
-static evmc_instance* create_aaa()
+static evmc_vm* create_aaa()
 {
-    return (evmc_instance*)0xaaa;
+    return (evmc_vm*)0xaaa;
 }
 
-static evmc_instance* create_eee_bbb()
+static evmc_vm* create_eee_bbb()
 {
-    return (evmc_instance*)0xeeebbb;
+    return (evmc_vm*)0xeeebbb;
 }
 
-static evmc_instance* create_failure()
+static evmc_vm* create_failure()
 {
     return nullptr;
 }
@@ -200,7 +198,7 @@ TEST_F(loader, load_prefix_aaa)
         "unittests/double_prefix_aaa.evm",
     };
 
-    const auto expected_vm_ptr = reinterpret_cast<evmc_instance*>(0xaaa);
+    const auto expected_vm_ptr = reinterpret_cast<evmc_vm*>(0xaaa);
 
     for (auto& path : paths)
     {
@@ -219,7 +217,7 @@ TEST_F(loader, load_eee_bbb)
     setup("unittests/eee-bbb.dll", "evmc_create_eee_bbb", create_eee_bbb);
     evmc_loader_error_code ec;
     auto fn = evmc_load(evmc_test_library_path, &ec);
-    const auto expected_vm_ptr = reinterpret_cast<evmc_instance*>(0xeeebbb);
+    const auto expected_vm_ptr = reinterpret_cast<evmc_vm*>(0xeeebbb);
     ASSERT_TRUE(fn != nullptr);
     EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
     EXPECT_EQ(fn(), expected_vm_ptr);
@@ -297,13 +295,13 @@ TEST_F(loader, load_and_create_failure)
     evmc_loader_error_code ec;
     auto vm = evmc_load_and_create(evmc_test_library_path, &ec);
     EXPECT_TRUE(vm == nullptr);
-    EXPECT_EQ(ec, EVMC_LOADER_INSTANCE_CREATION_FAILURE);
-    EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC instance of failure.vm has failed");
+    EXPECT_EQ(ec, EVMC_LOADER_VM_CREATION_FAILURE);
+    EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC VM of failure.vm has failed");
     EXPECT_TRUE(evmc_last_error_msg() == nullptr);
 
     vm = evmc_load_and_create(evmc_test_library_path, nullptr);
     EXPECT_TRUE(vm == nullptr);
-    EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC instance of failure.vm has failed");
+    EXPECT_STREQ(evmc_last_error_msg(), "creating EVMC VM of failure.vm has failed");
 }
 
 TEST_F(loader, load_and_create_abi_mismatch)

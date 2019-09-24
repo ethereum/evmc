@@ -15,7 +15,7 @@ extern "C" {
 /**
  * Creates EVMC Example VM.
  */
-EVMC_EXPORT struct evmc_instance* evmc_create_example_vm(void);
+EVMC_EXPORT struct evmc_vm* evmc_create_example_vm(void);
 
 #ifdef __cplusplus
 }

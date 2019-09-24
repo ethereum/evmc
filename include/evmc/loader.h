@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /** The function pointer type for EVMC create functions. */
-typedef struct evmc_instance* (*evmc_create_fn)(void);
+typedef struct evmc_vm* (*evmc_create_fn)(void);
 
 /** Error codes for the EVMC loader. */
 enum evmc_loader_error_code
@@ -37,7 +37,7 @@ enum evmc_loader_error_code
     EVMC_LOADER_INVALID_ARGUMENT = 3,
 
     /** The creation of a VM instance has failed. */
-    EVMC_LOADER_INSTANCE_CREATION_FAILURE = 4,
+    EVMC_LOADER_VM_CREATION_FAILURE = 4,
 
     /** The ABI version of the VM instance has mismatched. */
     EVMC_LOADER_ABI_VERSION_MISMATCH = 5,
@@ -98,7 +98,7 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
  *
  * This is a macro for creating the VM instance with the function returned from evmc_load().
  * The function signals the same errors as evmc_load() and additionally:
- * - ::EVMC_LOADER_INSTANCE_CREATION_FAILURE when the create function returns NULL,
+ * - ::EVMC_LOADER_VM_CREATION_FAILURE when the create function returns NULL,
  * - ::EVMC_LOADER_ABI_VERSION_MISMATCH when the created VM instance has ABI version different
  *   from the ABI version of this library (::EVMC_ABI_VERSION).
  *
@@ -114,8 +114,7 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
  *                    ::EVMC_LOADER_SUCCESS on success or any other error code as described above.
  * @return            The pointer to the created VM or NULL in case of error.
  */
-struct evmc_instance* evmc_load_and_create(const char* filename,
-                                           enum evmc_loader_error_code* error_code);
+struct evmc_vm* evmc_load_and_create(const char* filename, enum evmc_loader_error_code* error_code);
 
 /**
  * Dynamically loads the EVMC module, then creates and configures the VM instance.
@@ -151,8 +150,8 @@ struct evmc_instance* evmc_load_and_create(const char* filename,
  *                    ::EVMC_LOADER_SUCCESS on success or any other error code as described above.
  * @return            The pointer to the created VM or NULL in case of error.
  */
-struct evmc_instance* evmc_load_and_configure(const char* config,
-                                              enum evmc_loader_error_code* error_code);
+struct evmc_vm* evmc_load_and_configure(const char* config,
+                                        enum evmc_loader_error_code* error_code);
 
 /**
  * Returns the human-readable message describing the most recent error

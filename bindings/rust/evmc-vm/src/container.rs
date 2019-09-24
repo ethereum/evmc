@@ -13,7 +13,7 @@ where
     T: EvmcVm + Sized,
 {
     #[allow(dead_code)]
-    instance: ::evmc_sys::evmc_instance,
+    instance: ::evmc_sys::evmc_vm,
     vm: T,
 }
 
@@ -22,7 +22,7 @@ where
     T: EvmcVm + Sized,
 {
     /// Basic constructor.
-    pub fn new(_instance: ::evmc_sys::evmc_instance) -> Box<Self> {
+    pub fn new(_instance: ::evmc_sys::evmc_vm) -> Box<Self> {
         Box::new(Self {
             instance: _instance,
             vm: T::init(),
@@ -30,14 +30,14 @@ where
     }
 
     /// Take ownership of the given pointer and return a box.
-    pub unsafe fn from_ffi_pointer(instance: *mut ::evmc_sys::evmc_instance) -> Box<Self> {
+    pub unsafe fn from_ffi_pointer(instance: *mut ::evmc_sys::evmc_vm) -> Box<Self> {
         assert!(!instance.is_null(), "from_ffi_pointer received NULL");
         Box::from_raw(instance as *mut EvmcContainer<T>)
     }
 
     /// Convert boxed self into an FFI pointer, surrendering ownership of the heap data.
-    pub unsafe fn into_ffi_pointer(boxed: Box<Self>) -> *mut ::evmc_sys::evmc_instance {
-        Box::into_raw(boxed) as *mut ::evmc_sys::evmc_instance
+    pub unsafe fn into_ffi_pointer(boxed: Box<Self>) -> *mut ::evmc_sys::evmc_vm {
+        Box::into_raw(boxed) as *mut ::evmc_sys::evmc_vm
     }
 }
 
@@ -91,7 +91,7 @@ mod tests {
 
     #[test]
     fn container_new() {
-        let instance = ::evmc_sys::evmc_instance {
+        let instance = ::evmc_sys::evmc_vm {
             abi_version: ::evmc_sys::EVMC_ABI_VERSION as i32,
             name: std::ptr::null(),
             version: std::ptr::null(),

@@ -19,15 +19,15 @@ int main(int argc, char* argv[])
 #ifdef STATICALLY_LINKED_EXAMPLE
     (void)argc;
     (void)argv;
-    struct evmc_instance* vm = evmc_create_example_vm();
+    struct evmc_vm* vm = evmc_create_example_vm();
     if (!vm)
-        return EVMC_LOADER_INSTANCE_CREATION_FAILURE;
+        return EVMC_LOADER_VM_CREATION_FAILURE;
     if (!evmc_is_abi_compatible(vm))
         return EVMC_LOADER_ABI_VERSION_MISMATCH;
 #else
     const char* config_string = (argc > 1) ? argv[1] : "example-vm.so";
     enum evmc_loader_error_code error_code;
-    struct evmc_instance* vm = evmc_load_and_configure(config_string, &error_code);
+    struct evmc_vm* vm = evmc_load_and_configure(config_string, &error_code);
     if (!vm)
     {
         printf("Loading error: %d\n", error_code);

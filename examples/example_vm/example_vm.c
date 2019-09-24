@@ -19,21 +19,21 @@
 #include <string.h>
 
 
-/// The example VM instance struct extending the evmc_instance.
+/// The example VM instance struct extending the evmc_vm.
 struct example_vm
 {
-    struct evmc_instance instance;  ///< The base struct.
-    int verbose;                    ///< The verbosity level.
+    struct evmc_vm instance;  ///< The base struct.
+    int verbose;              ///< The verbosity level.
 };
 
-/// The implementation of the evmc_instance::destroy() method.
-static void destroy(struct evmc_instance* vm)
+/// The implementation of the evmc_vm::destroy() method.
+static void destroy(struct evmc_vm* vm)
 {
     free(vm);
 }
 
-/// The example implementation of the evmc_instance::get_capabilities() method.
-static evmc_capabilities_flagset get_capabilities(struct evmc_instance* vm)
+/// The example implementation of the evmc_vm::get_capabilities() method.
+static evmc_capabilities_flagset get_capabilities(struct evmc_vm* vm)
 {
     (void)vm;
     return EVMC_CAPABILITY_EVM1 | EVMC_CAPABILITY_EWASM;
@@ -41,9 +41,9 @@ static evmc_capabilities_flagset get_capabilities(struct evmc_instance* vm)
 
 /// Example VM options.
 ///
-/// The implementation of the evmc_instance::set_option() method.
+/// The implementation of the evmc_vm::set_option() method.
 /// VMs are allowed to omit this method implementation.
-static enum evmc_set_option_result set_option(struct evmc_instance* instance,
+static enum evmc_set_option_result set_option(struct evmc_vm* instance,
                                               const char* name,
                                               const char* value)
 {
@@ -73,8 +73,8 @@ static void free_result_output_data(const struct evmc_result* result)
     free((uint8_t*)result->output_data);
 }
 
-/// The example implementation of the evmc_instance::execute() method.
-static struct evmc_result execute(struct evmc_instance* instance,
+/// The example implementation of the evmc_vm::execute() method.
+static struct evmc_result execute(struct evmc_vm* instance,
                                   struct evmc_host_context* context,
                                   enum evmc_revision rev,
                                   const struct evmc_message* msg,
@@ -215,9 +215,9 @@ static struct evmc_result execute(struct evmc_instance* instance,
 #endif
 /// @endcond
 
-struct evmc_instance* evmc_create_example_vm()
+struct evmc_vm* evmc_create_example_vm()
 {
-    struct evmc_instance init = {
+    struct evmc_vm init = {
         .abi_version = EVMC_ABI_VERSION,
         .name = "example_vm",
         .version = PROJECT_VERSION,
@@ -227,7 +227,7 @@ struct evmc_instance* evmc_create_example_vm()
         .set_option = set_option,
     };
     struct example_vm* vm = calloc(1, sizeof(struct example_vm));
-    struct evmc_instance* interface = &vm->instance;
+    struct evmc_vm* interface = &vm->instance;
     memcpy(interface, &init, sizeof(init));
     return interface;
 }

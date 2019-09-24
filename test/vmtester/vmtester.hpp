@@ -9,12 +9,12 @@
 class evmc_vm_test : public ::testing::Test
 {
 public:
-    static void init_vm(evmc_instance* owned_vm_instance) noexcept;
+    static void init_vm(evmc_vm* owned_vm) noexcept;
 
 protected:
     /// The raw pointer to the loaded VM instance.
     /// The C API is used to allow more sophisticated unit tests.
-    static evmc_instance* vm;
+    static evmc_vm* vm;
 
     /// The C++ RAII wrapper of the loaded VM instance.
     static evmc::VM owned_vm;

@@ -277,10 +277,10 @@ TEST(cpp, vm)
 
 TEST(cpp, vm_set_option)
 {
-    evmc_instance raw_instance = {EVMC_ABI_VERSION, "", "", nullptr, nullptr, nullptr, nullptr};
-    raw_instance.destroy = [](evmc_instance*) {};
+    evmc_vm raw = {EVMC_ABI_VERSION, "", "", nullptr, nullptr, nullptr, nullptr};
+    raw.destroy = [](evmc_vm*) {};
 
-    auto vm = evmc::VM{&raw_instance};
+    auto vm = evmc::VM{&raw};
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
@@ -294,14 +294,13 @@ TEST(cpp, vm_null)
 TEST(cpp, vm_move)
 {
     static int destroy_counter = 0;
-    const auto template_instance =
-        evmc_instance{EVMC_ABI_VERSION, "",      "",     [](evmc_instance*) { ++destroy_counter; },
-                      nullptr,          nullptr, nullptr};
+    const auto template_vm = evmc_vm{
+        EVMC_ABI_VERSION, "", "", [](evmc_vm*) { ++destroy_counter; }, nullptr, nullptr, nullptr};
 
     EXPECT_EQ(destroy_counter, 0);
     {
-        auto v1 = template_instance;
-        auto v2 = template_instance;
+        auto v1 = template_vm;
+        auto v2 = template_vm;
 
         auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
@@ -310,7 +309,7 @@ TEST(cpp, vm_move)
     }
     EXPECT_EQ(destroy_counter, 2);
     {
-        auto v1 = template_instance;
+        auto v1 = template_vm;
 
         auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
@@ -319,7 +318,7 @@ TEST(cpp, vm_move)
     }
     EXPECT_EQ(destroy_counter, 3);
     {
-        auto v1 = template_instance;
+        auto v1 = template_vm;
 
         auto vm1 = evmc::VM{&v1};
         EXPECT_TRUE(vm1);
@@ -334,7 +333,7 @@ TEST(cpp, vm_move)
     EXPECT_EQ(destroy_counter, 4);
     {
         // Moving to itself will destroy the VM and reset the evmc::vm.
-        auto v1 = template_instance;
+        auto v1 = template_vm;
 
         auto vm1 = evmc::VM{&v1};
         auto& vm1_ref = vm1;
