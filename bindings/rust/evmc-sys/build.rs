@@ -22,6 +22,7 @@ fn gen_bindings() {
         .rustified_enum("*")
         // force deriving the Hash trait on basic types (address, bytes32)
         .derive_hash(true)
+        .opaque_type("evmc_host_context")
         .generate()
         .expect("Unable to generate bindings");
 

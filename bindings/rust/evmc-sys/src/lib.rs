@@ -36,6 +36,12 @@ impl Default for evmc_bytes32 {
     }
 }
 
+impl Default for evmc_host_context {
+    fn default() -> Self {
+        evmc_host_context { _unused: [0u8; 0] }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::mem::size_of;
