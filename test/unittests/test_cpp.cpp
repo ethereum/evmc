@@ -231,24 +231,26 @@ TEST(cpp, literals)
 
 TEST(cpp, result)
 {
-    static int release_called = 0;
-    release_called = 0;
-
+    static const uint8_t output = 0;
+    int release_called = 0;
     {
-        EXPECT_EQ(release_called, 0);
         auto raw_result = evmc_result{};
-        raw_result.output_data = static_cast<uint8_t*>(std::malloc(13));
+        evmc_get_optional_storage(&raw_result)->pointer = &release_called;
+        EXPECT_EQ(release_called, 0);
+
+        raw_result.output_data = &output;
         raw_result.release = [](const evmc_result* r) {
-            std::free(const_cast<uint8_t*>(r->output_data));
-            ++release_called;
+            EXPECT_EQ(r->output_data, &output);
+            ++*static_cast<int*>(evmc_get_const_optional_storage(r)->pointer);
         };
+        EXPECT_EQ(release_called, 0);
 
         auto res1 = evmc::result{raw_result};
         auto res2 = std::move(res1);
-
         EXPECT_EQ(release_called, 0);
 
-        [](evmc::result) {}(std::move(res2));
+        auto f = [](evmc::result r) { EXPECT_EQ(r.output_data, &output); };
+        f(std::move(res2));
 
         EXPECT_EQ(release_called, 1);
     }
