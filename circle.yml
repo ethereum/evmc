@@ -127,10 +127,8 @@ jobs:
       - build_and_test
 
   build-gcc6:
-    executor: linux
-    environment:
-      CC: gcc-6
-      CXX: g++-6
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-6
     steps:
       - build_and_test
 
