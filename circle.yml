@@ -116,11 +116,20 @@ jobs:
     steps:
       - build_and_test
 
+  build-cxx17-ubsan:
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-9
+    environment:
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic -DSANITIZE=undefined
+    steps:
+      - build_and_test
+
   build-cxx14-asan:
     docker:
       - image: ethereum/cpp-build-env:12-clang-9
     environment:
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
+      UBSAN_OPTIONS: halt_on_error=1
     steps:
       - build_and_test
 
@@ -236,6 +245,7 @@ workflows:
     jobs:
       - lint
       - build-cxx17
+      - build-cxx17-ubsan
       - build-cxx14-asan
       - build-gcc6
       - build-clang38
