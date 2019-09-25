@@ -133,10 +133,8 @@ jobs:
       - build_and_test
 
   build-clang38:
-    executor: linux
-    environment:
-      CC: clang-3.8
-      CXX: clang++-3.8
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-3.8
     steps:
       - build_and_test
 
