@@ -8,7 +8,7 @@
 ///
 /// This VM does not do anything useful except for showing
 /// how EVMC VM API should be implemented.
-/// The inplementation is done in C only, but could be done in C++ in very
+/// The implementation is done in C only, but could be done in C++ in very
 /// similar way.
 
 #include "example_vm.h"

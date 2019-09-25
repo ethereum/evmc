@@ -56,7 +56,8 @@ commands:
 jobs:
 
   lint:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-lint
     steps:
     - checkout
     - run:
@@ -68,7 +69,7 @@ jobs:
     - run:
         name: "Run codespell"
         command: |
-          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
+          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist --skip=.git
     - run:
         name: "Check bumpversion"
         command: |
@@ -126,18 +127,14 @@ jobs:
       - build_and_test
 
   build-gcc6:
-    executor: linux
-    environment:
-      CC: gcc-6
-      CXX: g++-6
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-6
     steps:
       - build_and_test
 
   build-clang38:
-    executor: linux
-    environment:
-      CC: clang-3.8
-      CXX: clang++-3.8
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-3.8
     steps:
       - build_and_test
 
