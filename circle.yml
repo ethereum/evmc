@@ -109,10 +109,9 @@ jobs:
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
   build-cxx17:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-8
     environment:
-      CC: gcc-8
-      CXX: g++-8
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
     steps:
       - build_and_test
