@@ -56,7 +56,8 @@ commands:
 jobs:
 
   lint:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-lint
     steps:
     - checkout
     - run:
