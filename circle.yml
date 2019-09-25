@@ -118,10 +118,9 @@ jobs:
       - build_and_test
 
   build-cxx14-asan:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-9
     environment:
-      CC: clang-8
-      CXX: clang++-8
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
     steps:
       - build_and_test
