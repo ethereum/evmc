@@ -147,7 +147,8 @@ jobs:
       - build_and_test
 
   build-32bit:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-base
     environment:
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx11-32bit
     steps:
