@@ -69,7 +69,7 @@ jobs:
     - run:
         name: "Run codespell"
         command: |
-          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist
+          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist --skip=.git
     - run:
         name: "Check bumpversion"
         command: |
