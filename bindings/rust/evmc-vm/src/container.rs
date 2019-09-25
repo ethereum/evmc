@@ -98,7 +98,6 @@ mod tests {
             destroy: None,
             execute: None,
             get_capabilities: None,
-            set_tracer: None,
             set_option: None,
         };
 

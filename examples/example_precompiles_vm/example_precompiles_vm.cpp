@@ -121,7 +121,6 @@ extern "C" EVMC_EXPORT evmc_instance* evmc_create_example_precompiles_vm()
         execute,
         [](evmc_instance*) { return evmc_capabilities_flagset{EVMC_CAPABILITY_PRECOMPILES}; },
         nullptr,
-        nullptr,
     };
     return &instance;
 }
