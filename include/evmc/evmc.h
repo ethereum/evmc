@@ -670,14 +670,14 @@ struct evmc_host_context
 
 
 /* Forward declaration. */
-struct evmc_instance;
+struct evmc_vm;
 
 /**
- * Destroys the EVM instance.
+ * Destroys the VM instance.
  *
- *  @param evm  The EVM instance to be destroyed.
+ * @param vm  The VM instance to be destroyed.
  */
-typedef void (*evmc_destroy_fn)(struct evmc_instance* evm);
+typedef void (*evmc_destroy_fn)(struct evmc_vm* vm);
 
 /**
  * Possible outcomes of evmc_set_option.
@@ -690,19 +690,19 @@ enum evmc_set_option_result
 };
 
 /**
- * Configures the EVM instance.
+ * Configures the VM instance.
  *
- *  Allows modifying options of the EVM instance.
- *  Options:
- *  - code cache behavior: on, off, read-only, ...
- *  - optimizations,
+ * Allows modifying options of the VM instance.
+ * Options:
+ * - code cache behavior: on, off, read-only, ...
+ * - optimizations,
  *
- *  @param evm    The EVM instance to be configured.
- *  @param name   The option name. NULL-terminated string. Cannot be NULL.
- *  @param value  The new option value. NULL-terminated string. Cannot be NULL.
- *  @return       The outcome of the operation.
+ * @param vm     The VM instance to be configured.
+ * @param name   The option name. NULL-terminated string. Cannot be NULL.
+ * @param value  The new option value. NULL-terminated string. Cannot be NULL.
+ * @return       The outcome of the operation.
  */
-typedef enum evmc_set_option_result (*evmc_set_option_fn)(struct evmc_instance* evm,
+typedef enum evmc_set_option_result (*evmc_set_option_fn)(struct evmc_vm* vm,
                                                           char const* name,
                                                           char const* value);
 
@@ -790,18 +790,18 @@ enum evmc_revision
  *
  * This function MAY be invoked multiple times for a single VM instance.
  *
- * @param instance   The VM instance. This argument MUST NOT be NULL.
+ * @param vm         The VM instance. This argument MUST NOT be NULL.
  * @param context    The pointer to the Host execution context to be passed
  *                   to the Host interface methods (::evmc_host_interface).
  *                   This argument MUST NOT be NULL unless
- *                   the @p instance has the ::EVMC_CAPABILITY_PRECOMPILES capability.
+ *                   the @p vm has the ::EVMC_CAPABILITY_PRECOMPILES capability.
  * @param rev        The requested EVM specification revision.
  * @param msg        The call parameters. See ::evmc_message. This argument MUST NOT be NULL.
  * @param code       The reference to the code to be executed. This argument MAY be NULL.
  * @param code_size  The length of the code. If @p code is NULL this argument MUST be 0.
  * @return           The execution result.
  */
-typedef struct evmc_result (*evmc_execute_fn)(struct evmc_instance* instance,
+typedef struct evmc_result (*evmc_execute_fn)(struct evmc_vm* vm,
                                               struct evmc_host_context* context,
                                               enum evmc_revision rev,
                                               const struct evmc_message* msg,
@@ -847,20 +847,20 @@ typedef uint32_t evmc_capabilities_flagset;
  * Return the supported capabilities of the VM instance.
  *
  * This function MAY be invoked multiple times for a single VM instance,
- * and its value MAY be influenced by calls to evmc_instance::set_option.
+ * and its value MAY be influenced by calls to evmc_vm::set_option.
  *
- * @param instance  The EVM instance.
- * @return          The supported capabilities of the VM. @see evmc_capabilities.
+ * @param vm  The VM instance.
+ * @return    The supported capabilities of the VM. @see evmc_capabilities.
  */
-typedef evmc_capabilities_flagset (*evmc_get_capabilities_fn)(struct evmc_instance* instance);
+typedef evmc_capabilities_flagset (*evmc_get_capabilities_fn)(struct evmc_vm* vm);
 
 
 /**
- * The EVM instance.
+ * The VM instance.
  *
  * Defines the base struct of the VM implementation.
  */
-struct evmc_instance
+struct evmc_vm
 {
     /**
      * EVMC ABI version implemented by the VM instance.
@@ -887,14 +887,14 @@ struct evmc_instance
     const char* version;
 
     /**
-     * Pointer to function destroying the EVM instance.
+     * Pointer to function destroying the VM instance.
      *
      * This is a mandatory method and MUST NOT be set to NULL.
      */
     evmc_destroy_fn destroy;
 
     /**
-     * Pointer to function executing a code by the EVM instance.
+     * Pointer to function executing a code by the VM instance.
      *
      * This is a mandatory method and MUST NOT be set to NULL.
      */
@@ -936,9 +936,9 @@ struct evmc_instance
  * For example, the shared library with the "beta-interpreter" implementation may be named
  * `libbeta-interpreter.so`.
  *
- * @return  EVM instance or NULL indicating instance creation failure.
+ * @return  The VM instance or NULL indicating instance creation failure.
  */
-struct evmc_instance* evmc_create_example_vm(void);
+struct evmc_vm* evmc_create_example_vm(void);
 #endif
 
 #if __cplusplus

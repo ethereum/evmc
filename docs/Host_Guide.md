@@ -21,17 +21,17 @@ When Host implementation is ready it's time to start using EVMC VMs.
 1. Firstly, create a VM instance. You need to know what is the name of the "create"
    function in particular VM implementation. The EVMC recommends to name the 
    function by the VM codename, e.g. ::evmc_create_example_vm().
-   Invoking the create function will give you the VM instance (::evmc_instance). 
+   Invoking the create function will give you the VM instance (::evmc_vm). 
    It is recommended to create the VM instance once.
    
 2. If you are interested in loading VMs dynamically (i.e. to use DLLs) 
    check out the [EVMC Loader](@ref loader) library.
    
-3. The ::evmc_instance contains information about the VM like 
-   name (::evmc_instance::name) or ABI version (::evmc_instance::abi_version)
+3. The ::evmc_vm contains information about the VM like 
+   name (::evmc_vm::name) or ABI version (::evmc_vm::abi_version)
    and methods.
    
-4. To execute code in the VM use the "execute()" method (::evmc_instance::execute).
+4. To execute code in the VM use the "execute()" method (::evmc_vm::execute).
    You will need:
    - the code to execute,
    - the message (::evmc_message) object that describes the execution context,

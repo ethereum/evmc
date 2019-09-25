@@ -6,15 +6,14 @@
 #include <evmc/evmc.hpp>
 #include <evmc/loader.h>
 #include <iostream>
-#include <memory>
 
-evmc_instance* evmc_vm_test::vm;
+evmc_vm* evmc_vm_test::vm;
 evmc::VM evmc_vm_test::owned_vm;
 
-void evmc_vm_test::init_vm(evmc_instance* owned_vm_instance) noexcept
+void evmc_vm_test::init_vm(evmc_vm* _owned_vm) noexcept
 {
-    vm = owned_vm_instance;
-    owned_vm = evmc::VM{owned_vm_instance};
+    vm = _owned_vm;
+    owned_vm = evmc::VM{_owned_vm};
 }
 
 class cli_parser

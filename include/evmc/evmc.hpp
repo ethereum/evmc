@@ -334,17 +334,17 @@ public:
     }
 };
 
-/// @copybrief evmc_instance
+/// @copybrief evmc_vm
 ///
-/// This is a RAII wrapper for evmc_instance and objects of this type
+/// This is a RAII wrapper for evmc_vm and objects of this type
 /// automatically destroys the VM instance.
 class VM
 {
 public:
     VM() noexcept = default;
 
-    /// Converting constructor from evmc_instance.
-    explicit VM(evmc_instance* instance) noexcept : m_instance{instance} {}
+    /// Converting constructor from evmc_vm.
+    explicit VM(evmc_vm* vm) noexcept : m_instance{vm} {}
 
     /// Destructor responsible for automatically destroying the VM instance.
     ~VM() noexcept
@@ -369,8 +369,8 @@ public:
     }
 
     /// The constructor that captures a VM instance and configures the instance
-    /// with provided list of options.
-    inline VM(evmc_instance* instance,
+    /// with the provided list of options.
+    inline VM(evmc_vm* vm,
               std::initializer_list<std::pair<const char*, const char*>> options) noexcept;
 
     /// Checks if contains a valid pointer to the VM instance.
@@ -379,13 +379,13 @@ public:
     /// Checks whenever the VM instance is ABI compatible with the current EVMC API.
     bool is_abi_compatible() const noexcept { return m_instance->abi_version == EVMC_ABI_VERSION; }
 
-    /// @copydoc evmc_instance::name
+    /// @copydoc evmc_vm::name
     char const* name() const noexcept { return m_instance->name; }
 
-    /// @copydoc evmc_instance::version
+    /// @copydoc evmc_vm::version
     char const* version() const noexcept { return m_instance->version; }
 
-    /// @copydoc evmc::instance::get_capabilities
+    /// @copydoc evmc::vm::get_capabilities
     evmc_capabilities_flagset get_capabilities() const noexcept
     {
         return m_instance->get_capabilities(m_instance);
@@ -408,12 +408,12 @@ public:
     }
 
 private:
-    evmc_instance* m_instance = nullptr;
+    evmc_vm* m_instance = nullptr;
 };
 
-inline VM::VM(evmc_instance* instance,
+inline VM::VM(evmc_vm* vm,
               std::initializer_list<std::pair<const char*, const char*>> options) noexcept
-  : m_instance{instance}
+  : m_instance{vm}
 {
     for (const auto& option : options)
         set_option(option.first, option.second);
