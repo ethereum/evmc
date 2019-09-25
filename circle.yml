@@ -25,7 +25,7 @@ commands:
           command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
       - run:
           name: "Build"
-          command: cmake --build ~/build
+          command: cmake --build ~/build -- -j4
       - run:
           name: "Test"
           command: |
