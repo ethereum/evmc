@@ -188,8 +188,8 @@ struct evmc_instruction_metrics
     /** The instruction gas cost. */
     int16_t gas_cost;
 
-    /** The number of items the instruction pops from the EVM stack before execution. */
-    int8_t num_stack_arguments;
+    /** The minimum number of the EVM stack items required for the instruction. */
+    int8_t stack_height_required;
 
     /** The number of items the instruction pushes to the EVM stack after execution. */
     int8_t num_stack_returned_items;
