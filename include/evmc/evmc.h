@@ -336,6 +336,33 @@ struct evmc_result;
  */
 typedef void (*evmc_release_result_fn)(const struct evmc_result* result);
 
+union evmc_result_scratchpad
+{
+    /**
+     * The address of the contract created by create instructions.
+     *
+     * This field has valid value only if:
+     * - it is a result of the Host method evmc_host_interface::call
+     * - and the result describes successful contract creation
+     *   (evmc_result::status_code is ::EVMC_SUCCESS).
+     * In all other cases the address MUST be null bytes.
+     */
+    evmc_address create_address;
+
+    /**
+     * Reserved data that MAY be used by a evmc_result object creator.
+     *
+     *  This reserved 4 bytes together with 20 bytes from create_address form
+     *  24 bytes of memory called "optional data" within evmc_result struct
+     *  to be optionally used by the evmc_result object creator.
+     *
+     *  @see evmc_result_optional_data, evmc_get_optional_data().
+     *
+     *  Also extends the size of the evmc_result to 64 bytes (full cache line).
+     */
+    uint8_t bytes[64];
+};
+
 /** The EVM code execution result. */
 struct evmc_result
 {
@@ -391,29 +418,7 @@ struct evmc_result
      */
     evmc_release_result_fn release;
 
-    /**
-     * The address of the contract created by create instructions.
-     *
-     * This field has valid value only if:
-     * - it is a result of the Host method evmc_host_interface::call
-     * - and the result describes successful contract creation
-     *   (evmc_result::status_code is ::EVMC_SUCCESS).
-     * In all other cases the address MUST be null bytes.
-     */
-    evmc_address create_address;
-
-    /**
-     * Reserved data that MAY be used by a evmc_result object creator.
-     *
-     *  This reserved 4 bytes together with 20 bytes from create_address form
-     *  24 bytes of memory called "optional data" within evmc_result struct
-     *  to be optionally used by the evmc_result object creator.
-     *
-     *  @see evmc_result_optional_data, evmc_get_optional_data().
-     *
-     *  Also extends the size of the evmc_result to 64 bytes (full cache line).
-     */
-    uint8_t padding[4];
+    union evmc_result_scratchpad scratchpad;
 };
 
 

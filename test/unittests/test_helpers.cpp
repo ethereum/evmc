@@ -10,7 +10,7 @@
 
 static_assert(sizeof(evmc_bytes32) == 32, "evmc_bytes32 is too big");
 static_assert(sizeof(evmc_address) == 20, "evmc_address is too big");
-static_assert(sizeof(evmc_result) <= 64, "evmc_result does not fit cache line");
+static_assert(sizeof(evmc_result) <= 128, "evmc_result does not fit 2 cache lines");
 static_assert(sizeof(evmc_vm) <= 64, "evmc_vm does not fit cache line");
 static_assert(offsetof(evmc_message, value) % sizeof(size_t) == 0,
               "evmc_message.value not aligned");
@@ -22,7 +22,7 @@ static_assert(sizeof(evmc_call_kind) == sizeof(int),
 static_assert(sizeof(evmc_revision) == sizeof(int), "Enum `evmc_revision` is not the size of int");
 
 static constexpr size_t optionalDataSize =
-    sizeof(evmc_result) - offsetof(evmc_result, create_address);
+    sizeof(evmc_result) - offsetof(evmc_result, scratchpad);
 static_assert(optionalDataSize >= sizeof(evmc_result_optional_storage),
               "evmc_result's optional data space is too small");
 

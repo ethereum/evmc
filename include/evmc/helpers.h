@@ -197,14 +197,14 @@ union evmc_result_optional_storage
 static inline union evmc_result_optional_storage* evmc_get_optional_storage(
     struct evmc_result* result)
 {
-    return (union evmc_result_optional_storage*)&result->create_address;
+    return (union evmc_result_optional_storage*)&result->scratchpad;
 }
 
 /** Provides read-only access to evmc_result "optional storage". */
 static inline const union evmc_result_optional_storage* evmc_get_const_optional_storage(
     const struct evmc_result* result)
 {
-    return (const union evmc_result_optional_storage*)&result->create_address;
+    return (const union evmc_result_optional_storage*)&result->scratchpad;
 }
 
 /** @} */
