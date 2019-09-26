@@ -25,7 +25,7 @@ commands:
           command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
       - run:
           name: "Build"
-          command: cmake --build ~/build
+          command: cmake --build ~/build -- -j4
       - run:
           name: "Test"
           command: |
@@ -93,7 +93,8 @@ jobs:
         destination: docs
 
   upload-docs:
-    executor: linux
+    docker:
+      - image: ethereum/cpp-build-env:12-lint
     steps:
       - checkout
       - run:
@@ -108,21 +109,28 @@ jobs:
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
-  build-cxx17:
-    executor: linux
+  build-gcc8-cxx17:
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-8
     environment:
-      CC: gcc-8
-      CXX: g++-8
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
     steps:
       - build_and_test
 
-  build-cxx14-asan:
-    executor: linux
+  build-gcc9-cxx17-ubsan:
+    docker:
+      - image: ethereum/cpp-build-env:12-gcc-9
     environment:
-      CC: clang-8
-      CXX: clang++-8
+      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic -DSANITIZE=undefined
+    steps:
+      - build_and_test
+
+  build-clang9-cxx14-asan:
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-9
+    environment:
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
+      UBSAN_OPTIONS: halt_on_error=1
     steps:
       - build_and_test
 
@@ -138,8 +146,9 @@ jobs:
     steps:
       - build_and_test
 
-  build-32bit:
-    executor: linux
+  build-gcc-32bit:
+    docker:
+      - image: ethereum/cpp-build-env:12-base
     environment:
       CMAKE_OPTIONS: -DTOOLCHAIN=cxx11-32bit
     steps:
@@ -237,19 +246,20 @@ workflows:
   evmc:
     jobs:
       - lint
-      - build-cxx17
-      - build-cxx14-asan
+      - build-gcc8-cxx17
+      - build-gcc9-cxx17-ubsan
+      - build-clang9-cxx14-asan
       - build-gcc6
       - build-clang38
-      - build-32bit
+      - build-gcc-32bit
       - bindings-go-latest
       - bindings-go-min
       - bindings-rust:
           requires:
-            - build-cxx17
+            - build-gcc8-cxx17
       - bindings-rust-asan-combined:
           requires:
-            - build-cxx14-asan
+            - build-clang9-cxx14-asan
       - upload-docs:
           requires:
             - lint
