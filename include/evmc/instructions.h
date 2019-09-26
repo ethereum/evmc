@@ -191,8 +191,11 @@ struct evmc_instruction_metrics
     /** The minimum number of the EVM stack items required for the instruction. */
     int8_t stack_height_required;
 
-    /** The number of items the instruction pushes to the EVM stack after execution. */
-    int8_t num_stack_returned_items;
+    /**
+     * The EVM stack height change caused by the instruction execution,
+     * i.e. stack height _after_ execution - stack height _before_ execution.
+     */
+    int8_t stack_height_change;
 };
 
 /**

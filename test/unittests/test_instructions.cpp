@@ -9,7 +9,7 @@
 bool operator==(const evmc_instruction_metrics& a, const evmc_instruction_metrics& b) noexcept
 {
     return a.gas_cost == b.gas_cost && a.stack_height_required == b.stack_height_required &&
-           a.num_stack_returned_items == b.num_stack_returned_items;
+           a.stack_height_change == b.stack_height_change;
 }
 
 TEST(instructions, name_gas_cost_equivalence)
@@ -160,7 +160,7 @@ TEST(instructions, byzantium_hard_fork)
 
     EXPECT_EQ(b[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(b[OP_REVERT].stack_height_required, 2);
-    EXPECT_EQ(b[OP_REVERT].num_stack_returned_items, 0);
+    EXPECT_EQ(b[OP_REVERT].stack_height_change, 0);
     EXPECT_EQ(sd[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(bn[OP_REVERT], std::string{"REVERT"});
     EXPECT_TRUE(sdn[OP_REVERT] == nullptr);
@@ -210,19 +210,19 @@ TEST(instructions, constantinople_hard_fork)
         const auto m = c[op];
         EXPECT_EQ(m.gas_cost, 3);
         EXPECT_EQ(m.stack_height_required, 2);
-        EXPECT_EQ(m.num_stack_returned_items, 1);
+        EXPECT_EQ(m.stack_height_change, 1);
     }
 
     EXPECT_EQ(c[OP_CREATE2].gas_cost, 32000);
     EXPECT_EQ(c[OP_CREATE2].stack_height_required, 4);
-    EXPECT_EQ(c[OP_CREATE2].num_stack_returned_items, 1);
+    EXPECT_EQ(c[OP_CREATE2].stack_height_change, 1);
     EXPECT_EQ(b[OP_CREATE2].gas_cost, 0);
     EXPECT_EQ(cn[OP_CREATE2], std::string{"CREATE2"});
     EXPECT_TRUE(bn[OP_CREATE2] == nullptr);
 
     EXPECT_EQ(c[OP_EXTCODEHASH].gas_cost, 400);
     EXPECT_EQ(c[OP_EXTCODEHASH].stack_height_required, 1);
-    EXPECT_EQ(c[OP_EXTCODEHASH].num_stack_returned_items, 1);
+    EXPECT_EQ(c[OP_EXTCODEHASH].stack_height_change, 1);
     EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, 0);
     EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
     EXPECT_TRUE(bn[OP_EXTCODEHASH] == nullptr);
@@ -268,14 +268,14 @@ TEST(instructions, istanbul_hard_fork)
 
     EXPECT_EQ(i[OP_CHAINID].gas_cost, 2);
     EXPECT_EQ(i[OP_CHAINID].stack_height_required, 0);
-    EXPECT_EQ(i[OP_CHAINID].num_stack_returned_items, 1);
+    EXPECT_EQ(i[OP_CHAINID].stack_height_change, 1);
     EXPECT_EQ(p[OP_CHAINID].gas_cost, 0);
     EXPECT_EQ(in[OP_CHAINID], std::string{"CHAINID"});
     EXPECT_TRUE(pn[OP_CHAINID] == nullptr);
 
     EXPECT_EQ(i[OP_SELFBALANCE].gas_cost, 5);
     EXPECT_EQ(i[OP_SELFBALANCE].stack_height_required, 0);
-    EXPECT_EQ(i[OP_SELFBALANCE].num_stack_returned_items, 1);
+    EXPECT_EQ(i[OP_SELFBALANCE].stack_height_change, 1);
     EXPECT_EQ(p[OP_SELFBALANCE].gas_cost, 0);
     EXPECT_EQ(in[OP_SELFBALANCE], std::string{"SELFBALANCE"});
     EXPECT_TRUE(pn[OP_SELFBALANCE] == nullptr);
