@@ -361,6 +361,8 @@ union evmc_result_scratchpad
      *  Also extends the size of the evmc_result to 64 bytes (full cache line).
      */
     uint8_t bytes[64];
+
+    void* pointer;
 };
 
 /** The EVM code execution result. */

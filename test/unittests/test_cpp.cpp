@@ -236,13 +236,13 @@ TEST(cpp, result)
     int release_called = 0;
     {
         auto raw_result = evmc_result{};
-        evmc_get_optional_storage(&raw_result)->pointer = &release_called;
+        raw_result.scratchpad.pointer = &release_called;
         EXPECT_EQ(release_called, 0);
 
         raw_result.output_data = &output;
         raw_result.release = [](const evmc_result* r) {
             EXPECT_EQ(r->output_data, &output);
-            ++*static_cast<int*>(evmc_get_const_optional_storage(r)->pointer);
+            ++*static_cast<int*>(r->scratchpad.pointer);
         };
         EXPECT_EQ(release_called, 0);
 
