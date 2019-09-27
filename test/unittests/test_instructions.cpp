@@ -160,7 +160,7 @@ TEST(instructions, byzantium_hard_fork)
 
     EXPECT_EQ(b[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(b[OP_REVERT].stack_height_required, 2);
-    EXPECT_EQ(b[OP_REVERT].stack_height_change, 0);
+    EXPECT_EQ(b[OP_REVERT].stack_height_change, -2);
     EXPECT_EQ(sd[OP_REVERT].gas_cost, 0);
     EXPECT_EQ(bn[OP_REVERT], std::string{"REVERT"});
     EXPECT_TRUE(sdn[OP_REVERT] == nullptr);
@@ -210,19 +210,19 @@ TEST(instructions, constantinople_hard_fork)
         const auto m = c[op];
         EXPECT_EQ(m.gas_cost, 3);
         EXPECT_EQ(m.stack_height_required, 2);
-        EXPECT_EQ(m.stack_height_change, 1);
+        EXPECT_EQ(m.stack_height_change, -1);
     }
 
     EXPECT_EQ(c[OP_CREATE2].gas_cost, 32000);
     EXPECT_EQ(c[OP_CREATE2].stack_height_required, 4);
-    EXPECT_EQ(c[OP_CREATE2].stack_height_change, 1);
+    EXPECT_EQ(c[OP_CREATE2].stack_height_change, -3);
     EXPECT_EQ(b[OP_CREATE2].gas_cost, 0);
     EXPECT_EQ(cn[OP_CREATE2], std::string{"CREATE2"});
     EXPECT_TRUE(bn[OP_CREATE2] == nullptr);
 
     EXPECT_EQ(c[OP_EXTCODEHASH].gas_cost, 400);
     EXPECT_EQ(c[OP_EXTCODEHASH].stack_height_required, 1);
-    EXPECT_EQ(c[OP_EXTCODEHASH].stack_height_change, 1);
+    EXPECT_EQ(c[OP_EXTCODEHASH].stack_height_change, 0);
     EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, 0);
     EXPECT_EQ(cn[OP_EXTCODEHASH], std::string{"EXTCODEHASH"});
     EXPECT_TRUE(bn[OP_EXTCODEHASH] == nullptr);
