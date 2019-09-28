@@ -47,7 +47,7 @@ mod tests {
         // TODO: add other checks from test/unittests/test_helpers.cpp
         assert_eq!(size_of::<evmc_bytes32>(), 32);
         assert_eq!(size_of::<evmc_address>(), 20);
-        assert!(size_of::<evmc_result>() <= 64);
+        assert!(size_of::<evmc_result>() <= 128);
         assert!(size_of::<evmc_vm>() <= 64);
     }
 }
