@@ -10,7 +10,8 @@ configuration:
   - Release
 environment:
   matrix:
-    - VS: 2017
+    - VS: 2019
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - VS: 2017-32bit
     - VS: 2015
     - GO: true
@@ -20,7 +21,7 @@ cache:
 before_build:
   # Add ninja to PATH. This is done for VS2017 by vsdevcmd, but not for VS2015.
   - set PATH=%PATH%;%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
-  - if "%VS%" == "2017" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd" -arch=amd64)
+  - if "%VS%" == "2019" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\Common7\Tools\vsdevcmd" -arch=amd64)
   - if "%VS%" == "2017-32bit" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd" -arch=x86)
   - if "%VS%" == "2015" (call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall" x64)
   - if defined VS cmake -S . -B build -G Ninja -Wno-dev -DTOOLCHAIN=cxx17-pic -DEVMC_TESTING=ON
