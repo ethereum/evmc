@@ -338,16 +338,6 @@ typedef void (*evmc_release_result_fn)(const struct evmc_result* result);
 
 union evmc_result_scratchpad
 {
-    /**
-     * The address of the contract created by create instructions.
-     *
-     * This field has valid value only if:
-     * - it is a result of the Host method evmc_host_interface::call
-     * - and the result describes successful contract creation
-     *   (evmc_result::status_code is ::EVMC_SUCCESS).
-     * In all other cases the address MUST be null bytes.
-     */
-    evmc_address create_address;
 
     /**
      * Reserved data that MAY be used by a evmc_result object creator.
@@ -419,6 +409,17 @@ struct evmc_result
      * function to the result itself allows VM composition.
      */
     evmc_release_result_fn release;
+
+    /**
+     * The address of the contract created by create instructions.
+     *
+     * This field has valid value only if:
+     * - it is a result of the Host method evmc_host_interface::call
+     * - and the result describes successful contract creation
+     *   (evmc_result::status_code is ::EVMC_SUCCESS).
+     * In all other cases the address MUST be null bytes.
+     */
+    evmc_address create_address;
 
     union evmc_result_scratchpad scratchpad;
 };

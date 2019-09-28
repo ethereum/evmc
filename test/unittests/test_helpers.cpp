@@ -21,6 +21,10 @@ static_assert(sizeof(evmc_call_kind) == sizeof(int),
               "Enum `evmc_call_kind` is not the size of int");
 static_assert(sizeof(evmc_revision) == sizeof(int), "Enum `evmc_revision` is not the size of int");
 
+
+static_assert(offsetof(evmc_result, scratchpad) % alignof(void*) == 0,
+              "evmc_result's scratchpad not properly aligned");
+
 TEST(helpers, release_result)
 {
     auto r1 = evmc_result{};

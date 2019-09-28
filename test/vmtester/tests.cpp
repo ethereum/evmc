@@ -83,7 +83,7 @@ TEST_F(evmc_vm_test, execute_call)
         read_buffer(result.output_data, result.output_size);
     }
 
-    EXPECT_TRUE(evmc::is_zero(result.scratchpad.create_address));
+    EXPECT_TRUE(evmc::is_zero(result.create_address));
 
     if (result.release)
         result.release(&result);
@@ -120,7 +120,7 @@ TEST_F(evmc_vm_test, execute_create)
     }
 
     // The VM will never provide the create address.
-    EXPECT_TRUE(evmc::is_zero(result.scratchpad.create_address));
+    EXPECT_TRUE(evmc::is_zero(result.create_address));
 
     if (result.release)
         result.release(&result);

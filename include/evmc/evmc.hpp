@@ -270,6 +270,7 @@ public:
     using evmc_result::output_data;
     using evmc_result::output_size;
     using evmc_result::status_code;
+    using evmc_result::create_address;
 
     /// Creates the result from the provided arguments.
     ///
@@ -330,11 +331,6 @@ public:
         const auto out = evmc_result{*this};  // Copy data.
         this->release = nullptr;              // Disable releasing of this object.
         return out;
-    }
-
-    const evmc_address& get_create_address() noexcept
-    {
-        return scratchpad.create_address;
     }
 };
 
