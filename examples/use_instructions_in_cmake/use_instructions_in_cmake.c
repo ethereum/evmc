@@ -9,5 +9,5 @@
 
 int main()
 {
-    return evmc_get_instruction_metrics_table(EVMC_BYZANTIUM)[OP_STOP].num_stack_returned_items;
+    return evmc_get_instruction_metrics_table(EVMC_BYZANTIUM)[OP_STOP].gas_cost;
 }
