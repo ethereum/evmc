@@ -35,3 +35,19 @@ impl Default for evmc_bytes32 {
         evmc_bytes32 { bytes: [0u8; 32] }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::mem::size_of;
+
+    use super::*;
+
+    #[test]
+    fn container_new() {
+        // TODO: add other checks from test/unittests/test_helpers.cpp
+        assert_eq!(size_of::<evmc_bytes32>(), 32);
+        assert_eq!(size_of::<evmc_address>(), 20);
+        assert!(size_of::<evmc_result>() <= 64);
+        assert!(size_of::<evmc_vm>() <= 64);
+    }
+}
