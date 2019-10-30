@@ -10,26 +10,47 @@
 
 #include <evmc/evmc.hpp>
 
+#include <algorithm>
 #include <map>
+#include <vector>
 
 using namespace evmc::literals;
 
+namespace evmc
+{
 struct account
 {
     evmc::uint256be balance = {};
-    size_t code_size = 0;
-    evmc::bytes32 code_hash = {};
+    std::vector<uint8_t> code;
     std::map<evmc::bytes32, evmc::bytes32> storage;
+
+    virtual evmc::bytes32 code_hash()
+    {
+        // Extremely dumb "hash" function.
+        evmc::bytes32 ret{};
+        for (std::vector<uint8_t>::size_type i = 0; i != code.size(); i++)
+        {
+            auto v = code[i];
+            ret.bytes[v % sizeof(ret.bytes)] ^= v;
+        }
+        return ret;
+    }
 };
+
+using accounts = std::map<evmc::address, account>;
+
+}  // namespace evmc
 
 class ExampleHost : public evmc::Host
 {
-    std::map<evmc::address, account> accounts;
+    evmc::accounts accounts;
     evmc_tx_context tx_context{};
 
 public:
     ExampleHost() = default;
     explicit ExampleHost(evmc_tx_context& _tx_context) noexcept : tx_context{_tx_context} {};
+    ExampleHost(evmc_tx_context& _tx_context, evmc::accounts& _accounts) noexcept
+      : accounts{_accounts}, tx_context{_tx_context} {};
 
     bool account_exists(const evmc::address& addr) noexcept final
     {
@@ -67,7 +88,7 @@ public:
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
-            return it->second.code_size;
+            return it->second.code.size();
         return 0;
     }
 
@@ -75,7 +96,7 @@ public:
     {
         auto it = accounts.find(addr);
         if (it != accounts.end())
-            return it->second.code_hash;
+            return it->second.code_hash();
         return {};
     }
 
@@ -84,11 +105,20 @@ public:
                      uint8_t* buffer_data,
                      size_t buffer_size) noexcept final
     {
-        (void)addr;
-        (void)code_offset;
-        (void)buffer_data;
-        (void)buffer_size;
-        return 0;
+        const auto it = accounts.find(addr);
+        if (it == accounts.end())
+            return 0;
+
+        const auto& code = it->second.code;
+
+        if (code_offset >= code.size())
+            return 0;
+
+        const auto n = std::min(buffer_size, code.size() - code_offset);
+
+        if (n > 0)
+            std::copy_n(&code[code_offset], n, buffer_data);
+        return n;
     }
 
     void selfdestruct(const evmc::address& addr, const evmc::address& beneficiary) noexcept final
