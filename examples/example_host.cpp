@@ -10,6 +10,7 @@
 
 #include <evmc/evmc.hpp>
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -104,21 +105,20 @@ public:
                      uint8_t* buffer_data,
                      size_t buffer_size) noexcept final
     {
-        auto it = accounts.find(addr);
+        const auto it = accounts.find(addr);
         if (it == accounts.end())
             return 0;
-        auto code = it->second.code;
+
+        const auto& code = it->second.code;
+
         if (code_offset >= code.size())
             return 0;
-        // TODO: implement this more nicely?
-        auto begin = code.begin();
-        auto end = code.end();
-        std::advance(begin, static_cast<long>(code_offset));
-        auto len = std::distance(begin, end);
-        if (len > static_cast<long>(buffer_size))
-            std::advance(end, len - static_cast<long>(buffer_size));
-        std::copy(begin, end, buffer_data);
-        return static_cast<size_t>(len);
+
+        const auto n = std::min(buffer_size, code.size() - code_offset);
+
+        if (n > 0)
+            std::copy_n(&code[code_offset], n, buffer_data);
+        return n;
     }
 
     void selfdestruct(const evmc::address& addr, const evmc::address& beneficiary) noexcept final
