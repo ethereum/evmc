@@ -48,6 +48,7 @@ int main(int argc, char* argv[])
     tx_context.block_number = 42;
     tx_context.block_timestamp = 66;
     tx_context.block_gas_limit = gas * 2;
+    const struct evmc_host_interface* host = example_host_get_interface();
     struct evmc_host_context* ctx = example_host_create_context(tx_context);
     struct evmc_message msg;
     msg.kind = EVMC_CALL;
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
     msg.input_size = sizeof(input);
     msg.gas = gas;
     msg.depth = 0;
-    struct evmc_result result = evmc_execute(vm, ctx, EVMC_HOMESTEAD, &msg, code, code_size);
+    struct evmc_result result = evmc_execute(vm, host, ctx, EVMC_HOMESTEAD, &msg, code, code_size);
     printf("Execution result:\n");
     int exit_code = 0;
     if (result.status_code != EVMC_SUCCESS)
@@ -77,7 +78,7 @@ int main(int argc, char* argv[])
             printf("%02x", result.output_data[i]);
         printf("\n");
         const evmc_bytes32 storage_key = {{0}};
-        evmc_bytes32 storage_value = ctx->host->get_storage(ctx, &msg.destination, &storage_key);
+        evmc_bytes32 storage_value = host->get_storage(ctx, &msg.destination, &storage_key);
         printf("  Storage at 0x00..00: ");
         for (i = 0; i < sizeof(storage_value.bytes) / sizeof(storage_value.bytes[0]); i++)
             printf("%02x", storage_value.bytes[i]);

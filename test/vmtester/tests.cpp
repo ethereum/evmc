@@ -59,12 +59,13 @@ TEST_F(evmc_vm_test, capabilities)
 
 TEST_F(evmc_vm_test, execute_call)
 {
+    const evmc_host_interface* host = example_host_get_interface();
     evmc_host_context* context = example_host_create_context(evmc_tx_context{});
     evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, host, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -92,6 +93,7 @@ TEST_F(evmc_vm_test, execute_call)
 
 TEST_F(evmc_vm_test, execute_create)
 {
+    const evmc_host_interface* host = example_host_get_interface();
     evmc_host_context* context = example_host_create_context(evmc_tx_context{});
     evmc_message msg{
         EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, nullptr, 0, evmc_uint256be{},
@@ -99,7 +101,7 @@ TEST_F(evmc_vm_test, execute_create)
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, host, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -181,7 +183,7 @@ TEST_F(evmc_vm_test, precompile_test)
             EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, nullptr, 0, evmc_uint256be{},
             evmc_bytes32{}};
 
-        evmc_result result = vm->execute(vm, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
+        evmc_result result = vm->execute(vm, nullptr, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
 
         // Validate some constraints
 

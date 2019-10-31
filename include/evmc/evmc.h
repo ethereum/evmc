@@ -156,6 +156,11 @@ struct evmc_tx_context
     evmc_uint256be chain_id;         /**< The blockchain's ChainID. */
 };
 
+/**
+ * @struct evmc_host_context
+ * The opaque data type representing the Host execution context.
+ * @see evmc_execute_fn().
+ */
 struct evmc_host_context;
 
 /**
@@ -653,22 +658,6 @@ struct evmc_host_interface
 };
 
 
-/**
- * Execution context managed by the Host.
- *
- * The Host MUST pass the pointer to the execution context to ::evmc_execute_fn.
- * The VM MUST pass the same pointer back to the Host in every callback function.
- * The context MUST contain at least the function table defining
- * the context callback interface.
- * Optionally, the Host MAY include in the context additional data.
- */
-struct evmc_host_context
-{
-    /** The Host interface. */
-    const struct evmc_host_interface* host;
-};
-
-
 /* Forward declaration. */
 struct evmc_vm;
 
@@ -791,10 +780,12 @@ enum evmc_revision
  * This function MAY be invoked multiple times for a single VM instance.
  *
  * @param vm         The VM instance. This argument MUST NOT be NULL.
- * @param context    The pointer to the Host execution context to be passed
- *                   to the Host interface methods (::evmc_host_interface).
- *                   This argument MUST NOT be NULL unless
+ * @param host       The Host interface. This argument MUST NOT be NULL unless
  *                   the @p vm has the ::EVMC_CAPABILITY_PRECOMPILES capability.
+ * @param context    The opaque pointer to the Host execution context.
+ *                   This argument MAY be NULL. The VM MUST pass the same
+ *                   pointer to the methods of the @p host interface.
+ *                   The VM MUST NOT dereference the pointer.
  * @param rev        The requested EVM specification revision.
  * @param msg        The call parameters. See ::evmc_message. This argument MUST NOT be NULL.
  * @param code       The reference to the code to be executed. This argument MAY be NULL.
@@ -802,6 +793,7 @@ enum evmc_revision
  * @return           The execution result.
  */
 typedef struct evmc_result (*evmc_execute_fn)(struct evmc_vm* vm,
+                                              const struct evmc_host_interface* host,
                                               struct evmc_host_context* context,
                                               enum evmc_revision rev,
                                               const struct evmc_message* msg,

@@ -268,8 +268,8 @@ TEST(cpp, vm)
     EXPECT_EQ(vm.name(), std::string{"example_vm"});
     EXPECT_NE(vm.version()[0], 0);
 
-    auto ctx = evmc_host_context{};
-    auto res = vm.execute(ctx, EVMC_MAX_REVISION, {}, nullptr, 0);
+    const auto host = evmc_host_interface{};
+    auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, {}, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_FAILURE);
 
     EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EVM1);
@@ -348,8 +348,9 @@ TEST(cpp, host)
 {
     // Use example host to execute all methods from the C++ host wrapper.
 
+    auto* host_interface = example_host_get_interface();
     auto* host_context = example_host_create_context(evmc_tx_context{});
-    auto host = evmc::HostContext{host_context};
+    auto host = evmc::HostContext{host_interface, host_context};
 
     const auto a = evmc::address{{{1}}};
     const auto v = evmc::bytes32{{{7, 7, 7}}};
@@ -382,8 +383,9 @@ TEST(cpp, host_call)
 {
     // Use example host to test Host::call() method.
 
+    auto* host_interface = example_host_get_interface();
     auto* host_context = example_host_create_context(evmc_tx_context{});
-    auto host = evmc::HostContext{host_context};
+    auto host = evmc::HostContext{host_interface, host_context};
 
     EXPECT_EQ(host.call({}).gas_left, 0);
 
