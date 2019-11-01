@@ -10,6 +10,7 @@ Ethereum Clients. On the EVM side it supports classic EVM1 and [ewasm].
 On the Client-side it defines the interface for EVM implementations
 to access Ethereum environment and state.
 
+
 ## Usage
 
 ### Documentation
@@ -26,6 +27,13 @@ Please visit the [documentation].
 | **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.31.0 and newer
 
 <b id="n1">1</b>. Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
+
+### Testing tools
+
+* **evmc-vmtester** ([test/vmtester]) — can test any EVM implementation for compatibility with EVMC.
+* **evm-test** ([evmone → test/unittests]) — allows running the collection of [evmone]'s unit tests on any EVMC-compatible EVM implementation.
+* **evmone-fuzzer** ([evmone → test/fuzzer]) — differential fuzzer for EVMC-compatible EVM implementations. 
+
 
 ## Related projects
 
@@ -82,6 +90,8 @@ Licensed under the [MIT License](LICENSE).
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
 [evmone]: https://github.com/chfast/evmone
+[evmone → test/fuzzer]: https://github.com/ethereum/evmone/tree/master/test/fuzzer
+[evmone → test/unittests]: https://github.com/ethereum/evmone/tree/master/test/unittests
 [Hera]: https://github.com/ewasm/hera
 [Hera.rs]: https://github.com/ewasm/hera.rs
 [Gitter]: https://gitter.im/ethereum/evmc
@@ -92,6 +102,7 @@ Licensed under the [MIT License](LICENSE).
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
+[test/vmtester]: https://github.com/ethereum/evmc/tree/master/test/vmtester
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
 [readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
