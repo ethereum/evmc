@@ -152,8 +152,8 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
     char* base_name = prefixed_name + prefix_length;
     strcpy_sx(base_name, PATH_MAX_LENGTH, name_pos);
 
-    // Trim the file extension.
-    char* ext_pos = strrchr(prefixed_name, '.');
+    // Trim all file extensions.
+    char* ext_pos = strchr(prefixed_name, '.');
     if (ext_pos)
         *ext_pos = 0;
 
