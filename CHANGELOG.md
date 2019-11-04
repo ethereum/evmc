@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning].
 - The EVMC loader trims all extensions (previously only the last one)
   from the EVMC module file name.
   [[#439](https://github.com/ethereum/evmc/pull/439)]
+- The EVMC loader no longer ties to guess the VM create function name 
+  by dropping prefix words from the name.
+  [[#440](https://github.com/ethereum/evmc/pull/440)]
 
 
 ## [6.3.1] - 2019-08-19
