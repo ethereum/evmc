@@ -20,15 +20,21 @@ and this project adheres to [Semantic Versioning].
 
 - The `evmc_instance` renamed to `evmc_vm`.
   [[#430](https://github.com/ethereum/evmc/pull/430)]
+- The `evmc_context` renamed to `evmc_host_context`.
+  [[#426](https://github.com/ethereum/evmc/pull/426)]
 - The `evmc::vm` renamed to `evmc::VM` in C++ API.
   [[#252](https://github.com/ethereum/evmc/pull/252)]
 - Previously deprecated `helpers.hpp` header file has been removed.
   [[#410](https://github.com/ethereum/evmc/pull/410)]
 - Previously deprecated `EVMC_CONSTANTINOPLE2` and `EVMC_LATEST_REVISION` revisions have been removed.
   [[#411](https://github.com/ethereum/evmc/pull/411)]
+- Previously deprecated tracing API has been removed.
+  [[#429](https://github.com/ethereum/evmc/pull/429)]
 - In `evmc::instructions` library the undefined instructions have `0` gas cost
   instead of previous `-1` value.
   [[#425](https://github.com/ethereum/evmc/pull/425)]
+- The EVM instruction tables have been redesigned to be more useful.
+  [[#435](https://github.com/ethereum/evmc/pull/435)]
 - The EVMC loader trims all extensions (previously only the last one)
   from the EVMC module file name.
   [[#439](https://github.com/ethereum/evmc/pull/439)]
