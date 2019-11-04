@@ -61,21 +61,16 @@ enum evmc_loader_error_code
  * After the DLL is successfully loaded the function tries to find the EVM create function in the
  * library. The `filename` is used to guess the EVM name and the name of the create function.
  * The create function name is constructed by the following rules. Consider example path:
- * "/ethereum/libexample-interpreter.so".
+ * "/ethereum/libexample-interpreter.so.1.0".
  * - the filename is taken from the path:
- *   "libexample-interpreter.so",
- * - the "lib" prefix and file extension are stripped from the name:
+ *   "libexample-interpreter.so.1.0",
+ * - the "lib" prefix and all file extensions are stripped from the name:
  *   "example-interpreter"
  * - all "-" are replaced with "_" to construct _base name_:
  *   "example_interpreter",
  * - the function name "evmc_create_" + _base name_ is searched in the library:
  *   "evmc_create_example_interpreter",
- * - if function not found, the _base name_ is shorten by skipping the first word separated by "_":
- *   "interpreter",
- * - then, the function of the shorter name "evmc_create_" + _base name_ is searched in the library:
- *   "evmc_create_interpreter",
- * - the name shortening continues until a function is found or the name cannot be shorten more,
- * - lastly, when no function found, the function name "evmc_create" is searched in the library.
+ * - if the function is not found, the function name "evmc_create" is searched in the library.
  *
  * If the create function is found in the library, the pointer to the function is returned.
  * Otherwise, the ::EVMC_LOADER_SYMBOL_NOT_FOUND error code is signaled and NULL is returned.

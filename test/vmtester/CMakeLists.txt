@@ -18,8 +18,8 @@ endif()
 
 set(prefix ${PROJECT_NAME}/vmtester)
 
-evmc_add_vm_test(NAME ${prefix}/examplevm TARGET evmc-example-vm)
-evmc_add_vm_test(NAME ${prefix}/example_precompiles_vm TARGET evmc-example-precompiles-vm)
+evmc_add_vm_test(NAME ${prefix}/examplevm TARGET example-vm)
+evmc_add_vm_test(NAME ${prefix}/example_precompiles_vm TARGET example-precompiles-vm)
 
 add_test(NAME ${prefix}/help COMMAND evmc-vmtester --version --help)
 set_tests_properties(${prefix}/help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
