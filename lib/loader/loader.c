@@ -163,15 +163,7 @@ evmc_create_fn evmc_load(const char* filename, enum evmc_loader_error_code* erro
         *dash_pos++ = '_';
 
     // Search for the built function name.
-    while ((create_fn = DLL_GET_CREATE_FN(handle, prefixed_name)) == NULL)
-    {
-        // Shorten the base name by skipping the `word_` segment.
-        const char* shorter_name_pos = strchr(base_name, '_');
-        if (!shorter_name_pos)
-            break;
-
-        memmove(base_name, shorter_name_pos + 1, strlen(shorter_name_pos) + 1);
-    }
+    create_fn = DLL_GET_CREATE_FN(handle, prefixed_name);
 
     if (!create_fn)
         create_fn = DLL_GET_CREATE_FN(handle, "evmc_create");

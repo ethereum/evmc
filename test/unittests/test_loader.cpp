@@ -188,14 +188,12 @@ TEST_F(loader, load_empty_path)
     EXPECT_TRUE(evmc_last_error_msg() == nullptr);
 }
 
-TEST_F(loader, load_prefix_aaa)
+TEST_F(loader, load_aaa)
 {
     auto paths = {
         "./aaa.evm",
         "aaa.evm",
         "unittests/libaaa.so",
-        "unittests/double-prefix-aaa.evm",
-        "unittests/double_prefix_aaa.evm",
     };
 
     const auto expected_vm_ptr = reinterpret_cast<evmc_vm*>(0xaaa);
@@ -285,7 +283,16 @@ TEST_F(loader, load_windows_path)
 
 TEST_F(loader, load_symbol_not_found)
 {
-    auto paths = {"libaaa1.so", "eee2.so", "libeee3.x", "eee4", "_", "lib_.so"};
+    auto paths = {
+        "libaaa1.so",
+        "eee2.so",
+        "libeee3.x",
+        "eee4",
+        "_",
+        "lib_.so",
+        "unittests/double-prefix-aaa.evm",
+        "unittests/double_prefix_aaa.evm",
+    };
 
     for (auto& path : paths)
     {
