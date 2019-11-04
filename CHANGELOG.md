@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning].
 - In `evmc::instructions` library the undefined instructions have `0` gas cost
   instead of previous `-1` value.
   [[#425](https://github.com/ethereum/evmc/pull/425)]
+- The EVMC loader trims all extensions (previously only the last one)
+  from the EVMC module file name.
+  [[#439](https://github.com/ethereum/evmc/pull/439)]
+
 
 ## [6.3.1] - 2019-08-19
 

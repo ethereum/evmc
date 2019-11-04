@@ -46,7 +46,7 @@ protected:
         recorded_options.clear();
     }
 
-    void setup(const char* path, const char* symbol, evmc_create_fn fn) noexcept
+    static void setup(const char* path, const char* symbol, evmc_create_fn fn) noexcept
     {
         evmc_test_library_path = path;
         evmc_test_library_symbol = symbol;
@@ -196,6 +196,31 @@ TEST_F(loader, load_prefix_aaa)
         "unittests/libaaa.so",
         "unittests/double-prefix-aaa.evm",
         "unittests/double_prefix_aaa.evm",
+    };
+
+    const auto expected_vm_ptr = reinterpret_cast<evmc_vm*>(0xaaa);
+
+    for (auto& path : paths)
+    {
+        setup(path, "evmc_create_aaa", create_aaa);
+        evmc_loader_error_code ec;
+        const auto fn = evmc_load(path, &ec);
+        EXPECT_EQ(ec, EVMC_LOADER_SUCCESS);
+        ASSERT_TRUE(fn != nullptr);
+        EXPECT_EQ(fn(), expected_vm_ptr);
+        EXPECT_TRUE(evmc_last_error_msg() == nullptr);
+    }
+}
+
+TEST_F(loader, load_file_with_multiple_extensions)
+{
+    auto paths = {
+        "./aaa.evm.0.99",
+        "aaa.tar.gz.so",
+        "unittests/aaa.x.y.z.so",
+        "unittests/aaa.1.lib",
+        "unittests/aaa.1.0",
+        "unittests/aaa.extextextextextextextextextextextextextextextextext",
     };
 
     const auto expected_vm_ptr = reinterpret_cast<evmc_vm*>(0xaaa);
