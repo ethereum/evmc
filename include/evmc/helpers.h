@@ -24,7 +24,7 @@
 /**
  * Returns true if the VM has a compatible ABI version.
  */
-static inline int evmc_is_abi_compatible(struct evmc_vm* vm)
+static inline bool evmc_is_abi_compatible(struct evmc_vm* vm)
 {
     return vm->abi_version == EVMC_ABI_VERSION;
 }

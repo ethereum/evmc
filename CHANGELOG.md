@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning].
 - The EVMC loader no longer ties to guess the VM create function name 
   by dropping prefix words from the name.
   [[#440](https://github.com/ethereum/evmc/pull/440)]
+- The helper function `evmc_is_abi_compatible()` returns now `bool`
+  instead of `int`.
+  [[#442](https://github.com/ethereum/evmc/pull/442)]
 
 
 ## [6.3.1] - 2019-08-19
