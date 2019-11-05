@@ -62,7 +62,7 @@ static evmc_result execute(evmc_vm* /*unused*/,
     constexpr auto prefix_size = sizeof(evmc_address) - 2;
     const auto& dst = msg->destination;
     // Check if the address prefix is all zeros.
-    if (std::all_of(&dst.bytes[0], &dst.bytes[prefix_size], [](uint8_t x) { return x == 0; }))
+    if (std::any_of(&dst.bytes[0], &dst.bytes[prefix_size], [](uint8_t x) { return x != 0; }))
     {
         // If not, reject the execution request.
         auto result = evmc_result{};
