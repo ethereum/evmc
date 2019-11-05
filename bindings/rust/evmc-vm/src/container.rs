@@ -132,9 +132,9 @@ mod tests {
             get_block_hash: None,
             emit_log: None,
         };
-        let mut host_context = ::evmc_sys::evmc_host_context::default();
+        let host_context = std::ptr::null_mut();
 
-        let mut context = ExecutionContext::new(&host, &mut host_context);
+        let mut context = ExecutionContext::new(&host, host_context);
         let container = EvmcContainer::<TestVm>::new(instance);
         assert_eq!(
             container
@@ -150,7 +150,7 @@ mod tests {
 
         let ptr = unsafe { EvmcContainer::into_ffi_pointer(container) };
 
-        let mut context = ExecutionContext::new(&host, &mut host_context);
+        let mut context = ExecutionContext::new(&host, host_context);
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
         assert_eq!(
             container

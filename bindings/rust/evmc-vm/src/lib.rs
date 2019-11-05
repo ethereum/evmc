@@ -59,7 +59,7 @@ pub type ExecutionTxContext = ffi::evmc_tx_context;
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
     host: &'a ffi::evmc_host_interface,
-    context: &'a mut ffi::evmc_host_context,
+    context: *mut ffi::evmc_host_context,
     tx_context: ExecutionTxContext,
 }
 
@@ -195,13 +195,10 @@ impl ExecutionMessage {
 }
 
 impl<'a> ExecutionContext<'a> {
-    pub fn new(
-        host: &'a ffi::evmc_host_interface,
-        _context: &'a mut ffi::evmc_host_context,
-    ) -> Self {
+    pub fn new(host: &'a ffi::evmc_host_interface, _context: *mut ffi::evmc_host_context) -> Self {
         let _tx_context = unsafe {
             assert!((*host).get_tx_context.is_some());
-            (*host).get_tx_context.unwrap()(_context as *mut ffi::evmc_host_context)
+            (*host).get_tx_context.unwrap()(_context)
         };
 
         ExecutionContext {
@@ -220,10 +217,7 @@ impl<'a> ExecutionContext<'a> {
     pub fn account_exists(&mut self, address: &Address) -> bool {
         unsafe {
             assert!((*self.host).account_exists.is_some());
-            (*self.host).account_exists.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
-                address as *const Address,
-            )
+            (*self.host).account_exists.unwrap()(self.context, address as *const Address)
         }
     }
 
@@ -232,7 +226,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.host).get_storage.is_some());
             (*self.host).get_storage.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
+                self.context,
                 address as *const Address,
                 key as *const Bytes32,
             )
@@ -249,7 +243,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.host).set_storage.is_some());
             (*self.host).set_storage.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
+                self.context,
                 address as *const Address,
                 key as *const Bytes32,
                 value as *const Bytes32,
@@ -261,10 +255,7 @@ impl<'a> ExecutionContext<'a> {
     pub fn get_balance(&mut self, address: &Address) -> Uint256 {
         unsafe {
             assert!((*self.host).get_balance.is_some());
-            (*self.host).get_balance.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
-                address as *const Address,
-            )
+            (*self.host).get_balance.unwrap()(self.context, address as *const Address)
         }
     }
 
@@ -272,10 +263,7 @@ impl<'a> ExecutionContext<'a> {
     pub fn get_code_size(&mut self, address: &Address) -> usize {
         unsafe {
             assert!((*self.host).get_code_size.is_some());
-            (*self.host).get_code_size.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
-                address as *const Address,
-            )
+            (*self.host).get_code_size.unwrap()(self.context, address as *const Address)
         }
     }
 
@@ -283,10 +271,7 @@ impl<'a> ExecutionContext<'a> {
     pub fn get_code_hash(&mut self, address: &Address) -> Bytes32 {
         unsafe {
             assert!((*self.host).get_code_size.is_some());
-            (*self.host).get_code_hash.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
-                address as *const Address,
-            )
+            (*self.host).get_code_hash.unwrap()(self.context, address as *const Address)
         }
     }
 
@@ -295,7 +280,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.host).copy_code.is_some());
             (*self.host).copy_code.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
+                self.context,
                 address as *const Address,
                 code_offset,
                 // FIXME: ensure that alignment of the array elements is OK
@@ -310,7 +295,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.host).selfdestruct.is_some());
             (*self.host).selfdestruct.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
+                self.context,
                 address as *const Address,
                 beneficiary as *const Address,
             )
@@ -348,11 +333,7 @@ impl<'a> ExecutionContext<'a> {
         };
         unsafe {
             assert!((*self.host).call.is_some());
-            (*self.host).call.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
-                &message as *const ffi::evmc_message,
-            )
-            .into()
+            (*self.host).call.unwrap()(self.context, &message as *const ffi::evmc_message).into()
         }
     }
 
@@ -360,7 +341,7 @@ impl<'a> ExecutionContext<'a> {
     pub fn get_block_hash(&mut self, num: i64) -> Bytes32 {
         unsafe {
             assert!((*self.host).get_block_hash.is_some());
-            (*self.host).get_block_hash.unwrap()(self.context as *mut ffi::evmc_host_context, num)
+            (*self.host).get_block_hash.unwrap()(self.context, num)
         }
     }
 
@@ -369,7 +350,7 @@ impl<'a> ExecutionContext<'a> {
         unsafe {
             assert!((*self.host).emit_log.is_some());
             (*self.host).emit_log.unwrap()(
-                self.context as *mut ffi::evmc_host_context,
+                self.context,
                 address as *const Address,
                 // FIXME: ensure that alignment of the array elements is OK
                 data.as_ptr(),
@@ -821,14 +802,12 @@ mod tests {
 
     #[test]
     fn execution_context() {
-        let mut host_context = ffi::evmc_host_context::default();
-        let mut host_context_copy = host_context.clone();
+        let host_context = std::ptr::null_mut();
         let host_interface = get_dummy_host_interface();
-        let exe_context = ExecutionContext::new(&host_interface, &mut host_context);
+        let exe_context = ExecutionContext::new(&host_interface, host_context);
         let a = exe_context.get_tx_context();
 
-        let b =
-            unsafe { get_dummy_tx_context(&mut host_context_copy as *mut ffi::evmc_host_context) };
+        let b = unsafe { get_dummy_tx_context(host_context) };
 
         assert_eq!(a.block_gas_limit, b.block_gas_limit);
         assert_eq!(a.block_timestamp, b.block_timestamp);
@@ -840,9 +819,9 @@ mod tests {
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = Address { bytes: [0u8; 20] };
         let host = get_dummy_host_interface();
-        let mut host_context = ffi::evmc_host_context::default();
+        let host_context = std::ptr::null_mut();
 
-        let mut exe_context = ExecutionContext::new(&host, &mut host_context);
+        let mut exe_context = ExecutionContext::new(&host, host_context);
 
         let a: usize = 105023;
         let b = exe_context.get_code_size(&test_addr);
@@ -855,8 +834,8 @@ mod tests {
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
         let host = get_dummy_host_interface();
-        let mut host_context = ffi::evmc_host_context::default();
-        let mut exe_context = ExecutionContext::new(&host, &mut host_context);
+        let host_context = std::ptr::null_mut();
+        let mut exe_context = ExecutionContext::new(&host, host_context);
 
         let message = ExecutionMessage::new(
             ffi::evmc_call_kind::EVMC_CALL,
@@ -884,8 +863,8 @@ mod tests {
         // This address is useless. Just a dummy parameter for the interface function.
         let test_addr = ffi::evmc_address { bytes: [0u8; 20] };
         let host = get_dummy_host_interface();
-        let mut host_context = ffi::evmc_host_context::default();
-        let mut exe_context = ExecutionContext::new(&host, &mut host_context);
+        let host_context = std::ptr::null_mut();
+        let mut exe_context = ExecutionContext::new(&host, host_context);
 
         let data = vec![0xc0, 0xff, 0xfe];
 
