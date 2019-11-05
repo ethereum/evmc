@@ -3,8 +3,7 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-#include <evmc/evmc.h>
-#include <evmc/utils.h>
+#include "example_precompiles_vm.h"
 #include <algorithm>
 
 static evmc_result execute_identity(const evmc_message* msg)
@@ -63,7 +62,7 @@ static evmc_result execute(evmc_vm* /*unused*/,
     constexpr auto prefix_size = sizeof(evmc_address) - 2;
     const auto& dst = msg->destination;
     // Check if the address prefix is all zeros.
-    if (std::all_of(&dst.bytes[0], &dst.bytes[prefix_size], [](uint8_t x) { return x == 0; }))
+    if (std::any_of(&dst.bytes[0], &dst.bytes[prefix_size], [](uint8_t x) { return x != 0; }))
     {
         // If not, reject the execution request.
         auto result = evmc_result{};
@@ -112,7 +111,7 @@ static evmc_result execute(evmc_vm* /*unused*/,
     }
 }
 
-extern "C" EVMC_EXPORT evmc_vm* evmc_create_example_precompiles_vm()
+evmc_vm* evmc_create_example_precompiles_vm()
 {
     static struct evmc_vm vm = {
         EVMC_ABI_VERSION,

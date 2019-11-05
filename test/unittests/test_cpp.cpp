@@ -7,16 +7,17 @@
 #include <vector>
 
 #include "../../examples/example_host.h"
+#include "../../examples/example_precompiles_vm/example_precompiles_vm.h"
 #include "../../examples/example_vm/example_vm.h"
 
 #include <evmc/evmc.hpp>
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <cstring>
 #include <map>
 #include <unordered_map>
-
 
 TEST(cpp, address)
 {
@@ -342,6 +343,27 @@ TEST(cpp, vm_move)
         EXPECT_FALSE(vm1);              // Null.
     }
     EXPECT_EQ(destroy_counter, 5);
+}
+
+TEST(cpp, vm_execute_precompiles)
+{
+    auto vm = evmc::VM{evmc_create_example_precompiles_vm()};
+    EXPECT_EQ(vm.get_capabilities(), evmc_capabilities_flagset{EVMC_CAPABILITY_PRECOMPILES});
+
+    constexpr std::array<uint8_t, 3> input{{1, 2, 3}};
+
+    evmc_message msg{};
+    msg.destination.bytes[19] = 4;  // Call Identify precompile at address 0x4.
+    msg.input_data = input.data();
+    msg.input_size = input.size();
+    msg.gas = 18;
+
+    constexpr evmc_host_interface null_interface{};
+    auto res = vm.execute(null_interface, nullptr, EVMC_MAX_REVISION, msg, nullptr, 0);
+    EXPECT_EQ(res.status_code, EVMC_SUCCESS);
+    EXPECT_EQ(res.gas_left, 0);
+    ASSERT_EQ(res.output_size, input.size());
+    EXPECT_TRUE(std::equal(input.begin(), input.end(), res.output_data));
 }
 
 TEST(cpp, host)

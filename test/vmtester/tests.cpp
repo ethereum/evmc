@@ -201,9 +201,8 @@ TEST_F(evmc_vm_test, precompile_test)
         {
             EXPECT_EQ(result.output_size, size_t{0});
         }
-        else
+        else if (result.output_size != 0)
         {
-            EXPECT_NE(result.output_size, size_t{0});
             read_buffer(result.output_data, result.output_size);
         }
 
