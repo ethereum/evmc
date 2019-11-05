@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning].
   [[#372](https://github.com/ethereum/evmc/pull/372)]
 - The **Berlin** EVM revision has been added.
   [[#407](https://github.com/ethereum/evmc/pull/407)]
+- In C++ API, an overload for `VM::execute()` has been added that omits
+  the Host context and interface parameters. This is useful for Precompiles VMs
+  that do not interact with the Host.
+  [[#302](https://github.com/ethereum/evmc/pull/302)]
   
 ### Changed
 

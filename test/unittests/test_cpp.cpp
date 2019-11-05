@@ -358,8 +358,7 @@ TEST(cpp, vm_execute_precompiles)
     msg.input_size = input.size();
     msg.gas = 18;
 
-    constexpr evmc_host_interface null_interface{};
-    auto res = vm.execute(null_interface, nullptr, EVMC_MAX_REVISION, msg, nullptr, 0);
+    auto res = vm.execute(EVMC_MAX_REVISION, msg, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_SUCCESS);
     EXPECT_EQ(res.gas_left, 0);
     ASSERT_EQ(res.output_size, input.size());
