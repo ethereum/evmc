@@ -22,7 +22,7 @@ target_link_libraries(
     PRIVATE
     loader-mocked
     evmc::example-vm-static
-    evmc::example-precompiles-vm
+    evmc::example-precompiles-vm-static
     evmc-example-host
     instructions
     GTest::gtest_main
