@@ -3,8 +3,7 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-#include <evmc/evmc.h>
-#include <evmc/utils.h>
+#include "example_precompiles_vm.h"
 #include <algorithm>
 
 static evmc_result execute_identity(const evmc_message* msg)
@@ -112,7 +111,7 @@ static evmc_result execute(evmc_vm* /*unused*/,
     }
 }
 
-extern "C" EVMC_EXPORT evmc_vm* evmc_create_example_precompiles_vm()
+evmc_vm* evmc_create_example_precompiles_vm()
 {
     static struct evmc_vm vm = {
         EVMC_ABI_VERSION,

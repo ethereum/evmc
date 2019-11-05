@@ -2,7 +2,7 @@
 # Copyright 2019 The EVMC Authors.
 # Licensed under the Apache License, Version 2.0.
 
-add_library(example-precompiles-vm SHARED example_precompiles_vm.cpp)
+add_library(example-precompiles-vm SHARED example_precompiles_vm.cpp example_precompiles_vm.h)
 add_library(evmc::example-precompiles-vm ALIAS example-precompiles-vm)
 target_link_libraries(example-precompiles-vm PRIVATE evmc)
 
