@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning].
   [[#430](https://github.com/ethereum/evmc/pull/430)]
 - The `evmc_context` renamed to `evmc_host_context`.
   [[#426](https://github.com/ethereum/evmc/pull/426)]
+- The `evmc_host_interface` is now separated from `evmc_host_context`. 
+  This simplifies language bindings which implement the `evmc_host_interface`.
+  [[#427](https://github.com/ethereum/evmc/pull/427)]
 - The `evmc::vm` renamed to `evmc::VM` in C++ API.
   [[#252](https://github.com/ethereum/evmc/pull/252)]
 - Previously deprecated `helpers.hpp` header file has been removed.

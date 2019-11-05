@@ -75,6 +75,7 @@ static void free_result_output_data(const struct evmc_result* result)
 
 /// The example implementation of the evmc_vm::execute() method.
 static struct evmc_result execute(struct evmc_vm* instance,
+                                  const struct evmc_host_interface* host,
                                   struct evmc_host_context* context,
                                   enum evmc_revision rev,
                                   const struct evmc_message* msg,
@@ -142,16 +143,16 @@ static struct evmc_result execute(struct evmc_vm* instance,
              strncmp((const char*)code, counter, code_size) == 0)
     {
         const evmc_bytes32 key = {{0}};
-        evmc_bytes32 value = context->host->get_storage(context, &msg->destination, &key);
+        evmc_bytes32 value = host->get_storage(context, &msg->destination, &key);
         value.bytes[31]++;
-        context->host->set_storage(context, &msg->destination, &key, &value);
+        host->set_storage(context, &msg->destination, &key, &value);
         ret.status_code = EVMC_SUCCESS;
         return ret;
     }
     else if (code_size == (sizeof(return_block_number) - 1) &&
              strncmp((const char*)code, return_block_number, code_size) == 0)
     {
-        const struct evmc_tx_context tx_context = context->host->get_tx_context(context);
+        const struct evmc_tx_context tx_context = host->get_tx_context(context);
         const size_t output_size = 20;
 
         uint8_t* output_data = (uint8_t*)calloc(1, output_size);
@@ -166,7 +167,7 @@ static struct evmc_result execute(struct evmc_vm* instance,
     else if (code_size == (sizeof(save_return_block_number) - 1) &&
              strncmp((const char*)code, save_return_block_number, code_size) == 0)
     {
-        const struct evmc_tx_context tx_context = context->host->get_tx_context(context);
+        const struct evmc_tx_context tx_context = host->get_tx_context(context);
         const size_t output_size = 20;
 
         // Store block number.
@@ -174,7 +175,7 @@ static struct evmc_result execute(struct evmc_vm* instance,
         evmc_bytes32 value = {{0}};
         // NOTE: assume block number is <= 255
         value.bytes[31] = (uint8_t)tx_context.block_number;
-        context->host->set_storage(context, &msg->destination, &key, &value);
+        host->set_storage(context, &msg->destination, &key, &value);
 
         // Return block number.
         uint8_t* output_data = (uint8_t*)calloc(1, output_size);
@@ -195,7 +196,7 @@ static struct evmc_result execute(struct evmc_vm* instance,
         call_msg.depth = msg->depth + 1;
         call_msg.gas = msg->gas - (msg->gas / 64);
         call_msg.sender = msg->destination;
-        return context->host->call(context, &call_msg);
+        return host->call(context, &call_msg);
     }
 
     ret.status_code = EVMC_FAILURE;

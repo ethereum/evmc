@@ -10,12 +10,6 @@ package evmc
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
 
-struct extended_context
-{
-    struct evmc_host_context context;
-    int64_t index;
-};
-
 */
 import "C"
 import (
@@ -99,50 +93,43 @@ type HostContext interface {
 
 //export accountExists
 func accountExists(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.bool {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return C.bool(ctx.AccountExists(goAddress(*pAddr)))
 }
 
 //export getStorage
 func getStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_bytes32) C.evmc_bytes32 {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return evmcBytes32(ctx.GetStorage(goAddress(*pAddr), goHash(*pKey)))
 }
 
 //export setStorage
 func setStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32, pVal *C.evmc_bytes32) C.enum_evmc_storage_status {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return C.enum_evmc_storage_status(ctx.SetStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal)))
 }
 
 //export getBalance
 func getBalance(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.evmc_uint256be {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return evmcBytes32(ctx.GetBalance(goAddress(*pAddr)))
 }
 
 //export getCodeSize
 func getCodeSize(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.size_t {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return C.size_t(ctx.GetCodeSize(goAddress(*pAddr)))
 }
 
 //export getCodeHash
 func getCodeHash(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.evmc_bytes32 {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return evmcBytes32(ctx.GetCodeHash(goAddress(*pAddr)))
 }
 
 //export copyCode
 func copyCode(pCtx unsafe.Pointer, pAddr *C.evmc_address, offset C.size_t, p *C.uint8_t, size C.size_t) C.size_t {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	code := ctx.GetCode(goAddress(*pAddr))
 	length := C.size_t(len(code))
 
@@ -162,15 +149,13 @@ func copyCode(pCtx unsafe.Pointer, pAddr *C.evmc_address, offset C.size_t, p *C.
 
 //export selfdestruct
 func selfdestruct(pCtx unsafe.Pointer, pAddr *C.evmc_address, pBeneficiary *C.evmc_address) {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	ctx.Selfdestruct(goAddress(*pAddr), goAddress(*pBeneficiary))
 }
 
 //export getTxContext
 func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 
 	txContext := ctx.GetTxContext()
 
@@ -188,15 +173,13 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 
 //export getBlockHash
 func getBlockHash(pCtx unsafe.Pointer, number int64) C.evmc_bytes32 {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 	return evmcBytes32(ctx.GetBlockHash(number))
 }
 
 //export emitLog
 func emitLog(pCtx unsafe.Pointer, pAddr *C.evmc_address, pData unsafe.Pointer, dataSize C.size_t, pTopics unsafe.Pointer, topicsCount C.size_t) {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 
 	// FIXME: Optimize memory copy
 	data := C.GoBytes(pData, C.int(dataSize))
@@ -213,8 +196,7 @@ func emitLog(pCtx unsafe.Pointer, pAddr *C.evmc_address, pData unsafe.Pointer, d
 
 //export call
 func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result {
-	idx := int((*C.struct_extended_context)(pCtx).index)
-	ctx := getHostContext(idx)
+	ctx := getHostContext(uintptr(pCtx))
 
 	kind := CallKind(msg.kind)
 	output, gasLeft, createAddr, err := ctx.Call(kind, goAddress(msg.destination), goAddress(msg.sender), goHash(msg.value).Big(),

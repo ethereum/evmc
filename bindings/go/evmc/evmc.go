@@ -23,16 +23,10 @@ static inline enum evmc_set_option_result set_option(struct evmc_vm* vm, char* n
 	return ret;
 }
 
-struct extended_context
-{
-	struct evmc_host_context context;
-	int64_t index;
-};
-
 extern const struct evmc_host_interface evmc_go_host;
 
 static struct evmc_result execute_wrapper(struct evmc_vm* vm,
-	int64_t context_index, enum evmc_revision rev,
+	uintptr_t context_index, enum evmc_revision rev,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
 	const evmc_address* destination, const evmc_address* sender,
 	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
@@ -51,8 +45,8 @@ static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 		*create2_salt,
 	};
 
-	struct extended_context ctx = {{&evmc_go_host}, context_index};
-	return evmc_execute(vm, &ctx.context, rev, &msg, code, code_size);
+	struct evmc_host_context* context = (struct evmc_host_context*)context_index;
+	return evmc_execute(vm, &evmc_go_host, context, rev, &msg, code, code_size);
 }
 */
 import "C"
@@ -242,7 +236,7 @@ func (vm *VM) Execute(ctx HostContext, rev Revision,
 	evmcSender := evmcAddress(sender)
 	evmcValue := evmcBytes32(value)
 	evmcCreate2Salt := evmcBytes32(create2Salt)
-	result := C.execute_wrapper(vm.handle, C.int64_t(ctxId), uint32(rev),
+	result := C.execute_wrapper(vm.handle, C.uintptr_t(ctxId), uint32(rev),
 		C.enum_evmc_call_kind(kind), flags, C.int32_t(depth), C.int64_t(gas),
 		&evmcDestination, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
 		bytesPtr(code), C.size_t(len(code)), &evmcCreate2Salt)
@@ -262,12 +256,12 @@ func (vm *VM) Execute(ctx HostContext, rev Revision,
 }
 
 var (
-	hostContextCounter int
-	hostContextMap     = map[int]HostContext{}
+	hostContextCounter uintptr
+	hostContextMap     = map[uintptr]HostContext{}
 	hostContextMapMu   sync.Mutex
 )
 
-func addHostContext(ctx HostContext) int {
+func addHostContext(ctx HostContext) uintptr {
 	hostContextMapMu.Lock()
 	id := hostContextCounter
 	hostContextCounter++
@@ -276,13 +270,13 @@ func addHostContext(ctx HostContext) int {
 	return id
 }
 
-func removeHostContext(id int) {
+func removeHostContext(id uintptr) {
 	hostContextMapMu.Lock()
 	delete(hostContextMap, id)
 	hostContextMapMu.Unlock()
 }
 
-func getHostContext(idx int) HostContext {
+func getHostContext(idx uintptr) HostContext {
 	hostContextMapMu.Lock()
 	ctx := hostContextMap[idx]
 	hostContextMapMu.Unlock()

@@ -335,6 +335,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     quote! {
         extern "C" fn __evmc_execute(
             instance: *mut ::evmc_vm::ffi::evmc_vm,
+            host: *const ::evmc_vm::ffi::evmc_host_interface,
             context: *mut ::evmc_vm::ffi::evmc_host_context,
             revision: ::evmc_vm::ffi::evmc_revision,
             msg: *const ::evmc_vm::ffi::evmc_message,
@@ -345,14 +346,14 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             use evmc_vm::EvmcVm;
 
             // TODO: context is optional in case of the "precompiles" capability
-            if instance.is_null() || context.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
+            if instance.is_null() || host.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
                 // These are irrecoverable errors that violate the EVMC spec.
                 std::process::abort();
             }
 
             assert!(!instance.is_null());
-            // TODO: context is optional in case of the "precompiles" capability
-            assert!(!context.is_null());
+            // TODO: host is optional in case of the "precompiles" capability
+            assert!(!host.is_null());
             assert!(!msg.is_null());
 
             let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
@@ -376,7 +377,10 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
             let result = ::std::panic::catch_unwind(|| {
                 let mut execution_context = unsafe {
-                  ::evmc_vm::ExecutionContext::new(context.as_mut().expect("EVMC context is null"))
+                    ::evmc_vm::ExecutionContext::new(
+                        host.as_ref().expect("EVMC host is null"),
+                        context,
+                    )
                 };
                 container.execute(revision, code_ref, &execution_message, &mut execution_context)
             });

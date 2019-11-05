@@ -160,13 +160,19 @@ public:
 
 extern "C" {
 
+const evmc_host_interface* example_host_get_interface()
+{
+    return evmc::Host::get_interface();
+}
+
 evmc_host_context* example_host_create_context(evmc_tx_context tx_context)
 {
-    return new ExampleHost(tx_context);
+    auto host = new ExampleHost{tx_context};
+    return host->to_context();
 }
 
 void example_host_destroy_context(evmc_host_context* context)
 {
-    delete static_cast<ExampleHost*>(context);
+    delete evmc::Host::from_context<ExampleHost>(context);
 }
 }
