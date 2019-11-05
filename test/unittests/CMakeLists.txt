@@ -17,7 +17,16 @@ add_executable(
     test_loader.cpp
 )
 
-target_link_libraries(evmc-unittests PRIVATE loader-mocked evmc::example-vm-static evmc-example-host instructions GTest::gtest_main)
+target_link_libraries(
+    evmc-unittests
+    PRIVATE
+    loader-mocked
+    evmc::example-vm-static
+    evmc::example-precompiles-vm
+    evmc-example-host
+    instructions
+    GTest::gtest_main
+)
 set_target_properties(evmc-unittests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 gtest_add_tests(TARGET evmc-unittests TEST_PREFIX ${PROJECT_NAME}/unittests/)
