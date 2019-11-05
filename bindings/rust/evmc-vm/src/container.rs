@@ -69,7 +69,7 @@ mod tests {
             _revision: evmc_sys::evmc_revision,
             _code: &[u8],
             _message: &ExecutionMessage,
-            _context: &mut ExecutionContext,
+            _context: Option<&mut ExecutionContext>,
         ) -> ExecutionResult {
             ExecutionResult::failure()
         }
@@ -142,7 +142,7 @@ mod tests {
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
                     &code,
                     &message,
-                    &mut context,
+                    Some(&mut context)
                 )
                 .status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
@@ -158,7 +158,7 @@ mod tests {
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
                     &code,
                     &message,
-                    &mut context,
+                    Some(&mut context)
                 )
                 .status_code(),
             ::evmc_sys::evmc_status_code::EVMC_FAILURE

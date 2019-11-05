@@ -6,7 +6,7 @@
 use evmc_declare::evmc_declare_vm;
 use evmc_vm::*;
 
-#[evmc_declare_vm("ExampleRustVM", "evm", "6.3.0-dev")]
+#[evmc_declare_vm("ExampleRustVM", "evm, precompiles", "6.3.0-dev")]
 pub struct ExampleRustVM;
 
 impl EvmcVm for ExampleRustVM {
@@ -19,8 +19,13 @@ impl EvmcVm for ExampleRustVM {
         _revision: evmc_sys::evmc_revision,
         _code: &'a [u8],
         message: &'a ExecutionMessage,
-        _context: &'a mut ExecutionContext<'a>,
+        _context: Option<&'a mut ExecutionContext<'a>>,
     ) -> ExecutionResult {
+        if _context.is_none() {
+            return ExecutionResult::failure();
+        }
+        let _context = _context.unwrap();
+
         if message.kind() != evmc_sys::evmc_call_kind::EVMC_CALL {
             return ExecutionResult::failure();
         }
