@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning].
   which can be used to emulate Host behavior when testing VM implementations.
   [#456](https://github.com/ethereum/evmc/pull/456)
 
+### Changed
+
+- In the Rust bindings mark read-only functions in `ExecutionContext` as non-mutating.
+  [#444](https://github.com/ethereum/evmc/pull/444)
+
 
 ## [7.0.0] „Istanbul Ready” — 2019-11-11
 
