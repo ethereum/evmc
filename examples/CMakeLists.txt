@@ -10,11 +10,14 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 set(CMAKE_DEBUG_POSTFIX "")
 
+hunter_add_package(ethash)
+find_package(ethash CONFIG REQUIRED)
+
 add_subdirectory(example_vm)
 add_subdirectory(example_precompiles_vm)
 
 add_library(evmc-example-host STATIC example_host.cpp)
-target_link_libraries(evmc-example-host PRIVATE evmc)
+target_link_libraries(evmc-example-host PRIVATE evmc ethash::keccak)
 
 add_executable(evmc-example-static example.c)
 target_link_libraries(evmc-example-static PRIVATE evmc-example-host evmc::example-vm-static evmc)

@@ -8,6 +8,7 @@
 
 #include "example_host.h"
 
+#include <ethash/keccak.hpp>
 #include <evmc/evmc.hpp>
 
 #include <algorithm>
@@ -26,14 +27,7 @@ struct account
 
     virtual evmc::bytes32 code_hash()
     {
-        // Extremely dumb "hash" function.
-        evmc::bytes32 ret{};
-        for (std::vector<uint8_t>::size_type i = 0; i != code.size(); i++)
-        {
-            auto v = code[i];
-            ret.bytes[v % sizeof(ret.bytes)] ^= v;
-        }
-        return ret;
+        return evmc_bytes32{*ethash::keccak256(code.data(), code.size()).bytes};
     }
 };
 
