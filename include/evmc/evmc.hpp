@@ -334,6 +334,8 @@ public:
     }
 };
 
+class Host;
+
 /// @copybrief evmc_vm
 ///
 /// This is a RAII wrapper for evmc_vm and objects of this type
@@ -407,6 +409,13 @@ public:
     {
         return result{m_instance->execute(m_instance, &host, ctx, rev, &msg, code, code_size)};
     }
+
+    /// Convenient variant of the VM::execute() that takes reference to evmc::Host class.
+    inline result execute(Host& host,
+                          evmc_revision rev,
+                          const evmc_message& msg,
+                          const uint8_t* code,
+                          size_t code_size) noexcept;
 
     /// Executes code without the Host context.
     ///
@@ -501,7 +510,10 @@ class HostContext : public HostInterface
     evmc_tx_context tx_context = {};
 
 public:
-    /// Implicit converting constructor from evmc_host_context.
+    /// Default constructor for null Host context.
+    HostContext() = default;
+
+    /// Constructor from the EVMC Host primitives.
     HostContext(const evmc_host_interface* interface, evmc_host_context* ctx) noexcept
       : host{interface}, context{ctx}
     {}
@@ -593,8 +605,8 @@ class Host : public HostInterface
 {
 public:
     /// Provides access to the global host interface.
-    /// @returns  Pointer to the host interface object.
-    static const evmc_host_interface* get_interface() noexcept;
+    /// @returns  Reference to the host interface object.
+    static const evmc_host_interface& get_interface() noexcept;
 
     /// Converts the Host object to the opaque host context pointer.
     /// @returns  Pointer to evmc_host_context.
@@ -614,6 +626,17 @@ public:
         return static_cast<DerivedClass*>(h);
     }
 };
+
+
+inline result VM::execute(Host& host,
+                          evmc_revision rev,
+                          const evmc_message& msg,
+                          const uint8_t* code,
+                          size_t code_size) noexcept
+{
+    return execute(Host::get_interface(), host.to_context(), rev, msg, code, code_size);
+}
+
 
 namespace internal
 {
@@ -695,7 +718,7 @@ inline void emit_log(evmc_host_context* h,
 }
 }  // namespace internal
 
-inline const evmc_host_interface* Host::get_interface() noexcept
+inline const evmc_host_interface& Host::get_interface() noexcept
 {
     static constexpr evmc_host_interface interface{
         ::evmc::internal::account_exists, ::evmc::internal::get_storage,
@@ -704,7 +727,7 @@ inline const evmc_host_interface* Host::get_interface() noexcept
         ::evmc::internal::copy_code,      ::evmc::internal::selfdestruct,
         ::evmc::internal::call,           ::evmc::internal::get_tx_context,
         ::evmc::internal::get_block_hash, ::evmc::internal::emit_log};
-    return &interface;
+    return interface;
 }
 }  // namespace evmc
 
