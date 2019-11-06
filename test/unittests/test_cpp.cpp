@@ -404,9 +404,10 @@ TEST(cpp, host_call)
 {
     // Use example host to test Host::call() method.
 
+    auto host = evmc::HostContext{};  // Use default constructor.
     auto* host_interface = example_host_get_interface();
     auto* host_context = example_host_create_context(evmc_tx_context{});
-    auto host = evmc::HostContext{host_interface, host_context};
+    host = evmc::HostContext{host_interface, host_context};
 
     EXPECT_EQ(host.call({}).gas_left, 0);
 

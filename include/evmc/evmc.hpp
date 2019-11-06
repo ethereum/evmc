@@ -501,7 +501,10 @@ class HostContext : public HostInterface
     evmc_tx_context tx_context = {};
 
 public:
-    /// Implicit converting constructor from evmc_host_context.
+    /// Default constructor for null Host context.
+    HostContext() = default;
+
+    /// Constructor from the EVMC Host primitives.
     HostContext(const evmc_host_interface* interface, evmc_host_context* ctx) noexcept
       : host{interface}, context{ctx}
     {}
