@@ -44,6 +44,8 @@ Please visit the [documentation].
 - [evmone]
 - [Hera]
 - [Hera.rs]
+- [Daytona]
+- [eip1962-evmc] (EIP-2003 style precompile)
 
 ### Clients
 
@@ -52,6 +54,7 @@ Please visit the [documentation].
 - [go-ethereum] (in progress)
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
+- [Solidity] (for integration testing)
 
 
 ## Maintainers
@@ -89,14 +92,17 @@ Licensed under the [MIT License](LICENSE).
 [documentation]: https://ethereum.github.io/evmc
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
-[evmone]: https://github.com/chfast/evmone
+[evmone]: https://github.com/ethereum/evmone
 [evmone → test/fuzzer]: https://github.com/ethereum/evmone/tree/master/test/fuzzer
 [evmone → test/unittests]: https://github.com/ethereum/evmone/tree/master/test/unittests
 [Hera]: https://github.com/ewasm/hera
 [Hera.rs]: https://github.com/ewasm/hera.rs
+[Daytona]: https://github.com/axic/daytona
+[eip1962-evmc]: https://github.com/axic/eip1962-evmc
 [Gitter]: https://gitter.im/ethereum/evmc
 [aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
 [aleth]: https://github.com/ethereum/aleth
+[Solidity]: https://github.com/ethereum/solidity
 [nim-evmc]: https://github.com/status-im/nim-evmc
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
 [pyevm]: https://github.com/ethereum/py-evm
