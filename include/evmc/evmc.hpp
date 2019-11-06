@@ -334,6 +334,8 @@ public:
     }
 };
 
+class Host;
+
 /// @copybrief evmc_vm
 ///
 /// This is a RAII wrapper for evmc_vm and objects of this type
@@ -407,6 +409,13 @@ public:
     {
         return result{m_instance->execute(m_instance, &host, ctx, rev, &msg, code, code_size)};
     }
+
+    /// Convenient variant of the VM::execute() that takes reference to evmc::Host class.
+    inline result execute(Host& host,
+                          evmc_revision rev,
+                          const evmc_message& msg,
+                          const uint8_t* code,
+                          size_t code_size) noexcept;
 
     /// Executes code without the Host context.
     ///
@@ -617,6 +626,17 @@ public:
         return static_cast<DerivedClass*>(h);
     }
 };
+
+
+inline result VM::execute(Host& host,
+                          evmc_revision rev,
+                          const evmc_message& msg,
+                          const uint8_t* code,
+                          size_t code_size) noexcept
+{
+    return execute(Host::get_interface(), host.to_context(), rev, msg, code, code_size);
+}
+
 
 namespace internal
 {
