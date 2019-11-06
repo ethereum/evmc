@@ -596,8 +596,8 @@ class Host : public HostInterface
 {
 public:
     /// Provides access to the global host interface.
-    /// @returns  Pointer to the host interface object.
-    static const evmc_host_interface* get_interface() noexcept;
+    /// @returns  Reference to the host interface object.
+    static const evmc_host_interface& get_interface() noexcept;
 
     /// Converts the Host object to the opaque host context pointer.
     /// @returns  Pointer to evmc_host_context.
@@ -698,7 +698,7 @@ inline void emit_log(evmc_host_context* h,
 }
 }  // namespace internal
 
-inline const evmc_host_interface* Host::get_interface() noexcept
+inline const evmc_host_interface& Host::get_interface() noexcept
 {
     static constexpr evmc_host_interface interface{
         ::evmc::internal::account_exists, ::evmc::internal::get_storage,
@@ -707,7 +707,7 @@ inline const evmc_host_interface* Host::get_interface() noexcept
         ::evmc::internal::copy_code,      ::evmc::internal::selfdestruct,
         ::evmc::internal::call,           ::evmc::internal::get_tx_context,
         ::evmc::internal::get_block_hash, ::evmc::internal::emit_log};
-    return &interface;
+    return interface;
 }
 }  // namespace evmc
 
