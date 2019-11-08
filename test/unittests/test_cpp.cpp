@@ -19,6 +19,47 @@
 #include <map>
 #include <unordered_map>
 
+class NullHost : public evmc::Host
+{
+public:
+    bool account_exists(const evmc::address&) noexcept final { return false; }
+
+    evmc::bytes32 get_storage(const evmc::address&, const evmc::bytes32&) noexcept final
+    {
+        return {};
+    }
+
+    evmc_storage_status set_storage(const evmc::address&,
+                                    const evmc::bytes32&,
+                                    const evmc::bytes32&) noexcept final
+    {
+        return {};
+    }
+
+    evmc::uint256be get_balance(const evmc::address&) noexcept final { return {}; }
+
+    size_t get_code_size(const evmc::address&) noexcept final { return 0; }
+
+    evmc::bytes32 get_code_hash(const evmc::address&) noexcept final { return {}; }
+
+    size_t copy_code(const evmc::address&, size_t, uint8_t*, size_t) noexcept final { return 0; }
+
+    void selfdestruct(const evmc::address&, const evmc::address&) noexcept final {}
+
+    evmc::result call(const evmc_message&) noexcept final { return evmc::result{evmc_result{}}; }
+
+    evmc_tx_context get_tx_context() noexcept final { return {}; }
+
+    evmc::bytes32 get_block_hash(int64_t) noexcept final { return {}; }
+
+    void emit_log(const evmc::address&,
+                  const uint8_t*,
+                  size_t,
+                  const evmc::bytes32[],
+                  size_t) noexcept final
+    {}
+};
+
 TEST(cpp, address)
 {
     evmc::address a;
@@ -285,6 +326,23 @@ TEST(cpp, vm_set_option)
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
+TEST(cpp, vm_set_option_in_constructor)
+{
+    static int num_calls = 0;
+    const auto set_option_method = [](evmc_vm* /*unused*/, const char* name, const char* value) {
+        ++num_calls;
+        EXPECT_STREQ(name, "o");
+        EXPECT_EQ(value, std::to_string(num_calls));
+        return EVMC_SET_OPTION_INVALID_NAME;
+    };
+
+    evmc_vm raw{EVMC_ABI_VERSION, "", "", nullptr, nullptr, nullptr, set_option_method};
+    raw.destroy = [](evmc_vm*) {};
+
+    const auto vm = evmc::VM{&raw, {{"o", "1"}, {"o", "2"}}};
+    EXPECT_EQ(num_calls, 2);
+}
+
 TEST(cpp, vm_null)
 {
     evmc::VM vm;
@@ -363,6 +421,19 @@ TEST(cpp, vm_execute_precompiles)
     EXPECT_EQ(res.gas_left, 0);
     ASSERT_EQ(res.output_size, input.size());
     EXPECT_TRUE(std::equal(input.begin(), input.end(), res.output_data));
+}
+
+TEST(cpp, vm_execute_with_null_host)
+{
+    // This tests only if the used VM::execute() overload is at least implemented.
+    // We know that the example VM will not use the host context in this case.
+
+    auto host = NullHost{};
+
+    auto vm = evmc::VM{evmc_create_example_vm()};
+    evmc_message msg{};
+    auto res = vm.execute(host, EVMC_MAX_REVISION, msg, nullptr, 0);
+    EXPECT_EQ(res.status_code, EVMC_FAILURE);
 }
 
 TEST(cpp, host)
