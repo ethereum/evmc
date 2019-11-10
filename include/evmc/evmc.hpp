@@ -266,11 +266,11 @@ constexpr auto make_result = evmc_make_result;
 class result : private evmc_result
 {
 public:
-    using evmc_result::create_address;
     using evmc_result::gas_left;
     using evmc_result::output_data;
     using evmc_result::output_size;
     using evmc_result::status_code;
+    using evmc_result::create_address;
 
     /// Creates the result from the provided arguments.
     ///

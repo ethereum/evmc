@@ -447,7 +447,7 @@ impl Into<ffi::evmc_result> for ExecutionResult {
             } else {
                 Address { bytes: [0u8; 20] }
             },
-            padding: [0u8; 4],
+            scratchpad: ffi::evmc_result_scratchpad { bytes: [0u8; 32] },
         }
     }
 }
@@ -532,7 +532,7 @@ mod tests {
             output_size: 4,
             release: Some(test_result_dispose),
             create_address: Address { bytes: [0u8; 20] },
-            padding: [0u8; 4],
+            scratchpad: ffi::evmc_result_scratchpad { bytes: [0u8; 32] },
         };
 
         let r: ExecutionResult = f.into();
@@ -778,7 +778,7 @@ mod tests {
             output_size: msg.input_size,
             release: None,
             create_address: ffi::evmc_address::default(),
-            padding: [0u8; 4],
+            scratchpad: ffi::evmc_result_scratchpad { bytes: [0u8; 32] },
         }
     }
 
