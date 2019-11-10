@@ -402,8 +402,10 @@ public:
     HostContext() = default;
 
     /// Constructor from the EVMC Host primitives.
-    HostContext(const evmc_host_interface* interface, evmc_host_context* ctx) noexcept
-      : host{interface}, context{ctx}
+    /// @param interface  The reference to the Host interface.
+    /// @param ctx        The pointer to the Host context object. This parameter MAY be null.
+    HostContext(const evmc_host_interface& interface, evmc_host_context* ctx) noexcept
+      : host{&interface}, context{ctx}
     {}
 
     bool account_exists(const address& address) noexcept final
