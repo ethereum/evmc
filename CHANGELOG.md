@@ -5,15 +5,21 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [7.0.0] - unreleased
+## [7.0.0] „Istanbul Ready” — 2019-11-11
+
+This version of EVMC delivers compatibility with Istanbul EVM revision.
+The ABI breaking change has been required in this case so some other 
+backward-incompatible changes are also included and deprecated APIs have been 
+removed.
 
 ### Added
 
-- Support for Istanbul EIP-1344 (CHAINID opcode). `chain_id` added to `evmc_tx_context` struct.
+- Support for **Istanbul** EIP-1344 (CHAINID opcode). 
+  `chain_id` added to `evmc_tx_context` struct.
   [#375](https://github.com/ethereum/evmc/pull/375)
-- Support for Istanbul EIP-1884 (Repricing for trie-size-dependent opcodes).
+- Support for **Istanbul** EIP-1884 (Repricing for trie-size-dependent opcodes).
   [#372](https://github.com/ethereum/evmc/pull/372)
-- The **Berlin** EVM revision has been added.
+- The **Berlin** EVM revision number has been added.
   [#407](https://github.com/ethereum/evmc/pull/407)
 - In C++ API, an overload for `VM::execute()` has been added that omits
   the Host context and interface parameters. This is useful for Precompiles VMs
@@ -395,7 +401,7 @@ and this project adheres to [Semantic Versioning].
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
-[7.0.0]: https://github.com/ethereum/evmc/compare/v6.3.1...master
+[7.0.0]: https://github.com/ethereum/evmc/releases/tag/v7.0.0
 [6.3.1]: https://github.com/ethereum/evmc/releases/tag/v6.3.1
 [6.3.0]: https://github.com/ethereum/evmc/releases/tag/v6.3.0
 [6.2.2]: https://github.com/ethereum/evmc/releases/tag/v6.2.2
