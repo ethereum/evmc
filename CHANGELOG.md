@@ -53,6 +53,11 @@ and this project adheres to [Semantic Versioning].
   [[#442](https://github.com/ethereum/evmc/pull/442)]
 - In the Rust bindings make `ExecutionContext` optional within `execute`.
   [[#350](https://github.com/ethereum/evmc/pull/350)]
+- A set of small improvements to C++ API
+  [[#445](https://github.com/ethereum/evmc/pull/445),
+   [#449](https://github.com/ethereum/evmc/pull/449),
+   [#451](https://github.com/ethereum/evmc/pull/451)]
+   
 
 
 ## [6.3.1] - 2019-08-19

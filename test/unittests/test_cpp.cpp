@@ -440,9 +440,10 @@ TEST(cpp, host)
 {
     // Use example host to execute all methods from the C++ host wrapper.
 
-    auto* host_interface = example_host_get_interface();
+    const auto* host_interface = example_host_get_interface();
+    ASSERT_NE(host_interface, nullptr);
     auto* host_context = example_host_create_context(evmc_tx_context{});
-    auto host = evmc::HostContext{host_interface, host_context};
+    auto host = evmc::HostContext{*host_interface, host_context};
 
     const auto a = evmc::address{{{1}}};
     const auto v = evmc::bytes32{{{7, 7, 7}}};
@@ -476,9 +477,10 @@ TEST(cpp, host_call)
     // Use example host to test Host::call() method.
 
     auto host = evmc::HostContext{};  // Use default constructor.
-    auto* host_interface = example_host_get_interface();
+    const auto* host_interface = example_host_get_interface();
+    ASSERT_NE(host_interface, nullptr);
     auto* host_context = example_host_create_context(evmc_tx_context{});
-    host = evmc::HostContext{host_interface, host_context};
+    host = evmc::HostContext{*host_interface, host_context};
 
     EXPECT_EQ(host.call({}).gas_left, 0);
 
