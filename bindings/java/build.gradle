@@ -1,0 +1,40 @@
+plugins {
+    id 'com.diffplug.gradle.spotless' version '3.16.0'
+}
+apply from: "${rootDir}/wrapper.gradle"
+allprojects {
+    apply plugin: 'java-library'
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+    apply plugin: 'com.diffplug.gradle.spotless'
+    spotless {
+        java {
+        // This path needs to be relative to each project
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/.gradle/**'
+        }
+        importOrder 'org.ethereum', 'java', ''
+        trimTrailingWhitespace()
+        endWithNewline()
+        googleJavaFormat('1.7')
+        }
+    }
+}
+
+subprojects {
+    tasks.withType(Test) {
+        testLogging.showStandardStreams = true
+        // If GRADLE_MAX_TEST_FORKS is not set, use half the available processors
+        maxParallelForks = (System.getenv('GRADLE_MAX_TEST_FORKS') ?: (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)).toInteger()
+        useJUnitPlatform()
+        reports {
+            junitXml.enabled = true
+        }
+    }
+}

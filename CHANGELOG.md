@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
+- Added Java bindings.
+  [#455](https://github.com/ethereum/evmc/pull/455)
 - Added `MockedHost` C++ class (in form of header-only `evmc::mocked_host` library)
   which can be used to emulate Host behavior when testing VM implementations.
   [#456](https://github.com/ethereum/evmc/pull/456)

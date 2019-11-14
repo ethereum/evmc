@@ -64,7 +64,7 @@ jobs:
         name: "Check code format"
         command: |
           clang-format --version
-          find examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+          find bindings/java examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
     - run:
         name: "Run codespell"
@@ -182,6 +182,25 @@ jobs:
       - image: circleci/golang:1.9
     steps: *bindings-go-steps
 
+  bindings-java:
+    docker:
+      - image: circleci/openjdk:11-stretch
+    steps:
+      - checkout
+      - run:
+          name: Update environment
+          command: |
+            sudo apt -qq update
+            sudo apt -yq install build-essential
+      - run:
+          name: "Java Build"
+          command: |
+            cd bindings/java && make clean build
+      - run:
+          name: "Java Test"
+          command: |
+            cd bindings/java && make test
+
   bindings-rust:
     docker:
       - image: rust:1
@@ -261,6 +280,7 @@ workflows:
       - build-gcc-32bit
       - bindings-go-latest
       - bindings-go-min
+      - bindings-java
       - bindings-rust:
           requires:
             - build-gcc8-cxx17
