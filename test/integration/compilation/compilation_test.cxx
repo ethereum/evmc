@@ -10,6 +10,7 @@
 #include <evmc/helpers.h>
 #include <evmc/instructions.h>
 #include <evmc/loader.h>
+#include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
 
 // Include again to check if headers have proper include guards.
@@ -18,4 +19,5 @@
 #include <evmc/helpers.h>
 #include <evmc/instructions.h>
 #include <evmc/loader.h>
+#include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
