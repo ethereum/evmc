@@ -37,6 +37,7 @@ protected:
     static int destroy_count;
     static std::unordered_map<std::string, std::vector<std::string>> supported_options;
     static std::vector<std::pair<std::string, std::string>> recorded_options;
+    static const std::string option_name_causing_unknown_error;
 
     loader() noexcept
     {
@@ -63,9 +64,18 @@ protected:
         if (it == supported_options.end())
             return EVMC_SET_OPTION_INVALID_NAME;
 
-        const auto value_supported =
-            std::find(std::begin(it->second), std::end(it->second), value) != std::end(it->second);
-        return value_supported ? EVMC_SET_OPTION_SUCCESS : EVMC_SET_OPTION_INVALID_VALUE;
+        if (std::find(std::begin(it->second), std::end(it->second), value) != std::end(it->second))
+            return EVMC_SET_OPTION_SUCCESS;
+
+        if (name == option_name_causing_unknown_error)
+        {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+            return static_cast<evmc_set_option_result>(-42);
+#pragma GCC diagnostic pop
+        }
+
+        return EVMC_SET_OPTION_INVALID_VALUE;
     }
 
     /// Creates a VM mock with only destroy() method.
@@ -102,6 +112,9 @@ int loader::create_count = 0;
 int loader::destroy_count = 0;
 std::unordered_map<std::string, std::vector<std::string>> loader::supported_options;
 std::vector<std::pair<std::string, std::string>> loader::recorded_options;
+
+/// The option name that will return unexpected error code from the set_option() method.
+const std::string loader::option_name_causing_unknown_error{"raise_unknown"};
 
 static evmc_vm* create_aaa()
 {
@@ -625,4 +638,25 @@ TEST_F(loader, load_and_configure_error_not_wanted)
     EXPECT_EQ(destroy_count, create_count);
     EXPECT_STREQ(evmc_last_error_msg(), "vm_with_set_option (path): unknown option 'f'");
     EXPECT_FALSE(evmc_last_error_msg());
+}
+
+TEST_F(loader, load_and_configure_unknown_set_option_error_code)
+{
+    // Enable "option name causing unknown error".
+    supported_options[option_name_causing_unknown_error] = {""};
+
+    setup("path", "evmc_create", create_vm_with_set_option);
+
+    evmc_loader_error_code ec;
+    const auto config_str = "path," + option_name_causing_unknown_error + "=1";
+    auto vm = evmc_load_and_configure(config_str.c_str(), &ec);
+    EXPECT_FALSE(vm);
+    ASSERT_EQ(recorded_options.size(), 1u);
+    EXPECT_EQ(recorded_options[0].first, option_name_causing_unknown_error);
+    EXPECT_EQ(recorded_options[0].second, "1");
+    EXPECT_EQ(ec, EVMC_LOADER_INVALID_OPTION_VALUE);
+    EXPECT_EQ(evmc_last_error_msg(),
+              "vm_with_set_option (path): unknown error when setting value '1' for option '" +
+                  option_name_causing_unknown_error + "'");
+    EXPECT_EQ(destroy_count, create_count);
 }
