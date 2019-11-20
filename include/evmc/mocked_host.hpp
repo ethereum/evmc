@@ -5,7 +5,6 @@
 
 #include <evmc/evmc.hpp>
 #include <algorithm>
-#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -76,9 +75,7 @@ public:
         /// Equal operator.
         bool operator==(const log_record& other) const noexcept
         {
-            return creator == other.creator && data == other.data &&
-                   topics.size() == other.topics.size() &&
-                   std::equal(topics.begin(), topics.end(), other.topics.begin());
+            return creator == other.creator && data == other.data && topics == other.topics;
         }
     };
 
@@ -188,21 +185,19 @@ protected:
         if (old.value == value)
             return EVMC_STORAGE_UNCHANGED;
 
-        evmc_storage_status status;
+        evmc_storage_status status{};
+        if (!old.dirty)
         {
-            if (!old.dirty)
-            {
-                old.dirty = true;
-                if (!old.value)
-                    status = EVMC_STORAGE_ADDED;
-                else if (value)
-                    status = EVMC_STORAGE_MODIFIED;
-                else
-                    status = EVMC_STORAGE_DELETED;
-            }
+            old.dirty = true;
+            if (!old.value)
+                status = EVMC_STORAGE_ADDED;
+            else if (value)
+                status = EVMC_STORAGE_MODIFIED;
             else
-                status = EVMC_STORAGE_MODIFIED_AGAIN;
+                status = EVMC_STORAGE_DELETED;
         }
+        else
+            status = EVMC_STORAGE_MODIFIED_AGAIN;
 
         old.value = value;
         return status;
@@ -311,10 +306,7 @@ protected:
                   const bytes32 topics[],
                   size_t topics_count) noexcept override
     {
-        recorded_logs.push_back({addr, {data, data_size}, {}});
-        auto& record_topics = recorded_logs.back().topics;
-        record_topics.reserve(topics_count);
-        std::copy_n(topics, topics_count, std::back_inserter(record_topics));
+        recorded_logs.push_back({addr, {data, data_size}, {topics, topics + topics_count}});
     }
 };
 }  // namespace evmc
