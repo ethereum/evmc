@@ -6,14 +6,12 @@
 // previously related to using explicit template argument (SFINAE disabled).
 #include <vector>
 
-#include "../../examples/example_host.h"
 #include "../../examples/example_precompiles_vm/example_precompiles_vm.h"
 #include "../../examples/example_vm/example_vm.h"
 
 #include <evmc/evmc.hpp>
-
+#include <evmc/mocked_host.hpp>
 #include <gtest/gtest.h>
-
 #include <array>
 #include <cstring>
 #include <map>
@@ -438,17 +436,20 @@ TEST(cpp, vm_execute_with_null_host)
 
 TEST(cpp, host)
 {
-    // Use example host to execute all methods from the C++ host wrapper.
+    // Use MockedHost to execute all methods from the C++ host wrapper.
+    evmc::MockedHost mockedHost;
+    const auto& host_interface = evmc::MockedHost::get_interface();
+    auto* host_context = mockedHost.to_context();
 
-    const auto* host_interface = example_host_get_interface();
-    ASSERT_NE(host_interface, nullptr);
-    auto* host_context = example_host_create_context(evmc_tx_context{});
-    auto host = evmc::HostContext{*host_interface, host_context};
+    auto host = evmc::HostContext{host_interface, host_context};
 
     const auto a = evmc::address{{{1}}};
     const auto v = evmc::bytes32{{{7, 7, 7}}};
 
     EXPECT_FALSE(host.account_exists(a));
+
+    mockedHost.accounts[a].storage[{}].value.bytes[0] = 1;
+    EXPECT_TRUE(host.account_exists(a));
 
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_MODIFIED);
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_UNCHANGED);
@@ -468,34 +469,53 @@ TEST(cpp, host)
     EXPECT_EQ(host.get_block_hash(0), evmc::bytes32{});
 
     host.emit_log(a, nullptr, 0, nullptr, 0);
-
-    example_host_destroy_context(host_context);
 }
 
 TEST(cpp, host_call)
 {
     // Use example host to test Host::call() method.
+    evmc::MockedHost mockedHost;
+    const auto& host_interface = evmc::MockedHost::get_interface();
+    auto* host_context = mockedHost.to_context();
 
     auto host = evmc::HostContext{};  // Use default constructor.
-    const auto* host_interface = example_host_get_interface();
-    ASSERT_NE(host_interface, nullptr);
-    auto* host_context = example_host_create_context(evmc_tx_context{});
-    host = evmc::HostContext{*host_interface, host_context};
+    host = evmc::HostContext{host_interface, host_context};
 
     EXPECT_EQ(host.call({}).gas_left, 0);
+    ASSERT_EQ(mockedHost.recorded_calls.size(), 1u);
+    const auto& recorded_msg1 = mockedHost.recorded_calls.back();
+    EXPECT_EQ(recorded_msg1.kind, EVMC_CALL);
+    EXPECT_EQ(recorded_msg1.gas, 0);
+    EXPECT_EQ(recorded_msg1.flags, 0u);
+    EXPECT_EQ(recorded_msg1.depth, 0);
+    EXPECT_EQ(recorded_msg1.input_data, nullptr);
+    EXPECT_EQ(recorded_msg1.input_size, 0u);
 
     auto msg = evmc_message{};
     msg.gas = 1;
-    uint8_t input[] = {0xa, 0xb, 0xc};
-    msg.input_data = input;
-    msg.input_size = sizeof(input);
+    evmc::bytes input{0xa, 0xb, 0xc};
+    msg.input_data = input.data();
+    msg.input_size = input.size();
+
+    mockedHost.call_result.status_code = EVMC_REVERT;
+    mockedHost.call_result.gas_left = 4321;
+    mockedHost.call_result.output_data = &input[2];
+    mockedHost.call_result.output_size = 1;
 
     auto res = host.call(msg);
-    EXPECT_EQ(res.status_code, EVMC_REVERT);
-    EXPECT_EQ(res.output_size, msg.input_size);
-    EXPECT_TRUE(std::equal(&res.output_data[0], &res.output_data[res.output_size], msg.input_data));
+    ASSERT_EQ(mockedHost.recorded_calls.size(), 2u);
+    const auto& recorded_msg2 = mockedHost.recorded_calls.back();
+    EXPECT_EQ(recorded_msg2.kind, EVMC_CALL);
+    EXPECT_EQ(recorded_msg2.gas, 1);
+    EXPECT_EQ(recorded_msg2.flags, 0u);
+    EXPECT_EQ(recorded_msg2.depth, 0);
+    ASSERT_EQ(recorded_msg2.input_size, 3u);
+    EXPECT_EQ(evmc::bytes(recorded_msg2.input_data, recorded_msg2.input_size), input);
 
-    example_host_destroy_context(host_context);
+    EXPECT_EQ(res.status_code, EVMC_REVERT);
+    EXPECT_EQ(res.gas_left, 4321);
+    ASSERT_EQ(res.output_size, 1u);
+    EXPECT_EQ(*res.output_data, input[2]);
 }
 
 TEST(cpp, result_raii)

@@ -4,3 +4,4 @@
 
 add_subdirectory(instructions)
 add_subdirectory(loader)
+add_subdirectory(mocked_host)
