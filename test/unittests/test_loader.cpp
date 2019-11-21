@@ -118,12 +118,12 @@ const std::string loader::option_name_causing_unknown_error{"raise_unknown"};
 
 static evmc_vm* create_aaa()
 {
-    return (evmc_vm*)0xaaa;
+    return reinterpret_cast<evmc_vm*>(0xaaa);
 }
 
 static evmc_vm* create_eee_bbb()
 {
-    return (evmc_vm*)0xeeebbb;
+    return reinterpret_cast<evmc_vm*>(0xeeebbb);
 }
 
 static evmc_vm* create_failure()

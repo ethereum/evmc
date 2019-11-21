@@ -329,7 +329,7 @@ TEST(cpp, vm_set_option)
 TEST(cpp, vm_set_option_in_constructor)
 {
     static int num_calls = 0;
-    const auto set_option_method = [](evmc_vm* /*unused*/, const char* name, const char* value) {
+    const auto set_option_method = [](evmc_vm*, const char* name, const char* value) {
         ++num_calls;
         EXPECT_STREQ(name, "o");
         EXPECT_EQ(value, std::to_string(num_calls));
