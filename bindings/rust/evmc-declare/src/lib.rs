@@ -41,7 +41,6 @@ use syn::parse_macro_input;
 use syn::spanned::Spanned;
 use syn::AttributeArgs;
 use syn::Ident;
-use syn::IntSuffix;
 use syn::ItemStruct;
 use syn::Lit;
 use syn::LitInt;
@@ -126,7 +125,7 @@ impl VMMetaData {
         let vm_version_meta = &args[2];
 
         let vm_name_string = match vm_name_meta {
-            NestedMeta::Literal(lit) => {
+            NestedMeta::Lit(lit) => {
                 if let Lit::Str(s) = lit {
                     // Add a null terminator here to ensure that it is handled correctly when
                     // converted to a C String.
@@ -141,7 +140,7 @@ impl VMMetaData {
         };
 
         let vm_capabilities_string = match vm_capabilities_meta {
-            NestedMeta::Literal(lit) => {
+            NestedMeta::Lit(lit) => {
                 if let Lit::Str(s) = lit {
                     s.value().to_string()
                 } else {
@@ -170,7 +169,7 @@ impl VMMetaData {
             ret
         };
 
-        let vm_version_string: String = if let NestedMeta::Literal(lit) = vm_version_meta {
+        let vm_version_string: String = if let NestedMeta::Lit(lit) = vm_version_meta {
             match lit {
                 // Add a null terminator here to ensure that it is handled correctly when
                 // converted to a C String.
@@ -268,8 +267,8 @@ fn build_static_data(names: &VMNameSet, metadata: &VMMetaData) -> proc_macro2::T
 
 /// Takes a capabilities flag and builds the evmc_get_capabilities callback.
 fn build_capabilities_fn(capabilities: u32) -> proc_macro2::TokenStream {
-    let capabilities_literal =
-        LitInt::new(capabilities as u64, IntSuffix::U32, capabilities.span());
+    let capabilities_string = capabilities.to_string();
+    let capabilities_literal = LitInt::new(&capabilities_string, capabilities.span());
 
     quote! {
         extern "C" fn __evmc_get_capabilities(instance: *mut ::evmc_vm::ffi::evmc_vm) -> ::evmc_vm::ffi::evmc_capabilities_flagset {
