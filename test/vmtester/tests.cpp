@@ -13,19 +13,16 @@
 namespace
 {
 // NOTE: this is to avoid compiler optimisations when reading the buffer
-uint8_t read_uint8(const volatile uint8_t* p)
+uint8_t read_uint8(const volatile uint8_t* p) noexcept
 {
     return *p;
 }
 
-void read_buffer(const uint8_t* ptr, size_t size)
+void read_buffer(const uint8_t* ptr, size_t size) noexcept
 {
     for (size_t i = 0; i < size; i++)
-    {
         read_uint8(&ptr[i]);
-    }
 }
-
 }  // namespace
 
 TEST_F(evmc_vm_test, abi_version_match)
