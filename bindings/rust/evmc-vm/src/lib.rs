@@ -214,7 +214,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Check if an account exists.
-    pub fn account_exists(&mut self, address: &Address) -> bool {
+    pub fn account_exists(&self, address: &Address) -> bool {
         unsafe {
             assert!((*self.host).account_exists.is_some());
             (*self.host).account_exists.unwrap()(self.context, address as *const Address)
@@ -222,7 +222,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Read from a storage key.
-    pub fn get_storage(&mut self, address: &Address, key: &Bytes32) -> Bytes32 {
+    pub fn get_storage(&self, address: &Address, key: &Bytes32) -> Bytes32 {
         unsafe {
             assert!((*self.host).get_storage.is_some());
             (*self.host).get_storage.unwrap()(
@@ -252,7 +252,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Get balance of an account.
-    pub fn get_balance(&mut self, address: &Address) -> Uint256 {
+    pub fn get_balance(&self, address: &Address) -> Uint256 {
         unsafe {
             assert!((*self.host).get_balance.is_some());
             (*self.host).get_balance.unwrap()(self.context, address as *const Address)
@@ -260,7 +260,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Get code size of an account.
-    pub fn get_code_size(&mut self, address: &Address) -> usize {
+    pub fn get_code_size(&self, address: &Address) -> usize {
         unsafe {
             assert!((*self.host).get_code_size.is_some());
             (*self.host).get_code_size.unwrap()(self.context, address as *const Address)
@@ -268,7 +268,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Get code hash of an account.
-    pub fn get_code_hash(&mut self, address: &Address) -> Bytes32 {
+    pub fn get_code_hash(&self, address: &Address) -> Bytes32 {
         unsafe {
             assert!((*self.host).get_code_size.is_some());
             (*self.host).get_code_hash.unwrap()(self.context, address as *const Address)
@@ -276,7 +276,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Copy code of an account.
-    pub fn copy_code(&mut self, address: &Address, code_offset: usize, buffer: &mut [u8]) -> usize {
+    pub fn copy_code(&self, address: &Address, code_offset: usize, buffer: &mut [u8]) -> usize {
         unsafe {
             assert!((*self.host).copy_code.is_some());
             (*self.host).copy_code.unwrap()(
@@ -338,7 +338,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Get block hash of an account.
-    pub fn get_block_hash(&mut self, num: i64) -> Bytes32 {
+    pub fn get_block_hash(&self, num: i64) -> Bytes32 {
         unsafe {
             assert!((*self.host).get_block_hash.is_some());
             (*self.host).get_block_hash.unwrap()(self.context, num)
