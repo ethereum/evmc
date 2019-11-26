@@ -59,9 +59,13 @@ public:
 
     evmc::bytes32 get_storage(const evmc::address& addr, const evmc::bytes32& key) noexcept final
     {
-        auto it = accounts.find(addr);
-        if (it != accounts.end())
-            return it->second.storage[key];
+        const auto account_iter = accounts.find(addr);
+        if (account_iter == accounts.end())
+            return {};
+
+        const auto storage_iter = account_iter->second.storage.find(key);
+        if (storage_iter != account_iter->second.storage.end())
+            return storage_iter->second;
         return {};
     }
 
