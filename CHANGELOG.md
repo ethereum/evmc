@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning].
   [#444](https://github.com/ethereum/evmc/pull/444)
 - In the C++ `HostInterface` the logically read-only methods are marked with `const`.
   [#461](https://github.com/ethereum/evmc/pull/461)
+- Updated dependencies of the Rust bindings to latest stable versions.
+  [#462](https://github.com/ethereum/evmc/pull/462)
 
 
 ## [7.0.0] „Istanbul Ready” — 2019-11-11
