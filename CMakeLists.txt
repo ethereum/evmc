@@ -53,16 +53,17 @@ target_include_directories(evmc INTERFACE $<BUILD_INTERFACE:${include_dir}>$<INS
 
 add_subdirectory(lib)
 
+if(EVMC_TOOLS)
+    add_subdirectory(tools)
+endif()
+
+if(EVMC_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
 if(EVMC_TESTING)
     enable_testing()
-endif()
-
-if(EVMC_TESTING OR EVMC_TOOLS)
     add_subdirectory(test)
-endif()
-
-if(EVMC_TESTING OR EVMC_EXAMPLES)
-    add_subdirectory(examples)
 endif()
 
 write_basic_package_version_file(evmcConfigVersion.cmake COMPATIBILITY ExactVersion)
