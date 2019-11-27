@@ -29,7 +29,6 @@ target_link_libraries(
     loader-mocked
     evmc::example-vm-static
     evmc::example-precompiles-vm-static
-    evmc-example-host
     evmc::instructions
     GTest::gtest_main
 )
