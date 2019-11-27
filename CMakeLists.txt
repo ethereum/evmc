@@ -9,22 +9,26 @@ if(TARGET evmc)
     return()
 endif()
 
-option(EVMC_INSTALL "Enable EVMC installation (e.g. make install)" ON)
-option(EVMC_TESTING "Build EVMC examples, tests and test tools (i.e. everything)" OFF)
-option(EVMC_TEST_TOOLS "Build EVMC test tools" ${EVMC_TESTING})
-if(EVMC_TESTING OR EVMC_TEST_TOOLS)
-    set(hunter_and_examples_required TRUE)
-endif()
-option(EVMC_EXAMPLES "Build EVMC examples" ${hunter_and_examples_required})
-option(HUNTER_ENABLED "Enable Hunter package manager support" ${hunter_and_examples_required})
-
 include(cmake/cable/bootstrap.cmake)
 include(CableBuildType)
 include(CableCompilerSettings)
+include(CMakeDependentOption)
 include(CablePackage)
 include(CableToolchains)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+
+option(EVMC_INSTALL "Enable EVMC installation (e.g. make install)" ON)
+
+option(EVMC_TESTING "Build everything (libraries, tools, examples, internal tests)" OFF)
+
+cmake_dependent_option(EVMC_TOOLS "Build EVMC tools" OFF
+    "NOT EVMC_TESTING" ON)
+
+cmake_dependent_option(EVMC_EXAMPLES "Build EVMC examples" OFF
+    "NOT EVMC_TESTING" ON)
+
+option(HUNTER_ENABLED "Enable Hunter package manager support" ${EVMC_TOOLS})
 
 if(HUNTER_ENABLED)
     set(HUNTER_CONFIGURATION_TYPES Release CACHE STRING "Build type of Hunter packages")
@@ -53,7 +57,7 @@ if(EVMC_TESTING)
     enable_testing()
 endif()
 
-if(EVMC_TESTING OR EVMC_TEST_TOOLS)
+if(EVMC_TESTING OR EVMC_TOOLS)
     add_subdirectory(test)
 endif()
 

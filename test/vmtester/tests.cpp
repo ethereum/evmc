@@ -2,30 +2,25 @@
 // Copyright 2018-2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
-#include "../../examples/example_host.h"
 #include "vmtester.hpp"
-
 #include <evmc/evmc.hpp>
-
+#include <evmc/mocked_host.hpp>
 #include <array>
 #include <cstring>
 
 namespace
 {
 // NOTE: this is to avoid compiler optimisations when reading the buffer
-uint8_t read_uint8(const volatile uint8_t* p)
+uint8_t read_uint8(const volatile uint8_t* p) noexcept
 {
     return *p;
 }
 
-void read_buffer(const uint8_t* ptr, size_t size)
+void read_buffer(const uint8_t* ptr, size_t size) noexcept
 {
     for (size_t i = 0; i < size; i++)
-    {
         read_uint8(&ptr[i]);
-    }
 }
-
 }  // namespace
 
 TEST_F(evmc_vm_test, abi_version_match)
@@ -59,13 +54,13 @@ TEST_F(evmc_vm_test, capabilities)
 
 TEST_F(evmc_vm_test, execute_call)
 {
-    const evmc_host_interface* host = example_host_get_interface();
-    evmc_host_context* context = example_host_create_context(evmc_tx_context{});
+    evmc::MockedHost mockedHost;
     evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, host, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, &evmc::MockedHost::get_interface(), mockedHost.to_context(),
+                    EVMC_MAX_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -87,21 +82,19 @@ TEST_F(evmc_vm_test, execute_call)
 
     if (result.release != nullptr)
         result.release(&result);
-
-    example_host_destroy_context(context);
 }
 
 TEST_F(evmc_vm_test, execute_create)
 {
-    const evmc_host_interface* host = example_host_get_interface();
-    evmc_host_context* context = example_host_create_context(evmc_tx_context{});
+    evmc::MockedHost mockedHost;
     evmc_message msg{
         EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, nullptr, 0, evmc_uint256be{},
         evmc_bytes32{}};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
-        vm->execute(vm, host, context, EVMC_MAX_REVISION, &msg, code.data(), code.size());
+        vm->execute(vm, &evmc::MockedHost::get_interface(), mockedHost.to_context(),
+                    EVMC_MAX_REVISION, &msg, code.data(), code.size());
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -124,8 +117,6 @@ TEST_F(evmc_vm_test, execute_create)
 
     if (result.release != nullptr)
         result.release(&result);
-
-    example_host_destroy_context(context);
 }
 
 TEST_F(evmc_vm_test, set_option_unknown_name)
