@@ -24,7 +24,7 @@ Please visit the [documentation].
 | **C**                         | C99, C11              | GCC 6+, clang 3.8+, MSVC 2015+
 | **C++**                       | C++11, C++14, C++17   | GCC 6+, clang 3.8+, MSVC 2015+
 | **Go** _(bindings)_           | 1.9 - 1.12            |
-| **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.31.0 and newer
+| **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.37.0 and newer
 
 <b id="n1">1</b>. Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
 

@@ -16,7 +16,7 @@ impl EvmcVm for ExampleRustVM {
 
     fn execute<'a>(
         &self,
-        _revision: evmc_sys::evmc_revision,
+        _revision: Revision,
         _code: &'a [u8],
         message: &'a ExecutionMessage,
         _context: Option<&'a mut ExecutionContext<'a>>,
@@ -26,7 +26,7 @@ impl EvmcVm for ExampleRustVM {
         }
         let _context = _context.unwrap();
 
-        if message.kind() != evmc_sys::evmc_call_kind::EVMC_CALL {
+        if message.kind() != MessageKind::EVMC_CALL {
             return ExecutionResult::failure();
         }
 
