@@ -20,9 +20,9 @@
 class NullHost : public evmc::Host
 {
 public:
-    bool account_exists(const evmc::address&) noexcept final { return false; }
+    bool account_exists(const evmc::address&) const noexcept final { return false; }
 
-    evmc::bytes32 get_storage(const evmc::address&, const evmc::bytes32&) noexcept final
+    evmc::bytes32 get_storage(const evmc::address&, const evmc::bytes32&) const noexcept final
     {
         return {};
     }
@@ -34,21 +34,24 @@ public:
         return {};
     }
 
-    evmc::uint256be get_balance(const evmc::address&) noexcept final { return {}; }
+    evmc::uint256be get_balance(const evmc::address&) const noexcept final { return {}; }
 
-    size_t get_code_size(const evmc::address&) noexcept final { return 0; }
+    size_t get_code_size(const evmc::address&) const noexcept final { return 0; }
 
-    evmc::bytes32 get_code_hash(const evmc::address&) noexcept final { return {}; }
+    evmc::bytes32 get_code_hash(const evmc::address&) const noexcept final { return {}; }
 
-    size_t copy_code(const evmc::address&, size_t, uint8_t*, size_t) noexcept final { return 0; }
+    size_t copy_code(const evmc::address&, size_t, uint8_t*, size_t) const noexcept final
+    {
+        return 0;
+    }
 
     void selfdestruct(const evmc::address&, const evmc::address&) noexcept final {}
 
     evmc::result call(const evmc_message&) noexcept final { return evmc::result{evmc_result{}}; }
 
-    evmc_tx_context get_tx_context() noexcept final { return {}; }
+    evmc_tx_context get_tx_context() const noexcept final { return {}; }
 
-    evmc::bytes32 get_block_hash(int64_t) noexcept final { return {}; }
+    evmc::bytes32 get_block_hash(int64_t) const noexcept final { return {}; }
 
     void emit_log(const evmc::address&,
                   const uint8_t*,

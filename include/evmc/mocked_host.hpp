@@ -108,10 +108,10 @@ public:
     evmc_result call_result = {};
 
     /// The record of all block numbers for which get_block_hash() was called.
-    std::vector<int64_t> recorded_blockhashes;
+    mutable std::vector<int64_t> recorded_blockhashes;
 
     /// The record of all account accesses.
-    std::vector<address> recorded_account_accesses;
+    mutable std::vector<address> recorded_account_accesses;
 
     /// The maximum number of entries in recorded_account_accesses record.
     /// This is arbitrary value useful in fuzzing when we don't want the record to explode.
@@ -136,7 +136,7 @@ protected:
 
     /// Record an account access.
     /// @param addr  The address of the accessed account.
-    void record_account_access(const address& addr)
+    void record_account_access(const address& addr) const
     {
         if (recorded_account_accesses.empty())
             recorded_account_accesses.reserve(max_recorded_account_accesses);
@@ -146,14 +146,14 @@ protected:
     }
 
     /// Returns true if an account exists (EVMC Host method).
-    bool account_exists(const address& addr) noexcept override
+    bool account_exists(const address& addr) const noexcept override
     {
         record_account_access(addr);
         return accounts.count(addr) != 0;
     }
 
     /// Get the account's storage value at the given key (EVMC Host method).
-    bytes32 get_storage(const address& addr, const bytes32& key) noexcept override
+    bytes32 get_storage(const address& addr, const bytes32& key) const noexcept override
     {
         record_account_access(addr);
 
@@ -204,7 +204,7 @@ protected:
     }
 
     /// Get the account's balance (EVMC Host method).
-    uint256be get_balance(const address& addr) noexcept override
+    uint256be get_balance(const address& addr) const noexcept override
     {
         record_account_access(addr);
         const auto it = accounts.find(addr);
@@ -215,7 +215,7 @@ protected:
     }
 
     /// Get the account's code size (EVMC host method).
-    size_t get_code_size(const address& addr) noexcept override
+    size_t get_code_size(const address& addr) const noexcept override
     {
         record_account_access(addr);
         const auto it = accounts.find(addr);
@@ -225,7 +225,7 @@ protected:
     }
 
     /// Get the account's code hash (EVMC host method).
-    bytes32 get_code_hash(const address& addr) noexcept override
+    bytes32 get_code_hash(const address& addr) const noexcept override
     {
         record_account_access(addr);
         const auto it = accounts.find(addr);
@@ -238,7 +238,7 @@ protected:
     size_t copy_code(const address& addr,
                      size_t code_offset,
                      uint8_t* buffer_data,
-                     size_t buffer_size) noexcept override
+                     size_t buffer_size) const noexcept override
     {
         record_account_access(addr);
         const auto it = accounts.find(addr);
@@ -290,10 +290,10 @@ protected:
     }
 
     /// Get transaction context (EVMC host method).
-    evmc_tx_context get_tx_context() noexcept override { return tx_context; }
+    evmc_tx_context get_tx_context() const noexcept override { return tx_context; }
 
     /// Get the block header hash (EVMC host method).
-    bytes32 get_block_hash(int64_t block_number) noexcept override
+    bytes32 get_block_hash(int64_t block_number) const noexcept override
     {
         recorded_blockhashes.emplace_back(block_number);
         return block_hash;
