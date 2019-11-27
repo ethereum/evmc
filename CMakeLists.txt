@@ -25,7 +25,9 @@ option(EVMC_TESTING "Build everything (libraries, tools, examples, internal test
 cmake_dependent_option(EVMC_TOOLS "Build EVMC tools" OFF
     "NOT EVMC_TESTING" ON)
 
-option(EVMC_EXAMPLES "Build EVMC examples" ${EVMC_TOOLS})
+cmake_dependent_option(EVMC_EXAMPLES "Build EVMC examples" OFF
+    "NOT EVMC_TESTING" ON)
+
 option(HUNTER_ENABLED "Enable Hunter package manager support" ${EVMC_TOOLS})
 
 if(HUNTER_ENABLED)
