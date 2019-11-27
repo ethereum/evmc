@@ -314,8 +314,18 @@ TEST(cpp, vm)
     const auto host = evmc_host_interface{};
     auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, {}, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_FAILURE);
+}
+
+TEST(cpp, vm_capabilities)
+{
+    const auto vm = evmc::VM{evmc_create_example_vm()};
 
     EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EVM1);
+    EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EWASM);
+    EXPECT_FALSE(vm.get_capabilities() & EVMC_CAPABILITY_PRECOMPILES);
+    EXPECT_TRUE(vm.has_capability(EVMC_CAPABILITY_EVM1));
+    EXPECT_TRUE(vm.has_capability(EVMC_CAPABILITY_EWASM));
+    EXPECT_FALSE(vm.has_capability(EVMC_CAPABILITY_PRECOMPILES));
 }
 
 TEST(cpp, vm_set_option)

@@ -570,6 +570,12 @@ public:
     /// @copydoc evmc_vm::version
     char const* version() const noexcept { return m_instance->version; }
 
+    /// Checks if the VM has the given capability.
+    bool has_capability(evmc_capabilities capability) const noexcept
+    {
+        return (get_capabilities() & static_cast<evmc_capabilities_flagset>(capability)) != 0;
+    }
+
     /// @copydoc evmc::vm::get_capabilities
     evmc_capabilities_flagset get_capabilities() const noexcept
     {
