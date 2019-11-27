@@ -10,7 +10,9 @@ if(TARGET evmc)
 endif()
 
 option(EVMC_INSTALL "Enable EVMC installation (e.g. make install)" ON)
-option(EVMC_TESTING "Build EVMC examples, tests and test tools (i.e. everything)" OFF)
+
+option(EVMC_TESTING "Build everything (libraries, tools, examples, internal tests)" OFF)
+
 option(EVMC_TOOLS "Build EVMC tools" ${EVMC_TESTING})
 if(EVMC_TESTING OR EVMC_TOOLS)
     set(hunter_and_examples_required TRUE)
