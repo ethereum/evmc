@@ -41,6 +41,8 @@ removed.
   the Host context and interface parameters. This is useful for Precompiles VMs
   that do not interact with the Host.
   [#302](https://github.com/ethereum/evmc/pull/302)
+- In C++ API, the `VM::has_capability()` method has been added.
+  [#465](https://github.com/ethereum/evmc/pull/465)
   
 ### Changed
 
