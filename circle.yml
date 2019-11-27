@@ -50,7 +50,7 @@ commands:
       - persist_to_workspace:
           root: ~/build
           paths:
-            - test/evmc-vmtester
+            - bin/evmc-vmtester
             - examples/evmc-example
 
 jobs:
@@ -204,7 +204,7 @@ jobs:
       - run:
           name: Test with evmc-vmtester
           command: |
-            ~/build/test/evmc-vmtester target/debug/libexamplerustvm.so
+            ~/build/bin/evmc-vmtester target/debug/libexamplerustvm.so
       - run:
           name: Test with evmc-example
           command: |
@@ -235,7 +235,7 @@ jobs:
       - run:
           name: Test with evmc-vmtester
           command: |
-            ~/build/test/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
+            ~/build/bin/evmc-vmtester target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
       - run:
           name: Test with evmc-example
           command: |
