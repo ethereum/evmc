@@ -4,10 +4,12 @@
 
 add_library(example-precompiles-vm SHARED example_precompiles_vm.cpp example_precompiles_vm.h)
 add_library(evmc::example-precompiles-vm ALIAS example-precompiles-vm)
+target_compile_features(example-precompiles-vm PRIVATE cxx_std_11)
 target_link_libraries(example-precompiles-vm PRIVATE evmc::evmc)
 
 add_library(example-precompiles-vm-static STATIC example_precompiles_vm.cpp example_precompiles_vm.h)
 add_library(evmc::example-precompiles-vm-static ALIAS example-precompiles-vm-static)
+target_compile_features(example-precompiles-vm-static PRIVATE cxx_std_11)
 target_link_libraries(example-precompiles-vm-static PRIVATE evmc::evmc)
 
 set_source_files_properties(example_precompiles_vm.cpp PROPERTIES
