@@ -153,7 +153,7 @@ jobs:
     docker:
       - image: ethereum/cpp-build-env:12-gcc-8
     environment:
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17
     steps:
       - build_and_test
 
@@ -161,7 +161,7 @@ jobs:
     docker:
       - image: ethereum/cpp-build-env:12-gcc-9
     environment:
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx17-pic -DSANITIZE=undefined
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=undefined
     steps:
       - build_and_test
 
@@ -169,7 +169,7 @@ jobs:
     docker:
       - image: ethereum/cpp-build-env:12-clang-9
     environment:
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx14-pic -DSANITIZE=address
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=14 -DSANITIZE=address
       UBSAN_OPTIONS: halt_on_error=1
     steps:
       - build_and_test
@@ -196,7 +196,7 @@ jobs:
     docker:
       - image: ethereum/cpp-build-env:12-base
     environment:
-      CMAKE_OPTIONS: -DTOOLCHAIN=cxx11-32bit
+      CMAKE_OPTIONS: -DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/cxx11-32bit.cmake
     steps:
       - run:
           name: "Install GCC 32-bit"
