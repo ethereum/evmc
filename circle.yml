@@ -140,6 +140,12 @@ jobs:
     steps:
       - build_and_test
 
+  build-clang5:
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-5
+    steps:
+      - build_and_test
+
   build-clang38:
     docker:
       - image: ethereum/cpp-build-env:12-clang-3.8
@@ -250,6 +256,7 @@ workflows:
       - build-gcc9-cxx17-ubsan
       - build-clang9-cxx14-asan
       - build-gcc6
+      - build-clang5
       - build-clang38
       - build-gcc-32bit
       - bindings-go-latest

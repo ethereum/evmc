@@ -14,27 +14,27 @@ namespace evmc
 /// The string of bytes.
 using bytes = std::basic_string<uint8_t>;
 
+/// Extended value (by dirty flag) for account storage.
+struct storage_value
+{
+    /// The storage value.
+    bytes32 value;
+
+    /// True means this value has been modified already by the current transaction.
+    bool dirty{false};
+
+    /// Default constructor.
+    storage_value() noexcept = default;
+
+    /// Constructor.
+    storage_value(const bytes32& _value, bool _dirty = false) noexcept  // NOLINT
+      : value{_value}, dirty{_dirty}
+    {}
+};
+
 /// Mocked account.
 struct MockedAccount
 {
-    /// Extended value (by dirty flag) for account storage.
-    struct storage_value
-    {
-        /// The storage value.
-        bytes32 value;
-
-        /// True means this value has been modified already by the current transaction.
-        bool dirty{false};
-
-        /// Default constructor.
-        storage_value() noexcept = default;
-
-        /// Constructor.
-        storage_value(const bytes32& _value, bool _dirty = false) noexcept  // NOLINT
-          : value{_value}, dirty{_dirty}
-        {}
-    };
-
     /// The account nonce.
     int nonce = 0;
 
