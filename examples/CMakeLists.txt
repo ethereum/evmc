@@ -4,12 +4,6 @@
 
 include(GNUInstallDirs)
 
-if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
-set(CMAKE_DEBUG_POSTFIX "")
-
 add_subdirectory(example_vm)
 add_subdirectory(example_precompiles_vm)
 
