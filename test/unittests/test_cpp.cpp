@@ -634,3 +634,17 @@ TEST(cpp, result_create)
     EXPECT_TRUE(std::memcmp(c.output_data, r.output_data, c.output_size) == 0);
     c.release(&c);
 }
+
+TEST(cpp, mocked_account)
+{
+    using namespace evmc::literals;
+
+    evmc::MockedAccount account;
+    EXPECT_EQ(account.nonce, 0);
+    --account.nonce;
+    account.set_balance(0x0102030405060708);
+
+    EXPECT_EQ(account.balance,
+              0x0000000000000000000000000000000000000000000000000102030405060708_bytes32);
+    EXPECT_EQ(account.nonce, -1);
+}
