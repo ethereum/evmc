@@ -11,7 +11,7 @@ find_package(GTest CONFIG REQUIRED)
 set_target_properties(GTest::gtest PROPERTIES INTERFACE_COMPILE_DEFINITIONS GTEST_HAS_TR1_TUPLE=0)
 
 add_library(loader-mocked STATIC ${PROJECT_SOURCE_DIR}/lib/loader/loader.c)
-target_link_libraries(loader-mocked PRIVATE evmc)
+target_link_libraries(loader-mocked PRIVATE evmc::evmc)
 target_compile_definitions(loader-mocked PRIVATE EVMC_LOADER_MOCK=1)
 
 add_executable(

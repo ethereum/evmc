@@ -71,7 +71,6 @@ configure_package_config_file(
 )
 
 if(EVMC_INSTALL)
-    install(TARGETS evmc EXPORT evmcTargets)
     install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     install(
