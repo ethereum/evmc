@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning].
 - In the Rust bindings added more type aliases (`MessageKind`, `MessageFlags`, `StatusCode`,
   `StorageStatus`, `Revision`).
   [#206](https://github.com/ethereum/evmc/pull/206)
+- In CMake the `evmc::evmc_cpp` target has been added which represents the C++ EVMC API.
+  [#470](https://github.com/ethereum/evmc/pull/470)
 
 ### Changed
 

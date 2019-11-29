@@ -47,10 +47,6 @@ cable_configure_compiler(NO_STACK_PROTECTION)
 
 set(include_dir ${PROJECT_SOURCE_DIR}/include)
 
-add_library(evmc INTERFACE)
-add_library(evmc::evmc ALIAS evmc)
-target_include_directories(evmc INTERFACE $<BUILD_INTERFACE:${include_dir}>$<INSTALL_INTERFACE:include>)
-
 add_subdirectory(lib)
 
 if(EVMC_TOOLS)
@@ -75,7 +71,6 @@ configure_package_config_file(
 )
 
 if(EVMC_INSTALL)
-    install(TARGETS evmc EXPORT evmcTargets)
     install(DIRECTORY include/evmc DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     install(

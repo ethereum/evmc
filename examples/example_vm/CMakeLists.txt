@@ -4,11 +4,11 @@
 
 add_library(example-vm SHARED example_vm.c example_vm.h)
 add_library(evmc::example-vm ALIAS example-vm)
-target_link_libraries(example-vm PRIVATE evmc)
+target_link_libraries(example-vm PRIVATE evmc::evmc)
 
 add_library(example-vm-static STATIC example_vm.c example_vm.h)
 add_library(evmc::example-vm-static ALIAS example-vm-static)
-target_link_libraries(example-vm-static PRIVATE evmc)
+target_link_libraries(example-vm-static PRIVATE evmc::evmc)
 
 set_source_files_properties(example_vm.cpp PROPERTIES
     COMPILE_DEFINITIONS PROJECT_VERSION="${PROJECT_VERSION}")
