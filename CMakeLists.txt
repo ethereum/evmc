@@ -41,7 +41,7 @@ cable_configure_toolchain(DEFAULT cxx11-pic)
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
-set(PROJECT_VERSION 7.1.0-alpha.0)
+set(PROJECT_VERSION 7.1.0)
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 
