@@ -50,7 +50,6 @@ using uint256be = bytes32;
 /// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
 constexpr inline uint64_t load64be(const uint8_t* bytes) noexcept
 {
-    // TODO: Report bug in clang incorrectly optimizing this with AVX2 enabled.
     return (uint64_t{bytes[0]} << 56) | (uint64_t{bytes[1]} << 48) | (uint64_t{bytes[2]} << 40) |
            (uint64_t{bytes[3]} << 32) | (uint64_t{bytes[4]} << 24) | (uint64_t{bytes[5]} << 16) |
            (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
@@ -76,7 +75,7 @@ constexpr inline uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
 }  // namespace fnv
 
 
-/// The "equal" comparison operator for the evmc::address type.
+/// The "equal to" comparison operator for the evmc::address type.
 constexpr bool operator==(const address& a, const address& b) noexcept
 {
     // TODO: Report bug in clang keeping unnecessary bswap.
@@ -85,13 +84,13 @@ constexpr bool operator==(const address& a, const address& b) noexcept
            load32be(&a.bytes[16]) == load32be(&b.bytes[16]);
 }
 
-/// The "not equal" comparison operator for the evmc::address type.
+/// The "not equal to" comparison operator for the evmc::address type.
 constexpr bool operator!=(const address& a, const address& b) noexcept
 {
     return !(a == b);
 }
 
-/// The "less" comparison operator for the evmc::address type.
+/// The "less than" comparison operator for the evmc::address type.
 constexpr bool operator<(const address& a, const address& b) noexcept
 {
     return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
@@ -101,7 +100,25 @@ constexpr bool operator<(const address& a, const address& b) noexcept
             load32be(&a.bytes[16]) < load32be(&b.bytes[16]));
 }
 
-/// The "equal" comparison operator for the evmc::bytes32 type.
+/// The "greater than" comparison operator for the evmc::address type.
+constexpr bool operator>(const address& a, const address& b) noexcept
+{
+    return b < a;
+}
+
+/// The "less than or equal to" comparison operator for the evmc::address type.
+constexpr bool operator<=(const address& a, const address& b) noexcept
+{
+    return !(b < a);
+}
+
+/// The "greater than or equal to" comparison operator for the evmc::address type.
+constexpr bool operator>=(const address& a, const address& b) noexcept
+{
+    return !(a < b);
+}
+
+/// The "equal to" comparison operator for the evmc::bytes32 type.
 constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
 {
     return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
@@ -110,13 +127,13 @@ constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
            load64be(&a.bytes[24]) == load64be(&b.bytes[24]);
 }
 
-/// The "not equal" comparison operator for the evmc::bytes32 type.
+/// The "not equal to" comparison operator for the evmc::bytes32 type.
 constexpr bool operator!=(const bytes32& a, const bytes32& b) noexcept
 {
     return !(a == b);
 }
 
-/// The "less" comparison operator for the evmc::bytes32 type.
+/// The "less than" comparison operator for the evmc::bytes32 type.
 constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
 {
     return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
@@ -126,6 +143,24 @@ constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
             load64be(&a.bytes[16]) < load64be(&b.bytes[16])) ||
            (load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
             load64be(&a.bytes[24]) < load64be(&b.bytes[24]));
+}
+
+/// The "greater than" comparison operator for the evmc::bytes32 type.
+constexpr bool operator>(const bytes32& a, const bytes32& b) noexcept
+{
+    return b < a;
+}
+
+/// The "less than or equal to" comparison operator for the evmc::bytes32 type.
+constexpr bool operator<=(const bytes32& a, const bytes32& b) noexcept
+{
+    return !(b < a);
+}
+
+/// The "greater than or equal to" comparison operator for the evmc::bytes32 type.
+constexpr bool operator>=(const bytes32& a, const bytes32& b) noexcept
+{
+    return !(a < b);
 }
 
 /// Checks if the given address is the zero address.
