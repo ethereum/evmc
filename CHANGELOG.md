@@ -5,12 +5,19 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [7.1.0] — 2019-11-29
+
+## [7.2.0] — unreleased
 
 ### Added
 
 - Added Java bindings.
   [#455](https://github.com/ethereum/evmc/pull/455)
+
+
+## [7.1.0] — 2019-11-29
+
+### Added
+
 - Added `MockedHost` C++ class (in form of header-only `evmc::mocked_host` library)
   which can be used to emulate Host behavior when testing VM implementations.
   [#456](https://github.com/ethereum/evmc/pull/456)
@@ -428,6 +435,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[7.2.0]: https://github.com/ethereum/evmc/compare/v7.1.0...master
 [7.1.0]: https://github.com/ethereum/evmc/releases/tag/v7.1.0
 [7.0.0]: https://github.com/ethereum/evmc/releases/tag/v7.0.0
 [6.3.1]: https://github.com/ethereum/evmc/releases/tag/v6.3.1
