@@ -16,11 +16,11 @@ target_compile_definitions(loader-mocked PRIVATE EVMC_LOADER_MOCK=1)
 
 add_executable(
     evmc-unittests
+    cpp_test.cpp
+    helpers_test.cpp
+    instructions_test.cpp
     loader_mock.h
-    test_cpp.cpp
-    test_helpers.cpp
-    test_instructions.cpp
-    test_loader.cpp
+    loader_test.cpp
 )
 
 target_link_libraries(
