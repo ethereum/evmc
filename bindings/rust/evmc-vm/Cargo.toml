@@ -12,4 +12,4 @@ description = "Bindings to EVMC (VM specific)"
 edition = "2018"
 
 [dependencies]
-evmc-sys = { path = "../evmc-sys" }
+evmc-sys = { path = "../evmc-sys", version = "7.2.0-alpha.0" }
