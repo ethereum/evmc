@@ -21,6 +21,7 @@ add_executable(
     instructions_test.cpp
     loader_mock.h
     loader_test.cpp
+    mocked_host_test.cpp
 )
 
 target_link_libraries(
