@@ -155,9 +155,79 @@ TEST(cpp, std_maps)
     EXPECT_FALSE(unordered_storage.begin()->first);
 }
 
+enum relation
+{
+    equal,
+    less,
+    greater
+};
+
+/// Compares x and y using all comparison operators (also with reversed argument order)
+/// and validates results against the expected relation: eq: x == y, less: x < y.
+template <typename T>
+static void expect_cmp(const T& x, const T& y, relation expected)
+{
+    switch (expected)
+    {
+    case equal:
+        EXPECT_TRUE(x == y);
+        EXPECT_FALSE(x != y);
+        EXPECT_FALSE(x < y);
+        EXPECT_TRUE(x <= y);
+        EXPECT_FALSE(x > y);
+        EXPECT_TRUE(x >= y);
+
+        EXPECT_TRUE(y == x);
+        EXPECT_FALSE(y != x);
+        EXPECT_FALSE(y < x);
+        EXPECT_TRUE(y <= x);
+        EXPECT_FALSE(y > x);
+        EXPECT_TRUE(y >= x);
+        break;
+    case less:
+        EXPECT_FALSE(x == y);
+        EXPECT_TRUE(x != y);
+        EXPECT_TRUE(x < y);
+        EXPECT_TRUE(x <= y);
+        EXPECT_FALSE(x > y);
+        EXPECT_FALSE(x >= y);
+
+        EXPECT_FALSE(y == x);
+        EXPECT_TRUE(y != x);
+        EXPECT_FALSE(y < x);
+        EXPECT_FALSE(y <= x);
+        EXPECT_TRUE(y > x);
+        EXPECT_TRUE(y >= x);
+        break;
+    case greater:
+        EXPECT_FALSE(x == y);
+        EXPECT_TRUE(x != y);
+        EXPECT_FALSE(x < y);
+        EXPECT_FALSE(x <= y);
+        EXPECT_TRUE(x > y);
+        EXPECT_TRUE(x >= y);
+
+        EXPECT_FALSE(y == x);
+        EXPECT_TRUE(y != x);
+        EXPECT_TRUE(y < x);
+        EXPECT_TRUE(y <= x);
+        EXPECT_FALSE(y > x);
+        EXPECT_FALSE(y >= x);
+        break;
+    }
+}
+
 TEST(cpp, address_comparison)
 {
     const auto zero = evmc::address{};
+    auto max = evmc::address{};
+    std::fill_n(max.bytes, sizeof(max), uint8_t{0xff});
+
+    expect_cmp(zero, zero, equal);
+    expect_cmp(max, max, equal);
+    expect_cmp(zero, max, less);
+    expect_cmp(max, zero, greater);
+
     for (size_t i = 0; i < sizeof(evmc::address); ++i)
     {
         auto t = evmc::address{};
@@ -167,37 +237,35 @@ TEST(cpp, address_comparison)
         auto f = evmc::address{};
         f.bytes[i] = 0xff;
 
-        EXPECT_TRUE(zero < t);
-        EXPECT_TRUE(zero < u);
-        EXPECT_TRUE(zero < f);
-        EXPECT_TRUE(zero != t);
-        EXPECT_TRUE(zero != u);
-        EXPECT_TRUE(zero != f);
+        expect_cmp(zero, t, less);
+        expect_cmp(zero, u, less);
+        expect_cmp(zero, f, less);
 
-        EXPECT_TRUE(t < u);
-        EXPECT_TRUE(t < f);
-        EXPECT_TRUE(u < f);
+        expect_cmp(t, max, less);
+        expect_cmp(u, max, less);
+        expect_cmp(f, max, less);
 
-        EXPECT_FALSE(u < t);
-        EXPECT_FALSE(f < t);
-        EXPECT_FALSE(f < u);
+        expect_cmp(t, u, less);
+        expect_cmp(t, f, less);
+        expect_cmp(u, f, less);
 
-        EXPECT_TRUE(t != u);
-        EXPECT_TRUE(t != f);
-        EXPECT_TRUE(u != t);
-        EXPECT_TRUE(u != f);
-        EXPECT_TRUE(f != t);
-        EXPECT_TRUE(f != u);
-
-        EXPECT_TRUE(t == t);
-        EXPECT_TRUE(u == u);
-        EXPECT_TRUE(f == f);
+        expect_cmp(t, t, equal);
+        expect_cmp(u, u, equal);
+        expect_cmp(f, f, equal);
     }
 }
 
 TEST(cpp, bytes32_comparison)
 {
     const auto zero = evmc::bytes32{};
+    auto max = evmc::bytes32{};
+    std::fill_n(max.bytes, sizeof(max), uint8_t{0xff});
+
+    expect_cmp(zero, zero, equal);
+    expect_cmp(max, max, equal);
+    expect_cmp(zero, max, less);
+    expect_cmp(max, zero, greater);
+
     for (size_t i = 0; i < sizeof(evmc::bytes32); ++i)
     {
         auto t = evmc::bytes32{};
@@ -207,31 +275,21 @@ TEST(cpp, bytes32_comparison)
         auto f = evmc::bytes32{};
         f.bytes[i] = 0xff;
 
-        EXPECT_TRUE(zero < t);
-        EXPECT_TRUE(zero < u);
-        EXPECT_TRUE(zero < f);
-        EXPECT_TRUE(zero != t);
-        EXPECT_TRUE(zero != u);
-        EXPECT_TRUE(zero != f);
+        expect_cmp(zero, t, less);
+        expect_cmp(zero, u, less);
+        expect_cmp(zero, f, less);
 
-        EXPECT_TRUE(t < u);
-        EXPECT_TRUE(t < f);
-        EXPECT_TRUE(u < f);
+        expect_cmp(t, max, less);
+        expect_cmp(u, max, less);
+        expect_cmp(f, max, less);
 
-        EXPECT_FALSE(u < t);
-        EXPECT_FALSE(f < t);
-        EXPECT_FALSE(f < u);
+        expect_cmp(t, u, less);
+        expect_cmp(t, f, less);
+        expect_cmp(u, f, less);
 
-        EXPECT_TRUE(t != u);
-        EXPECT_TRUE(t != f);
-        EXPECT_TRUE(u != t);
-        EXPECT_TRUE(u != f);
-        EXPECT_TRUE(f != t);
-        EXPECT_TRUE(f != u);
-
-        EXPECT_TRUE(t == t);
-        EXPECT_TRUE(u == u);
-        EXPECT_TRUE(f == f);
+        expect_cmp(t, t, equal);
+        expect_cmp(u, u, equal);
+        expect_cmp(f, f, equal);
     }
 }
 
