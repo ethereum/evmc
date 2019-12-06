@@ -24,7 +24,7 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
         {
             const char* error_msg = evmc_last_error_msg();
             jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-            (*jenv)->ThrowNew(jenv, jclazz, error_msg);
+            (*jenv)->ThrowNew(jenv, jclazz, error_msg ? error_msg : "Loading EVMC VM failed");
         }
         (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
     }
