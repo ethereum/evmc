@@ -15,23 +15,20 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
     jint rs = set_jvm(jenv);
     assert(rs == JNI_OK);
     // load the EVM
-    const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, 0);
-    if (filename != NULL)
-    {
-        enum evmc_loader_error_code loader_error;
-        evm = evmc_load_and_create(filename, &loader_error);
-        if (evm == NULL || loader_error != EVMC_LOADER_SUCCESS)
-        {
-            const char* error_msg = evmc_last_error_msg();
-            jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-            (*jenv)->ThrowNew(jenv, jclazz, error_msg ? error_msg : "Loading EVMC VM failed");
-        }
-        (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
-    }
-    else
+    const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, NULL);
+    if (filename == NULL)
     {
         jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-        (*jenv)->ThrowNew(jenv, jclazz, "JNI Error: filename cannot be NULL. \n");
+        (*jenv)->ThrowNew(jenv, jclazz, "JNI Error: filename cannot be NULL.\n");
+    }
+    enum evmc_loader_error_code loader_error;
+    evm = evmc_load_and_create(filename, &loader_error);
+    (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
+    if (loader_error != EVMC_LOADER_SUCCESS)
+    {
+        const char* error_msg = evmc_last_error_msg();
+        jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
+        (*jenv)->ThrowNew(jenv, jclazz, error_msg ? error_msg : "Loading EVMC VM failed");
     }
     jobject jresult = (*jenv)->NewDirectByteBuffer(jenv, (void*)evm, sizeof(struct evmc_vm));
     assert(jresult != NULL);
