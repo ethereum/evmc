@@ -64,7 +64,7 @@ jobs:
         name: "Check code format"
         command: |
           clang-format --version
-          find bindings/java examples include lib test -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+          find bindings examples include lib test tools -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
           git diff --color --exit-code
     - run:
         name: "Run codespell"
