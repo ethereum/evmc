@@ -33,4 +33,7 @@ std::string hex(const uint8_t* data, size_t size);
 /// Output stream operator for evmc_status_code.
 std::ostream& operator<<(std::ostream& os, evmc_status_code status_code);
 
+/// Output stream operator for EVM revision.
+std::ostream& operator<<(std::ostream& os, evmc_revision revision);
+
 }  // namespace evmc

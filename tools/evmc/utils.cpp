@@ -117,4 +117,42 @@ std::ostream& operator<<(std::ostream& os, evmc_status_code status_code)
     return os << s;
 }
 
+std::ostream& operator<<(std::ostream& os, evmc_revision revision)
+{
+    const char* s = nullptr;
+    switch (revision)
+    {
+    case EVMC_FRONTIER:
+        s = "Frontier";
+        break;
+    case EVMC_HOMESTEAD:
+        s = "Homestead";
+        break;
+    case EVMC_TANGERINE_WHISTLE:
+        s = "Tangerine Whistle";
+        break;
+    case EVMC_SPURIOUS_DRAGON:
+        s = "Spurious Dragon";
+        break;
+    case EVMC_BYZANTIUM:
+        s = "Byzantium";
+        break;
+    case EVMC_CONSTANTINOPLE:
+        s = "Constantinople";
+        break;
+    case EVMC_PETERSBURG:
+        s = "Petersburg";
+        break;
+    case EVMC_ISTANBUL:
+        s = "Istanbul";
+        break;
+    case EVMC_BERLIN:
+        s = "Berlin";
+        break;
+    default:
+        throw std::invalid_argument{"invalid EVM revision: " + std::to_string(revision)};
+    }
+    return os << s;
+}
+
 }  // namespace evmc
