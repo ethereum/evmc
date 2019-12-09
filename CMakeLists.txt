@@ -44,6 +44,13 @@ project(evmc)
 set(PROJECT_VERSION 7.2.0-alpha.0)
 
 cable_configure_compiler(NO_STACK_PROTECTION)
+if(CABLE_COMPILER_CLANG)
+    set(CMAKE_C_FLAGS_COVERAGE "-fprofile-instr-generate -fcoverage-mapping")
+    set(CMAKE_CXX_FLAGS_COVERAGE "-fprofile-instr-generate -fcoverage-mapping")
+elseif(CABLE_COMPILER_GNU)
+    set(CMAKE_C_FLAGS_COVERAGE "--coverage")
+    set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
+endif()
 
 set(include_dir ${PROJECT_SOURCE_DIR}/include)
 

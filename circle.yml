@@ -109,6 +109,45 @@ jobs:
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
+  build-clang9-coverage:
+    docker:
+      - image: ethereum/cpp-build-env:12-clang-9
+    environment:
+      CMAKE_OPTIONS: -DCMAKE_BUILD_TYPE=Coverage
+    steps:
+      - run:
+          name: "Install lcov"
+          working_directory: /tmp
+          command: |
+            sudo apt-get -q update
+            # sudo apt-get install -qy lcov --no-install-recommends
+            apt-get download lcov
+            sudo dpkg -i --force-depends lcov*.deb
+      - build_and_test
+      - run:
+          name: "Collect coverage data"
+          working_directory: ~/build
+          command: |
+            find -name '*.profraw'
+            llvm-profdata merge *.profraw -o evmc.profdata
+            llvm-cov report -instr-profile evmc.profdata \
+              -object test/evmc-unittests \
+              -object bin/evmc-vmtester
+            llvm-cov export -instr-profile evmc.profdata -format=lcov > evmc.lcov \
+              -object test/evmc-unittests \
+              -object bin/evmc-vmtester
+            genhtml evmc.lcov -o coverage -t EVMC
+      - store_artifacts:
+          path: ~/build/coverage
+          destination: coverage
+      - run:
+          name: "Upload to Codecov"
+          command: |
+            # Convert to relative paths
+            sed -i 's|$(pwd)/||' ~/build/evmc.lcov
+            codecov --file ~/build/evmc.lcov -X gcov
+
+
   build-gcc8-cxx17:
     docker:
       - image: ethereum/cpp-build-env:12-gcc-8
@@ -271,6 +310,7 @@ workflows:
   evmc:
     jobs:
       - lint
+      - build-clang9-coverage
       - build-gcc8-cxx17
       - build-gcc9-cxx17-ubsan
       - build-clang9-cxx14-asan
