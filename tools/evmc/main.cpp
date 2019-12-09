@@ -17,9 +17,14 @@ int main(int argc, const char** argv)
 
     std::string vm_config;
     std::string code_hex;
+    evmc_message msg{};
+    msg.gas = 1000000;
+
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
-    run_cmd.add_option("--vm", vm_config)->required();
-    run_cmd.add_option("code", code_hex)->required();
+    run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
+    run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required();
+    run_cmd.add_option("--gas", msg.gas, "Execution gas limit", true)
+        ->check(CLI::Range(0, 1000000000));
 
     try
     {
@@ -49,8 +54,6 @@ int main(int argc, const char** argv)
             }
 
             MockedHost host;
-            evmc_message msg{};
-            msg.gas = 10000000;
 
             std::cout << "Executing on Istanbul with " << msg.gas << " gas limit\n"
                       << "in " << vm_config << "\n";
