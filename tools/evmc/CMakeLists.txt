@@ -11,4 +11,4 @@ set_target_properties(evmc-tool PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set_source_files_properties(main.cpp PROPERTIES
     COMPILE_DEFINITIONS PROJECT_VERSION="${PROJECT_VERSION}")
-target_link_libraries(evmc-tool PRIVATE CLI11::CLI11)
+target_link_libraries(evmc-tool PRIVATE evmc::mocked_host evmc::loader CLI11::CLI11)
