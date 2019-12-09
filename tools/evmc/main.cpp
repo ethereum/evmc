@@ -22,7 +22,7 @@ int main(int argc, const char** argv)
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
-    run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required();
+    run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
     run_cmd.add_option("--gas", msg.gas, "Execution gas limit", true)
         ->check(CLI::Range(0, 1000000000));
 
