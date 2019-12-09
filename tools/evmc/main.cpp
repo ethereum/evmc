@@ -19,12 +19,14 @@ int main(int argc, const char** argv)
     std::string code_hex;
     evmc_message msg{};
     msg.gas = 1000000;
+    auto rev = EVMC_ISTANBUL;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
     run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
     run_cmd.add_option("--gas", msg.gas, "Execution gas limit", true)
         ->check(CLI::Range(0, 1000000000));
+    run_cmd.add_option("--rev", rev, "EVM revision", true);
 
     try
     {
@@ -55,9 +57,9 @@ int main(int argc, const char** argv)
 
             MockedHost host;
 
-            std::cout << "Executing on Istanbul with " << msg.gas << " gas limit\n"
+            std::cout << "Executing on " << rev << " with " << msg.gas << " gas limit\n"
                       << "in " << vm_config << "\n";
-            const auto result = vm.execute(host, EVMC_ISTANBUL, msg, code.data(), code.size());
+            const auto result = vm.execute(host, rev, msg, code.data(), code.size());
 
             const auto gas_used = msg.gas - result.gas_left;
 
