@@ -3,7 +3,9 @@
 // Licensed under the Apache License, Version 2.0.
 #pragma once
 
+#include <evmc/evmc.h>
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 
 namespace evmc
@@ -26,5 +28,9 @@ bytes from_hex(const std::string& hex);
 
 /// Encodes bytes as hex string.
 std::string hex(const uint8_t* data, size_t size);
+
+
+/// Output stream operator for evmc_status_code.
+std::ostream& operator<<(std::ostream& os, evmc_status_code status_code);
 
 }  // namespace evmc
