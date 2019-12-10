@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
-- Added Java bindings.
+- Added **Java** bindings.
   [#455](https://github.com/ethereum/evmc/pull/455)
 - The C++ EVMC basic types `address` and `bytes32` have all the comparison operators supported.
   [#474](https://github.com/ethereum/evmc/pull/474)
+- New **evmc command-line tool** has been added. At the moment it supports
+  command _run_ for executing bytecode in any EVMC-compatible VM implementation.
+  Try `evmc run --help` for more information.
 
 
 ## [7.1.0] — 2019-11-29
