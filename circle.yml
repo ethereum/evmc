@@ -135,6 +135,7 @@ jobs:
               -object bin/evmc-vmtester
             llvm-cov export -instr-profile evmc.profdata -format=lcov > evmc.lcov \
               -object test/evmc-unittests \
+              -object bin/evmc \
               -object bin/evmc-vmtester
             genhtml evmc.lcov -o coverage -t EVMC
       - store_artifacts:
