@@ -12,3 +12,6 @@ set_tests_properties(
     ${prefix}/example1 PROPERTIES PASS_REGULAR_EXPRESSION
     "Result: +success[\r\n]+Gas used: +99[\r\n]+Output: +0000000000000000000000000000000000000000[\r\n]"
 )
+
+get_property(tools_tests DIRECTORY PROPERTY TESTS)
+set_tests_properties(${tools_tests} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/tools-%p.profraw)
