@@ -4,5 +4,6 @@
 
 add_subdirectory(cmake_package)
 add_subdirectory(compilation)
+add_subdirectory(tools)
 add_subdirectory(unittests)
 add_subdirectory(vmtester)

@@ -6,6 +6,7 @@ hunter_add_package(CLI11)
 find_package(CLI11 REQUIRED)
 
 add_executable(evmc-tool main.cpp utils.cpp utils.hpp)
+add_executable(evmc::tool ALIAS evmc-tool)
 set_target_properties(evmc-tool PROPERTIES
     OUTPUT_NAME evmc
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
