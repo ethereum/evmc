@@ -8,12 +8,12 @@
 
 namespace evmc
 {
-bytes from_hex(const std::string& hex)
+std::string from_hex(const std::string& hex)
 {
     if (hex.length() % 2 == 1)
         throw std::length_error{"the length of the input is odd"};
 
-    bytes bs;
+    std::string bs;
     bs.reserve(hex.length() / 2);
     int b = 0;
     for (size_t i = 0; i < hex.size(); ++i)
@@ -32,7 +32,7 @@ bytes from_hex(const std::string& hex)
         if (i % 2 == 0)
             b = v << 4;
         else
-            bs.push_back(static_cast<uint8_t>(b | v));
+            bs.push_back(static_cast<char>(b | v));
     }
     return bs;
 }

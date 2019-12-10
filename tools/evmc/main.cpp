@@ -2,11 +2,53 @@
 // Copyright 2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
-#include <CLI/CLI.hpp>
 #include <evmc/loader.h>
 #include <evmc/mocked_host.hpp>
+#include <iterator>
+#include <sstream>
+
+#include <iostream>
 
 #include "utils.hpp"
+
+namespace CLI
+{
+std::istringstream& operator>>(std::istringstream& in, evmc::bytes& val)
+{
+    using iterator_type = std::istream_iterator<std::istringstream::char_type>;
+    std::copy(iterator_type{in}, iterator_type{}, std::back_inserter(val));
+    in.clear(std::ios::eofbit);  // Clear fail state.
+    return in;
+}
+}  // namespace CLI
+
+#include <CLI/CLI.hpp>
+
+namespace CLI
+{
+namespace detail
+{
+template <>
+constexpr const char* type_name<evmc::bytes>()
+{
+    return "BYTES";
+}
+}  // namespace detail
+
+class Bytes : public CLI::Validator
+{
+public:
+    Bytes() : Validator{"HEX|FILE"}
+    {
+        func_ = [](std::string& input) -> std::string {
+            std::cerr << "in: " << input << "\n";
+            return evmc::from_hex(input);
+//            std::cerr << "out: " << input << "\n";
+//            return input;
+        };
+    }
+};
+}  // namespace CLI
 
 int main(int argc, const char** argv)
 {
@@ -16,13 +58,13 @@ int main(int argc, const char** argv)
     const auto& version_flag = *app.add_flag("--version", "Print version information");
 
     std::string vm_config;
-    std::string code_hex;
+    bytes code;
     evmc_message msg{};
     msg.gas = 1000000;
     auto rev = EVMC_ISTANBUL;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
-    run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
+    run_cmd.add_option("code", code, "Bytecode")->required()->check(CLI::Bytes{});
     run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
     run_cmd.add_option("--gas", msg.gas, "Execution gas limit", true)
         ->check(CLI::Range(0, 1000000000));
@@ -31,6 +73,8 @@ int main(int argc, const char** argv)
     try
     {
         app.parse(argc, argv);
+
+        std::cerr << "code " << hex(code.data(), code.size()) << "\n";
 
         // Handle the --version flag first and exit when present.
         if (version_flag)
@@ -41,8 +85,6 @@ int main(int argc, const char** argv)
 
         if (run_cmd)
         {
-            const auto code = from_hex(code_hex);
-
             evmc_loader_error_code ec;
             auto vm = VM{evmc_load_and_configure(vm_config.c_str(), &ec)};
             if (ec != EVMC_LOADER_SUCCESS)

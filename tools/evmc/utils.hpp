@@ -24,7 +24,7 @@ inline std::string hex(uint8_t b) noexcept
 /// Exceptions:
 /// - std::length_error when the input has invalid length (must be even).
 /// - std::out_of_range when invalid hex digit encountered.
-bytes from_hex(const std::string& hex);
+std::string from_hex(const std::string& hex);
 
 /// Encodes bytes as hex string.
 std::string hex(const uint8_t* data, size_t size);
