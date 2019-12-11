@@ -40,11 +40,12 @@ class Bytes : public CLI::Validator
 public:
     Bytes() : Validator{"HEX|FILE"}
     {
+        non_modifying_ = false;
         func_ = [](std::string& input) -> std::string {
             std::cerr << "in: " << input << "\n";
-            return evmc::from_hex(input);
-//            std::cerr << "out: " << input << "\n";
-//            return input;
+            input = evmc::from_hex(input);
+            std::cerr << "out: " << input << "\n";
+            return {};
         };
     }
 };
