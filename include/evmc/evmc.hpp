@@ -39,6 +39,45 @@ struct bytes32 : evmc_bytes32
     /// Initializes bytes to zeros if not other @p init value provided.
     constexpr bytes32(evmc_bytes32 init = {}) noexcept : evmc_bytes32{init} {}
 
+    /// Converting constructor from unsigned integer value.
+    ///
+    /// This constructor assigns the @p v value to the last 8 bytes [24:31]
+    /// in big-endian order.
+    constexpr explicit bytes32(uint64_t v) noexcept
+      : evmc_bytes32{{0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      static_cast<uint8_t>(v >> 56),
+                      static_cast<uint8_t>(v >> 48),
+                      static_cast<uint8_t>(v >> 40),
+                      static_cast<uint8_t>(v >> 32),
+                      static_cast<uint8_t>(v >> 24),
+                      static_cast<uint8_t>(v >> 16),
+                      static_cast<uint8_t>(v >> 8),
+                      static_cast<uint8_t>(v >> 0)}}
+    {}
+
     /// Explicit operator converting to bool.
     constexpr inline explicit operator bool() const noexcept;
 };
