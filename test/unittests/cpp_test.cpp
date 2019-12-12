@@ -330,6 +330,49 @@ TEST(cpp, literals)
     EXPECT_EQ(h1, f1);
 }
 
+TEST(cpp, bytes32_from_uint)
+{
+    using evmc::bytes32;
+    using evmc::operator""_bytes32;
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
+    static_assert(bytes32{0} == bytes32{}, "");
+    static_assert(bytes32{3}.bytes[31] == 3, "");
+    static_assert(bytes32{0xfe00000000000000}.bytes[24] == 0xfe, "");
+#endif
+
+    EXPECT_EQ(bytes32{0}, bytes32{});
+    EXPECT_EQ(bytes32{0x01},
+              0x0000000000000000000000000000000000000000000000000000000000000001_bytes32);
+    EXPECT_EQ(bytes32{0xff},
+              0x00000000000000000000000000000000000000000000000000000000000000ff_bytes32);
+    EXPECT_EQ(bytes32{0x500},
+              0x0000000000000000000000000000000000000000000000000000000000000500_bytes32);
+    EXPECT_EQ(bytes32{0x8000000000000000},
+              0x0000000000000000000000000000000000000000000000008000000000000000_bytes32);
+    EXPECT_EQ(bytes32{0xc1c2c3c4c5c6c7c8},
+              0x000000000000000000000000000000000000000000000000c1c2c3c4c5c6c7c8_bytes32);
+}
+
+TEST(cpp, address_from_uint)
+{
+    using evmc::address;
+    using evmc::operator""_address;
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
+    static_assert(address{0} == address{}, "");
+    static_assert(address{3}.bytes[19] == 3, "");
+    static_assert(address{0xfe00000000000000}.bytes[12] == 0xfe, "");
+#endif
+
+    EXPECT_EQ(address{0}, address{});
+    EXPECT_EQ(address{0x01}, 0x0000000000000000000000000000000000000001_address);
+    EXPECT_EQ(address{0xff}, 0x00000000000000000000000000000000000000ff_address);
+    EXPECT_EQ(address{0x500}, 0x0000000000000000000000000000000000000500_address);
+    EXPECT_EQ(address{0x8000000000000000}, 0x0000000000000000000000008000000000000000_address);
+    EXPECT_EQ(address{0xc1c2c3c4c5c6c7c8}, 0x000000000000000000000000c1c2c3c4c5c6c7c8_address);
+}
+
 TEST(cpp, result)
 {
     static const uint8_t output = 0;
