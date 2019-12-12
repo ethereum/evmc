@@ -352,6 +352,23 @@ TEST(cpp, bytes32_from_uint)
               0x000000000000000000000000000000000000000000000000c1c2c3c4c5c6c7c8_bytes32);
 }
 
+TEST(cpp, address_from_uint)
+{
+    using evmc::address;
+    using evmc::operator""_address;
+
+    static_assert(address{0} == address{}, "");
+    static_assert(address{3}.bytes[19] == 3, "");
+    static_assert(address{0xfe00000000000000}.bytes[12] == 0xfe, "");
+
+    EXPECT_EQ(address{0}, address{});
+    EXPECT_EQ(address{0x01}, 0x0000000000000000000000000000000000000001_address);
+    EXPECT_EQ(address{0xff}, 0x00000000000000000000000000000000000000ff_address);
+    EXPECT_EQ(address{0x500}, 0x0000000000000000000000000000000000000500_address);
+    EXPECT_EQ(address{0x8000000000000000}, 0x0000000000000000000000008000000000000000_address);
+    EXPECT_EQ(address{0xc1c2c3c4c5c6c7c8}, 0x000000000000000000000000c1c2c3c4c5c6c7c8_address);
+}
+
 TEST(cpp, result)
 {
     static const uint8_t output = 0;
