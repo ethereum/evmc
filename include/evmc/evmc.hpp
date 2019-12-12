@@ -189,16 +189,16 @@ namespace literals
 {
 namespace internal
 {
-template <typename T, T... Ints>
-struct integer_sequence
+template <typename T, T...>
+struct sequence
 {
 };
 
 template <uint8_t... Bytes>
-using byte_sequence = integer_sequence<uint8_t, Bytes...>;
+using byte_sequence = sequence<uint8_t, Bytes...>;
 
 template <char... Chars>
-using char_sequence = integer_sequence<char, Chars...>;
+using char_sequence = sequence<char, Chars...>;
 
 
 template <typename, typename>
