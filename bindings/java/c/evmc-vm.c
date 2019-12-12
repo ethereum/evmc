@@ -148,6 +148,8 @@ JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_set_1option(JNIEnv* jenv,
     assert(evm != NULL);
     const char* name = (*jenv)->GetStringUTFChars(jenv, jname, 0);
     const char* value = (*jenv)->GetStringUTFChars(jenv, jvalue, 0);
+    assert(name != NULL);
+    assert(value != NULL);
     enum evmc_set_option_result option_result = evmc_set_option(evm, name, value);
     (*jenv)->ReleaseStringUTFChars(jenv, jname, name);
     (*jenv)->ReleaseStringUTFChars(jenv, jvalue, value);
