@@ -7,14 +7,7 @@
 #include <evmc/loader.h>
 #include <iostream>
 
-evmc_vm* evmc_vm_test::vm;
 evmc::VM evmc_vm_test::owned_vm;
-
-void evmc_vm_test::init_vm(evmc_vm* _owned_vm) noexcept
-{
-    vm = _owned_vm;
-    owned_vm = evmc::VM{_owned_vm};
-}
 
 class cli_parser
 {
@@ -127,7 +120,7 @@ int main(int argc, char* argv[])
         std::cout << "Testing " << evmc_module << "\n";
 
         evmc_loader_error_code ec;
-        auto vm_instance = evmc_load_and_configure(evmc_module.c_str(), &ec);
+        auto vm = evmc::VM{evmc_load_and_configure(evmc_module.c_str(), &ec)};
         if (ec != EVMC_LOADER_SUCCESS)
         {
             const auto error = evmc_last_error_msg();
@@ -138,7 +131,7 @@ int main(int argc, char* argv[])
             return static_cast<int>(ec);
         }
 
-        evmc_vm_test::init_vm(vm_instance);
+        evmc_vm_test::set_vm(std::move(vm));
 
         std::cout << std::endl;
         return RUN_ALL_TESTS();

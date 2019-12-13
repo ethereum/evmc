@@ -435,6 +435,7 @@ TEST(cpp, vm_set_option)
     raw.destroy = [](evmc_vm*) {};
 
     auto vm = evmc::VM{&raw};
+    EXPECT_EQ(vm.get_raw_pointer(), &raw);
     EXPECT_EQ(vm.set_option("1", "2"), EVMC_SET_OPTION_INVALID_NAME);
 }
 
@@ -460,6 +461,7 @@ TEST(cpp, vm_null)
     evmc::VM vm;
     EXPECT_FALSE(vm);
     EXPECT_TRUE(!vm);
+    EXPECT_EQ(vm.get_raw_pointer(), nullptr);
 }
 
 TEST(cpp, vm_move)
@@ -496,10 +498,13 @@ TEST(cpp, vm_move)
         auto vm2 = std::move(vm1);
         EXPECT_TRUE(vm2);
         EXPECT_FALSE(vm1);  // NOLINT
+        EXPECT_EQ(vm1.get_raw_pointer(), nullptr);
         auto vm3 = std::move(vm2);
         EXPECT_TRUE(vm3);
         EXPECT_FALSE(vm2);  // NOLINT
+        EXPECT_EQ(vm2.get_raw_pointer(), nullptr);
         EXPECT_FALSE(vm1);
+        EXPECT_EQ(vm1.get_raw_pointer(), nullptr);
     }
     EXPECT_EQ(destroy_counter, 4);
     {
