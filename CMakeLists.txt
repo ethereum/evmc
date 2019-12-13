@@ -3,7 +3,10 @@
 # Licensed under the Apache License, Version 2.0.
 
 cmake_minimum_required(VERSION 3.5)
-cmake_policy(SET CMP0074 NEW)
+
+if(POLICY CMP0074)
+    cmake_policy(SET CMP0074 NEW)
+endif()
 
 if(TARGET evmc)
     # The evmc library has been already created (probably by other submodule).
