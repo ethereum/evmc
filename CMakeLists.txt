@@ -2,7 +2,7 @@
 # Copyright 2016-2019 The EVMC Authors.
 # Licensed under the Apache License, Version 2.0.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 if(POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
