@@ -727,6 +727,13 @@ public:
             m_instance->execute(m_instance, nullptr, nullptr, rev, &msg, code, code_size)};
     }
 
+    /// Returns the pointer to C EVMC struct representing the VM.
+    ///
+    /// Gives access to the C EVMC VM struct to allow advanced interaction with the VM not supported
+    /// by the C++ interface. Use as the last resort.
+    /// This object still owns the VM after returning the pointer. The returned pointer MAY be null.
+    evmc_vm* get_raw_pointer() const noexcept { return m_instance; }
+
 private:
     evmc_vm* m_instance = nullptr;
 };
