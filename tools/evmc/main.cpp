@@ -8,6 +8,11 @@
 
 #include "utils.hpp"
 
+namespace evmc
+{
+int check_command(VM& vm);
+}
+
 int main(int argc, const char** argv)
 {
     using namespace evmc;
@@ -41,6 +46,9 @@ int main(int argc, const char** argv)
         ->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
 
+    auto& check_cmd = *app.add_subcommand("check", "Check VM for compatibility with EVMC");
+    check_cmd.add_option_function("vm", load_vm, "EVMC VM module")->required();
+
     try
     {
         app.parse(argc, argv);
@@ -71,6 +79,8 @@ int main(int argc, const char** argv)
 
             return 0;
         }
+        else if (check_cmd)
+            check_command(vm);
 
         return 0;
     }
