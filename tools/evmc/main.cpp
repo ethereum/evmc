@@ -16,14 +16,27 @@ int main(int argc, const char** argv)
     const auto& version_flag = *app.add_flag("--version", "Print version information");
 
     std::string vm_config;
+    evmc::VM vm;
+    std::function<void(const std::string&)> load_vm = [&vm, &vm_config](const std::string& config) {
+        evmc_loader_error_code ec;
+        vm = VM{evmc_load_and_configure(config.c_str(), &ec)};
+        if (ec != EVMC_LOADER_SUCCESS)
+        {
+            const auto error = evmc_last_error_msg();
+            throw std::invalid_argument{error != nullptr ? error : "Loading error"};
+        }
+        vm_config = config;
+    };
+
     std::string code_hex;
     evmc_message msg{};
     msg.gas = 1000000;
     auto rev = EVMC_ISTANBUL;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
+    run_cmd.add_option_function("--vm", load_vm, "EVMC VM module")->required()->envname("EVMC_VM");
+
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
-    run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
     run_cmd.add_option("--gas", msg.gas, "Execution gas limit", true)
         ->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
@@ -42,18 +55,6 @@ int main(int argc, const char** argv)
         if (run_cmd)
         {
             const auto code = from_hex(code_hex);
-
-            evmc_loader_error_code ec;
-            auto vm = VM{evmc_load_and_configure(vm_config.c_str(), &ec)};
-            if (ec != EVMC_LOADER_SUCCESS)
-            {
-                const auto error = evmc_last_error_msg();
-                if (error != nullptr)
-                    std::cerr << error << "\n";
-                else
-                    std::cerr << "Loading error " << ec << "\n";
-                return static_cast<int>(ec);
-            }
 
             MockedHost host;
 
