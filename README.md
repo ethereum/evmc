@@ -31,7 +31,8 @@ Please visit the [documentation].
 
 ### Testing tools
 
-* **evmc-vmtester** ([test/vmtester]) — can test any EVM implementation for compatibility with EVMC.
+* **evmc run** ([tools/evmc]) — executes bytecode in any EVMC-compatible VM implementation.
+* **evmc-vmtester** ([tools/vmtester]) — can test any EVM implementation for compatibility with EVMC.
 * **evm-test** ([evmone → test/unittests]) — allows running the collection of [evmone]'s unit tests on any EVMC-compatible EVM implementation.
 * **evmone-fuzzer** ([evmone → test/fuzzer]) — differential fuzzer for EVMC-compatible EVM implementations. 
 
@@ -109,7 +110,8 @@ Licensed under the [MIT License](LICENSE).
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
-[test/vmtester]: https://github.com/ethereum/evmc/tree/master/test/vmtester
+[tools/evmc]: https://github.com/ethereum/evmc/tree/master/tools/evmc
+[tools/vmtester]: https://github.com/ethereum/evmc/tree/master/tools/vmtester
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
 [readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
