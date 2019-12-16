@@ -19,19 +19,20 @@ Please visit the [documentation].
 
 ### Languages support
 
-| Language                      | Supported Versions    | Supported Compilers
-| ----------------------------- | --------------------- | ------------------------------
-| **C**                         | C99, C11              | GCC 6+, clang 3.8+, MSVC 2015+
-| **C++**                       | C++11, C++14, C++17   | GCC 6+, clang 3.8+, MSVC 2015+
-| **Go** _(bindings)_           | 1.9 - 1.12            |
-| **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.37.0 and newer
-| **Java** _(bindings)_         | 11                    |
+| Language                      | Supported Versions    | Supported Compilers            | Feature Support
+| ----------------------------- | --------------------- | ------------------------------ | -------------------
+| **C**                         | C99, C11              | GCC 6+, clang 3.8+, MSVC 2015+ | Host- and VM-side
+| **C++**                       | C++11, C++14, C++17   | GCC 6+, clang 3.8+, MSVC 2015+ | Host- and VM-side
+| **Go** _(bindings)_           | 1.9 - 1.12            |                                | Host-side only
+| **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.37.0 and newer               | VM-side only
+| **Java** _(bindings)_         | 11                    |                                | Host-side only
 
 <b id="n1">1</b>. Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
 
 ### Testing tools
 
-* **evmc-vmtester** ([test/vmtester]) — can test any EVM implementation for compatibility with EVMC.
+* **evmc run** ([tools/evmc]) — executes bytecode in any EVMC-compatible VM implementation.
+* **evmc-vmtester** ([tools/vmtester]) — can test any EVM implementation for compatibility with EVMC.
 * **evm-test** ([evmone → test/unittests]) — allows running the collection of [evmone]'s unit tests on any EVMC-compatible EVM implementation.
 * **evmone-fuzzer** ([evmone → test/fuzzer]) — differential fuzzer for EVMC-compatible EVM implementations. 
 
@@ -109,7 +110,8 @@ Licensed under the [MIT License](LICENSE).
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [standard readme]: https://github.com/RichardLitt/standard-readme
-[test/vmtester]: https://github.com/ethereum/evmc/tree/master/test/vmtester
+[tools/evmc]: https://github.com/ethereum/evmc/tree/master/tools/evmc
+[tools/vmtester]: https://github.com/ethereum/evmc/tree/master/tools/vmtester
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
 [readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
