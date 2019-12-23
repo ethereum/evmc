@@ -31,6 +31,7 @@ target_link_libraries(
     evmc::example-vm-static
     evmc::example-precompiles-vm-static
     evmc::instructions
+    evmc::evmc_cpp
     GTest::gtest_main
 )
 set_target_properties(evmc-unittests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)

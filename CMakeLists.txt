@@ -16,9 +16,8 @@ endif()
 include(cmake/cable/bootstrap.cmake)
 include(CableBuildType)
 include(CableCompilerSettings)
-include(CMakeDependentOption)
 include(CablePackage)
-include(CableToolchains)
+include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -41,7 +40,6 @@ if(HUNTER_ENABLED)
     include(defaults/HunterCacheServers)
 endif()
 
-cable_configure_toolchain(DEFAULT cxx11-pic)
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
