@@ -315,6 +315,12 @@ enum evmc_status_code
     EVMC_OUT_OF_MEMORY = -3
 };
 
+struct evmc_destruct_list
+{
+    unsigned count;
+    evmc_address* list;
+}
+
 /* Forward declaration. */
 struct evmc_result;
 
@@ -412,6 +418,8 @@ struct evmc_result
      * In all other cases the address MUST be null bytes.
      */
     evmc_address create_address;
+
+    struct evmc_destruct_list destructed_addresses;
 
     /**
      * Reserved data that MAY be used by a evmc_result object creator.
