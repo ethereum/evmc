@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning].
 - New **evmc command-line tool** has been added. At the moment it supports
   command _run_ for executing bytecode in any EVMC-compatible VM implementation.
   Try `evmc run --help` for more information.
+  
+### Fixed
+
+- The implementation of C++ `operator<` for `evmc::address` and `evmc::bytes32` has been fixed.
+  [#498](https://github.com/ethereum/evmc/pull/498)
 
 
 ## [7.1.0] — 2019-11-29
