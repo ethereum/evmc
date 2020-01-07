@@ -223,10 +223,17 @@ TEST(cpp, address_comparison)
     auto max = evmc::address{};
     std::fill_n(max.bytes, sizeof(max), uint8_t{0xff});
 
+    auto zero_max = evmc::address{};
+    std::fill_n(zero_max.bytes + 8, sizeof(zero_max) - 8, uint8_t{0xff});
+    auto max_zero = evmc::address{};
+    std::fill_n(max_zero.bytes, sizeof(max_zero) - 8, uint8_t{0xff});
+
     expect_cmp(zero, zero, equal);
     expect_cmp(max, max, equal);
     expect_cmp(zero, max, less);
     expect_cmp(max, zero, greater);
+    expect_cmp(zero_max, max_zero, less);
+    expect_cmp(max_zero, zero_max, greater);
 
     for (size_t i = 0; i < sizeof(evmc::address); ++i)
     {
@@ -260,11 +267,17 @@ TEST(cpp, bytes32_comparison)
     const auto zero = evmc::bytes32{};
     auto max = evmc::bytes32{};
     std::fill_n(max.bytes, sizeof(max), uint8_t{0xff});
+    auto z_max = evmc::bytes32{};
+    std::fill_n(z_max.bytes + 8, sizeof(max) - 8, uint8_t{0xff});
+    auto max_z = evmc::bytes32{};
+    std::fill_n(max_z.bytes, sizeof(max) - 8, uint8_t{0xff});
 
     expect_cmp(zero, zero, equal);
     expect_cmp(max, max, equal);
     expect_cmp(zero, max, less);
     expect_cmp(max, zero, greater);
+    expect_cmp(z_max, max_z, less);
+    expect_cmp(max_z, z_max, greater);
 
     for (size_t i = 0; i < sizeof(evmc::bytes32); ++i)
     {
