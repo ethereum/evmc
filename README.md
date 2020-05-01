@@ -48,6 +48,7 @@ Please visit the [documentation].
 - [Hera.rs]
 - [Daytona]
 - [eip1962-evmc] (EIP-2003 style precompile)
+- [ssvm-evmc]
 
 ### Clients
 
@@ -56,8 +57,11 @@ Please visit the [documentation].
 - [go-ethereum] (in progress)
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
+- [turbo-geth]
+- [core-geth] (in progress)
+- [rust-ssvm] (Rust Host-side)
+- [evmc-js]
 - [Solidity] (for integration testing)
-
 
 ## Maintainers
 
@@ -101,6 +105,7 @@ Licensed under the [MIT License](LICENSE).
 [Hera.rs]: https://github.com/ewasm/hera.rs
 [Daytona]: https://github.com/axic/daytona
 [eip1962-evmc]: https://github.com/axic/eip1962-evmc
+[ssvm-evmc]: https://github.com/second-state/SSVM
 [Gitter]: https://gitter.im/ethereum/evmc
 [aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
 [aleth]: https://github.com/ethereum/aleth
@@ -109,6 +114,10 @@ Licensed under the [MIT License](LICENSE).
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
+[turbo-geth]: https://github.com/ledgerwatch/turbo-geth
+[core-geth]: https://github.com/etclabscore/core-geth/issues/55
+[evmc-js]: https://github.com/RainBlock/evmc-js
+[rust-ssvm]: https://github.com/second-state/rust-ssvm
 [standard readme]: https://github.com/RichardLitt/standard-readme
 [tools/evmc]: https://github.com/ethereum/evmc/tree/master/tools/evmc
 [tools/vmtester]: https://github.com/ethereum/evmc/tree/master/tools/vmtester
