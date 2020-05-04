@@ -5,7 +5,7 @@
 package evmc
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/.. -Wall -Wextra
+#cgo CFLAGS: -I${SRCDIR}/..  -I${SRCDIR}/../../../include -I${SRCDIR}/../../../lib -Wall -Wextra
 #cgo !windows LDFLAGS: -ldl
 
 #include <evmc/evmc.h>
@@ -14,6 +14,8 @@ package evmc
 
 #include <stdlib.h>
 #include <string.h>
+
+#include "loader/loader.c"
 
 static inline enum evmc_set_option_result set_option(struct evmc_vm* vm, char* name, char* value)
 {

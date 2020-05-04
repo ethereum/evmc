@@ -1,10 +1,11 @@
+// EVMC: Ethereum Client-VM Connector API.
 // Copyright 2018-2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
 package evmc
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/.. -Wall -Wextra -Wno-unused-parameter
+#cgo CFLAGS: -I${SRCDIR}/..  -I${SRCDIR}/../../../include -Wall -Wextra -Wno-unused-parameter
 
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>
