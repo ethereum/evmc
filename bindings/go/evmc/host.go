@@ -1,4 +1,3 @@
-// EVMC: Ethereum Client-VM Connector API.
 // Copyright 2018-2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
@@ -15,8 +14,6 @@ import "C"
 import (
 	"math/big"
 	"unsafe"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type CallKind int
@@ -39,16 +36,16 @@ const (
 	StorageDeleted       StorageStatus = C.EVMC_STORAGE_DELETED
 )
 
-func goAddress(in C.evmc_address) common.Address {
-	out := common.Address{}
+func goAddress(in C.evmc_address) Address {
+	out := Address{}
 	for i := 0; i < len(out); i++ {
 		out[i] = byte(in.bytes[i])
 	}
 	return out
 }
 
-func goHash(in C.evmc_bytes32) common.Hash {
-	out := common.Hash{}
+func goHash(in C.evmc_bytes32) Hash {
+	out := Hash{}
 	for i := 0; i < len(out); i++ {
 		out[i] = byte(in.bytes[i])
 	}
@@ -64,31 +61,31 @@ func goByteSlice(data *C.uint8_t, size C.size_t) []byte {
 
 // TxContext contains information about current transaction and block.
 type TxContext struct {
-	GasPrice   common.Hash
-	Origin     common.Address
-	Coinbase   common.Address
+	GasPrice   Hash
+	Origin     Address
+	Coinbase   Address
 	Number     int64
 	Timestamp  int64
 	GasLimit   int64
-	Difficulty common.Hash
-	ChainID    common.Hash
+	Difficulty Hash
+	ChainID    Hash
 }
 
 type HostContext interface {
-	AccountExists(addr common.Address) bool
-	GetStorage(addr common.Address, key common.Hash) common.Hash
-	SetStorage(addr common.Address, key common.Hash, value common.Hash) StorageStatus
-	GetBalance(addr common.Address) common.Hash
-	GetCodeSize(addr common.Address) int
-	GetCodeHash(addr common.Address) common.Hash
-	GetCode(addr common.Address) []byte
-	Selfdestruct(addr common.Address, beneficiary common.Address)
+	AccountExists(addr Address) bool
+	GetStorage(addr Address, key Hash) Hash
+	SetStorage(addr Address, key Hash, value Hash) StorageStatus
+	GetBalance(addr Address) Hash
+	GetCodeSize(addr Address) int
+	GetCodeHash(addr Address) Hash
+	GetCode(addr Address) []byte
+	Selfdestruct(addr Address, beneficiary Address)
 	GetTxContext() TxContext
-	GetBlockHash(number int64) common.Hash
-	EmitLog(addr common.Address, topics []common.Hash, data []byte)
+	GetBlockHash(number int64) Hash
+	EmitLog(addr Address, topics []Hash, data []byte)
 	Call(kind CallKind,
-		destination common.Address, sender common.Address, value *big.Int, input []byte, gas int64, depth int,
-		static bool, salt *big.Int) (output []byte, gasLeft int64, createAddr common.Address, err error)
+		destination Address, sender Address, value *big.Int, input []byte, gas int64, depth int,
+		static bool, salt *big.Int) (output []byte, gasLeft int64, createAddr Address, err error)
 }
 
 //export accountExists
@@ -186,7 +183,7 @@ func emitLog(pCtx unsafe.Pointer, pAddr *C.evmc_address, pData unsafe.Pointer, d
 	tData := C.GoBytes(pTopics, C.int(topicsCount*32))
 
 	nTopics := int(topicsCount)
-	topics := make([]common.Hash, nTopics)
+	topics := make([]Hash, nTopics)
 	for i := 0; i < nTopics; i++ {
 		copy(topics[i][:], tData[i*32:(i+1)*32])
 	}

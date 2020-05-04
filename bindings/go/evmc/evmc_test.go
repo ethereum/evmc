@@ -9,8 +9,6 @@ package evmc
 import (
 	"bytes"
 	"testing"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var modulePath = "./example_vm.so"
@@ -47,8 +45,8 @@ func TestExecute(t *testing.T) {
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()
 
-	addr := common.Address{}
-	h := common.Hash{}
+	addr := Address{}
+	h := Hash{}
 	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil, h)
 
 	if bytes.Compare(output, []byte("Welcome to Byzantium!")) != 0 {

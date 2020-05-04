@@ -8,41 +8,39 @@ import (
 	"bytes"
 	"math/big"
 	"testing"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type testHostContext struct{}
 
-func (host *testHostContext) AccountExists(addr common.Address) bool {
+func (host *testHostContext) AccountExists(addr Address) bool {
 	return false
 }
 
-func (host *testHostContext) GetStorage(addr common.Address, key common.Hash) common.Hash {
-	return common.Hash{}
+func (host *testHostContext) GetStorage(addr Address, key Hash) Hash {
+	return Hash{}
 }
 
-func (host *testHostContext) SetStorage(addr common.Address, key common.Hash, value common.Hash) (status StorageStatus) {
+func (host *testHostContext) SetStorage(addr Address, key Hash, value Hash) (status StorageStatus) {
 	return StorageUnchanged
 }
 
-func (host *testHostContext) GetBalance(addr common.Address) common.Hash {
-	return common.Hash{}
+func (host *testHostContext) GetBalance(addr Address) Hash {
+	return Hash{}
 }
 
-func (host *testHostContext) GetCodeSize(addr common.Address) int {
+func (host *testHostContext) GetCodeSize(addr Address) int {
 	return 0
 }
 
-func (host *testHostContext) GetCodeHash(addr common.Address) common.Hash {
-	return common.Hash{}
+func (host *testHostContext) GetCodeHash(addr Address) Hash {
+	return Hash{}
 }
 
-func (host *testHostContext) GetCode(addr common.Address) []byte {
+func (host *testHostContext) GetCode(addr Address) []byte {
 	return nil
 }
 
-func (host *testHostContext) Selfdestruct(addr common.Address, beneficiary common.Address) {
+func (host *testHostContext) Selfdestruct(addr Address, beneficiary Address) {
 }
 
 func (host *testHostContext) GetTxContext() TxContext {
@@ -51,18 +49,18 @@ func (host *testHostContext) GetTxContext() TxContext {
 	return txContext
 }
 
-func (host *testHostContext) GetBlockHash(number int64) common.Hash {
-	return common.Hash{}
+func (host *testHostContext) GetBlockHash(number int64) Hash {
+	return Hash{}
 }
 
-func (host *testHostContext) EmitLog(addr common.Address, topics []common.Hash, data []byte) {
+func (host *testHostContext) EmitLog(addr Address, topics []Hash, data []byte) {
 }
 
 func (host *testHostContext) Call(kind CallKind,
-	destination common.Address, sender common.Address, value *big.Int, input []byte, gas int64, depth int,
-	static bool, salt *big.Int) (output []byte, gasLeft int64, createAddr common.Address, err error) {
+	destination Address, sender Address, value *big.Int, input []byte, gas int64, depth int,
+	static bool, salt *big.Int) (output []byte, gasLeft int64, createAddr Address, err error) {
 	output = []byte("output from testHostContext.Call()")
-	return output, gas, common.Address{}, nil
+	return output, gas, Address{}, nil
 }
 
 func TestGetTxContext(t *testing.T) {
@@ -72,8 +70,8 @@ func TestGetTxContext(t *testing.T) {
 	host := &testHostContext{}
 	code := []byte("\x43\x60\x00\x52\x59\x60\x00\xf3")
 
-	addr := common.Address{}
-	h := common.Hash{}
+	addr := Address{}
+	h := Hash{}
 	output, gasLeft, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code, h)
 
 	if len(output) != 20 {
@@ -97,8 +95,8 @@ func TestCall(t *testing.T) {
 	host := &testHostContext{}
 	code := []byte("\x60\x00\x80\x80\x80\x80\x80\x80\xf1")
 
-	addr := common.Address{}
-	h := common.Hash{}
+	addr := Address{}
+	h := Hash{}
 	output, gasLeft, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code, h)
 
 	if bytes.Compare(output, []byte("output from testHostContext.Call()")) != 0 {
