@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
 
+## [7.3.0] — unreleased
+
+### Changed
+
+- Removed dependency on go-ethereum in Go bindings by introducing own `Address` and `Hash` types.
+  [#513](https://github.com/ethereum/evmc/pull/513)
+
+
 ## [7.2.0] — 2020-05-13
 
 ### Added
