@@ -42,22 +42,26 @@ Please visit the [documentation].
 ### EVMs
 
 - [aleth-interpreter]
+- [Daytona]
+- [eip1962-evmc] (EIP-2003 style precompile)
 - [evmjit]
 - [evmone]
 - [Hera]
 - [Hera.rs]
-- [Daytona]
-- [eip1962-evmc] (EIP-2003 style precompile)
+- [ssvm-evmc]
 
 ### Clients
 
 - [aleth]
-- [nim-evmc]
+- [core-geth] (in progress)
+- [evmc-js]
 - [go-ethereum] (in progress)
+- [nim-evmc]
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
+- [rust-ssvm] (Rust Host-side)
 - [Solidity] (for integration testing)
-
+- [turbo-geth]
 
 ## Maintainers
 
@@ -74,8 +78,9 @@ Talk with us on the [EVMC Gitter chat][Gitter].
 
 ## License
 
-Licensed under the [MIT License](LICENSE).
+[![license badge]][Apache License, Version 2.0]
 
+Licensed under the [Apache License, Version 2.0].
 
 ## Internal
 
@@ -91,6 +96,7 @@ Licensed under the [MIT License](LICENSE).
 
 [@axic]: https://github.com/axic
 [@chfast]: https://github.com/chfast
+[Apache License, Version 2.0]: LICENSE
 [documentation]: https://ethereum.github.io/evmc
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
@@ -101,6 +107,7 @@ Licensed under the [MIT License](LICENSE).
 [Hera.rs]: https://github.com/ewasm/hera.rs
 [Daytona]: https://github.com/axic/daytona
 [eip1962-evmc]: https://github.com/axic/eip1962-evmc
+[ssvm-evmc]: https://github.com/second-state/SSVM
 [Gitter]: https://gitter.im/ethereum/evmc
 [aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
 [aleth]: https://github.com/ethereum/aleth
@@ -109,9 +116,14 @@ Licensed under the [MIT License](LICENSE).
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
+[turbo-geth]: https://github.com/ledgerwatch/turbo-geth
+[core-geth]: https://github.com/etclabscore/core-geth/issues/55
+[evmc-js]: https://github.com/RainBlock/evmc-js
+[rust-ssvm]: https://github.com/second-state/rust-ssvm
 [standard readme]: https://github.com/RichardLitt/standard-readme
 [tools/evmc]: https://github.com/ethereum/evmc/tree/master/tools/evmc
 [tools/vmtester]: https://github.com/ethereum/evmc/tree/master/tools/vmtester
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
+[license badge]: https://img.shields.io/github/license/ethereum/evmc.svg?logo=apache
 [readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
