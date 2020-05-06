@@ -1,14 +1,8 @@
 version: 2.1
 
-executors:
-  linux:
-    docker:
-      - image: ethereum/cpp-build-env:10
-
 commands:
-  build_and_test:
+  build:
     steps:
-      - checkout
       - run:
           name: "Environment"
           command: |
@@ -27,14 +21,6 @@ commands:
           name: "Build"
           command: cmake --build ~/build -- -j4
       - run:
-          name: "Test"
-          command: |
-            cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
-            # Test statically linked end-to-end example
-            ~/build/examples/evmc-example-static
-            # Test dynamically loaded end-to-end example
-            ~/build/examples/evmc-example ~/build/examples/example_vm/libexample-vm.so
-      - run:
           name: "Install"
           command: cmake --build ~/build --target install
       - run:
@@ -52,6 +38,17 @@ commands:
           paths:
             - bin/evmc-vmtester
             - examples/evmc-example
+
+  test:
+    steps:
+      - run:
+          name: "Test"
+          command: |
+            cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
+            # Test statically linked end-to-end example
+            ~/build/examples/evmc-example-static
+            # Test dynamically loaded end-to-end example
+            ~/build/examples/evmc-example ~/build/examples/example_vm/libexample-vm.so
 
 jobs:
 
@@ -123,7 +120,9 @@ jobs:
             # sudo apt-get install -qy lcov --no-install-recommends
             apt-get download lcov
             sudo dpkg -i --force-depends lcov*.deb
-      - build_and_test
+      - checkout
+      - build
+      - test
       - run:
           name: "Collect coverage data"
           working_directory: ~/build
@@ -155,7 +154,9 @@ jobs:
     environment:
       CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-gcc9-cxx17-ubsan:
     docker:
@@ -163,7 +164,9 @@ jobs:
     environment:
       CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=undefined
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-clang9-cxx14-asan:
     docker:
@@ -172,25 +175,33 @@ jobs:
       CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=14 -DSANITIZE=address
       UBSAN_OPTIONS: halt_on_error=1
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-gcc6:
     docker:
       - image: ethereum/cpp-build-env:12-gcc-6
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-clang5:
     docker:
       - image: ethereum/cpp-build-env:12-clang-5
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-clang38:
     docker:
       - image: ethereum/cpp-build-env:12-clang-3.8
     steps:
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   build-gcc-32bit:
     docker:
@@ -201,7 +212,9 @@ jobs:
       - run:
           name: "Install GCC 32-bit"
           command: sudo apt -q update && sudo apt -qy install g++-multilib
-      - build_and_test
+      - checkout
+      - build
+      - test
 
   bindings-go-latest:
     docker:
