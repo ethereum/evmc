@@ -238,8 +238,6 @@ jobs:
   build-cmake-min:
     docker:
       - image: circleci/buildpack-deps:bionic
-    environment:
-      CMAKE_OPTIONS: -DHUNTER_RUN_UPLOAD=NO
     steps:
       - run:
           name: "Install default CMake"
@@ -270,8 +268,17 @@ jobs:
   bindings-java:
     docker:
       - image: circleci/openjdk:13-buster
+    environment:
+      CMAKE_OPTIONS: -DEVMC_JAVA=ON
     steps:
+      - run:
+          name: "Install CMake"
+          command: |
+            sudo apt -qq update
+            sudo apt -yq install cmake
       - checkout
+      - build
+      - test
       - run:
           name: "Java Build"
           command: |
