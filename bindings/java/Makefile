@@ -2,7 +2,7 @@ OS:=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 ifeq ($(OS), linux)
 	EXT:=so
 	OS_LFLAGS:=
-	JAVA_HOME:=/usr/local/openjdk-11
+	JAVA_HOME:=$(shell java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | sed 's/\s*java.home = //' | sed 's/\/jre//')
 else ifeq ($(OS), darwin)
 	EXT:=so
 	OS_LFLAGS:=-mmacosx-version-min=$(shell defaults read loginwindow SystemVersionStampAsString) -framework CoreFoundation -framework Security
@@ -17,7 +17,7 @@ LFLAGS = -shared
 OUT_DIR = ./c/build
 
 gradlew:
-	gradle setup
+	gradle --no-daemon setup
 
 build: gradlew
 	mkdir -p $(OUT_DIR)
