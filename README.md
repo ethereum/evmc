@@ -78,8 +78,9 @@ Talk with us on the [EVMC Gitter chat][Gitter].
 
 ## License
 
-Licensed under the [MIT License](LICENSE).
+[![license badge]][Apache License, Version 2.0]
 
+Licensed under the [Apache License, Version 2.0].
 
 ## Internal
 
@@ -95,6 +96,7 @@ Licensed under the [MIT License](LICENSE).
 
 [@axic]: https://github.com/axic
 [@chfast]: https://github.com/chfast
+[Apache License, Version 2.0]: LICENSE
 [documentation]: https://ethereum.github.io/evmc
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
@@ -123,4 +125,5 @@ Licensed under the [MIT License](LICENSE).
 [tools/vmtester]: https://github.com/ethereum/evmc/tree/master/tools/vmtester
 
 [gitter badge]: https://img.shields.io/gitter/room/ethereum/evmc.svg
+[license badge]: https://img.shields.io/github/license/ethereum/evmc.svg?logo=apache
 [readme style standard badge]: https://img.shields.io/badge/readme%20style-standard-brightgreen.svg
