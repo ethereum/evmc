@@ -237,7 +237,7 @@ jobs:
 
   bindings-java:
     docker:
-      - image: circleci/openjdk:11-buster
+      - image: circleci/openjdk:13-buster
     steps:
       - checkout
       - run:
