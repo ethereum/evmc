@@ -237,14 +237,9 @@ jobs:
 
   bindings-java:
     docker:
-      - image: circleci/openjdk:11-stretch
+      - image: circleci/openjdk:11-buster
     steps:
       - checkout
-      - run:
-          name: Update environment
-          command: |
-            sudo apt -qq update
-            sudo apt -yq install build-essential
       - run:
           name: "Java Build"
           command: |
