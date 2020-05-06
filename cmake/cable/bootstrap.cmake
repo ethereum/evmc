@@ -1,5 +1,5 @@
-# Cable: CMake Bootstrap Library.
-# Copyright 2019 Pawel Bylica.
+# Cable: CMake Bootstrap Library <https://github.com/ethereum/cable>
+# Copyright 2019-2020 Pawel Bylica.
 # Licensed under the Apache License, Version 2.0.
 
 # Bootstrap the Cable - CMake Bootstrap Library by including this file.
@@ -10,7 +10,7 @@
 #
 # This is internal variable automatically updated with external tools.
 # Use CABLE_VERSION variable if you need this information.
-set(version 0.4.4)
+set(version 0.5.0)
 
 # For convenience, add the project CMake module dir to module path.
 set(module_dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
