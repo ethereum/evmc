@@ -1,6 +1,14 @@
-# Cable: CMake Bootstrap Library.
-# Copyright 2019 Pawel Bylica.
-# Licensed under the Apache License, Version 2.0. See the LICENSE file.
+# Cable: CMake Bootstrap Library <https://github.com/ethereum/cable>
+# Copyright 2019-2020 Pawel Bylica.
+# Licensed under the Apache License, Version 2.0.
+
+# Cable Package, version 1.0.0
+#
+# This CMake module provides default configuration for CPack
+#
+# CHANGELOG
+#
+# 1.0.0 - 2020-05-06
 
 if(cable_package_included)
     return()
