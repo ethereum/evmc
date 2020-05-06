@@ -42,26 +42,26 @@ Please visit the [documentation].
 ### EVMs
 
 - [aleth-interpreter]
+- [Daytona]
+- [eip1962-evmc] (EIP-2003 style precompile)
 - [evmjit]
 - [evmone]
 - [Hera]
 - [Hera.rs]
-- [Daytona]
-- [eip1962-evmc] (EIP-2003 style precompile)
 - [ssvm-evmc]
 
 ### Clients
 
 - [aleth]
-- [nim-evmc]
+- [core-geth] (in progress)
+- [evmc-js]
 - [go-ethereum] (in progress)
+- [nim-evmc]
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
-- [turbo-geth]
-- [core-geth] (in progress)
 - [rust-ssvm] (Rust Host-side)
-- [evmc-js]
 - [Solidity] (for integration testing)
+- [turbo-geth]
 
 ## Maintainers
 
