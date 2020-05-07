@@ -7,6 +7,12 @@
 #include "evmc/loader.h"
 #include "host.h"
 
+static void throw_java_assert(JNIEnv* jenv, const char* msg)
+{
+    jclass jcls = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
+    (*jenv)->ThrowNew(jenv, jcls, msg);
+}
+
 JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
                                                              jclass jcls,
                                                              jstring jfilename)
@@ -15,23 +21,16 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
     jint rs = set_jvm(jenv);
     assert(rs == JNI_OK);
     // load the EVM
-    const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, 0);
-    if (filename != NULL)
+    const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, NULL);
+    if (filename == NULL)
+        throw_java_assert(jenv, "JNI Error: filename cannot be NULL");
+    enum evmc_loader_error_code loader_error;
+    evm = evmc_load_and_create(filename, &loader_error);
+    (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
+    if (loader_error != EVMC_LOADER_SUCCESS)
     {
-        enum evmc_loader_error_code loader_error;
-        evm = evmc_load_and_create(filename, &loader_error);
-        if (evm == NULL || loader_error != EVMC_LOADER_SUCCESS)
-        {
-            const char* error_msg = evmc_last_error_msg();
-            jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-            (*jenv)->ThrowNew(jenv, jclazz, error_msg ? error_msg : "Loading EVMC VM failed");
-        }
-        (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
-    }
-    else
-    {
-        jclass jclazz = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-        (*jenv)->ThrowNew(jenv, jclazz, "JNI Error: filename cannot be NULL. \n");
+        const char* error_msg = evmc_last_error_msg();
+        throw_java_assert(jenv, error_msg ? error_msg : "Loading EVMC VM failed");
     }
     jobject jresult = (*jenv)->NewDirectByteBuffer(jenv, (void*)evm, sizeof(struct evmc_vm));
     assert(jresult != NULL);
@@ -151,6 +150,8 @@ JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_set_1option(JNIEnv* jenv,
     assert(evm != NULL);
     const char* name = (*jenv)->GetStringUTFChars(jenv, jname, 0);
     const char* value = (*jenv)->GetStringUTFChars(jenv, jvalue, 0);
+    assert(name != NULL);
+    assert(value != NULL);
     enum evmc_set_option_result option_result = evmc_set_option(evm, name, value);
     (*jenv)->ReleaseStringUTFChars(jenv, jname, name);
     (*jenv)->ReleaseStringUTFChars(jenv, jvalue, value);

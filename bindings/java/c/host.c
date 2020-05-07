@@ -18,11 +18,21 @@ static JNIEnv* attach()
     return jenv;
 }
 
+// Why isn't this helper part of JNI?
+static jbyteArray CopyDataToJava(JNIEnv* jenv, const void* ptr, size_t size)
+{
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, size);
+    assert(ret != NULL);
+    (*jenv)->SetByteArrayRegion(jenv, ret, 0, size, (jbyte*)ptr);
+    return ret;
+}
+
 static bool account_exists_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     bool result = false;
     const char java_method_name[] = "account_exists";
     const char java_method_signature[] = "(I[B)I";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -41,15 +51,8 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
-        assert(jaddress != NULL);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
         // call java method
         jint jresult =
@@ -66,6 +69,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
     evmc_bytes32 result;
     const char java_method_name[] = "get_storage";
     const char java_method_signature[] = "(I[B[B)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -74,6 +78,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
         jint jcontext_index;
         jbyteArray jaddress;
         jbyteArray jkey;
+
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
         assert(host_class != NULL);
@@ -84,18 +89,9 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
         assert(method != NULL);
 
         // set java method params
-
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
-        jkey = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_bytes32));
-        assert(jkey != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jkey, 0, sizeof(struct evmc_bytes32), (jbyte*)key);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+        jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
 
         // call java method
         jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index,
@@ -118,6 +114,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
     enum evmc_storage_status result;
     const char java_method_name[] = "set_storage";
     const char java_method_signature[] = "(I[B[B[B)I";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -127,30 +124,21 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
         jbyteArray jaddress;
         jbyteArray jkey;
         jbyteArray jvalue;
+
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
         assert(host_class != NULL);
+
         // get java method
         method =
             (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
-        jkey = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_bytes32));
-        assert(jkey != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jkey, 0, sizeof(struct evmc_bytes32), (jbyte*)key);
-
-        jvalue = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_bytes32));
-        assert(jvalue != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jvalue, 0, sizeof(struct evmc_bytes32), (jbyte*)value);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+        jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
+        jvalue = CopyDataToJava(jenv, value, sizeof(struct evmc_bytes32));
 
         // call java method
         jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index,
@@ -165,6 +153,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
     evmc_uint256be result;
     char java_method_name[] = "get_balance";
     char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -183,13 +172,8 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
         // call java method
         jobject jresult =
@@ -211,6 +195,7 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
     size_t result = 0;
     char java_method_name[] = "get_code_size";
     char java_method_signature[] = "(I[B)I";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -229,13 +214,8 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
         // call java method
         jint jresult =
@@ -250,6 +230,7 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     evmc_bytes32 result;
     char java_method_name[] = "get_code_hash";
     char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -261,20 +242,15 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
         assert(host_class != NULL);
+
         // get java method
         method =
             (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
         assert(method != NULL);
 
         // set java method params
-
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
         // call java method
         jobject jresult =
@@ -300,6 +276,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
     size_t result;
     const char java_method_name[] = "copy_code";
     const char java_method_signature[] = "(I[BI)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -319,15 +296,8 @@ static size_t copy_code_fn(struct evmc_host_context* context,
         assert(method != NULL);
 
         // set java method params
-
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
         jcode_offset = code_offset;
 
         // call java method
@@ -352,6 +322,7 @@ static void selfdestruct_fn(struct evmc_host_context* context,
 {
     const char java_method_name[] = "selfdestruct";
     const char java_method_signature[] = "(I[B[B)V";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -371,18 +342,9 @@ static void selfdestruct_fn(struct evmc_host_context* context,
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
-        jbeneficiary = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jbeneficiary != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jbeneficiary, 0, sizeof(struct evmc_address),
-                                    (jbyte*)beneficiary);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+        jbeneficiary = CopyDataToJava(jenv, beneficiary, sizeof(struct evmc_address));
 
         // call java method
         (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress,
@@ -397,6 +359,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
     const char java_method_name[] = "call";
     const char java_method_signature[] = "(ILjava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;";
     JNIEnv* jenv = attach();
+    assert(context != NULL);
     if (jenv != NULL)
     {
         jclass host_class;
@@ -414,7 +377,6 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
 
         jmsg = (*jenv)->NewDirectByteBuffer(jenv, (void*)msg, sizeof(struct evmc_message));
@@ -438,12 +400,14 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
     struct evmc_tx_context result;
     const char java_method_name[] = "get_tx_context";
     const char java_method_signature[] = "(I)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
+
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
         assert(host_class != NULL);
@@ -454,7 +418,6 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
 
         // call java method
@@ -475,6 +438,7 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
     evmc_bytes32 result;
     char java_method_name[] = "get_code_hash";
     char java_method_signature[] = "(IJ)Ljava/nio/ByteBuffer;";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -493,8 +457,6 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
         assert(method != NULL);
 
         // set java method params
-
-        assert(context != NULL);
         jcontext_index = context->index;
 
         jnumber = (jlong)number;
@@ -521,6 +483,7 @@ static void emit_log_fn(struct evmc_host_context* context,
 {
     const char java_method_name[] = "emit_log";
     const char java_method_signature[] = "(I[B[BI[[BI)V";
+    assert(context != NULL);
     JNIEnv* jenv = attach();
     if (jenv != NULL)
     {
@@ -541,27 +504,16 @@ static void emit_log_fn(struct evmc_host_context* context,
         assert(method != NULL);
 
         // set java method params
-        assert(context != NULL);
         jcontext_index = context->index;
-
-        jaddress = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_address));
-        assert(jaddress != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jaddress, 0, sizeof(struct evmc_address),
-                                    (jbyte*)address);
-
-        jdata = (*jenv)->NewByteArray(jenv, data_size);
-        assert(jdata != NULL);
-        (*jenv)->SetByteArrayRegion(jenv, jdata, 0, data_size, (jbyte*)data);
+        jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+        jdata = CopyDataToJava(jenv, data, data_size);
 
         jclass byte_type = (*jenv)->FindClass(jenv, "[B");
         jtopics = (*jenv)->NewObjectArray(jenv, (jsize)topics_count, byte_type, NULL);
         assert(jtopics != NULL);
         for (int i = 0; i < topics_count; i++)
         {
-            jbyteArray jtopic = (*jenv)->NewByteArray(jenv, sizeof(struct evmc_bytes32));
-            assert(jtopic != NULL);
-            (*jenv)->SetByteArrayRegion(jenv, jtopic, 0, sizeof(struct evmc_bytes32),
-                                        (jbyte*)topics[i].bytes);
+            jbyteArray jtopic = CopyDataToJava(jenv, topics[i].bytes, sizeof(struct evmc_bytes32));
             (*jenv)->SetObjectArrayElement(jenv, jtopics, i, jtopic);
             (*jenv)->DeleteLocalRef(jenv, jtopic);
         }
