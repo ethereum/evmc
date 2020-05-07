@@ -133,5 +133,5 @@
     </tbody>
 </table>
 
-[EIP-1283]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1283.md
-[EIP-2200]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2200.md
+[EIP-1283]: https://eips.ethereum.org/EIPS/eip-1283
+[EIP-2200]: https://eips.ethereum.org/EIPS/eip-2200
