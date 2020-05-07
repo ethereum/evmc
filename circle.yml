@@ -216,6 +216,19 @@ jobs:
       - build
       - test
 
+  build-cmake-min:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    environment:
+      CMAKE_OPTIONS: -DHUNTER_RUN_UPLOAD=NO
+    steps:
+      - run:
+          name: "Install default CMake"
+          command: sudo apt -q update && sudo apt -qy install cmake
+      - checkout
+      - build
+      - test
+
   bindings-go-latest:
     docker:
       - image: circleci/golang
@@ -327,6 +340,7 @@ workflows:
       - build-clang5
       - build-clang38
       - build-gcc-32bit
+      - build-cmake-min
       - bindings-go-latest
       - bindings-go-min
       - bindings-java
