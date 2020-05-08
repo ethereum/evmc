@@ -1,3 +1,8 @@
+/* EVMC: Ethereum Client-VM Connector API.
+ * Copyright 2019-2020 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
+ */
+
 #include <assert.h>
 #include <stdlib.h>
 
@@ -14,6 +19,7 @@ static JNIEnv* attach()
 {
     JNIEnv* jenv;
     jint rs = (*jvm)->AttachCurrentThread(jvm, (void**)&jenv, NULL);
+    (void)rs;
     assert(rs == JNI_OK);
     return jenv;
 }
@@ -21,9 +27,9 @@ static JNIEnv* attach()
 // Why isn't this helper part of JNI?
 static jbyteArray CopyDataToJava(JNIEnv* jenv, const void* ptr, size_t size)
 {
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, size);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, (jsize)size);
     assert(ret != NULL);
-    (*jenv)->SetByteArrayRegion(jenv, ret, 0, size, (jbyte*)ptr);
+    (*jenv)->SetByteArrayRegion(jenv, ret, 0, (jsize)size, (jbyte*)ptr);
     return ret;
 }
 
@@ -111,7 +117,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
                                                const evmc_bytes32* key,
                                                const evmc_bytes32* value)
 {
-    enum evmc_storage_status result;
+    enum evmc_storage_status result = 0;
     const char java_method_name[] = "set_storage";
     const char java_method_signature[] = "(I[B[B[B)I";
     assert(context != NULL);
@@ -123,7 +129,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
         jint jcontext_index;
         jbyteArray jaddress;
         jbyteArray jkey;
-        jbyteArray jvalue;
+        jbyteArray jval;
 
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
@@ -138,11 +144,11 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
         jcontext_index = context->index;
         jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
         jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
-        jvalue = CopyDataToJava(jenv, value, sizeof(struct evmc_bytes32));
+        jval = CopyDataToJava(jenv, value, sizeof(struct evmc_bytes32));
 
         // call java method
         jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index,
-                                                    jaddress, jkey, jvalue);
+                                                    jaddress, jkey, jval);
         result = (enum evmc_storage_status)jresult;
     }
     return result;
@@ -220,7 +226,7 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
         // call java method
         jint jresult =
             (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress);
-        result = jresult;
+        result = (size_t)jresult;
     }
     return result;
 }
@@ -273,7 +279,8 @@ static size_t copy_code_fn(struct evmc_host_context* context,
                            uint8_t* buffer_data,
                            size_t buffer_size)
 {
-    size_t result;
+    (void)buffer_size;  // FIXME: buffer_size suspiciously unused.
+    size_t result = 0;
     const char java_method_name[] = "copy_code";
     const char java_method_signature[] = "(I[BI)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
@@ -284,7 +291,6 @@ static size_t copy_code_fn(struct evmc_host_context* context,
         jmethodID method;
         jint jcontext_index;
         jbyteArray jaddress;
-        jint jcode_offset;
 
         // get java class
         host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
@@ -298,7 +304,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
         // set java method params
         jcontext_index = context->index;
         jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
-        jcode_offset = code_offset;
+        jint jcode_offset = (jint)code_offset;
 
         // call java method
         jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index,
@@ -307,6 +313,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
 
         // copy jresult back to buffer_data
         buffer_data = (uint8_t*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
+        (void)buffer_data;
         assert(buffer_data != NULL);
 
         result = get_code_size_fn(context, address) - code_offset;
@@ -511,10 +518,10 @@ static void emit_log_fn(struct evmc_host_context* context,
         jclass byte_type = (*jenv)->FindClass(jenv, "[B");
         jtopics = (*jenv)->NewObjectArray(jenv, (jsize)topics_count, byte_type, NULL);
         assert(jtopics != NULL);
-        for (int i = 0; i < topics_count; i++)
+        for (size_t i = 0; i < topics_count; i++)
         {
             jbyteArray jtopic = CopyDataToJava(jenv, topics[i].bytes, sizeof(struct evmc_bytes32));
-            (*jenv)->SetObjectArrayElement(jenv, jtopics, i, jtopic);
+            (*jenv)->SetObjectArrayElement(jenv, jtopics, (jsize)i, jtopic);
             (*jenv)->DeleteLocalRef(jenv, jtopic);
         }
 
