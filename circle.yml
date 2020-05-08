@@ -2,6 +2,13 @@ version: 2.1
 
 commands:
   build:
+    parameters:
+      build_type:
+        type: string
+        default: ""
+      toolchain:
+        type: string
+        default: ""
     steps:
       - run:
           name: "Environment"
@@ -13,10 +20,24 @@ commands:
             $CC --version
             $CXX --version
             cmake --version
+
+            # Create the toolchain.info file for cache key.
+            echo '<<parameters.toolchain>>' >> toolchain.info
+            echo '<<parameters.build_type>>' >> toolchain.info
+            $CXX --version >> toolchain.info
+      - restore_cache:
+          name: "Restore Hunter Cache"
+          key: &hunter-cache-key hunter-{{arch}}-{{checksum "toolchain.info"}}-{{checksum "cmake/Hunter/init.cmake"}}
       - run:
           name: "Configure"
           working_directory: ~/build
-          command: cmake ../project -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
+          command: |
+            cmake ../project <<#parameters.build_type>>-DCMAKE_BUILD_TYPE=<<parameters.build_type>><</parameters.build_type>> <<#parameters.toolchain>>-DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/<<parameters.toolchain>>.cmake<</parameters.toolchain>> -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
+      - save_cache:
+          name: "Save Hunter Cache"
+          key: *hunter-cache-key
+          paths:
+            - ~/.hunter/_Base/Cache
       - run:
           name: "Build"
           command: cmake --build ~/build -- -j4
@@ -109,8 +130,6 @@ jobs:
   build-clang9-coverage:
     docker:
       - image: ethereum/cpp-build-env:12-clang-9
-    environment:
-      CMAKE_OPTIONS: -DCMAKE_BUILD_TYPE=Coverage
     steps:
       - run:
           name: "Install lcov"
@@ -121,7 +140,8 @@ jobs:
             apt-get download lcov
             sudo dpkg -i --force-depends lcov*.deb
       - checkout
-      - build
+      - build:
+          build_type: Coverage
       - test
       - run:
           name: "Collect coverage data"
@@ -206,14 +226,13 @@ jobs:
   build-gcc-32bit:
     docker:
       - image: ethereum/cpp-build-env:12-base
-    environment:
-      CMAKE_OPTIONS: -DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/cxx11-32bit.cmake
     steps:
       - run:
           name: "Install GCC 32-bit"
           command: sudo apt -q update && sudo apt -qy install g++-multilib
       - checkout
-      - build
+      - build:
+          toolchain: cxx11-32bit
       - test
 
   build-cmake-min:
