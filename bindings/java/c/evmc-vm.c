@@ -94,10 +94,10 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
                                                              jobject jresult)
 {
     (void)jcls;
-    struct evmc_message* cmsg = (struct evmc_message*)(*jenv)->GetDirectBufferAddress(jenv, jmsg);
-    assert(cmsg != NULL);
-    const uint8_t* ccode = (uint8_t*)(*jenv)->GetDirectBufferAddress(jenv, jcode);
-    assert(ccode != NULL);
+    struct evmc_message* msg = (struct evmc_message*)(*jenv)->GetDirectBufferAddress(jenv, jmsg);
+    assert(msg != NULL);
+    const uint8_t* code = (uint8_t*)(*jenv)->GetDirectBufferAddress(jenv, jcode);
+    assert(code != NULL);
     struct evmc_host_context context = {jcontext_index};
     struct evmc_vm* evm = (struct evmc_vm*)(*jenv)->GetDirectBufferAddress(jenv, jevm);
     assert(evm != NULL);
@@ -105,8 +105,8 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
-    *result = evmc_execute(evm, host, &context, (enum evmc_revision)jrev, cmsg, ccode,
-                           (size_t)jcode_size);
+    *result =
+        evmc_execute(evm, host, &context, (enum evmc_revision)jrev, msg, code, (size_t)jcode_size);
 }
 
 JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_get_1capabilities(JNIEnv* jenv,
