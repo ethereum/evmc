@@ -30,10 +30,6 @@ build: gradlew
 	mkdir -p ./java/build
 	./gradlew --no-daemon clean spotlessApply build
 
-debug: DEBUG_FLAG = -D DEBUG
-
-debug: build
-
 test: build
 	./gradlew --no-daemon test
 

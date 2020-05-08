@@ -101,48 +101,12 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     struct evmc_host_context context = {jcontext_index};
     struct evmc_vm* evm = (struct evmc_vm*)(*jenv)->GetDirectBufferAddress(jenv, jevm);
     assert(evm != NULL);
-#ifdef DEBUG
-    printf("********************before execute*******************\n");
-
-    printf("struct: evmc_message=%p\n", cmsg);
-    printf("sizeof(evmc_message): %lu\n", sizeof(struct evmc_message));
-    printf("kind=%p\n", &cmsg->kind);
-    printf("flags=%p\n", &cmsg->flags);
-    printf("depth=%p\n", &cmsg->depth);
-    printf("gas=%p\n", &cmsg->gas);
-    printf("destination=%p\n", &cmsg->destination.bytes);
-    printf("sender=%p\n", &cmsg->sender.bytes);
-    printf("input_data=%p\n", &cmsg->input_data);
-    printf("input_size=%p\n", &cmsg->input_size);
-    printf("value=%p\n", &cmsg->value.bytes);
-    printf("create2_salt=%p\n\n", &cmsg->create2_salt.bytes);
-
-    printf("kind=%d\n", cmsg->kind);
-    printf("flags=%d\n", cmsg->flags);
-    printf("depth=%d\n", cmsg->depth);
-    printf("gas=%lld\n", cmsg->gas);
-    printf("destination=%s\n", cmsg->destination.bytes);
-    printf("sender=%s\n", cmsg->sender.bytes);
-    printf("input_size=%zu\n", cmsg->input_size);
-    printf("value=%s\n\n", cmsg->value.bytes);
-#endif
     const struct evmc_host_interface* host = get_host_interface();
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
     *result = evmc_execute(evm, host, &context, (enum evmc_revision)jrev, cmsg, ccode,
                            (size_t)jcode_size);
-#ifdef DEBUG
-    printf("********************after execute*******************\n");
-    printf("sizeof(evmc_result): %lu\n", sizeof(struct evmc_result));
-    printf("status_code=%p\n", &result->status_code);
-    printf("gas_left=%p\n", &result->gas_left);
-    printf("output_data=%p\n\n", &result->output_data);
-
-    printf("status_code=%d\n", result->status_code);
-    printf("gas_left=%llu\n", result->gas_left);
-    printf("output_data=%s\n\n", result->output_data);
-#endif
 }
 
 JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_get_1capabilities(JNIEnv* jenv,
