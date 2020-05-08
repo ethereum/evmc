@@ -69,8 +69,8 @@ impl ExecutionResult {
         ExecutionResult {
             status_code: _status_code,
             gas_left: _gas_left,
-            output: if _output.is_some() {
-                Some(_output.unwrap().to_vec())
+            output: if let Some(output) = _output {
+                Some(output.to_vec())
             } else {
                 None
             },
