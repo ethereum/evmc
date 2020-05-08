@@ -20,11 +20,24 @@ commands:
             $CC --version
             $CXX --version
             cmake --version
+
+            # Create the toolchain.info file for cache key.
+            echo '<<parameters.toolchain>>' >> toolchain.info
+            echo '<<parameters.build_type>>' >> toolchain.info
+            $CXX --version >> toolchain.info
+      - restore_cache:
+          name: "Restore Hunter Cache"
+          key: &hunter-cache-key hunter-{{arch}}-{{checksum "toolchain.info"}}-{{checksum "cmake/Hunter/init.cmake"}}
       - run:
           name: "Configure"
           working_directory: ~/build
           command: |
             cmake ../project <<#parameters.build_type>>-DCMAKE_BUILD_TYPE=<<parameters.build_type>><</parameters.build_type>> <<#parameters.toolchain>>-DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/<<parameters.toolchain>>.cmake<</parameters.toolchain>> -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
+      - save_cache:
+          name: "Save Hunter Cache"
+          key: *hunter-cache-key
+          paths:
+            - ~/.hunter/_Base/Cache
       - run:
           name: "Build"
           command: cmake --build ~/build -- -j4
