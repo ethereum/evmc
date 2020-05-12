@@ -24,7 +24,7 @@ public final class EvmcVm implements AutoCloseable {
     if (!EvmcVm.isEvmcLibraryLoaded) {
       try {
         // load so containing the jni bindings to evmc
-        System.load(System.getProperty("user.dir") + "/../c/build/evmc.so");
+        System.load(System.getProperty("user.dir") + "/../c/build/lib/libevmc-java.so");
         EvmcVm.isEvmcLibraryLoaded = true;
       } catch (UnsatisfiedLinkError e) {
         System.err.println("Native code library failed to load.\n" + e);

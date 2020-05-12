@@ -6,18 +6,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 final class EvmcTest {
+  private static final String exampleVmPath =
+      System.getProperty("user.dir") + "/../c/build/lib/libexample-vm.so";
+
   @Test
   void testInitCloseDestroy() throws Exception {
     Assertions.assertDoesNotThrow(
         () -> {
-          try (EvmcVm vm =
-              EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {}
+          try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {}
         });
   }
 
   @Test
   void testAbiVersion() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       int abiVersion = vm.abi_version();
       assert (abiVersion > 0);
     }
@@ -25,7 +27,7 @@ final class EvmcTest {
 
   @Test
   void testName() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       String name = vm.name();
       assert (name.length() > 0);
       assert (name.equals("example_vm"));
@@ -34,7 +36,7 @@ final class EvmcTest {
 
   @Test
   void testVersion() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       String version = vm.version();
       assert (version.length() > 0);
       assert (version.equals("0.0.0"));
@@ -43,7 +45,7 @@ final class EvmcTest {
 
   @Test
   void testExecute_returnAddress() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CALL = 0;
@@ -73,7 +75,7 @@ final class EvmcTest {
   /** Tests callbacks: get_storage_fn & set_storage_fn */
   @Test
   void testExecute_counter() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CALL = 0;
@@ -103,7 +105,7 @@ final class EvmcTest {
   /** Tests callbacks: get_tx_context_fn */
   @Test
   void testExecute_returnBlockNumber() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CALL = 0;
@@ -133,7 +135,7 @@ final class EvmcTest {
   /** Tests callbacks: get_tx_context_fn & set_storage_fn */
   @Test
   void testExecute_saveReturnBlockNumber() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CALL = 0;
@@ -165,7 +167,7 @@ final class EvmcTest {
   /** Tests callbacks: call_fn */
   @Test
   void testExecute_makeCall() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CALL = 0;
@@ -203,7 +205,7 @@ final class EvmcTest {
 
   @Test
   void testExecute_EVMC_CREATE() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       HostContext context = new TestHostContext();
       int BYZANTIUM = 4;
       int EVMC_CREATE = 3;
@@ -231,7 +233,7 @@ final class EvmcTest {
 
   @Test
   void testGetCapabilities() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       int capabilities = vm.get_capabilities();
       assert (capabilities > 0);
     }
@@ -239,7 +241,7 @@ final class EvmcTest {
 
   @Test
   void testSetOption() throws Exception {
-    try (EvmcVm vm = EvmcVm.create(System.getProperty("user.dir") + "/../c/build/example_vm.so")) {
+    try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       int result = vm.set_option("verbose", "1");
       assert (result == 0);
     }
