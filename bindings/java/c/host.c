@@ -10,7 +10,7 @@
 
 static JavaVM* jvm;
 
-int set_jvm(JNIEnv* jenv)
+int evmc_java_set_jvm(JNIEnv* jenv)
 {
     return (*jenv)->GetJavaVM(jenv, &jvm);
 }
@@ -532,7 +532,7 @@ static void emit_log_fn(struct evmc_host_context* context,
     return;
 }
 
-const struct evmc_host_interface* get_host_interface()
+const struct evmc_host_interface* evmc_java_get_host_interface()
 {
     static const struct evmc_host_interface host = {
         account_exists_fn, get_storage_fn,    set_storage_fn,    get_balance_fn,
