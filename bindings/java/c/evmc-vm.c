@@ -3,14 +3,14 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
+#include "host.h"
+#include "org_ethereum_evmc_EvmcVm.h"
+#include <evmc/helpers.h>
+#include <evmc/loader.h>
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#include "evmc-vm.h"
-#include "evmc/helpers.h"
-#include "evmc/loader.h"
-#include "host.h"
 
 static void throw_java_assert(JNIEnv* jenv, const char* msg)
 {
