@@ -12,12 +12,23 @@ and this project adheres to [Semantic Versioning].
 
 - Added **Java** bindings.
   [#455](https://github.com/ethereum/evmc/pull/455)
-- The C++ EVMC basic types `address` and `bytes32` have all the comparison operators supported.
-  [#474](https://github.com/ethereum/evmc/pull/474)
+  [#490](https://github.com/ethereum/evmc/pull/490)
+  [#503](https://github.com/ethereum/evmc/pull/503)
 - New **evmc command-line tool** has been added. At the moment it supports
   command _run_ for executing bytecode in any EVMC-compatible VM implementation.
   Try `evmc run --help` for more information.
-  
+- C++: EVMC basic types `address` and `bytes32` have all the comparison operators supported.
+  [#474](https://github.com/ethereum/evmc/pull/474)
+- C++: Convenient constructors from `uint64_t` added for basic types `address` and `bytes32`.
+  [#488](https://github.com/ethereum/evmc/pull/488)
+- C++: Added `VM::get_raw_pointer()` method to directly access VM C API when needed.
+  [#492](https://github.com/ethereum/evmc/pull/492)
+
+### Changed
+
+- CMake minimum version required has been bumped to [3.10](https://cmake.org/cmake/help/v3.10/release/3.10.html).
+  [#495](https://github.com/ethereum/evmc/pull/495)
+
 ### Fixed
 
 - The implementation of C++ `operator<` for `evmc::address` and `evmc::bytes32` has been fixed.
@@ -107,7 +118,7 @@ removed.
   [#445](https://github.com/ethereum/evmc/pull/445)
   [#449](https://github.com/ethereum/evmc/pull/449)
   [#451](https://github.com/ethereum/evmc/pull/451)
-   
+
 
 
 ## [6.3.1] - 2019-08-19
