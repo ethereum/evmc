@@ -134,8 +134,8 @@ impl ExecutionMessage {
             gas,
             destination,
             sender,
-            input: if input.is_some() {
-                Some(input.unwrap().to_vec())
+            input: if let Some(input) = input {
+                Some(input.to_vec())
             } else {
                 None
             },
@@ -303,13 +303,13 @@ impl<'a> ExecutionContext<'a> {
         // There is no need to make any kind of copies here, because the caller
         // won't go out of scope and ensures these pointers remain valid.
         let input = message.input();
-        let input_size = if input.is_some() {
-            input.unwrap().len()
+        let input_size = if let Some(input) = input {
+            input.len()
         } else {
             0
         };
-        let input_data = if input.is_some() {
-            input.unwrap().as_ptr()
+        let input_data = if let Some(input) = input {
+            input.as_ptr()
         } else {
             std::ptr::null() as *const u8
         };

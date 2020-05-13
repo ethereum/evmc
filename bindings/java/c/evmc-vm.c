@@ -3,14 +3,14 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
+#include "host.h"
+#include "org_ethereum_evmc_EvmcVm.h"
+#include <evmc/helpers.h>
+#include <evmc/loader.h>
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#include "evmc-vm.h"
-#include "evmc/helpers.h"
-#include "evmc/loader.h"
-#include "host.h"
 
 static void throw_java_assert(JNIEnv* jenv, const char* msg)
 {
@@ -24,7 +24,7 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
 {
     (void)jcls;
     struct evmc_vm* evm = NULL;
-    jint rs = set_jvm(jenv);
+    jint rs = evmc_java_set_jvm(jenv);
     (void)rs;
     assert(rs == JNI_OK);
     // load the EVM
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     struct evmc_host_context context = {jcontext_index};
     struct evmc_vm* evm = (struct evmc_vm*)(*jenv)->GetDirectBufferAddress(jenv, jevm);
     assert(evm != NULL);
-    const struct evmc_host_interface* host = get_host_interface();
+    const struct evmc_host_interface* host = evmc_java_get_host_interface();
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
