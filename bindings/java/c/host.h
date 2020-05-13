@@ -12,8 +12,8 @@ struct evmc_host_context
     int index;
 };
 
-int set_jvm(JNIEnv*);
-const struct evmc_host_interface* get_host_interface();
+int evmc_java_set_jvm(JNIEnv*);
+const struct evmc_host_interface* evmc_java_get_host_interface();
 
 #ifdef __cplusplus
 }

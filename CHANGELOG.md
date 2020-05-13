@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning].
   [#455](https://github.com/ethereum/evmc/pull/455)
   [#490](https://github.com/ethereum/evmc/pull/490)
   [#503](https://github.com/ethereum/evmc/pull/503)
+  [#512](https://github.com/ethereum/evmc/pull/512)
 - New **evmc command-line tool** has been added. At the moment it supports
   command _run_ for executing bytecode in any EVMC-compatible VM implementation.
   Try `evmc run --help` for more information.
