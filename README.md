@@ -23,7 +23,7 @@ Please visit the [documentation].
 | ----------------------------- | --------------------- | ------------------------------ | -------------------
 | **C**                         | C99, C11              | GCC 6+, clang 3.8+, MSVC 2015+ | Host- and VM-side
 | **C++**                       | C++11, C++14, C++17   | GCC 6+, clang 3.8+, MSVC 2015+ | Host- and VM-side
-| **Go** _(bindings)_           | 1.9 - 1.12            |                                | Host-side only
+| **Go** _(bindings)_           | 1.11 - 1.14 (modules) |                                | Host-side only
 | **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.37.0 and newer               | VM-side only
 | **Java** _(bindings)_         | 11                    |                                | Host-side only
 

@@ -5,7 +5,7 @@
 package evmc
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/.. -Wall -Wextra
+#cgo CFLAGS: -I${SRCDIR}/../../../include -Wall -Wextra
 #cgo !windows LDFLAGS: -ldl
 
 #include <evmc/evmc.h>
