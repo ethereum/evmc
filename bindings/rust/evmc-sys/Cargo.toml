@@ -4,7 +4,7 @@
 
 [package]
 name = "evmc-sys"
-version = "7.2.0"
+version = "7.3.0-alpha.0"
 authors = ["Alex Beregszaszi <alex@rtfs.hu>"]
 license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
