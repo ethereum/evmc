@@ -252,16 +252,40 @@ jobs:
     steps: &bindings-go-steps
       - checkout
       - run:
+          name: "Environment"
+          command: |
+            go version
+            go env
+            gcc --version
+      - run:
           name: "Go Build"
           command: |
             go build -v ./bindings/go/evmc
             go vet -v ./bindings/go/evmc
             go generate -v ./bindings/go/evmc
             go test -v ./bindings/go/evmc
+      - run:
+          name: "Go module integration test"
+          working_directory: test/gomod
+          command: |
+            V=$CIRCLE_TAG
+            if [ -z $V ]; then
+              V=$CIRCLE_SHA1
+            fi
+            echo "version: $V"
+
+            go mod init evmc.ethereum.org/evmc_use
+            go get -v github.com/ethereum/evmc/v7@$V
+            go mod tidy -v
+            go mod graph
+            gcc -shared -I../../include ../../examples/example_vm/example_vm.c -o example-vm.so
+            go test -v
+            go mod graph
+
 
   bindings-go-min:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.11
     steps: *bindings-go-steps
 
   bindings-java:

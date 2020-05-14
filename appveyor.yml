@@ -39,11 +39,6 @@ build_script:
       gcc --version
       go env
 
-      copy include/evmc/evmc.h bindings/go/evmc
-      copy include/evmc/helpers.h bindings/go/evmc
-      copy include/evmc/loader.h bindings/go/evmc
-      copy lib/loader/loader.c bindings/go/evmc
-
       go build ./bindings/go/evmc
       go generate ./bindings/go/evmc
       go test -v ./bindings/go/evmc
