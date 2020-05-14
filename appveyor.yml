@@ -38,7 +38,6 @@ build_script:
       mkdir $env:GOPATH
       gcc --version
       go env
-      go get github.com/ethereum/go-ethereum/common
 
       copy include/evmc/evmc.h bindings/go/evmc
       copy include/evmc/helpers.h bindings/go/evmc

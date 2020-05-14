@@ -1,5 +1,5 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018-2019 The EVMC Authors.
+// Copyright 2018-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
 package evmc
@@ -55,16 +55,25 @@ import (
 	"fmt"
 	"sync"
 	"unsafe"
-
-	"github.com/ethereum/go-ethereum/common"
 )
+
+// Hash represents the 32 bytes of arbitrary data (e.g. the result of Keccak256
+// hash). It occasionally is used to represent 256-bit unsigned integer values
+// stored in big-endian byte order.
+type Hash [32]byte
+
+// Address represents the 160-bit (20 bytes) address of an Ethereum account.
+type Address [20]byte
 
 // Static asserts.
 const (
-	_ = uint(common.HashLength - C.sizeof_evmc_bytes32) // The size of evmc_bytes32 equals the size of Hash.
-	_ = uint(C.sizeof_evmc_bytes32 - common.HashLength)
-	_ = uint(common.AddressLength - C.sizeof_evmc_address) // The size of evmc_address equals the size of Address.
-	_ = uint(C.sizeof_evmc_address - common.AddressLength)
+	// The size of evmc_bytes32 equals the size of Hash.
+	_ = uint(len(Hash{}) - C.sizeof_evmc_bytes32)
+	_ = uint(C.sizeof_evmc_bytes32 - len(Hash{}))
+
+	// The size of evmc_address equals the size of Address.
+	_ = uint(len(Address{}) - C.sizeof_evmc_address)
+	_ = uint(C.sizeof_evmc_address - len(Address{}))
 )
 
 type Error int32
@@ -222,8 +231,8 @@ func (vm *VM) SetOption(name string, value string) (err error) {
 
 func (vm *VM) Execute(ctx HostContext, rev Revision,
 	kind CallKind, static bool, depth int, gas int64,
-	destination common.Address, sender common.Address, input []byte, value common.Hash,
-	code []byte, create2Salt common.Hash) (output []byte, gasLeft int64, err error) {
+	destination Address, sender Address, input []byte, value Hash,
+	code []byte, create2Salt Hash) (output []byte, gasLeft int64, err error) {
 
 	flags := C.uint32_t(0)
 	if static {
@@ -283,7 +292,7 @@ func getHostContext(idx uintptr) HostContext {
 	return ctx
 }
 
-func evmcBytes32(in common.Hash) C.evmc_bytes32 {
+func evmcBytes32(in Hash) C.evmc_bytes32 {
 	out := C.evmc_bytes32{}
 	for i := 0; i < len(in); i++ {
 		out.bytes[i] = C.uint8_t(in[i])
@@ -291,7 +300,7 @@ func evmcBytes32(in common.Hash) C.evmc_bytes32 {
 	return out
 }
 
-func evmcAddress(address common.Address) C.evmc_address {
+func evmcAddress(address Address) C.evmc_address {
 	r := C.evmc_address{}
 	for i := 0; i < len(address); i++ {
 		r.bytes[i] = C.uint8_t(address[i])
