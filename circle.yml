@@ -353,10 +353,9 @@ jobs:
       - run:
           name: Update environment
           command: |
-            echo 'deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main' >> /etc/apt/sources.list
-            wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+            echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
             apt -qq update
-            apt -yq  install llvm-8-dev clang-8
+            apt -yq  install llvm-8-dev clang-8 --no-install-recommends
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
             rustup update
       - run:
