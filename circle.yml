@@ -170,21 +170,21 @@ jobs:
       - build
       - test
 
-  build-gcc10-cxx17-ubsan:
+  build-gcc10-cxx17-sanitizers:
     docker:
       - image: ethereum/cpp-build-env:14-gcc-10
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=undefined
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined
     steps:
       - checkout
       - build
       - test
 
-  build-clang10-cxx14-asan:
+  build-clang10-cxx17-sanitizers:
     docker:
       - image: ethereum/cpp-build-env:14-clang-10
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=14 -DSANITIZE=address
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined,nullability,implicit-unsigned-integer-truncation,implicit-signed-integer-truncation
       UBSAN_OPTIONS: halt_on_error=1
     steps:
       - checkout
@@ -383,9 +383,9 @@ workflows:
       - lint
       - build-clang10-coverage
       - build-gcc8-cxx17
-      - build-gcc10-cxx17-ubsan
+      - build-gcc10-cxx17-sanitizers
+      - build-clang10-cxx17-sanitizers
       - build-clang9-cxx14-asan
-      - build-clang10-cxx14-asan
       - build-gcc6
       - build-clang5
       - build-clang38
