@@ -127,18 +127,10 @@ jobs:
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
-  build-clang9-coverage:
+  build-clang10-coverage:
     docker:
-      - image: ethereum/cpp-build-env:12-clang-9
+      - image: ethereum/cpp-build-env:14-clang-10
     steps:
-      - run:
-          name: "Install lcov"
-          working_directory: /tmp
-          command: |
-            sudo apt-get -q update
-            # sudo apt-get install -qy lcov --no-install-recommends
-            apt-get download lcov
-            sudo dpkg -i --force-depends lcov*.deb
       - checkout
       - build:
           build_type: Coverage
@@ -178,11 +170,22 @@ jobs:
       - build
       - test
 
-  build-gcc9-cxx17-ubsan:
+  build-gcc10-cxx17-sanitizers:
     docker:
-      - image: ethereum/cpp-build-env:12-gcc-9
+      - image: ethereum/cpp-build-env:14-gcc-10
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=undefined
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined
+    steps:
+      - checkout
+      - build
+      - test
+
+  build-clang10-cxx17-sanitizers:
+    docker:
+      - image: ethereum/cpp-build-env:14-clang-10
+    environment:
+      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined,nullability,implicit-unsigned-integer-truncation,implicit-signed-integer-truncation
+      UBSAN_OPTIONS: halt_on_error=1
     steps:
       - checkout
       - build
@@ -225,11 +228,8 @@ jobs:
 
   build-gcc-32bit:
     docker:
-      - image: ethereum/cpp-build-env:12-base
+      - image: ethereum/cpp-build-env:14-gcc-10-multilib
     steps:
-      - run:
-          name: "Install GCC 32-bit"
-          command: sudo apt -q update && sudo apt -qy install g++-multilib
       - checkout
       - build:
           toolchain: cxx11-32bit
@@ -353,10 +353,9 @@ jobs:
       - run:
           name: Update environment
           command: |
-            echo 'deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main' >> /etc/apt/sources.list
-            wget -nv -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+            echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
             apt -qq update
-            apt -yq  install llvm-8-dev clang-8
+            apt -yq  install llvm-8-dev clang-8 --no-install-recommends
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
             rustup update
       - run:
@@ -381,9 +380,10 @@ workflows:
   evmc:
     jobs:
       - lint
-      - build-clang9-coverage
+      - build-clang10-coverage
       - build-gcc8-cxx17
-      - build-gcc9-cxx17-ubsan
+      - build-gcc10-cxx17-sanitizers
+      - build-clang10-cxx17-sanitizers
       - build-clang9-cxx14-asan
       - build-gcc6
       - build-clang5
