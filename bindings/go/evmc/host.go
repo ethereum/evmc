@@ -5,7 +5,7 @@
 package evmc
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/.. -Wall -Wextra -Wno-unused-parameter
+#cgo CFLAGS: -I${SRCDIR}/../../../include -Wall -Wextra -Wno-unused-parameter
 
 #include <evmc/evmc.h>
 #include <evmc/helpers.h>

@@ -8,8 +8,15 @@ and this project adheres to [Semantic Versioning].
 
 ## [7.3.0] — unreleased
 
+### Added
+
+- Support for **Go modules**.
+  [#486](https://github.com/ethereum/evmc/pull/486)
+
 ### Changed
 
+- The minimum **Go version** supported bumped to **1.11** (Go modules are required).
+  [#486](https://github.com/ethereum/evmc/pull/486)
 - Removed dependency on go-ethereum in Go bindings by introducing own `Address` and `Hash` types.
   [#513](https://github.com/ethereum/evmc/pull/513)
 
