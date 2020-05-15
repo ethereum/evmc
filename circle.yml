@@ -159,6 +159,26 @@ jobs:
             sed -i 's|$(pwd)/||' ~/build/evmc.lcov
             codecov --file ~/build/evmc.lcov -X gcov
 
+  build-gcc10-coverage:
+    docker:
+      - image: ethereum/cpp-build-env:14-gcc-10
+    environment:
+      CMAKE_OPTIONS: -DCMAKE_C_FLAGS=-g3 -DCMAKE_CXX_FLAGS=-g3
+    steps:
+      - checkout
+      - build:
+          build_type: Coverage
+      - test
+      - run:
+          name: "Collect coverage data"
+          working_directory: ~/build
+          command: |
+            lcov --capture -d ~/build -b ~/project -o evmc.lcov
+            genhtml evmc.lcov -o coverage -t EVMC
+      - store_artifacts:
+          path: ~/build/coverage
+          destination: coverage
+
 
   build-gcc8-cxx17:
     docker:
@@ -379,30 +399,31 @@ workflows:
   version: 2
   evmc:
     jobs:
-      - lint
-      - build-clang10-coverage
-      - build-gcc8-cxx17
-      - build-gcc10-cxx17-sanitizers
-      - build-clang10-cxx17-sanitizers
-      - build-clang9-cxx14-asan
-      - build-gcc6
-      - build-clang5
-      - build-clang38
-      - build-gcc-32bit
-      - build-cmake-min
-      - bindings-go-latest
-      - bindings-go-min
-      - bindings-java
-      - bindings-rust:
-          requires:
-            - build-gcc8-cxx17
-      - bindings-rust-asan-combined:
-          requires:
-            - build-clang9-cxx14-asan
-      - upload-docs:
-          requires:
-            - lint
-          filters:
-            branches:
-              only:
-                - master
+      - build-gcc10-coverage
+#      - lint
+#      - build-clang10-coverage
+#      - build-gcc8-cxx17
+#      - build-gcc10-cxx17-sanitizers
+#      - build-clang10-cxx17-sanitizers
+#      - build-clang9-cxx14-asan
+#      - build-gcc6
+#      - build-clang5
+#      - build-clang38
+#      - build-gcc-32bit
+#      - build-cmake-min
+#      - bindings-go-latest
+#      - bindings-go-min
+#      - bindings-java
+#      - bindings-rust:
+#          requires:
+#            - build-gcc8-cxx17
+#      - bindings-rust-asan-combined:
+#          requires:
+#            - build-clang9-cxx14-asan
+#      - upload-docs:
+#          requires:
+#            - lint
+#          filters:
+#            branches:
+#              only:
+#                - master
