@@ -225,11 +225,8 @@ jobs:
 
   build-gcc-32bit:
     docker:
-      - image: ethereum/cpp-build-env:12-base
+      - image: ethereum/cpp-build-env:14-gcc-10-multilib
     steps:
-      - run:
-          name: "Install GCC 32-bit"
-          command: sudo apt -q update && sudo apt -qy install g++-multilib
       - checkout
       - build:
           toolchain: cxx11-32bit
