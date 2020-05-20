@@ -390,8 +390,14 @@ workflows:
       - build-clang38
       - build-gcc-32bit
       - build-cmake-min
-      - bindings-go-latest
-      - bindings-go-min
+      - bindings-go-latest:
+          filters:
+            tags:
+              only: /.*/
+      - bindings-go-min:
+          filters:
+            tags:
+              only: /.*/
       - bindings-java
       - bindings-rust:
           requires:
