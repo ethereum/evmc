@@ -1,5 +1,5 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018-2019 The EVMC Authors.
+ * Copyright 2018-2020 The EVMC Authors.
  * Licensed under the Apache License, Version 2.0.
  */
 #pragma once
@@ -294,15 +294,22 @@ constexpr address from_hex<address>(const char* s) noexcept
           byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19)}}};
 }
 
+/// A helper to report compile-time literal parsing errors. By design non-constexpr.
 template <typename T>
-constexpr T from_literal(const char* s)
+T error(const char*)
+{
+    std::abort();
+}
+
+template <typename T>
+constexpr T from_literal(const char* s) noexcept
 {
     return (s[0] == '0' && s[1] == '\0') ?
                T{} :
-               !(s[0] == '0' && s[1] == 'x') ?
-               throw "literal must be in hexadecimal notation" :
-               (length(s + 2) != sizeof(T) * 2) ? throw "literal must match the result type size" :
-                                                  from_hex<T>(s + 2);
+               !(s[0] == '0' && s[1] == 'x') ? error<T>("literal must be in hexadecimal notation") :
+                                               (length(s + 2) != sizeof(T) * 2) ?
+                                               error<T>("literal must match the result type size") :
+                                               from_hex<T>(s + 2);
 }
 }  // namespace internal
 
