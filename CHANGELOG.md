@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning].
 
 ## [7.4.0] — unreleased
 
+### Changed
+
+- The C++ standard required increased to **C++14**.
+  [#521](https://github.com/ethereum/evmc/pull/521)
+
+### Removed
+
+- The support for **Visual Studio 2015** C/C++ compiler has been dropped 
+  as a consequence of requiring C++14.
+  [#521](https://github.com/ethereum/evmc/pull/521)
+
 ## [7.3.0] — 2020-05-20
 
 ### Added
