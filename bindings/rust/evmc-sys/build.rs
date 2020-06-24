@@ -23,6 +23,9 @@ fn gen_bindings() {
         // force deriving the Hash trait on basic types (address, bytes32)
         .derive_hash(true)
         .opaque_type("evmc_host_context")
+        .whitelist_type("evmc_.*")
+        .whitelist_function("evmc_.*")
+        .whitelist_var("EVMC_ABI_VERSION")
         .generate()
         .expect("Unable to generate bindings");
 
