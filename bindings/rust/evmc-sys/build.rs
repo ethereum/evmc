@@ -26,6 +26,8 @@ fn gen_bindings() {
         .whitelist_type("evmc_.*")
         .whitelist_function("evmc_.*")
         .whitelist_var("EVMC_ABI_VERSION")
+        // TODO: consider removing this
+        .size_t_is_usize(true)
         .generate()
         .expect("Unable to generate bindings");
 
