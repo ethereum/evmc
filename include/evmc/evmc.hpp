@@ -1,5 +1,5 @@
 /* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2018-2019 The EVMC Authors.
+ * Copyright 2018-2020 The EVMC Authors.
  * Licensed under the Apache License, Version 2.0.
  */
 #pragma once
@@ -255,11 +255,6 @@ namespace literals
 {
 namespace internal
 {
-constexpr size_t length(const char* s) noexcept
-{
-    return (*s != '\0') ? length(s + 1) + 1 : 0;
-}
-
 constexpr int from_hex(char c) noexcept
 {
     return (c >= 'a' && c <= 'f') ? c - ('a' - 10) :
@@ -294,28 +289,34 @@ constexpr address from_hex<address>(const char* s) noexcept
           byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19)}}};
 }
 
-template <typename T>
-constexpr T from_literal(const char* s)
+template <typename T, char... c>
+constexpr T from_literal() noexcept
 {
-    return (s[0] == '0' && s[1] == '\0') ?
-               T{} :
-               !(s[0] == '0' && s[1] == 'x') ?
-               throw "literal must be in hexadecimal notation" :
-               (length(s + 2) != sizeof(T) * 2) ? throw "literal must match the result type size" :
-                                                  from_hex<T>(s + 2);
+    constexpr auto size = sizeof...(c);
+    constexpr char literal[] = {c...};
+    constexpr bool is_simple_zero = size == 1 && literal[0] == '0';
+
+    static_assert(is_simple_zero || (literal[0] == '0' && literal[1] == 'x'),
+                  "literal must be in hexadecimal notation");
+    static_assert(is_simple_zero || size == 2 * sizeof(T) + 2,
+                  "literal must match the result type size");
+
+    return is_simple_zero ? T{} : from_hex<T>(&literal[2]);
 }
 }  // namespace internal
 
 /// Literal for evmc::address.
-constexpr address operator""_address(const char* s) noexcept
+template <char... c>
+constexpr address operator""_address() noexcept
 {
-    return internal::from_literal<address>(s);
+    return internal::from_literal<address, c...>();
 }
 
 /// Literal for evmc::bytes32.
-constexpr bytes32 operator""_bytes32(const char* s) noexcept
+template <char... c>
+constexpr bytes32 operator""_bytes32() noexcept
 {
-    return internal::from_literal<bytes32>(s);
+    return internal::from_literal<bytes32, c...>();
 }
 }  // namespace literals
 

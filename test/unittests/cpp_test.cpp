@@ -1,5 +1,5 @@
 // EVMC: Ethereum Client-VM Connector API.
-// Copyright 2018-2019 The EVMC Authors.
+// Copyright 2018-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
 // The vector is not used here, but including it was causing compilation issues
@@ -111,10 +111,8 @@ TEST(cpp, std_hash)
 #pragma warning(disable : 4307 /* integral constant overflow */)
 #pragma warning(disable : 4309 /* 'static_cast': truncation of constant value */)
 
-#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
     static_assert(std::hash<evmc::address>{}({}) == static_cast<size_t>(0xd94d12186c0f2fb7), "");
     static_assert(std::hash<evmc::bytes32>{}({}) == static_cast<size_t>(0x4d25767f9dce13f5), "");
-#endif
 
     EXPECT_EQ(std::hash<evmc::address>{}({}), static_cast<size_t>(0xd94d12186c0f2fb7));
     EXPECT_EQ(std::hash<evmc::bytes32>{}({}), static_cast<size_t>(0x4d25767f9dce13f5));
@@ -310,7 +308,6 @@ TEST(cpp, literals)
 {
     using namespace evmc::literals;
 
-#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
     constexpr auto address1 = 0xa0a1a2a3a4a5a6a7a8a9d0d1d2d3d4d5d6d7d8d9_address;
     constexpr auto hash1 =
         0x01020304050607080910a1a2a3a4a5a6a7a8a9b0c1c2c3c4c5c6c7c8c9d0d1d2_bytes32;
@@ -326,7 +323,6 @@ TEST(cpp, literals)
     static_assert(hash1.bytes[31] == 0xd2, "");
     static_assert(zero_address == evmc::address{}, "");
     static_assert(zero_hash == evmc::bytes32{}, "");
-#endif
 
     EXPECT_EQ(0_address, evmc::address{});
     EXPECT_EQ(0_bytes32, evmc::bytes32{});
@@ -348,11 +344,9 @@ TEST(cpp, bytes32_from_uint)
     using evmc::bytes32;
     using evmc::operator""_bytes32;
 
-#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
     static_assert(bytes32{0} == bytes32{}, "");
     static_assert(bytes32{3}.bytes[31] == 3, "");
     static_assert(bytes32{0xfe00000000000000}.bytes[24] == 0xfe, "");
-#endif
 
     EXPECT_EQ(bytes32{0}, bytes32{});
     EXPECT_EQ(bytes32{0x01},
@@ -372,11 +366,9 @@ TEST(cpp, address_from_uint)
     using evmc::address;
     using evmc::operator""_address;
 
-#if !defined(_MSC_VER) || (_MSC_VER >= 1910 /* Only for Visual Studio 2017+ */)
     static_assert(address{0} == address{}, "");
     static_assert(address{3}.bytes[19] == 3, "");
     static_assert(address{0xfe00000000000000}.bytes[12] == 0xfe, "");
-#endif
 
     EXPECT_EQ(address{0}, address{});
     EXPECT_EQ(address{0x01}, 0x0000000000000000000000000000000000000001_address);
