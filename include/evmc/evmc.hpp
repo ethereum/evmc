@@ -255,74 +255,79 @@ namespace literals
 {
 namespace internal
 {
-constexpr size_t length(const char* s) noexcept
-{
-    return (*s != '\0') ? length(s + 1) + 1 : 0;
-}
-
 constexpr int from_hex(char c) noexcept
 {
     return (c >= 'a' && c <= 'f') ? c - ('a' - 10) :
                                     (c >= 'A' && c <= 'F') ? c - ('A' - 10) : c - '0';
 }
 
-constexpr uint8_t byte(const char* s, size_t i) noexcept
+constexpr uint8_t byte(char c1, char c2) noexcept
 {
-    return static_cast<uint8_t>((from_hex(s[2 * i]) << 4) | from_hex(s[2 * i + 1]));
+    return static_cast<uint8_t>((from_hex(c1) << 4) | from_hex(c2));
 }
 
-template <typename T>
-T from_hex(const char*) noexcept;
-
-template <>
-constexpr bytes32 from_hex<bytes32>(const char* s) noexcept
+template <typename T, char... c>
+struct validator
 {
-    return {
-        {{byte(s, 0),  byte(s, 1),  byte(s, 2),  byte(s, 3),  byte(s, 4),  byte(s, 5),  byte(s, 6),
-          byte(s, 7),  byte(s, 8),  byte(s, 9),  byte(s, 10), byte(s, 11), byte(s, 12), byte(s, 13),
-          byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19), byte(s, 20),
-          byte(s, 21), byte(s, 22), byte(s, 23), byte(s, 24), byte(s, 25), byte(s, 26), byte(s, 27),
-          byte(s, 28), byte(s, 29), byte(s, 30), byte(s, 31)}}};
-}
+    static constexpr auto size = sizeof...(c);
+    static constexpr char literal[] = {c...};
+    static constexpr bool is_simple_zero = size == 1 && literal[0] == '0';
 
-template <>
-constexpr address from_hex<address>(const char* s) noexcept
-{
-    return {
-        {{byte(s, 0),  byte(s, 1),  byte(s, 2),  byte(s, 3),  byte(s, 4),  byte(s, 5),  byte(s, 6),
-          byte(s, 7),  byte(s, 8),  byte(s, 9),  byte(s, 10), byte(s, 11), byte(s, 12), byte(s, 13),
-          byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19)}}};
-}
-
-/// A helper to report compile-time literal parsing errors. By design non-constexpr.
-template <typename T>
-T error(const char*)
-{
-    std::abort();
-}
-
-template <typename T>
-constexpr T from_literal(const char* s) noexcept
-{
-    return (s[0] == '0' && s[1] == '\0') ?
-               T{} :
-               !(s[0] == '0' && s[1] == 'x') ? error<T>("literal must be in hexadecimal notation") :
-                                               (length(s + 2) != sizeof(T) * 2) ?
-                                               error<T>("literal must match the result type size") :
-                                               from_hex<T>(s + 2);
-}
+    static_assert(is_simple_zero || (literal[0] == '0' && literal[1] == 'x'),
+                  "literal must be in hexadecimal notation");
+    static_assert(is_simple_zero || size == 2 * sizeof(T) + 2,
+                  "literal must match the result type size");
+};
 }  // namespace internal
 
 /// Literal for evmc::address.
-constexpr address operator""_address(const char* s) noexcept
+template <char... c>
+constexpr address operator""_address() noexcept
 {
-    return internal::from_literal<address>(s);
+    using v = internal::validator<address, c...>;
+    using internal::byte;
+    return v::is_simple_zero ?
+               address{} :
+               address{{{
+                   byte(v::literal[2], v::literal[3]),   byte(v::literal[4], v::literal[5]),
+                   byte(v::literal[6], v::literal[7]),   byte(v::literal[8], v::literal[9]),
+                   byte(v::literal[10], v::literal[11]), byte(v::literal[12], v::literal[13]),
+                   byte(v::literal[14], v::literal[15]), byte(v::literal[16], v::literal[17]),
+                   byte(v::literal[18], v::literal[19]), byte(v::literal[20], v::literal[21]),
+                   byte(v::literal[22], v::literal[23]), byte(v::literal[24], v::literal[25]),
+                   byte(v::literal[26], v::literal[27]), byte(v::literal[28], v::literal[29]),
+                   byte(v::literal[30], v::literal[31]), byte(v::literal[32], v::literal[33]),
+                   byte(v::literal[34], v::literal[35]), byte(v::literal[36], v::literal[37]),
+                   byte(v::literal[38], v::literal[39]), byte(v::literal[40], v::literal[41]),
+               }}};
 }
 
 /// Literal for evmc::bytes32.
-constexpr bytes32 operator""_bytes32(const char* s) noexcept
+template <char... c>
+constexpr bytes32 operator""_bytes32() noexcept
 {
-    return internal::from_literal<bytes32>(s);
+    using v = internal::validator<bytes32, c...>;
+    using internal::byte;
+    return v::is_simple_zero ?
+               bytes32{} :
+               bytes32{{{
+                   byte(v::literal[2], v::literal[3]),   byte(v::literal[4], v::literal[5]),
+                   byte(v::literal[6], v::literal[7]),   byte(v::literal[8], v::literal[9]),
+                   byte(v::literal[10], v::literal[11]), byte(v::literal[12], v::literal[13]),
+                   byte(v::literal[14], v::literal[15]), byte(v::literal[16], v::literal[17]),
+                   byte(v::literal[18], v::literal[19]), byte(v::literal[20], v::literal[21]),
+                   byte(v::literal[22], v::literal[23]), byte(v::literal[24], v::literal[25]),
+                   byte(v::literal[26], v::literal[27]), byte(v::literal[28], v::literal[29]),
+                   byte(v::literal[30], v::literal[31]), byte(v::literal[32], v::literal[33]),
+                   byte(v::literal[34], v::literal[35]), byte(v::literal[36], v::literal[37]),
+                   byte(v::literal[38], v::literal[39]), byte(v::literal[40], v::literal[41]),
+                   byte(v::literal[42], v::literal[43]), byte(v::literal[44], v::literal[45]),
+                   byte(v::literal[46], v::literal[47]), byte(v::literal[48], v::literal[49]),
+                   byte(v::literal[50], v::literal[51]), byte(v::literal[52], v::literal[53]),
+                   byte(v::literal[54], v::literal[55]), byte(v::literal[56], v::literal[57]),
+                   byte(v::literal[58], v::literal[59]), byte(v::literal[60], v::literal[61]),
+                   byte(v::literal[62], v::literal[63]), byte(v::literal[64], v::literal[65]),
+               }}};
 }
 }  // namespace literals
 
