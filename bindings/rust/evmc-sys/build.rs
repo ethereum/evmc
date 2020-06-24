@@ -22,6 +22,8 @@ fn gen_bindings() {
         .rustified_enum("*")
         // force deriving the Hash trait on basic types (address, bytes32)
         .derive_hash(true)
+        // force deriving the PratialEq trait on basic types (address, bytes32)
+        .derive_partialeq(true)
         .opaque_type("evmc_host_context")
         .whitelist_type("evmc_.*")
         .whitelist_function("evmc_.*")
