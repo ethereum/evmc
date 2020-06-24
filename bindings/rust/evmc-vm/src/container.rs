@@ -30,12 +30,18 @@ where
     }
 
     /// Take ownership of the given pointer and return a box.
+    ///
+    /// # Safety
+    /// This function expects a valid instance to be passed.
     pub unsafe fn from_ffi_pointer(instance: *mut ::evmc_sys::evmc_vm) -> Box<Self> {
         assert!(!instance.is_null(), "from_ffi_pointer received NULL");
         Box::from_raw(instance as *mut EvmcContainer<T>)
     }
 
     /// Convert boxed self into an FFI pointer, surrendering ownership of the heap data.
+    ///
+    /// # Safety
+    /// This function will return a valid instance pointer.
     pub unsafe fn into_ffi_pointer(boxed: Box<Self>) -> *mut ::evmc_sys::evmc_vm {
         Box::into_raw(boxed) as *mut ::evmc_sys::evmc_vm
     }
