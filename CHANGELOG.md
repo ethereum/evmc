@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning].
 
 - The C++ standard required increased to **C++14**.
   [#521](https://github.com/ethereum/evmc/pull/521)
+- The C++ literals for `address` and `bytes32` types have been reimplemented to
+  use `static_assert` to report errors. This makes C++ bindings exception-free
+  (_no-throw guarantee_ level of exception safety).
+  [#520](https://github.com/ethereum/evmc/pull/520)
 
 ### Removed
 
