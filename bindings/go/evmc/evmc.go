@@ -118,6 +118,8 @@ func (err Error) Error() string {
 		return "evmc: the WebAssembly unreachable instruction has been hit during execution"
 	case C.EVMC_WASM_TRAP:
 		return "evmc: a WebAssembly trap has been hit during execution"
+	case C.EVMC_INSUFFICIENT_BALANCE:
+		return "evmc: insufficient balance"
 	case C.EVMC_REJECTED:
 		return "evmc: rejected"
 	}
