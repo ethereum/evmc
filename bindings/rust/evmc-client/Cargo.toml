@@ -4,7 +4,7 @@
 
 [package]
 name = "evmc-client"
-version = "6.3.1"
+version = "7.4.0"
 authors = ["Zigang Lin <vincent@secondstate.io>"]
 license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
@@ -12,5 +12,5 @@ description = "Bindings to EVMC (Client/Host specific)"
 edition = "2018"
 
 [dependencies]
-evmc-sys = { path = "../evmc-sys" }
+evmc-sys = { path = "../evmc-sys", version = "7.4.0" }
 libloading = "0.5"

@@ -1,18 +1,7 @@
-// Copyright (C) 2020 Second State.
-// This file is part of Rust-SSVM.
-
-// Rust-SSVM is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-
-// Rust-SSVM is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+/* EVMC: Ethereum Client-VM Connector API.
+ * Copyright 2019 The EVMC Authors.
+ * Licensed under the Apache License, Version 2.0.
+ */
 
 use crate::types::*;
 use evmc_sys as ffi;
@@ -53,7 +42,9 @@ struct Callback {
     host_interface: ::std::option::Option<Box<dyn HostInterface>>,
 }
 
-static mut CALLBACK: Callback = Callback { host_interface: None };
+static mut CALLBACK: Callback = Callback {
+    host_interface: None,
+};
 
 pub fn set_host_interface(interface: Option<Box<dyn HostInterface>>) {
     unsafe {
@@ -62,7 +53,9 @@ pub fn set_host_interface(interface: Option<Box<dyn HostInterface>>) {
 }
 
 pub fn get_evmc_host_context() -> ffi::evmc_host_context {
-    ffi::evmc_host_context {_bindgen_opaque_blob:[0u8; 0]}
+    ffi::evmc_host_context {
+        _bindgen_opaque_blob: [0u8; 0],
+    }
 }
 
 pub fn get_evmc_host_interface() -> ffi::evmc_host_interface {
@@ -203,7 +196,9 @@ unsafe extern "C" fn selfdestruct(
     beneficiary: *const ffi::evmc_address,
 ) {
     match &mut CALLBACK.host_interface {
-        Some(host_interface) => host_interface.selfdestruct(&(*address).bytes, &(*beneficiary).bytes),
+        Some(host_interface) => {
+            host_interface.selfdestruct(&(*address).bytes, &(*beneficiary).bytes)
+        }
         None => {
             panic!("Host context not implemented");
         }
