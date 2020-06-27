@@ -27,7 +27,7 @@ pub trait HostInterface {
     fn emit_log(&mut self, addr: &Address, topics: &Vec<Bytes32>, data: &Bytes);
     fn call(
         &mut self,
-        kind: CallKind,
+        kind: MessageKind,
         destination: &Address,
         sender: &Address,
         value: &Bytes32,

@@ -73,7 +73,7 @@ impl EvmcVm {
         &self,
         host_interface: Box<dyn host::HostInterface>,
         rev: Revision,
-        kind: CallKind,
+        kind: MessageKind,
         is_static: bool,
         depth: i32,
         gas: i64,

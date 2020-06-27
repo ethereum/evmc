@@ -13,4 +13,5 @@ edition = "2018"
 
 [dependencies]
 evmc-sys = { path = "../evmc-sys", version = "7.4.0" }
+evmc-vm = { path = "../evmc-vm", version = "7.4.0" }
 libloading = "0.5"
