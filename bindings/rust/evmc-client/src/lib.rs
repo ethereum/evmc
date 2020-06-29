@@ -7,7 +7,6 @@ pub mod host;
 mod loader;
 pub mod types;
 pub use self::loader::EvmcLoaderErrorCode;
-
 use crate::loader::evmc_load_and_create;
 use crate::types::*;
 use evmc_sys as ffi;
@@ -39,7 +38,6 @@ fn error(err: EvmcLoaderErrorCode) -> Result<EvmcLoaderErrorCode, &'static str> 
 
 pub struct EvmcVm {
     handle: *mut ffi::evmc_vm,
-    host_context: *mut ffi::evmc_host_context,
     host_interface: *mut ffi::evmc_host_interface,
 }
 
@@ -71,7 +69,7 @@ impl EvmcVm {
 
     pub fn execute(
         &self,
-        host_interface: Box<dyn host::HostInterface>,
+        ctx: Box<dyn host::HostContext + Send + Sync>,
         rev: Revision,
         kind: MessageKind,
         is_static: bool,
@@ -84,15 +82,12 @@ impl EvmcVm {
         code: &Bytes,
         create2_salt: &Bytes32,
     ) -> (&Bytes, i64, StatusCode) {
-        host::set_host_interface(Some(host_interface));
-        let evmc_destination = ffi::evmc_address {
-            bytes: *destination,
-        };
-        let evmc_sender = ffi::evmc_address { bytes: *sender };
-        let evmc_value = ffi::evmc_uint256be { bytes: *value };
-        let evmc_create2_salt = ffi::evmc_bytes32 {
-            bytes: *create2_salt,
-        };
+        let ext_ctx: *mut host::ExtendedContext;
+        unsafe {
+            ext_ctx = Box::into_raw(Box::new(host::ExtendedContext {
+                index: host::add_host_context(ctx),
+            }));
+        }
         let mut evmc_flags: u32 = 0;
         unsafe {
             if is_static {
@@ -106,26 +101,29 @@ impl EvmcVm {
                 flags: evmc_flags,
                 depth: depth,
                 gas: gas,
-                destination: evmc_destination,
-                sender: evmc_sender,
+                destination: ffi::evmc_address {
+                    bytes: *destination,
+                },
+                sender: ffi::evmc_address { bytes: *sender },
                 input_data: input.as_ptr(),
                 input_size: input.len(),
-                value: evmc_value,
-                create2_salt: evmc_create2_salt,
+                value: ffi::evmc_uint256be { bytes: *value },
+                create2_salt: ffi::evmc_bytes32 {
+                    bytes: *create2_salt,
+                },
             }
         }));
-
         unsafe {
             let result = ((*self.handle).execute.unwrap())(
                 self.handle,
                 self.host_interface,
-                self.host_context,
+                ext_ctx as *mut ffi::evmc_host_context,
                 rev,
                 evmc_message,
                 code.as_ptr(),
                 code.len(),
             );
-            host::set_host_interface(None);
+            host::remove_host_context((*ext_ctx).index);
             return (
                 std::slice::from_raw_parts(result.output_data, result.output_size),
                 result.gas_left,
@@ -147,7 +145,6 @@ pub fn load(fname: &str) -> (EvmcVm, Result<EvmcLoaderErrorCode, &'static str>) 
     (
         EvmcVm {
             handle: instance,
-            host_context: Box::into_raw(Box::new(host::get_evmc_host_context())),
             host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
         },
         error(ec),
@@ -158,7 +155,6 @@ pub fn create() -> EvmcVm {
     unsafe {
         EvmcVm {
             handle: evmc_create(),
-            host_context: Box::into_raw(Box::new(host::get_evmc_host_context())),
             host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
         }
     }

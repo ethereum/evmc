@@ -15,3 +15,4 @@ edition = "2018"
 evmc-sys = { path = "../evmc-sys", version = "7.4.0" }
 evmc-vm = { path = "../evmc-vm", version = "7.4.0" }
 libloading = "0.5"
+lazy_static = "1.4.0"
