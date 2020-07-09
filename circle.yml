@@ -268,6 +268,8 @@ jobs:
           name: "Go module integration test"
           working_directory: test/gomod
           command: |
+            test -z "$CIRCLE_PR_USERNAME" || (echo "Skip for PRs from forks" && exit 0)
+
             V=$CIRCLE_TAG
             if [ -z $V ]; then
               V=$CIRCLE_SHA1
