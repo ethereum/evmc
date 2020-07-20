@@ -3,37 +3,18 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
+#[macro_use]
+extern crate enum_primitive;
 pub mod host;
 mod loader;
 pub mod types;
-pub use self::loader::EvmcLoaderErrorCode;
-use crate::loader::evmc_load_and_create;
+pub use crate::loader::{load_and_create, EvmcLoaderErrorCode};
 use crate::types::*;
 use evmc_sys as ffi;
 use std::ffi::CStr;
 
 extern "C" {
     fn evmc_create() -> *mut ffi::evmc_vm;
-}
-
-fn error(err: EvmcLoaderErrorCode) -> Result<EvmcLoaderErrorCode, &'static str> {
-    match err {
-        EvmcLoaderErrorCode::EvmcLoaderSucces => Ok(EvmcLoaderErrorCode::EvmcLoaderSucces),
-        EvmcLoaderErrorCode::EvmcLoaderCannotOpen => Err("evmc loader: library cannot open"),
-        EvmcLoaderErrorCode::EvmcLoaderSymbolNotFound => {
-            Err("evmc loader: the EVMC create function not found")
-        }
-        EvmcLoaderErrorCode::EvmcLoaderInvalidArgument => {
-            panic!("evmc loader: filename argument is invalid")
-        }
-        EvmcLoaderErrorCode::EvmcLoaderInstanceCreationFailure => {
-            Err("evmc loader: VM instance creation failure")
-        }
-        EvmcLoaderErrorCode::EvmcLoaderAbiVersionMismatch => {
-            Err("evmc loader: ABI version mismatch")
-        }
-        _ => Err("evmc loader: unexpected error"),
-    }
 }
 
 pub struct EvmcVm {
@@ -141,13 +122,13 @@ impl EvmcVm {
 }
 
 pub fn load(fname: &str) -> (EvmcVm, Result<EvmcLoaderErrorCode, &'static str>) {
-    let (instance, ec) = evmc_load_and_create(fname);
+    let (instance, ec) = load_and_create(fname);
     (
         EvmcVm {
             handle: instance,
             host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
         },
-        error(ec),
+        ec,
     )
 }
 
