@@ -9,6 +9,12 @@
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
+// Defining evmc_host_context here, because bindgen cannot create a useful declaration yet.
+
+pub type evmc_host_context = ::std::os::raw::c_void;
+
+//pub struct evmc_host_context { }
+
 // TODO: add `.derive_default(true)` to bindgen instead?
 
 impl Default for evmc_address {
