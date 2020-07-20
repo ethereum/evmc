@@ -10,9 +10,14 @@ license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
 description = "Bindings to EVMC (Client/Host specific)"
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
-evmc-sys = { path = "../evmc-sys", version = "7.4.0" }
-evmc-vm = { path = "../evmc-vm", version = "7.4.0" }
-libloading = "0.5"
+evmc-sys = { path = "../evmc-sys" }
+evmc-vm = { path = "../evmc-vm" }
+enum_primitive = "0.1.1"
+num = "0.3"
 lazy_static = "1.4.0"
+
+[build-dependencies]
+cmake = "0.1.44"
