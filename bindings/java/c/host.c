@@ -40,8 +40,7 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
     const char java_method_signature[] = "(I[B)I";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -64,7 +63,7 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
         jint jresult =
             (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress);
         result = !!jresult;
-    }
+
     return result;
 }
 
@@ -77,8 +76,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
     const char java_method_signature[] = "(I[B[B)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -108,7 +106,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
             (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
         assert(result_ptr != NULL);
         result = *result_ptr;
-    }
+
     return result;
 }
 
@@ -122,8 +120,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
     const char java_method_signature[] = "(I[B[B[B)I";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -150,7 +147,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
         jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index,
                                                     jaddress, jkey, jval);
         result = (enum evmc_storage_status)jresult;
-    }
+
     return result;
 }
 
@@ -161,8 +158,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
     char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -192,7 +188,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
         result = *result_ptr;
 
         (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
-    }
+
     return result;
 }
 
@@ -203,8 +199,6 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
     char java_method_signature[] = "(I[B)I";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -227,7 +221,7 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
         jint jresult =
             (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress);
         result = (size_t)jresult;
-    }
+
     return result;
 }
 
@@ -238,8 +232,7 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -269,7 +262,6 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
         result = *result_ptr;
 
         (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
-    }
     return result;
 }
 
@@ -285,8 +277,6 @@ static size_t copy_code_fn(struct evmc_host_context* context,
     const char java_method_signature[] = "(I[BI)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -319,7 +309,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
         result = get_code_size_fn(context, address) - code_offset;
 
         (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
-    }
+
     return result;
 }
 
@@ -331,8 +321,7 @@ static void selfdestruct_fn(struct evmc_host_context* context,
     const char java_method_signature[] = "(I[B[B)V";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -356,8 +345,7 @@ static void selfdestruct_fn(struct evmc_host_context* context,
         // call java method
         (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress,
                                      jbeneficiary);
-    }
-    return;
+
 }
 
 static struct evmc_result call_fn(struct evmc_host_context* context, const struct evmc_message* msg)
@@ -367,8 +355,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
     const char java_method_signature[] = "(ILjava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;";
     JNIEnv* jenv = attach();
     assert(context != NULL);
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -398,7 +385,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
             (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
         assert(result_ptr != NULL);
         result = *result_ptr;
-    }
+
     return result;
 }
 
@@ -409,8 +396,6 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
     const char java_method_signature[] = "(I)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -435,7 +420,7 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
             (struct evmc_tx_context*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
         assert(result_ptr != NULL);
         result = *result_ptr;
-    }
+
     return result;
 }
 
@@ -447,8 +432,7 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
     char java_method_signature[] = "(IJ)Ljava/nio/ByteBuffer;";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -477,7 +461,7 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
             (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
         assert(result_ptr != NULL);
         result = *result_ptr;
-    }
+
     return result;
 }
 
@@ -492,8 +476,7 @@ static void emit_log_fn(struct evmc_host_context* context,
     const char java_method_signature[] = "(I[B[BI[[BI)V";
     assert(context != NULL);
     JNIEnv* jenv = attach();
-    if (jenv != NULL)
-    {
+
         jclass host_class;
         jmethodID method;
         jint jcontext_index;
@@ -528,8 +511,6 @@ static void emit_log_fn(struct evmc_host_context* context,
         // call java method
         (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress, jdata,
                                      data_size, jtopics, topics_count);
-    }
-    return;
 }
 
 const struct evmc_host_interface* evmc_java_get_host_interface()

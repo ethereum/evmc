@@ -3,3 +3,5 @@
 /.idea
 Cargo.lock
 /target
+bindings/java/java/src/main/resources
+bindings/java/java/src/test/resources

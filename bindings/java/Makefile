@@ -22,6 +22,10 @@ $(OUT_DIR)/lib/libevmc-java.so:
 	mkdir -p $(BUILD_DIR)
 	(cd $(BUILD_DIR) && cmake $(SOURCE_DIR) -DCMAKE_INSTALL_PREFIX=$(OUT_DIR) -DEVMC_JAVA=ON -DJAVA_HOME=$(JAVA_HOME) -DEVMC_EXAMPLES=ON)
 	cmake --build $(OUT_DIR)/_cmake_build --target install
+	mkdir -p java/src/main/resources
+	mkdir -p java/src/test/resources
+	cp $(OUT_DIR)/lib/libevmc-java.* $(CURDIR)/java/src/main/resources/libevmc.so
+	cp $(OUT_DIR)/lib/libexample-vm.* $(CURDIR)/java/src/test/resources/libexample-vm.so
 
 clean:
 	rm -rf $(OUT_DIR)

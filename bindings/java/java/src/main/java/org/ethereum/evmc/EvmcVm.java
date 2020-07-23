@@ -6,7 +6,11 @@ package org.ethereum.evmc;
 import static org.ethereum.evmc.Host.addContext;
 import static org.ethereum.evmc.Host.removeContext;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 /**
@@ -15,29 +19,45 @@ import java.util.Objects;
  * <p>Defines the Java methods capable of accessing the evm implementation.
  */
 public final class EvmcVm implements AutoCloseable {
-  private static EvmcVm evmcVm;
-  private static boolean isEvmcLibraryLoaded = false;
+  private static final boolean available;
   private ByteBuffer nativeVm;
+
+  static {
+    boolean loaded = false;
+    try {
+      // load so containing the jni bindings to evmc
+      System.loadLibrary("libevmc");
+      loaded = true;
+    } catch (UnsatisfiedLinkError e) {
+      try {
+        Path soFile = Files.createTempFile("libevmc", "so");
+        Files.copy(EvmcVm.class.getResourceAsStream("/libevmc.so"), soFile, StandardCopyOption.REPLACE_EXISTING);
+        System.load(soFile.toAbsolutePath().toString());
+        soFile.toFile().deleteOnExit();
+        loaded = true;
+      } catch (IOException ex) {
+      }
+    }
+    available = loaded;
+  }
+
+  /**
+   * Returns true if the native library was loaded successfully and EVMC capabilities are available.
+   * @return true if the library is available
+   */
+  public static boolean isAvailable() {
+    return available;
+  }
   /**
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
    * @param filename /path/filename of the evm shared object
    */
   public static EvmcVm create(String filename) {
-    if (!EvmcVm.isEvmcLibraryLoaded) {
-      try {
-        // load so containing the jni bindings to evmc
-        System.load(System.getProperty("user.dir") + "/../c/build/lib/libevmc-java.so");
-        EvmcVm.isEvmcLibraryLoaded = true;
-      } catch (UnsatisfiedLinkError e) {
-        System.err.println("Native code library failed to load.\n" + e);
-        System.exit(1);
-      }
+    if (!isAvailable()) {
+      throw new IllegalStateException("Cannot load evmc native library");
     }
-    if (Objects.isNull(evmcVm)) {
-      evmcVm = new EvmcVm(filename);
-    }
-    return evmcVm;
+    return new EvmcVm(filename);
   }
 
   private EvmcVm(String filename) {
@@ -49,7 +69,7 @@ public final class EvmcVm implements AutoCloseable {
    * This method loads the specified evm implementation and initializes jni
    *
    * @param filename path + filename of the evm shared object to load
-   * @return
+   * @return the native VM object
    */
   public native ByteBuffer init(String filename);
 
@@ -158,12 +178,9 @@ public final class EvmcVm implements AutoCloseable {
   /**
    * This method cleans up resources
    *
-   * @throws Exception
    */
   @Override
-  public void close() throws Exception {
+  public void close() {
     destroy(nativeVm);
-    isEvmcLibraryLoaded = false;
-    evmcVm = null;
   }
 }
