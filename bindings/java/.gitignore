@@ -21,3 +21,5 @@ gradlew
 gradlew.bat
 c/evmc-vm.h
 *.class
+java/src/main/resources
+java/src/test/resources
