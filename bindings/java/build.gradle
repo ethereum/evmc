@@ -5,9 +5,11 @@
 plugins {
     id 'com.diffplug.gradle.spotless' version '3.29.0'
 }
+
 apply from: "${rootDir}/wrapper.gradle"
 allprojects {
     apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
     repositories {
         google()
         jcenter()
@@ -32,6 +34,7 @@ allprojects {
 }
 
 subprojects {
+
     tasks.withType(Test) {
         testLogging.showStandardStreams = true
         // If GRADLE_MAX_TEST_FORKS is not set, use half the available processors
@@ -41,4 +44,16 @@ subprojects {
             junitXml.enabled = true
         }
     }
+
+    publishing {
+        publications {
+            MyPublication(MavenPublication) {
+                from components.java
+                groupId 'org.ethereum'
+                artifactId 'evmc'
+                version '7.4.0'
+            }
+        }
+    }
 }
+
