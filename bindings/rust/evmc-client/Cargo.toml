@@ -17,7 +17,6 @@ evmc-sys = { path = "../evmc-sys" }
 evmc-vm = { path = "../evmc-vm" }
 enum_primitive = "0.1.1"
 num = "0.3"
-lazy_static = "1.4.0"
 
 [build-dependencies]
 cmake = "0.1.44"
