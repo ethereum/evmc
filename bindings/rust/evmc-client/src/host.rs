@@ -40,6 +40,7 @@ pub trait HostContext {
         gas: i64,
         depth: i32,
         is_static: bool,
+        salt: &Bytes32,
     ) -> (Vec<u8>, i64, Address, StatusCode);
 }
 
@@ -217,6 +218,7 @@ pub unsafe extern "C" fn call(
             msg.gas,
             msg.depth,
             msg.flags != 0,
+            &msg.create2_salt.bytes,
         );
     let ptr = output.as_ptr();
     let len = output.len();
