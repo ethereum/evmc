@@ -6,7 +6,6 @@ package org.ethereum.evmc;
 import org.ethereum.evmc.EvmcLoaderException;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 /**
  * The Java interface to the evm instance.
@@ -14,30 +13,18 @@ import java.util.Objects;
  * <p>Defines the Java methods capable of accessing the evm implementation.
  */
 public final class EvmcVm implements AutoCloseable {
-  private static EvmcVm evmcVm;
-  private static boolean isEvmcLibraryLoaded = false;
   private ByteBuffer nativeVm;
+
   /**
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
+   * @param evmcPath the path to the evmc shared library
    * @param filename /path/filename of the evm shared object
    * @throws EvmcLoaderException
    */
-  public static EvmcVm create(String filename) throws EvmcLoaderException {
-    if (!EvmcVm.isEvmcLibraryLoaded) {
-      try {
-        // load so containing the jni bindings to evmc
-        System.load(System.getProperty("user.dir") + "/../c/build/lib/libevmc-java.so");
-        EvmcVm.isEvmcLibraryLoaded = true;
-      } catch (UnsatisfiedLinkError e) {
-        System.err.println("Native code library failed to load.\n" + e);
-        System.exit(1);
-      }
-    }
-    if (Objects.isNull(evmcVm)) {
-      evmcVm = new EvmcVm(filename);
-    }
-    return evmcVm;
+  public static EvmcVm create(String evmcPath, String filename) {
+    System.load(evmcPath);
+    return new EvmcVm(filename);
   }
 
   private EvmcVm(String filename) throws EvmcLoaderException {
@@ -153,14 +140,15 @@ public final class EvmcVm implements AutoCloseable {
   private static native int get_result_size();
 
   /**
-   * This method cleans up resources
-   *
-   * @throws Exception
+   * Utility method to get a bytebuffer address
+   * @param buffer the byte buffer to consider
+   * @return the byte buffer address
    */
+  native long address(ByteBuffer buffer);
+
+  /** This method cleans up resources */
   @Override
-  public void close() throws Exception {
+  public void close() {
     destroy(nativeVm);
-    isEvmcLibraryLoaded = false;
-    evmcVm = null;
   }
 }
