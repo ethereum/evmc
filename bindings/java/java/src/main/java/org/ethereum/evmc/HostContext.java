@@ -146,8 +146,6 @@ public interface HostContext {
    */
   void emitLog(byte[] address, byte[] data, int dataSize, byte[][] topics, int topicCount);
 
-  /**
-   * Closes the context and frees all underlying resources.
-   */
+  /** Closes the context and frees all underlying resources. */
   default void close() {};
 }

@@ -1,7 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.30'
+}
+
+apply plugin: 'kotlin'
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 dependencies {
     testImplementation 'org.apache.commons:commons-lang3:3.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.3.2'
+    testImplementation 'org.apache.tuweni:tuweni-bytes:1.1.0'
+    testImplementation 'org.apache.tuweni:tuweni-eth:1.1.0'
+    testImplementation 'org.apache.tuweni:tuweni-junit:1.1.0'
+    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.60'
+    testImplementation 'org.slf4j:slf4j-api:1.7.30'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+    testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 }

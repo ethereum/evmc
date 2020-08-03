@@ -144,6 +144,7 @@ public final class EvmcVm implements AutoCloseable {
 
   /**
    * Utility method to get a bytebuffer address
+   *
    * @param buffer the byte buffer to consider
    * @return the byte buffer address
    */
