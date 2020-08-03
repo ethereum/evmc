@@ -145,4 +145,9 @@ public interface HostContext {
    * @param topicCount The number of the topics. Valid values are between 0 and 4 inclusively.
    */
   void emitLog(byte[] address, byte[] data, int dataSize, byte[][] topics, int topicCount);
+
+  /**
+   * Closes the context and frees all underlying resources.
+   */
+  default void close() {};
 }

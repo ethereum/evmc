@@ -23,7 +23,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getBalance(byte[] address) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
 
   @Override

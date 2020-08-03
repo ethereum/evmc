@@ -77,12 +77,12 @@ final class Host {
             "HostContext does not exist for context_index: " + context_index);
     byte[] code = context.getCode(address).array();
 
-    if (code != null && code_offset > 0 && code_offset < code.length) {
+    if (code_offset < code.length) {
       int length = code.length - code_offset;
-      return ByteBuffer.wrap(code, 0, length);
+      return ByteBuffer.allocateDirect(length).put(code, code_offset, length);
     }
 
-    return ByteBuffer.wrap(new byte[0]);
+    return ByteBuffer.allocateDirect(0);
   }
 
   /** Selfdestruct callback function. */
@@ -146,7 +146,8 @@ final class Host {
   }
 
   static void removeContext(int index) {
-    contextList.remove(index);
+    HostContext context = contextList.remove(index);
+    context.close();
   }
 
   private static List<HostContext> contextList = Collections.synchronizedList(new ArrayList<>());
