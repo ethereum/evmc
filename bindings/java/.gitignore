@@ -4,7 +4,6 @@ java/build/*
 java/out/*
 c/build/*
 *.o
-*.dylib
 .DS_Store
 .gradle
 build
@@ -21,3 +20,7 @@ gradlew
 gradlew.bat
 c/evmc-vm.h
 *.class
+java/src/test/resources/libexample-vm.so
+java/src/test/resources/libexample-vm.dylib
+java/src/test/resources/libevmc.so
+java/src/test/resources/libevmc.dylib
