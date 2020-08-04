@@ -26,7 +26,7 @@ public final class AccountState {
   /**
    * Reads an account state from a RLP representation.
    *
-   * @param bytes the bytes of the serialized acount state.
+   * @param bytes the bytes of the serialized account state.
    * @return the AccountState read from the bytes.
    */
   public static org.apache.tuweni.eth.AccountState fromBytes(Bytes bytes) {
