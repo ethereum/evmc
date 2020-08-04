@@ -29,7 +29,11 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.IOException
 import java.io.InputStream
 import java.io.UncheckedIOException
+import java.util.stream.Collectors
 import java.util.stream.Stream
+import kotlin.collections.HashMap
+
+const val MAX_CYCLES = 1
 
 @ExtendWith(BouncyCastleExtension::class)
 class EVMReferenceTest {
@@ -53,13 +57,20 @@ class EVMReferenceTest {
     @JvmStatic
     @Throws(IOException::class)
     private fun findTests(): Stream<Arguments> {
-      return Resources.find("**/*.json").flatMap { url ->
+      val tests = Resources.find("**/*.json").flatMap { url ->
         try {
           url.openConnection().getInputStream().use { input -> prepareTests(input) }
         } catch (e: IOException) {
           throw UncheckedIOException(e)
         }
+      }.collect(Collectors.toList())
+      val allTests = ArrayList<Arguments>()
+      for (i in 1..MAX_CYCLES) {
+        allTests.addAll(tests.map {
+          Arguments.of(it.get()[0] as String + "-" + i, it.get()[1])
+        })
       }
+      return allTests.stream()
     }
 
     @Throws(IOException::class)
@@ -128,53 +139,53 @@ class EVMReferenceTest {
         if (testName.contains("JumpDest", true)
           || testName.contains("OutsideBoundary", true)
           || testName.contains("outOfBoundary", true)
-          || testName.equals("DynamicJump_valueUnderflow")
-          || testName.equals("jumpiToUintmaxPlus1")
-          || testName.equals("jumpToUintmaxPlus1")
-          || testName.equals("DynamicJumpi0")
-          || testName.equals("DynamicJumpJD_DependsOnJumps0")
-          || testName.equals("jumpHigh")
-          || testName.equals("bad_indirect_jump2")
-          || testName.equals("DynamicJumpPathologicalTest1")
-          || testName.equals("jumpToUint64maxPlus1")
-          || testName.equals("jumpiToUint64maxPlus1")
-          || testName.equals("jumpi0")
-          || testName.equals("DynamicJumpPathologicalTest3")
-          || testName.equals("DynamicJumpPathologicalTest2")
-          || testName.equals("jump1")
-          || testName.equals("bad_indirect_jump1")
-          || testName.equals("BlockNumberDynamicJumpi0")
-          || testName.equals("gasOverFlow")
-          || testName.equals("DynamicJump1")
-          || testName.equals("BlockNumberDynamicJump1")
-                || testName.equals("JDfromStorageDynamicJump1")
-                || testName.equals("JDfromStorageDynamicJumpi0")
+          || testName.startsWith("DynamicJump_valueUnderflow")
+          || testName.startsWith("jumpiToUintmaxPlus1")
+          || testName.startsWith("jumpToUintmaxPlus1")
+          || testName.startsWith("DynamicJumpi0")
+          || testName.startsWith("DynamicJumpJD_DependsOnJumps0")
+          || testName.startsWith("jumpHigh")
+          || testName.startsWith("bad_indirect_jump2")
+          || testName.startsWith("DynamicJumpPathologicalTest1")
+          || testName.startsWith("jumpToUint64maxPlus1")
+          || testName.startsWith("jumpiToUint64maxPlus1")
+          || testName.startsWith("jumpi0")
+          || testName.startsWith("DynamicJumpPathologicalTest3")
+          || testName.startsWith("DynamicJumpPathologicalTest2")
+          || testName.startsWith("jump1")
+          || testName.startsWith("bad_indirect_jump1")
+          || testName.startsWith("BlockNumberDynamicJumpi0")
+          || testName.startsWith("gasOverFlow")
+          || testName.startsWith("DynamicJump1")
+          || testName.startsWith("BlockNumberDynamicJump1")
+          || testName.startsWith("JDfromStorageDynamicJump1")
+          || testName.startsWith("JDfromStorageDynamicJumpi0")
         ) {
           assertEquals(EVMExecutionStatusCode.EVMC_BAD_JUMP_DESTINATION, result.statusCode)
         } else if (testName.contains("underflow",true)
-          || testName.equals("swap2error")
-          || testName.equals("dup2error")
-          || testName.equals("pop1")
-          || testName.equals("jumpOntoJump")
-          || testName.equals("swapAt52becameMstore")
-          || testName.equals("stack_loop")
-          || testName.equals("201503110206PYTHON")
-          || testName.equals("201503112218PYTHON")
-          || testName.equals("201503110219PYTHON")
-          || testName.equals("201503102320PYTHON")
+          || testName.startsWith("swap2error")
+          || testName.startsWith("dup2error")
+          || testName.startsWith("pop1")
+          || testName.startsWith("jumpOntoJump")
+          || testName.startsWith("swapAt52becameMstore")
+          || testName.startsWith("stack_loop")
+          || testName.startsWith("201503110206PYTHON")
+          || testName.startsWith("201503112218PYTHON")
+          || testName.startsWith("201503110219PYTHON")
+          || testName.startsWith("201503102320PYTHON")
         ) {
           assertEquals(EVMExecutionStatusCode.EVMC_STACK_UNDERFLOW, result.statusCode)
         } else if (testName.contains("outofgas", true)
           || testName.contains("TooHigh", true)
           || testName.contains("MemExp", true)
           || testName.contains("return1", true)
-          || testName.equals("sha3_bigOffset")
-          || testName.equals("sha3_3")
-          || testName.equals("sha3_4")
-          || testName.equals("sha3_5")
-          || testName.equals("sha3_6")
-          || testName.equals("sha3_bigSize")
-                || testName.equals("ackermann33")
+          || testName.startsWith("sha3_bigOffset")
+          || testName.startsWith("sha3_3")
+          || testName.startsWith("sha3_4")
+          || testName.startsWith("sha3_5")
+          || testName.startsWith("sha3_6")
+          || testName.startsWith("sha3_bigSize")
+          || testName.startsWith("ackermann33")
         ) {
           assertEquals(EVMExecutionStatusCode.EVMC_OUT_OF_GAS, result.statusCode)
         } else if (testName.contains("stacklimit", true)) {
