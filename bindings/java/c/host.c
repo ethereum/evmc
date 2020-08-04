@@ -265,7 +265,6 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     assert(result_ptr != NULL);
     result = *result_ptr;
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
     return result;
 }
 
@@ -313,8 +312,6 @@ static size_t copy_code_fn(struct evmc_host_context* context,
     assert(buffer_data != NULL);
 
     result = get_code_size_fn(context, address) - code_offset;
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
     return result;
 }
