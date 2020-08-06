@@ -148,7 +148,7 @@ public final class EvmcVm implements AutoCloseable {
    * @param buffer the byte buffer to consider
    * @return the byte buffer address
    */
-  native long address(ByteBuffer buffer);
+  public native long address(ByteBuffer buffer);
 
   /** This method cleans up resources */
   @Override
