@@ -13,7 +13,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getStorage(byte[] address, byte[] key) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
 
   @Override
@@ -23,7 +23,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getBalance(byte[] address) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
 
   @Override
@@ -33,7 +33,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getCodeHash(byte[] address) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
 
   @Override
@@ -51,12 +51,12 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getTxContext() {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(160).put(new byte[160]);
   }
 
   @Override
   public ByteBuffer getBlockHash(long number) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
 
   @Override
