@@ -138,6 +138,15 @@ JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_set_1option(JNIEnv* jenv,
     return (jint)option_result;
 }
 
+JNIEXPORT jlong JNICALL Java_org_ethereum_evmc_EvmcVm_address(JNIEnv* jenv,
+                                                              jclass jcls,
+                                                              jobject buf)
+{
+    (void)jcls;
+    void* p = (*jenv)->GetDirectBufferAddress(jenv, buf);
+    return (jlong)p;
+}
+
 JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_get_1result_1size(JNIEnv* jenv, jclass jcls)
 {
     (void)jenv;

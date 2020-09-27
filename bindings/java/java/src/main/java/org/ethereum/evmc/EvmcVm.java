@@ -156,6 +156,13 @@ public final class EvmcVm implements AutoCloseable {
   native int get_result_size();
 
   /**
+   * Utility method to get a bytebuffer address
+   * @param buffer the byte buffer to consider
+   * @return the byte buffer address
+   */
+  native long address(ByteBuffer buffer);
+
+  /**
    * This method cleans up resources
    *
    * @throws Exception
