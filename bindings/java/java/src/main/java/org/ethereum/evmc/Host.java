@@ -79,10 +79,10 @@ final class Host {
 
     if (code != null && code_offset > 0 && code_offset < code.length) {
       int length = code.length - code_offset;
-      return ByteBuffer.wrap(code, 0, length);
+      return ByteBuffer.allocateDirect(length).put(code, code_offset, length);
     }
 
-    return ByteBuffer.wrap(new byte[0]);
+    return ByteBuffer.allocateDirect(0);
   }
 
   /** Selfdestruct callback function. */
