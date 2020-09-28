@@ -45,7 +45,7 @@ endif()
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
-set(PROJECT_VERSION 7.4.0)
+set(PROJECT_VERSION 7.5.0-alpha.0)
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 if(CABLE_COMPILER_CLANG)
