@@ -41,8 +41,7 @@ final class EvmcTest {
   void testVersion() throws Exception {
     try (EvmcVm vm = EvmcVm.create(exampleVmPath)) {
       String version = vm.version();
-      assert (version.length() > 0);
-      assert (version.equals("0.0.0"));
+      assert (version.length() >= 5);
     }
   }
 
