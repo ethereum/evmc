@@ -364,7 +364,7 @@ impl From<ffi::evmc_result> for ExecutionResult {
             status_code: result.status_code,
             gas_left: result.gas_left,
             output: if result.output_data.is_null() {
-                assert!(result.output_size == 0);
+                assert_eq!(result.output_size, 0);
                 None
             } else if result.output_size == 0 {
                 None
@@ -466,7 +466,7 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             destination: message.destination,
             sender: message.sender,
             input: if message.input_data.is_null() {
-                assert!(message.input_size == 0);
+                assert_eq!(message.input_size, 0);
                 None
             } else if message.input_size == 0 {
                 None
@@ -499,8 +499,8 @@ mod tests {
     fn result_new() {
         let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, None);
 
-        assert!(r.status_code() == StatusCode::EVMC_FAILURE);
-        assert!(r.gas_left() == 420);
+        assert_eq!(r.status_code(), StatusCode::EVMC_FAILURE);
+        assert_eq!(r.gas_left(), 420);
         assert!(r.output().is_none());
         assert!(r.create_address().is_none());
     }
@@ -533,10 +533,10 @@ mod tests {
 
         let r: ExecutionResult = f.into();
 
-        assert!(r.status_code() == StatusCode::EVMC_SUCCESS);
-        assert!(r.gas_left() == 1337);
+        assert_eq!(r.status_code(), StatusCode::EVMC_SUCCESS);
+        assert_eq!(r.gas_left(), 1337);
         assert!(r.output().is_some());
-        assert!(r.output().unwrap().len() == 4);
+        assert_eq!(r.output().unwrap().len(), 4);
         assert!(r.create_address().is_some());
     }
 
@@ -551,15 +551,15 @@ mod tests {
         let f: *const ffi::evmc_result = r.into();
         assert!(!f.is_null());
         unsafe {
-            assert!((*f).status_code == StatusCode::EVMC_FAILURE);
-            assert!((*f).gas_left == 420);
+            assert_eq!((*f).status_code, StatusCode::EVMC_FAILURE);
+            assert_eq!((*f).gas_left, 420);
             assert!(!(*f).output_data.is_null());
-            assert!((*f).output_size == 5);
-            assert!(
-                std::slice::from_raw_parts((*f).output_data, 5) as &[u8]
-                    == &[0xc0, 0xff, 0xee, 0x71, 0x75]
+            assert_eq!((*f).output_size, 5);
+            assert_eq!(
+                std::slice::from_raw_parts((*f).output_data, 5) as &[u8],
+                &[0xc0, 0xff, 0xee, 0x71, 0x75]
             );
-            assert!((*f).create_address.bytes == [0u8; 20]);
+            assert_eq!((*f).create_address.bytes, [0u8; 20]);
             if (*f).release.is_some() {
                 (*f).release.unwrap()(f);
             }
@@ -573,11 +573,11 @@ mod tests {
         let f: *const ffi::evmc_result = r.into();
         assert!(!f.is_null());
         unsafe {
-            assert!((*f).status_code == StatusCode::EVMC_FAILURE);
-            assert!((*f).gas_left == 420);
+            assert_eq!((*f).status_code, StatusCode::EVMC_FAILURE);
+            assert_eq!((*f).gas_left, 420);
             assert!((*f).output_data.is_null());
-            assert!((*f).output_size == 0);
-            assert!((*f).create_address.bytes == [0u8; 20]);
+            assert_eq!((*f).output_size, 0);
+            assert_eq!((*f).create_address.bytes, [0u8; 20]);
             if (*f).release.is_some() {
                 (*f).release.unwrap()(f);
             }
@@ -594,15 +594,15 @@ mod tests {
 
         let f: ffi::evmc_result = r.into();
         unsafe {
-            assert!(f.status_code == StatusCode::EVMC_FAILURE);
-            assert!(f.gas_left == 420);
+            assert_eq!(f.status_code, StatusCode::EVMC_FAILURE);
+            assert_eq!(f.gas_left, 420);
             assert!(!f.output_data.is_null());
-            assert!(f.output_size == 5);
-            assert!(
-                std::slice::from_raw_parts(f.output_data, 5) as &[u8]
-                    == &[0xc0, 0xff, 0xee, 0x71, 0x75]
+            assert_eq!(f.output_size, 5);
+            assert_eq!(
+                std::slice::from_raw_parts(f.output_data, 5) as &[u8],
+                &[0xc0, 0xff, 0xee, 0x71, 0x75]
             );
-            assert!(f.create_address.bytes == [0u8; 20]);
+            assert_eq!(f.create_address.bytes, [0u8; 20]);
             if f.release.is_some() {
                 f.release.unwrap()(&f);
             }
@@ -615,11 +615,11 @@ mod tests {
 
         let f: ffi::evmc_result = r.into();
         unsafe {
-            assert!(f.status_code == StatusCode::EVMC_FAILURE);
-            assert!(f.gas_left == 420);
+            assert_eq!(f.status_code, StatusCode::EVMC_FAILURE);
+            assert_eq!(f.gas_left, 420);
             assert!(f.output_data.is_null());
-            assert!(f.output_size == 0);
-            assert!(f.create_address.bytes == [0u8; 20]);
+            assert_eq!(f.output_size, 0);
+            assert_eq!(f.create_address.bytes, [0u8; 20]);
             if f.release.is_some() {
                 f.release.unwrap()(&f);
             }
