@@ -52,11 +52,10 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress);
+    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
     bool result = !!jresult;
 
     return result;
@@ -82,13 +81,12 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
     jbyteArray jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index, jaddress, jkey);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress, jkey);
 
     assert(jresult != NULL);
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
@@ -119,13 +117,12 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
     jbyteArray jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
     jbyteArray jval = CopyDataToJava(jenv, value, sizeof(struct evmc_bytes32));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress,
+    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress,
                                                 jkey, jval);
     enum evmc_storage_status result = (enum evmc_storage_status)jresult;
 
@@ -150,12 +147,11 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index, jaddress);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
     assert(jresult != NULL);
 
     evmc_uint256be* result_ptr = (evmc_uint256be*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
@@ -185,11 +181,10 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress);
+    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
     size_t result = (size_t)jresult;
 
     return result;
@@ -213,12 +208,11 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index, jaddress);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
     assert(jresult != NULL);
 
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
@@ -253,12 +247,11 @@ static size_t copy_code_fn(struct evmc_host_context* context,
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
     jint jcode_offset = (jint)code_offset;
 
     // call java method
-    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index,
+    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index,
                                                       jaddress, jcode_offset);
     assert(jresult != NULL);
 
@@ -294,12 +287,11 @@ static void selfdestruct_fn(struct evmc_host_context* context,
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
     jbyteArray jbeneficiary = CopyDataToJava(jenv, beneficiary, sizeof(struct evmc_address));
 
     // call java method
-    (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress, jbeneficiary);
+    (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress, jbeneficiary);
 }
 
 static struct evmc_result call_fn(struct evmc_host_context* context, const struct evmc_message* msg)
@@ -320,14 +312,12 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
-
     jobject jmsg = (*jenv)->NewDirectByteBuffer(jenv, (void*)msg, sizeof(struct evmc_message));
     assert(jmsg != NULL);
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index, jmsg);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jmsg);
     assert(jresult != NULL);
 
     struct evmc_result* result_ptr =
@@ -355,11 +345,8 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
         (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
     assert(method != NULL);
 
-    // set java method params
-    jint jcontext_index = context->index;
-
     // call java method
-    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index);
+    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index);
     assert(jresult != NULL);
 
     struct evmc_tx_context* result_ptr =
@@ -388,13 +375,9 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
         (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
     assert(method != NULL);
 
-    // set java method params
-    jint jcontext_index = context->index;
-    jlong jnumber = (jlong)number;
-
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, jcontext_index, jnumber);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, (jlong)number);
     assert(jresult != NULL);
 
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
@@ -427,7 +410,6 @@ static void emit_log_fn(struct evmc_host_context* context,
     assert(method != NULL);
 
     // set java method params
-    jint jcontext_index = context->index;
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
     jbyteArray jdata = CopyDataToJava(jenv, data, data_size);
 
@@ -442,7 +424,7 @@ static void emit_log_fn(struct evmc_host_context* context,
     }
 
     // call java method
-    (*jenv)->CallStaticIntMethod(jenv, host_class, method, jcontext_index, jaddress, jdata,
+    (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress, jdata,
                                  data_size, jtopics, topics_count);
 }
 
