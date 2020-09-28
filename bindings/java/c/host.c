@@ -56,9 +56,7 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
 
     // call java method
     jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
-    bool result = !!jresult;
-
-    return result;
+    return jresult != 0;
 }
 
 static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
@@ -91,9 +89,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
     assert(jresult != NULL);
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    evmc_bytes32 result = *result_ptr;
-
-    return result;
+    return *result_ptr;  // copy here
 }
 
 static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context,
@@ -124,9 +120,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
     // call java method
     jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress,
                                                 jkey, jval);
-    enum evmc_storage_status result = (enum evmc_storage_status)jresult;
-
-    return result;
+    return (enum evmc_storage_status)jresult;
 }
 
 static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const evmc_address* address)
@@ -156,7 +150,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
 
     evmc_uint256be* result_ptr = (evmc_uint256be*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    evmc_uint256be result = *result_ptr;
+    evmc_uint256be result = *result_ptr;  // copy here
 
     (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
@@ -185,9 +179,7 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
 
     // call java method
     jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
-    size_t result = (size_t)jresult;
-
-    return result;
+    return (size_t)jresult;
 }
 
 static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const evmc_address* address)
@@ -217,7 +209,7 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
 
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    evmc_bytes32 result = *result_ptr;
+    evmc_bytes32 result = *result_ptr;  // copy here
 
     (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
@@ -323,9 +315,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
     struct evmc_result* result_ptr =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    struct evmc_result result = *result_ptr;
-
-    return result;
+    return *result_ptr;  // copy here
 }
 
 static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* context)
@@ -352,11 +342,8 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
     struct evmc_tx_context* result_ptr =
         (struct evmc_tx_context*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    struct evmc_tx_context result = *result_ptr;
-
-    return result;
+    return *result_ptr;  // copy here
 }
-
 
 static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t number)
 {
@@ -382,9 +369,7 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
 
     evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result_ptr != NULL);
-    evmc_bytes32 result = *result_ptr;
-
-    return result;
+    return *result_ptr;  // copy here
 }
 
 static void emit_log_fn(struct evmc_host_context* context,
