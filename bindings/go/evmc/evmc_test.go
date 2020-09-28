@@ -2,7 +2,7 @@
 // Copyright 2018-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
-//go:generate gcc -shared ../../../examples/example_vm/example_vm.c -I../../../include -o example_vm.so
+//go:generate g++ -shared ../../../examples/example_vm/example_vm.cpp -I../../../include -o example_vm.so
 
 package evmc
 

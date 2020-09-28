@@ -1,18 +1,15 @@
-/* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2016-2019 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0.
- */
+// EVMC: Ethereum Client-VM Connector API.
+// Copyright 2016-2020 The EVMC Authors.
+// Licensed under the Apache License, Version 2.0.
 
 /// @file
 /// Example implementation of the EVMC VM interface.
 ///
-/// This VM does not do anything useful except for showing
-/// how EVMC VM API should be implemented.
-/// The implementation is done in C only, but could be done in C++ in very
-/// similar way.
+/// This VM does not do anything useful except for showing how EVMC VM API
+/// should be implemented. The implementation uses the C API directly
+/// and is done in simple C++ for readability.
 
 #include "example_vm.h"
-
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,14 +19,14 @@
 /// The example VM instance struct extending the evmc_vm.
 struct example_vm
 {
-    struct evmc_vm instance;  ///< The base struct.
-    int verbose;              ///< The verbosity level.
+    evmc_vm instance;  ///< The base struct.
+    int verbose;       ///< The verbosity level.
 };
 
 /// The implementation of the evmc_vm::destroy() method.
-static void destroy(struct evmc_vm* vm)
+static void destroy(evmc_vm* vm)
 {
-    free(vm);
+    delete (struct example_vm*)vm;
 }
 
 /// The example implementation of the evmc_vm::get_capabilities() method.
@@ -82,7 +79,8 @@ static struct evmc_result execute(struct evmc_vm* instance,
                                   const uint8_t* code,
                                   size_t code_size)
 {
-    struct evmc_result ret = {.status_code = EVMC_INTERNAL_ERROR};
+    evmc_result ret = {};
+    ret.status_code = EVMC_INTERNAL_ERROR;
     if (code_size == 0)
     {
         // In case of empty code return a fancy error message.
@@ -218,17 +216,15 @@ static struct evmc_result execute(struct evmc_vm* instance,
 
 struct evmc_vm* evmc_create_example_vm()
 {
-    struct evmc_vm init = {
-        .abi_version = EVMC_ABI_VERSION,
-        .name = "example_vm",
-        .version = PROJECT_VERSION,
-        .destroy = destroy,
-        .execute = execute,
-        .get_capabilities = get_capabilities,
-        .set_option = set_option,
-    };
-    struct example_vm* vm = calloc(1, sizeof(struct example_vm));
-    struct evmc_vm* interface = &vm->instance;
-    memcpy(interface, &init, sizeof(init));
-    return interface;
+    example_vm* vm = new example_vm{evmc_vm{
+                                        EVMC_ABI_VERSION,
+                                        "example_vm",
+                                        PROJECT_VERSION,
+                                        destroy,
+                                        execute,
+                                        get_capabilities,
+                                        set_option,
+                                    },
+                                    0};
+    return &vm->instance;
 }
