@@ -118,7 +118,7 @@ impl VMNameSet {
 
 impl VMMetaData {
     fn new(args: AttributeArgs) -> Self {
-        assert!(args.len() == 3, "Incorrect number of arguments supplied");
+        assert_eq!(args.len(), 3, "Incorrect number of arguments supplied");
 
         let vm_name_meta = &args[0];
         let vm_capabilities_meta = &args[1];
