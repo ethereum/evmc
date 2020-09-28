@@ -134,8 +134,8 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
 
 static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const evmc_address* address)
 {
-    char java_method_name[] = "get_balance";
-    char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    const char java_method_name[] = "get_balance";
+    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -169,8 +169,8 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
 
 static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_address* address)
 {
-    char java_method_name[] = "get_code_size";
-    char java_method_signature[] = "(I[B)I";
+    const char java_method_name[] = "get_code_size";
+    const char java_method_signature[] = "(I[B)I";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -197,8 +197,8 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
 
 static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const evmc_address* address)
 {
-    char java_method_name[] = "get_code_hash";
-    char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    const char java_method_name[] = "get_code_hash";
+    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
