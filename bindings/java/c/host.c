@@ -169,7 +169,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
     evmc_uint256be result;
     CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_uint256be));
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, JNI_ABORT);
 
     return result;
 }
@@ -228,7 +228,7 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     evmc_bytes32 result;
     CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_bytes32));
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, JNI_ABORT);
 
     return result;
 }
@@ -279,7 +279,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
             memcpy(buffer_data, code + code_offset, length);
     }
 
-    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, JNI_ABORT);
 
     return length;
 }
