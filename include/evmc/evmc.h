@@ -295,6 +295,9 @@ enum evmc_status_code
      */
     EVMC_WASM_TRAP = 16,
 
+    /** The caller does not have enough funds for value transfer. */
+    EVMC_INSUFFICIENT_BALANCE = 17,
+
     /** EVM implementation generic internal error. */
     EVMC_INTERNAL_ERROR = -1,
 

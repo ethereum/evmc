@@ -102,6 +102,9 @@ std::ostream& operator<<(std::ostream& os, evmc_status_code status_code)
     case EVMC_WASM_TRAP:
         s = "wasm trap";
         break;
+    case EVMC_INSUFFICIENT_BALANCE:
+        s = "insufficient balance";
+        break;
     case EVMC_INTERNAL_ERROR:
         s = "internal error";
         break;
