@@ -33,7 +33,7 @@ TEST(tool_commands, run_empty_code)
 
     const auto exit_code = cmd::run(vm, EVMC_FRONTIER, 1, "", out);
     EXPECT_EQ(exit_code, 0);
-    EXPECT_EQ(out.str(), out_pattern("Frontier", 1, "failure", 1));
+    EXPECT_EQ(out.str(), out_pattern("Frontier", 1, "success", 0, ""));
 }
 
 TEST(tool_commands, run_return_my_address)
@@ -43,6 +43,7 @@ TEST(tool_commands, run_return_my_address)
 
     const auto exit_code = cmd::run(vm, EVMC_HOMESTEAD, 200, "30600052596000f3", out);
     EXPECT_EQ(exit_code, 0);
-    EXPECT_EQ(out.str(), out_pattern("Homestead", 200, "success", 200,
-                                     "0000000000000000000000000000000000000000"));
+    EXPECT_EQ(out.str(),
+              out_pattern("Homestead", 200, "success", 6,
+                          "0000000000000000000000000000000000000000000000000000000000000000"));
 }
