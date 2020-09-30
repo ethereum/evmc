@@ -71,7 +71,10 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
     // call java method
     jboolean jresult =
         (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, context->index, jaddress);
-    // FIXME: release jaddress?
+    (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, JNI_ABORT);
+    (*jenv)->DeleteLocalRef(jenv, jaddress);
+    (*jenv)->DeleteLocalRef(jenv, method);
+    (*jenv)->DeleteLocalRef(jenv, host_class);
     return jresult != 0;
 }
 
