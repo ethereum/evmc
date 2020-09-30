@@ -10,6 +10,16 @@ Ethereum Clients. On the EVM side it supports classic EVM1 and [ewasm].
 On the Client-side it defines the interface for EVM implementations
 to access Ethereum environment and state.
 
+## Install
+
+### C / C++
+
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build .
+cmake --build . --target install
+```
 
 ## Usage
 
