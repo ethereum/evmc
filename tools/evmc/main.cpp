@@ -5,8 +5,7 @@
 #include <CLI/CLI.hpp>
 #include <evmc/loader.h>
 #include <evmc/mocked_host.hpp>
-
-#include "utils.hpp"
+#include <tools/utils/utils.hpp>
 
 int main(int argc, const char** argv)
 {
