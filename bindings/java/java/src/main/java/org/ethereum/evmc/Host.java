@@ -77,19 +77,12 @@ final class Host {
   }
 
   /** Copy code callback function. */
-  static ByteBuffer copy_code(int context_index, byte[] address, int code_offset) {
+  static ByteBuffer copy_code(int context_index, byte[] address) {
     HostContext context =
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    byte[] code = context.getCode(address).array();
-
-    if (code != null && code_offset > 0 && code_offset < code.length) {
-      int length = code.length - code_offset;
-      return ByteBuffer.allocateDirect(length).put(code, code_offset, length);
-    }
-
-    return ByteBuffer.allocateDirect(0);
+    return ensureDirectBuffer(context.getCode(address));
   }
 
   /** Selfdestruct callback function. */
