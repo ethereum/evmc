@@ -66,10 +66,6 @@ commands:
           name: "Test"
           command: |
             cmake --build ~/build --target test -- ARGS="-j4 --schedule-random --output-on-failure"
-            # Test statically linked end-to-end example
-            ~/build/examples/evmc-example-static
-            # Test dynamically loaded end-to-end example
-            ~/build/examples/evmc-example ~/build/examples/example_vm/libexample-vm.so
 
 jobs:
 
