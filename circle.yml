@@ -342,6 +342,11 @@ jobs:
           name: Test with evmc-example
           command: |
             ~/build/examples/evmc-example target/debug/libexamplerustvm.so
+      - run:
+          name: Package evmc-sys
+          # NOTE: can not be run for evmc-vm and evmc-declare due to version dependencies
+          working_directory: bindings/rust/evmc-sys
+          command: cargo package
 
   bindings-rust-asan-combined:
     docker:
