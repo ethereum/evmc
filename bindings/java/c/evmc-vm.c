@@ -18,9 +18,9 @@ static void throw_java_assert(JNIEnv* jenv, const char* msg)
     (*jenv)->ThrowNew(jenv, jcls, msg);
 }
 
-JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_init(JNIEnv* jenv,
-                                                             jclass jcls,
-                                                             jstring jfilename)
+JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_load_1and_1create(JNIEnv* jenv,
+                                                                          jclass jcls,
+                                                                          jstring jfilename)
 {
     (void)jcls;
     struct evmc_vm* evm = NULL;

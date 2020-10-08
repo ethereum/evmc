@@ -41,17 +41,16 @@ public final class EvmcVm implements AutoCloseable {
   }
 
   private EvmcVm(String filename) {
-    // initialize jni and load EVM shared library
-    nativeVm = init(filename);
+    nativeVm = load_and_create(filename);
   }
 
   /**
-   * This method loads the specified evm implementation and initializes jni
+   * This method loads the specified EVM implementation and returns its pointer.
    *
-   * @param filename path + filename of the evm shared object to load
-   * @return
+   * @param Path to the dynamic object representing the EVM implementation.
+   * @return Internal object pointer.
    */
-  public native ByteBuffer init(String filename);
+  native ByteBuffer load_and_create(String filename);
 
   /**
    * EVMC ABI version implemented by the VM instance.
