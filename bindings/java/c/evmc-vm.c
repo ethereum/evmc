@@ -29,8 +29,7 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_load_1and_1create(JNIEnv
     assert(rs == JNI_OK);
     // load the EVM
     const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, NULL);
-    if (filename == NULL)
-        throw_java_assert(jenv, "JNI Error: filename cannot be NULL");
+    assert(filename != NULL);
     enum evmc_loader_error_code loader_error;
     evm = evmc_load_and_create(filename, &loader_error);
     (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
