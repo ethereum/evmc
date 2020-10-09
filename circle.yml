@@ -317,10 +317,9 @@ jobs:
       - run:
           name: Update environment
           command: |
-            apt update
-            apt -y install libclang-dev clang
+            apt -qq update
+            apt -yq install libclang-dev clang --no-install-recommends
             rustup component add rustfmt
-            rustup update
       - run:
           name: Check formatting
           command: |
@@ -342,8 +341,13 @@ jobs:
           name: Test with evmc-example
           command: |
             ~/build/examples/evmc-example target/debug/libexamplerustvm.so
+      - run:
+          name: Package evmc-sys
+          # NOTE: can not be run for evmc-vm and evmc-declare due to version dependencies
+          working_directory: bindings/rust/evmc-sys
+          command: cargo package
 
-  bindings-rust-asan-combined:
+  bindings-rust-asan:
     docker:
       - image: rust:1-buster
     steps:
@@ -353,9 +357,8 @@ jobs:
           command: |
             echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
             apt -qq update
-            apt -yq  install llvm-8-dev clang-8 --no-install-recommends
+            apt -yq install llvm-8-dev clang-8 --no-install-recommends
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
-            rustup update
       - run:
           name: Build
           command: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS=detect_leaks=1 cargo +nightly build --target x86_64-unknown-linux-gnu
@@ -400,7 +403,7 @@ workflows:
       - bindings-rust:
           requires:
             - build-gcc8-cxx17
-      - bindings-rust-asan-combined:
+      - bindings-rust-asan:
           requires:
             - build-clang9-cxx14-asan
       - upload-docs:
