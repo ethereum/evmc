@@ -25,9 +25,10 @@ Please visit the [documentation].
 | **C++**                       | C++14, C++17          | GCC 6+, clang 3.8+, MSVC 2017+ | Host- and VM-side
 | **Go** _(bindings)_           | 1.11 - 1.14 (modules) |                                | Host-side only
 | **Rust** _(bindings)_[¹](#n1) | 2018 edition          | 1.37.0 and newer               | VM-side only
-| **Java** _(bindings)_         | 11                    |                                | Host-side only
+| **Java** _(bindings)_[²](#n2) | 11                    |                                | Host-side only
 
-<b id="n1">1</b>. Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
+1. <sup id="n1">↑</sup> Rust support is limited and not complete yet, but it is mostly functional already. Breaking changes are possible at this stage.
+2. <sup id="n2">↑</sup> Java support is in progress and the interface remains in flux. Breaking changes are possible at this stage.
 
 ### Testing tools
 
@@ -60,6 +61,7 @@ Please visit the [documentation].
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
 - [rust-ssvm] (Rust Host-side)
+- [silkworm]
 - [Solidity] (for integration testing)
 - [turbo-geth]
 
@@ -107,7 +109,7 @@ Licensed under the [Apache License, Version 2.0].
 [Hera.rs]: https://github.com/ewasm/hera.rs
 [Daytona]: https://github.com/axic/daytona
 [eip1962-evmc]: https://github.com/axic/eip1962-evmc
-[ssvm-evmc]: https://github.com/second-state/SSVM
+[ssvm-evmc]: https://github.com/second-state/ssvm-evmc
 [Gitter]: https://gitter.im/ethereum/evmc
 [aleth-interpreter]: https://github.com/ethereum/aleth/tree/master/libaleth-interpreter
 [aleth]: https://github.com/ethereum/aleth
@@ -116,6 +118,7 @@ Licensed under the [Apache License, Version 2.0].
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
+[silkworm]: https://github.com/torquem-ch/silkworm
 [turbo-geth]: https://github.com/ledgerwatch/turbo-geth
 [core-geth]: https://github.com/etclabscore/core-geth/issues/55
 [evmc-js]: https://github.com/RainBlock/evmc-js
