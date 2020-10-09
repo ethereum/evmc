@@ -143,13 +143,8 @@ public final class EvmcVm implements AutoCloseable {
    *
    * <p>This is a mandatory method and MUST NOT be set to NULL.
    */
-  private static native void execute(
-      ByteBuffer nativeVm,
-      HostContext context,
-      int rev,
-      ByteBuffer msg,
-      ByteBuffer code,
-      ByteBuffer result);
+  private static native ByteBuffer execute(
+      ByteBuffer nativeVm, HostContext context, int rev, ByteBuffer msg, ByteBuffer code);
 
   /**
    * Function is a wrapper around native execute.
@@ -158,10 +153,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   public synchronized ByteBuffer execute(
       HostContext context, int rev, ByteBuffer msg, ByteBuffer code) {
-    int resultSize = get_result_size();
-    ByteBuffer result = ByteBuffer.allocateDirect(resultSize);
-    execute(nativeVm, context, rev, msg, code, result);
-    return result;
+    return execute(nativeVm, context, rev, msg, code);
   }
 
   /**
@@ -192,9 +184,6 @@ public final class EvmcVm implements AutoCloseable {
   public int set_option(String name, String value) {
     return set_option(nativeVm, name, value);
   }
-
-  /** get size of result struct */
-  private static native int get_result_size();
 
   /** This method cleans up resources. */
   @Override
