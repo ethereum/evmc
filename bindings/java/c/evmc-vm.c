@@ -12,12 +12,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static void throw_java_assert(JNIEnv* jenv, const char* msg)
-{
-    jclass jcls = (*jenv)->FindClass(jenv, "java/lang/AssertionError");
-    (*jenv)->ThrowNew(jenv, jcls, msg);
-}
-
 JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_load_1and_1create(JNIEnv* jenv,
                                                                           jclass jcls,
                                                                           jstring jfilename)
@@ -36,7 +30,9 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_load_1and_1create(JNIEnv
     if (loader_error != EVMC_LOADER_SUCCESS)
     {
         const char* error_msg = evmc_last_error_msg();
-        throw_java_assert(jenv, error_msg ? error_msg : "Loading EVMC VM failed");
+        jclass exception_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/EvmcLoaderException");
+        assert(exception_class != NULL);
+        (*jenv)->ThrowNew(jenv, exception_class, error_msg ? error_msg : "Loading EVMC VM failed");
     }
     jobject jresult = (*jenv)->NewDirectByteBuffer(jenv, (void*)evm, sizeof(struct evmc_vm));
     assert(jresult != NULL);

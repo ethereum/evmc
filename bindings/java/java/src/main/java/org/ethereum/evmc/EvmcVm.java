@@ -3,6 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
+import org.ethereum.evmc.EvmcLoaderException;
 import static org.ethereum.evmc.Host.addContext;
 import static org.ethereum.evmc.Host.removeContext;
 
@@ -22,8 +23,9 @@ public final class EvmcVm implements AutoCloseable {
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
    * @param filename /path/filename of the evm shared object
+   * @throws EvmcLoaderException
    */
-  public static EvmcVm create(String filename) {
+  public static EvmcVm create(String filename) throws EvmcLoaderException {
     if (!EvmcVm.isEvmcLibraryLoaded) {
       try {
         // load so containing the jni bindings to evmc
@@ -40,7 +42,7 @@ public final class EvmcVm implements AutoCloseable {
     return evmcVm;
   }
 
-  private EvmcVm(String filename) {
+  private EvmcVm(String filename) throws EvmcLoaderException {
     nativeVm = load_and_create(filename);
   }
 
@@ -49,8 +51,9 @@ public final class EvmcVm implements AutoCloseable {
    *
    * @param Path to the dynamic object representing the EVM implementation.
    * @return Internal object pointer.
+   * @throws EvmcLoaderException
    */
-  private static native ByteBuffer load_and_create(String filename);
+  private static native ByteBuffer load_and_create(String filename) throws EvmcLoaderException;
 
   /**
    * EVMC ABI version implemented by the VM instance.
