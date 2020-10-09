@@ -19,7 +19,7 @@ public interface HostContext {
    * @param address The address of the account the query is about.
    * @return true if exists, false otherwise.
    */
-  boolean accountExists(byte[] address);
+  boolean accountExists(Address address);
 
   /**
    * Access account function.
@@ -55,7 +55,7 @@ public interface HostContext {
    * @param key The index of the account's storage entry.
    * @return The storage value at the given storage key or null bytes if the account does not exist.
    */
-  ByteBuffer getStorage(byte[] address, byte[] key);
+  Bytes32 getStorage(Address address, Bytes32 key);
 
   /**
    * Set storage function.
@@ -70,7 +70,7 @@ public interface HostContext {
    * @param value The value to be stored.
    * @return The effect on the storage item.
    */
-  int setStorage(byte[] address, byte[] key, byte[] value);
+  int setStorage(Address address, Bytes32 key, Bytes32 value);
 
   /**
    * Get balance function.
@@ -80,7 +80,7 @@ public interface HostContext {
    * @param address The address of the account.
    * @return The balance of the given account or 0 if the account does not exist.
    */
-  ByteBuffer getBalance(byte[] address);
+  Uint256 getBalance(Address address);
 
   /**
    * Get code size function.
@@ -91,7 +91,7 @@ public interface HostContext {
    * @param address The address of the account.
    * @return The size of the code in the account or 0 if the account does not exist.
    */
-  int getCodeSize(byte[] address);
+  int getCodeSize(Address address);
 
   /**
    * Get code hash function.
@@ -103,7 +103,7 @@ public interface HostContext {
    * @param address The address of the account.
    * @return The hash of the code in the account or null bytes if the account does not exist.
    */
-  ByteBuffer getCodeHash(byte[] address);
+  Bytes32 getCodeHash(Address address);
 
   /**
    * Copy code function.
@@ -116,7 +116,7 @@ public interface HostContext {
    * @param address The address of the account.
    * @return A copy of the requested code.
    */
-  ByteBuffer getCode(byte[] address);
+  ByteBuffer getCode(Address address);
 
   /**
    * Selfdestruct function.
@@ -127,7 +127,7 @@ public interface HostContext {
    * @param address The address of the contract to be selfdestructed.
    * @param beneficiary The address where the remaining ETH is going to be transferred.
    */
-  void selfdestruct(byte[] address, byte[] beneficiary);
+  void selfdestruct(Address address, Address beneficiary);
 
   /**
    * This function supports EVM calls.
@@ -156,7 +156,7 @@ public interface HostContext {
    * @param number The block number.
    * @return The block hash or null bytes if the information about the block is not available.
    */
-  ByteBuffer getBlockHash(long number);
+  Bytes32 getBlockHash(long number);
 
   /**
    * Log function.
@@ -170,5 +170,5 @@ public interface HostContext {
    * @param topics The the array of topics attached to the log.
    * @param topicCount The number of the topics. Valid values are between 0 and 4 inclusively.
    */
-  void emitLog(byte[] address, byte[] data, int dataSize, byte[][] topics, int topicCount);
+  void emitLog(Address address, byte[] data, int dataSize, byte[][] topics, int topicCount);
 }
