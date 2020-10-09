@@ -107,7 +107,6 @@ public final class EvmcVm implements AutoCloseable {
       int rev,
       ByteBuffer msg,
       ByteBuffer code,
-      int size,
       ByteBuffer result);
 
   /**
@@ -116,11 +115,11 @@ public final class EvmcVm implements AutoCloseable {
    * <p>This allows the context to managed in one method
    */
   public synchronized ByteBuffer execute(
-      HostContext context, int rev, ByteBuffer msg, ByteBuffer code, int size) {
+      HostContext context, int rev, ByteBuffer msg, ByteBuffer code) {
     int context_index = addContext(context);
     int resultSize = get_result_size();
     ByteBuffer result = ByteBuffer.allocateDirect(resultSize);
-    execute(nativeVm, context_index, rev, msg, code, size, result);
+    execute(nativeVm, context_index, rev, msg, code, result);
     removeContext(context_index);
     return result;
   }

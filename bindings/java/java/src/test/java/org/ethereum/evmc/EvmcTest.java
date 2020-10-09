@@ -65,7 +65,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -95,7 +95,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -125,7 +125,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -157,7 +157,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -196,7 +196,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -224,7 +224,7 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode, code.length).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
