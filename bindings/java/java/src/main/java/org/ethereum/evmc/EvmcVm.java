@@ -153,12 +153,10 @@ public final class EvmcVm implements AutoCloseable {
   private static native int get_result_size();
 
   /**
-   * This method cleans up resources
-   *
-   * @throws Exception
+   * This method cleans up resources.
    */
   @Override
-  public void close() throws Exception {
+  public void close() {
     destroy(nativeVm);
     isEvmcLibraryLoaded = false;
     evmcVm = null;
