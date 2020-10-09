@@ -18,6 +18,7 @@ add_jar(evmc-jar
     java/src/main/java/org/ethereum/evmc/types/Address.java
     java/src/main/java/org/ethereum/evmc/types/Bytes32.java
     java/src/main/java/org/ethereum/evmc/types/FixedLengthType.java
+    java/src/main/java/org/ethereum/evmc/types/Message.java
     java/src/main/java/org/ethereum/evmc/types/TxContext.java
     java/src/main/java/org/ethereum/evmc/types/Uint256.java
     GENERATE_NATIVE_HEADERS evmc-java-native-headers)
