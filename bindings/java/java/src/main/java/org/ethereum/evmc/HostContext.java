@@ -144,7 +144,7 @@ public interface HostContext {
    *
    * @return The transaction context.
    */
-  ByteBuffer getTxContext();
+  TxContext getTxContext();
 
   /**
    * Get block hash function.
