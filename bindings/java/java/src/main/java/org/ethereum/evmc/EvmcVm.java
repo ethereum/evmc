@@ -14,9 +14,12 @@ import java.util.Objects;
  * <p>Defines the Java methods capable of accessing the evm implementation.
  */
 public final class EvmcVm implements AutoCloseable {
-  private static EvmcVm evmcVm;
-  private static boolean isEvmcLibraryLoaded = false;
   private ByteBuffer nativeVm;
+
+  static {
+    System.loadLibrary("evmc-java");
+  }
+
   /**
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
@@ -24,20 +27,7 @@ public final class EvmcVm implements AutoCloseable {
    * @throws EvmcLoaderException
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
-    if (!EvmcVm.isEvmcLibraryLoaded) {
-      try {
-        // load so containing the jni bindings to evmc
-        System.load(System.getProperty("user.dir") + "/../c/build/lib/libevmc-java.so");
-        EvmcVm.isEvmcLibraryLoaded = true;
-      } catch (UnsatisfiedLinkError e) {
-        System.err.println("Native code library failed to load.\n" + e);
-        System.exit(1);
-      }
-    }
-    if (Objects.isNull(evmcVm)) {
-      evmcVm = new EvmcVm(filename);
-    }
-    return evmcVm;
+    return new EvmcVm(filename);
   }
 
   private EvmcVm(String filename) throws EvmcLoaderException {
@@ -160,7 +150,5 @@ public final class EvmcVm implements AutoCloseable {
   @Override
   public void close() throws Exception {
     destroy(nativeVm);
-    isEvmcLibraryLoaded = false;
-    evmcVm = null;
   }
 }
