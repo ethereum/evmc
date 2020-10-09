@@ -81,7 +81,7 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_destroy(JNIEnv* jenv,
 JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
                                                              jclass jcls,
                                                              jobject jevm,
-                                                             jint jcontext_index,
+                                                             jobject jcontext,
                                                              jint jrev,
                                                              jobject jmsg,
                                                              jobject jcode,
@@ -92,14 +92,14 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     assert(msg != NULL);
     size_t code_size;
     const uint8_t* code = GetDirectBuffer(jenv, jcode, &code_size);
-    struct evmc_host_context context = {jcontext_index};
     struct evmc_vm* evm = (struct evmc_vm*)(*jenv)->GetDirectBufferAddress(jenv, jevm);
     assert(evm != NULL);
     const struct evmc_host_interface* host = evmc_java_get_host_interface();
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
-    *result = evmc_execute(evm, host, &context, (enum evmc_revision)jrev, msg, code, code_size);
+    *result = evmc_execute(evm, host, (struct evmc_host_context*)jcontext, (enum evmc_revision)jrev,
+                           msg, code, code_size);
 }
 
 JNIEXPORT jint JNICALL Java_org_ethereum_evmc_EvmcVm_get_1capabilities(JNIEnv* jenv,

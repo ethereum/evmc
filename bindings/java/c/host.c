@@ -51,7 +51,7 @@ static void CopyFromByteBuffer(JNIEnv* jenv, jobject src, void* dst, size_t size
 static bool account_exists_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     const char java_method_name[] = "account_exists";
-    const char java_method_signature[] = "(I[B)Z";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)Z";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -70,7 +70,7 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
 
     // call java method
     jboolean jresult =
-        (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, context->index, jaddress);
+        (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, (jobject)context, jaddress);
     return jresult != 0;
 }
 
@@ -79,7 +79,8 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
                                    const evmc_bytes32* key)
 {
     const char java_method_name[] = "get_storage";
-    const char java_method_signature[] = "(I[B[B)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] =
+        "(Lorg/ethereum/evmc/HostContext;[B[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -99,7 +100,7 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress, jkey);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, jaddress, jkey);
     assert(jresult != NULL);
 
     evmc_bytes32 result;
@@ -113,7 +114,7 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
                                                const evmc_bytes32* value)
 {
     const char java_method_name[] = "set_storage";
-    const char java_method_signature[] = "(I[B[B[B)I";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[B[B)I";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -133,15 +134,15 @@ static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context
     jbyteArray jval = CopyDataToJava(jenv, value, sizeof(struct evmc_bytes32));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress,
-                                                jkey, jval);
+    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context,
+                                                jaddress, jkey, jval);
     return (enum evmc_storage_status)jresult;
 }
 
 static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     const char java_method_name[] = "get_balance";
-    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -160,7 +161,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, jaddress);
     assert(jresult != NULL);
 
     evmc_uint256be result;
@@ -174,7 +175,7 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
 static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     const char java_method_name[] = "get_code_size";
-    const char java_method_signature[] = "(I[B)I";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)I";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -192,14 +193,15 @@ static size_t get_code_size_fn(struct evmc_host_context* context, const evmc_add
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
+    jint jresult =
+        (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress);
     return (size_t)jresult;
 }
 
 static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     const char java_method_name[] = "get_code_hash";
-    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -218,7 +220,7 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, jaddress);
     assert(jresult != NULL);
 
     evmc_bytes32 result;
@@ -241,7 +243,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
                            size_t buffer_size)
 {
     const char java_method_name[] = "copy_code";
-    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -260,7 +262,7 @@ static size_t copy_code_fn(struct evmc_host_context* context,
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, jaddress);
     assert(jresult != NULL);
 
     // copy jresult back to buffer_data
@@ -285,7 +287,7 @@ static void selfdestruct_fn(struct evmc_host_context* context,
                             const evmc_address* beneficiary)
 {
     const char java_method_name[] = "selfdestruct";
-    const char java_method_signature[] = "(I[B[B)V";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[B)V";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -304,13 +306,15 @@ static void selfdestruct_fn(struct evmc_host_context* context,
     jbyteArray jbeneficiary = CopyDataToJava(jenv, beneficiary, sizeof(struct evmc_address));
 
     // call java method
-    (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress, jbeneficiary);
+    (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress,
+                                 jbeneficiary);
 }
 
 static struct evmc_result call_fn(struct evmc_host_context* context, const struct evmc_message* msg)
 {
     const char java_method_name[] = "call";
-    const char java_method_signature[] = "(ILjava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] =
+        "(Lorg/ethereum/evmc/HostContext;Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -330,7 +334,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jmsg);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, jmsg);
     assert(jresult != NULL);
 
     struct evmc_result result;
@@ -341,7 +345,7 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
 static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* context)
 {
     const char java_method_name[] = "get_tx_context";
-    const char java_method_signature[] = "(I)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -356,7 +360,7 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
     assert(method != NULL);
 
     // call java method
-    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index);
+    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context);
     assert(jresult != NULL);
 
     struct evmc_tx_context result;
@@ -367,7 +371,7 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
 static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t number)
 {
     char java_method_name[] = "get_code_hash";
-    char java_method_signature[] = "(IJ)Ljava/nio/ByteBuffer;";
+    char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;J)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -383,7 +387,7 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
 
     // call java method
     jobject jresult =
-        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, (jlong)number);
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, (jobject)context, (jlong)number);
     assert(jresult != NULL);
 
     evmc_bytes32 result;
@@ -399,7 +403,7 @@ static void emit_log_fn(struct evmc_host_context* context,
                         size_t topics_count)
 {
     const char java_method_name[] = "emit_log";
-    const char java_method_signature[] = "(I[B[BI[[BI)V";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[BI[[BI)V";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -428,7 +432,7 @@ static void emit_log_fn(struct evmc_host_context* context,
     }
 
     // call java method
-    (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress, jdata,
+    (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress, jdata,
                                  data_size, jtopics, topics_count);
 }
 

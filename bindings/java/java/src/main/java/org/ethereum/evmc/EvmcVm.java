@@ -4,8 +4,6 @@
 package org.ethereum.evmc;
 
 import org.ethereum.evmc.EvmcLoaderException;
-import static org.ethereum.evmc.Host.addContext;
-import static org.ethereum.evmc.Host.removeContext;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -103,7 +101,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native void execute(
       ByteBuffer nativeVm,
-      int context_index,
+      HostContext context,
       int rev,
       ByteBuffer msg,
       ByteBuffer code,
@@ -116,11 +114,9 @@ public final class EvmcVm implements AutoCloseable {
    */
   public synchronized ByteBuffer execute(
       HostContext context, int rev, ByteBuffer msg, ByteBuffer code) {
-    int context_index = addContext(context);
     int resultSize = get_result_size();
     ByteBuffer result = ByteBuffer.allocateDirect(resultSize);
-    execute(nativeVm, context_index, rev, msg, code, result);
-    removeContext(context_index);
+    execute(nativeVm, context, rev, msg, code, result);
     return result;
   }
 
