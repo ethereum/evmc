@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "host.h"
 
@@ -32,6 +33,20 @@ static jbyteArray CopyDataToJava(JNIEnv* jenv, const void* ptr, size_t size)
     assert(ret != NULL);
     (*jenv)->SetByteArrayRegion(jenv, ret, 0, (jsize)size, (jbyte*)ptr);
     return ret;
+}
+
+static void CopyFromByteBuffer(JNIEnv* jenv, jobject src, void* dst, size_t size)
+{
+    size_t src_size = (size_t)(*jenv)->GetDirectBufferCapacity(jenv, src);
+    if (src_size != size)
+    {
+        jclass exception_class = (*jenv)->FindClass(jenv, "java/lang/IllegalArgumentException");
+        assert(exception_class != NULL);
+        (*jenv)->ThrowNew(jenv, exception_class, "Unexpected length.");
+    }
+    void* ptr = (*jenv)->GetDirectBufferAddress(jenv, src);
+    assert(ptr != NULL);
+    memcpy(dst, ptr, size);
 }
 
 static bool account_exists_fn(struct evmc_host_context* context, const evmc_address* address)
@@ -85,11 +100,11 @@ static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
     // call java method
     jobject jresult =
         (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress, jkey);
-
     assert(jresult != NULL);
-    evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    return *result_ptr;  // copy here
+
+    evmc_bytes32 result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_bytes32));
+    return result;
 }
 
 static enum evmc_storage_status set_storage_fn(struct evmc_host_context* context,
@@ -148,9 +163,8 @@ static evmc_uint256be get_balance_fn(struct evmc_host_context* context, const ev
         (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
     assert(jresult != NULL);
 
-    evmc_uint256be* result_ptr = (evmc_uint256be*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    evmc_uint256be result = *result_ptr;  // copy here
+    evmc_uint256be result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_uint256be));
 
     (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
@@ -207,9 +221,8 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
         (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
     assert(jresult != NULL);
 
-    evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    evmc_bytes32 result = *result_ptr;  // copy here
+    evmc_bytes32 result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_bytes32));
 
     (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
@@ -312,10 +325,9 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
         (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jmsg);
     assert(jresult != NULL);
 
-    struct evmc_result* result_ptr =
-        (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    return *result_ptr;  // copy here
+    struct evmc_result result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(struct evmc_result));
+    return result;
 }
 
 static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* context)
@@ -339,10 +351,9 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
     jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index);
     assert(jresult != NULL);
 
-    struct evmc_tx_context* result_ptr =
-        (struct evmc_tx_context*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    return *result_ptr;  // copy here
+    struct evmc_tx_context result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(struct evmc_tx_context));
+    return result;
 }
 
 static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t number)
@@ -367,9 +378,9 @@ static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t
         (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, (jlong)number);
     assert(jresult != NULL);
 
-    evmc_bytes32* result_ptr = (struct evmc_bytes32*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    assert(result_ptr != NULL);
-    return *result_ptr;  // copy here
+    evmc_bytes32 result;
+    CopyFromByteBuffer(jenv, jresult, &result, sizeof(evmc_bytes32));
+    return result;
 }
 
 static void emit_log_fn(struct evmc_host_context* context,
