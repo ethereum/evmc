@@ -52,7 +52,7 @@ static void CopyFromByteBuffer(JNIEnv* jenv, jobject src, void* dst, size_t size
 static bool account_exists_fn(struct evmc_host_context* context, const evmc_address* address)
 {
     const char java_method_name[] = "account_exists";
-    const char java_method_signature[] = "(I[B)I";
+    const char java_method_signature[] = "(I[B)Z";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -70,7 +70,8 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
 
     // call java method
-    jint jresult = (*jenv)->CallStaticIntMethod(jenv, host_class, method, context->index, jaddress);
+    jboolean jresult =
+        (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, context->index, jaddress);
     return jresult != 0;
 }
 

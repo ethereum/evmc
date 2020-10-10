@@ -17,12 +17,12 @@ import java.util.List;
  */
 final class Host {
   /** Check account existence callback function. */
-  static int account_exists(int context_index, byte[] address) {
+  static boolean account_exists(int context_index, byte[] address) {
     HostContext context =
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.accountExists(address) ? 1 : 0;
+    return context.accountExists(address);
   }
 
   /** Get storage callback function. */
