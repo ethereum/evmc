@@ -17,12 +17,14 @@ int main(int argc, const char** argv)
     std::string code_hex;
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
+    std::string input_hex;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
     run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
+    run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
 
     try
     {
@@ -49,7 +51,7 @@ int main(int argc, const char** argv)
                 return static_cast<int>(ec);
             }
             std::cout << "Config: " << vm_config << "\n";
-            return cmd::run(vm, rev, gas, code_hex, std::cout);
+            return cmd::run(vm, rev, gas, code_hex, input_hex, std::cout);
         }
 
         return 0;
