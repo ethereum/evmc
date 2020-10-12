@@ -41,7 +41,7 @@ func TestLoadConfigure(t *testing.T) {
 	}
 }
 
-func TestExecute(t *testing.T) {
+func TestExecuteEmptyCode(t *testing.T) {
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()
 
@@ -49,13 +49,13 @@ func TestExecute(t *testing.T) {
 	h := Hash{}
 	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil, h)
 
-	if bytes.Compare(output, []byte("Welcome to Byzantium!")) != 0 {
-		t.Errorf("execution unexpected output: %s", output)
+	if bytes.Compare(output, []byte("")) != 0 {
+		t.Errorf("execution unexpected output: %x", output)
 	}
-	if gasLeft != 99 {
-		t.Error("execution gas left is incorrect")
+	if gasLeft != 999 {
+		t.Errorf("execution gas left is incorrect: %d", gasLeft)
 	}
-	if err != Failure {
-		t.Error("execution returned unexpected error")
+	if err != nil {
+		t.Errorf("execution returned unexpected error: %v", err)
 	}
 }
