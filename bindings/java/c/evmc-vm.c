@@ -90,9 +90,8 @@ JNIEXPORT void JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     (void)jcls;
     struct evmc_message* msg = (struct evmc_message*)(*jenv)->GetDirectBufferAddress(jenv, jmsg);
     assert(msg != NULL);
-    size_t code_size = (size_t)(*jenv)->GetDirectBufferCapacity(jenv, jcode);
-    const uint8_t* code = (uint8_t*)(*jenv)->GetDirectBufferAddress(jenv, jcode);
-    assert(code != NULL);
+    size_t code_size;
+    const uint8_t* code = GetDirectBuffer(jenv, jcode, &code_size);
     struct evmc_host_context context = {jcontext_index};
     struct evmc_vm* evm = (struct evmc_vm*)(*jenv)->GetDirectBufferAddress(jenv, jevm);
     assert(evm != NULL);
