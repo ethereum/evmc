@@ -11,6 +11,7 @@ add_jar(evmc-jar
     OUTPUT_NAME evmc-java
     VERSION ${PROJECT_VERSION}
     SOURCES
+    java/src/main/java/org/ethereum/evmc/EvmcLoaderException.java
     java/src/main/java/org/ethereum/evmc/EvmcVm.java
     java/src/main/java/org/ethereum/evmc/Host.java
     java/src/main/java/org/ethereum/evmc/HostContext.java
