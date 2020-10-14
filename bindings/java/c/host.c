@@ -229,15 +229,19 @@ static evmc_bytes32 get_code_hash_fn(struct evmc_host_context* context, const ev
     return result;
 }
 
+static inline size_t min(size_t a, size_t b)
+{
+    return (a > b) ? b : a;
+}
+
 static size_t copy_code_fn(struct evmc_host_context* context,
                            const evmc_address* address,
                            size_t code_offset,
                            uint8_t* buffer_data,
                            size_t buffer_size)
 {
-    (void)buffer_size;  // FIXME: buffer_size suspiciously unused.
     const char java_method_name[] = "copy_code";
-    const char java_method_signature[] = "(I[BI)Ljava/nio/ByteBuffer;";
+    const char java_method_signature[] = "(I[B)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -253,23 +257,27 @@ static size_t copy_code_fn(struct evmc_host_context* context,
 
     // set java method params
     jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
-    jint jcode_offset = (jint)code_offset;
 
     // call java method
-    jobject jresult = (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index,
-                                                      jaddress, jcode_offset);
+    jobject jresult =
+        (*jenv)->CallStaticObjectMethod(jenv, host_class, method, context->index, jaddress);
     assert(jresult != NULL);
 
     // copy jresult back to buffer_data
-    buffer_data = (uint8_t*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
-    (void)buffer_data;
-    assert(buffer_data != NULL);
+    size_t code_size;
+    uint8_t* code = GetDirectBuffer(jenv, jresult, &code_size);
 
-    size_t result = get_code_size_fn(context, address) - code_offset;
+    size_t length = 0;
+    if (code_offset < code_size)
+    {
+        length = min(buffer_size, code_size - code_offset);
+        if (length > 0)
+            memcpy(buffer_data, code + code_offset, length);
+    }
 
     (*jenv)->ReleaseByteArrayElements(jenv, jaddress, (jbyte*)address, 0);
 
-    return result;
+    return length;
 }
 
 static void selfdestruct_fn(struct evmc_host_context* context,

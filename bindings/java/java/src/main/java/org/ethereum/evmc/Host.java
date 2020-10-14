@@ -16,6 +16,13 @@ import java.util.List;
  * <p>The set of all callback functions expected by VM instances.
  */
 final class Host {
+  static private ByteBuffer ensureDirectBuffer(ByteBuffer input) {
+    // Reallocate if needed.
+    if (!input.isDirect())
+      return ByteBuffer.allocateDirect(input.remaining()).put(input);
+    return input;
+  }
+
   /** Check account existence callback function. */
   static boolean account_exists(int context_index, byte[] address) {
     HostContext context =
@@ -31,7 +38,7 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.getStorage(address, key);
+    return ensureDirectBuffer(context.getStorage(address, key));
   }
 
   /** Set storage callback function. */
@@ -48,7 +55,7 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.getBalance(address);
+    return ensureDirectBuffer(context.getBalance(address));
   }
 
   /** Get code size callback function. */
@@ -66,23 +73,16 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.getCodeHash(address);
+    return ensureDirectBuffer(context.getCodeHash(address));
   }
 
   /** Copy code callback function. */
-  static ByteBuffer copy_code(int context_index, byte[] address, int code_offset) {
+  static ByteBuffer copy_code(int context_index, byte[] address) {
     HostContext context =
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    byte[] code = context.getCode(address).array();
-
-    if (code != null && code_offset > 0 && code_offset < code.length) {
-      int length = code.length - code_offset;
-      return ByteBuffer.allocateDirect(length).put(code, code_offset, length);
-    }
-
-    return ByteBuffer.allocateDirect(0);
+    return ensureDirectBuffer(context.getCode(address));
   }
 
   /** Selfdestruct callback function. */
@@ -100,7 +100,7 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.call(msg);
+    return ensureDirectBuffer(context.call(msg));
   }
 
   /** Get transaction context callback function. */
@@ -109,7 +109,7 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.getTxContext();
+    return ensureDirectBuffer(context.getTxContext());
   }
 
   /** Get block hash callback function. */
@@ -118,7 +118,7 @@ final class Host {
         requireNonNull(
             getContext(context_index),
             "HostContext does not exist for context_index: " + context_index);
-    return context.getBlockHash(number);
+    return ensureDirectBuffer(context.getBlockHash(number));
   }
 
   /** Emit log callback function. */
