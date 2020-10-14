@@ -37,15 +37,14 @@ static jbyteArray CopyDataToJava(JNIEnv* jenv, const void* ptr, size_t size)
 
 static void CopyFromByteBuffer(JNIEnv* jenv, jobject src, void* dst, size_t size)
 {
-    size_t src_size = (size_t)(*jenv)->GetDirectBufferCapacity(jenv, src);
+    size_t src_size;
+    const void* ptr = GetDirectBuffer(jenv, src, &src_size);
     if (src_size != size)
     {
         jclass exception_class = (*jenv)->FindClass(jenv, "java/lang/IllegalArgumentException");
         assert(exception_class != NULL);
         (*jenv)->ThrowNew(jenv, exception_class, "Unexpected length.");
     }
-    void* ptr = (*jenv)->GetDirectBufferAddress(jenv, src);
-    assert(ptr != NULL);
     memcpy(dst, ptr, size);
 }
 
