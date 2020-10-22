@@ -3,10 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-import org.ethereum.evmc.EvmcLoaderException;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 /**
  * The Java interface to the evm instance.
@@ -24,7 +22,7 @@ public final class EvmcVm implements AutoCloseable {
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
    * @param filename /path/filename of the evm shared object
-   * @throws EvmcLoaderException
+   * @throws EvmcLoaderException if the library fails to load
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
     return new EvmcVm(filename);
@@ -37,9 +35,9 @@ public final class EvmcVm implements AutoCloseable {
   /**
    * This method loads the specified EVM implementation and returns its pointer.
    *
-   * @param Path to the dynamic object representing the EVM implementation.
+   * @param filename Path to the dynamic object representing the EVM implementation
    * @return Internal object pointer.
-   * @throws EvmcLoaderException
+   * @throws EvmcLoaderException if the library fails to load
    */
   private static native ByteBuffer load_and_create(String filename) throws EvmcLoaderException;
 
