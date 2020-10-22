@@ -4,7 +4,11 @@
 package org.ethereum.evmc;
 
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * The Java interface to the evm instance.
@@ -12,10 +16,52 @@ import java.nio.ByteBuffer;
  * <p>Defines the Java methods capable of accessing the evm implementation.
  */
 public final class EvmcVm implements AutoCloseable {
+  private static final Throwable errorLoadingEvmc;
   private ByteBuffer nativeVm;
 
   static {
-    System.loadLibrary("evmc-java");
+    Throwable error = null;
+    try {
+      // load so containing the jni bindings to evmc
+      System.loadLibrary("libevmc-java");
+    } catch (UnsatisfiedLinkError e) {
+      String extension = null;
+      String operSys = System.getProperty("os.name").toLowerCase();
+      if (operSys.contains("win")) {
+        extension = "dll";
+      } else if (operSys.contains("nix") || operSys.contains("nux")
+          || operSys.contains("aix")) {
+        extension = "so";
+      } else if (operSys.contains("mac")) {
+        extension = "dylib";
+      } else {
+        error = e;
+      }
+      if (extension != null) {
+        try {
+          Path evmcLib = Files.createTempFile("libevmc-java", extension);
+          Files.copy(EvmcVm.class.getResourceAsStream("/libevmc-java." + extension), evmcLib, StandardCopyOption.REPLACE_EXISTING);
+          evmcLib.toFile().deleteOnExit();
+          try {
+            System.load(evmcLib.toAbsolutePath().toString());
+          } catch (UnsatisfiedLinkError e1) {
+            error = e1;
+          }
+        } catch (IOException ex) {
+          error = ex;
+        }
+      }
+    }
+    errorLoadingEvmc = error;
+  }
+
+  /**
+   * Returns true if the native library was loaded successfully and EVMC capabilities are available.
+   *
+   * @return true if the library is available
+   */
+  public static boolean isAvailable() {
+    return errorLoadingEvmc == null;
   }
 
   /**
@@ -25,6 +71,9 @@ public final class EvmcVm implements AutoCloseable {
    * @throws EvmcLoaderException if the library fails to load
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
+    if (!isAvailable()) {
+      throw new EvmcLoaderException("Cannot load evmc native library", errorLoadingEvmc);
+    }
     return new EvmcVm(filename);
   }
 
@@ -57,7 +106,9 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native String name(ByteBuffer nativeVm);
 
-  /** Function is a wrapper around native name(). */
+  /**
+   * Function is a wrapper around native name().
+   */
   public String name() {
     return name(nativeVm);
   }
@@ -70,7 +121,9 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native String version(ByteBuffer nativeVm);
 
-  /** Function is a wrapper around native version(). */
+  /**
+   * Function is a wrapper around native version().
+   */
   public String version() {
     return version(nativeVm);
   }
@@ -120,7 +173,9 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native int get_capabilities(ByteBuffer nativeVm);
 
-  /** Function is a wrapper around native get_capabilities(). */
+  /**
+   * Function is a wrapper around native get_capabilities().
+   */
   public int get_capabilities() {
     return get_capabilities(nativeVm);
   }
@@ -132,12 +187,16 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native int set_option(ByteBuffer nativeVm, String name, String value);
 
-  /** Function is a wrapper around native set_option(). */
+  /**
+   * Function is a wrapper around native set_option().
+   */
   public int set_option(String name, String value) {
     return set_option(nativeVm, name, value);
   }
 
-  /** get size of result struct */
+  /**
+   * get size of result struct
+   */
   private static native int get_result_size();
 
   /**

@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 final class EvmcTest {
-  private static final String exampleVmPath =
-      System.getProperty("user.dir") + "/../c/build/lib/libexample-vm.so";
+  private static final String exampleVmPath = "c/build/lib/libexample-vm.so";
 
   @Test
   void testInitCloseDestroy() throws Exception {

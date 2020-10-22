@@ -8,7 +8,7 @@ SOURCE_DIR = $(realpath $(CURDIR)/../..)
 OUT_DIR = $(CURDIR)/c/build
 BUILD_DIR = $(OUT_DIR)/_cmake_build
 
-build: gradlew $(OUT_DIR)/lib/libevmc-java.so
+build: gradlew $(OUT_DIR)/lib/libevmc-java.so java/src/main/resources/libevmc-java.so
 	mkdir -p ./java/build
 	./gradlew --no-daemon clean spotlessApply build
 
@@ -22,6 +22,10 @@ $(OUT_DIR)/lib/libevmc-java.so:
 	mkdir -p $(BUILD_DIR)
 	(cd $(BUILD_DIR) && cmake $(SOURCE_DIR) -DCMAKE_INSTALL_PREFIX=$(OUT_DIR) -DEVMC_JAVA=ON -DJAVA_HOME=$(JAVA_HOME) -DEVMC_EXAMPLES=ON)
 	cmake --build $(OUT_DIR)/_cmake_build --target install
+
+java/src/main/resources/libevmc-java.so: $(OUT_DIR)/lib/libevmc-java.so
+	mkdir -p java/src/main/resources
+	cp $(OUT_DIR)/lib/libevmc-java.so java/src/main/resources/libevmc-java.so
 
 clean:
 	rm -rf $(OUT_DIR)

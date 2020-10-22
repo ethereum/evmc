@@ -7,7 +7,7 @@ package org.ethereum.evmc;
  * Exception thrown when the EVMC binding fails to load.
  */
 public class EvmcLoaderException extends Exception {
-   public EvmcLoaderException(String message) {
-      super(message);
+   public EvmcLoaderException(String message, Throwable cause) {
+      super(message, cause);
    }
 }
