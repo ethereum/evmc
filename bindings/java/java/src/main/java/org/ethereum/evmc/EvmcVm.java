@@ -3,7 +3,6 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -29,8 +28,7 @@ public final class EvmcVm implements AutoCloseable {
       String operSys = System.getProperty("os.name").toLowerCase();
       if (operSys.contains("win")) {
         extension = "dll";
-      } else if (operSys.contains("nix") || operSys.contains("nux")
-          || operSys.contains("aix")) {
+      } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
         extension = "so";
       } else if (operSys.contains("mac")) {
         extension = "dylib";
@@ -40,7 +38,10 @@ public final class EvmcVm implements AutoCloseable {
       if (extension != null) {
         try {
           Path evmcLib = Files.createTempFile("libevmc-java", extension);
-          Files.copy(EvmcVm.class.getResourceAsStream("/libevmc-java." + extension), evmcLib, StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(
+              EvmcVm.class.getResourceAsStream("/libevmc-java." + extension),
+              evmcLib,
+              StandardCopyOption.REPLACE_EXISTING);
           evmcLib.toFile().deleteOnExit();
           try {
             System.load(evmcLib.toAbsolutePath().toString());
@@ -106,9 +107,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native String name(ByteBuffer nativeVm);
 
-  /**
-   * Function is a wrapper around native name().
-   */
+  /** Function is a wrapper around native name(). */
   public String name() {
     return name(nativeVm);
   }
@@ -121,9 +120,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native String version(ByteBuffer nativeVm);
 
-  /**
-   * Function is a wrapper around native version().
-   */
+  /** Function is a wrapper around native version(). */
   public String version() {
     return version(nativeVm);
   }
@@ -173,9 +170,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native int get_capabilities(ByteBuffer nativeVm);
 
-  /**
-   * Function is a wrapper around native get_capabilities().
-   */
+  /** Function is a wrapper around native get_capabilities(). */
   public int get_capabilities() {
     return get_capabilities(nativeVm);
   }
@@ -187,21 +182,15 @@ public final class EvmcVm implements AutoCloseable {
    */
   private static native int set_option(ByteBuffer nativeVm, String name, String value);
 
-  /**
-   * Function is a wrapper around native set_option().
-   */
+  /** Function is a wrapper around native set_option(). */
   public int set_option(String name, String value) {
     return set_option(nativeVm, name, value);
   }
 
-  /**
-   * get size of result struct
-   */
+  /** get size of result struct */
   private static native int get_result_size();
 
-  /**
-   * This method cleans up resources.
-   */
+  /** This method cleans up resources. */
   @Override
   public void close() {
     destroy(nativeVm);

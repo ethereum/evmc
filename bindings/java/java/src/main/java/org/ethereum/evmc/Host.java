@@ -3,12 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-import static java.util.Objects.requireNonNull;
-
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The Host interface.
@@ -16,10 +11,9 @@ import java.util.List;
  * <p>The set of all callback functions expected by VM instances.
  */
 final class Host {
-  static private ByteBuffer ensureDirectBuffer(ByteBuffer input) {
+  private static ByteBuffer ensureDirectBuffer(ByteBuffer input) {
     // Reallocate if needed.
-    if (!input.isDirect())
-      return ByteBuffer.allocateDirect(input.remaining()).put(input);
+    if (!input.isDirect()) return ByteBuffer.allocateDirect(input.remaining()).put(input);
     return input;
   }
 

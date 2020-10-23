@@ -3,13 +3,28 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 final class EvmcTest {
-  private static final String exampleVmPath = "c/build/lib/libexample-vm.so";
+  private static final String extension;
+  private static final String exampleVmPath;
+  static {
+    String os = System.getProperty("os.name", "generic").toLowerCase();
+    if (os.contains("mac") || os.contains("darwin")) {
+      extension = "dylib";
+    } else if (os.contains("win")) {
+      extension = "dll";
+    } else {
+      extension = "so";
+    }
+
+    URL exampleVM = EvmcTest.class.getClassLoader().getResource("libexample-vm." + extension);
+    exampleVmPath = exampleVM.getFile();
+  }
 
   @Test
   void testInitCloseDestroy() throws Exception {
