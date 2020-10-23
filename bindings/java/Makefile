@@ -30,6 +30,8 @@ test: build
 gradlew:
 	gradle --no-daemon setup
 
+$(OUT_DIR)/lib/libexample-vm.$(EXTENSION): $(OUT_DIR)/lib/libevmc-java.$(EXTENSION)
+
 $(OUT_DIR)/lib/libevmc-java.$(EXTENSION):
 	mkdir -p $(BUILD_DIR)
 	(cd $(BUILD_DIR) && cmake $(SOURCE_DIR) -DCMAKE_INSTALL_PREFIX=$(OUT_DIR) -DEVMC_JAVA=ON -DJAVA_HOME=$(JAVA_HOME) -DEVMC_EXAMPLES=ON)
