@@ -15,6 +15,7 @@ add_jar(evmc-jar
     java/src/main/java/org/ethereum/evmc/EvmcVm.java
     java/src/main/java/org/ethereum/evmc/Host.java
     java/src/main/java/org/ethereum/evmc/HostContext.java
+    java/src/main/java/org/ethereum/evmc/StorageStatus.java
     java/src/main/java/org/ethereum/evmc/types/Address.java
     java/src/main/java/org/ethereum/evmc/types/Bytes32.java
     java/src/main/java/org/ethereum/evmc/types/FixedLengthType.java

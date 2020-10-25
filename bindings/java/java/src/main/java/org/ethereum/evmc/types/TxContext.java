@@ -4,37 +4,34 @@
 package org.ethereum.evmc.types;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-public class TxContext {
+public class TxContext extends FixedLengthType {
+
+  private static final int EXPECTED_LENGTH = 160;
+
+  public TxContext(
+      Uint256 tx_gas_price,
+      Address tx_origin,
+      Address block_coinbase,
+      long block_number,
+      long block_timestamp,
+      long block_gas_limit,
+      Uint256 block_difficulty,
+      Uint256 chain_id) {
+    super(
+        ByteBuffer.allocate(EXPECTED_LENGTH)
+            .put(tx_gas_price.get())
+            .put(tx_origin.get())
+            .put(block_coinbase.get())
+            .putLong(block_number)
+            .putLong(block_timestamp)
+            .putLong(block_gas_limit)
+            .put(block_difficulty.get())
+            .put(chain_id.get())
+            .rewind());
+  }
+
   protected int expectedLength() {
-    return 160;
-  }
-
-  // TODO add getter/setters?
-
-  public Uint256 tx_gas_price;
-  public Address tx_origin;
-  public Address block_coinbase;
-  public long block_number;
-  public long block_timestamp;
-  public long block_gas_limit;
-  public Uint256 block_difficulty;
-  public Uint256 chain_id;
-
-  public TxContext() {
-  }
-
-  public ByteBuffer getByteBuffer() {
-    // This is big endian by default, which is what we want.
-    return ByteBuffer.allocateDirect(expectedLength())
-      .put(this.tx_gas_price.getByteBuffer())
-      .put(this.tx_origin.getByteBuffer())
-      .put(this.block_coinbase.getByteBuffer())
-      .putLong(this.block_number)
-      .putLong(this.block_timestamp)
-      .putLong(this.block_gas_limit)
-      .put(this.block_difficulty.getByteBuffer())
-      .put(this.chain_id.getByteBuffer());
+    return EXPECTED_LENGTH;
   }
 }

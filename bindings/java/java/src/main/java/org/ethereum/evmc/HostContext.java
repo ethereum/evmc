@@ -3,8 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-import org.ethereum.evmc.types.*;
 import java.nio.ByteBuffer;
+import org.ethereum.evmc.types.*;
 
 /**
  * This interface represents the callback functions must be implemented in order to interface with
@@ -70,7 +70,7 @@ public interface HostContext {
    * @param value The value to be stored.
    * @return The effect on the storage item.
    */
-  int setStorage(Address address, Bytes32 key, Bytes32 value);
+  StorageStatus setStorage(Address address, Bytes32 key, Bytes32 value);
 
   /**
    * Get balance function.

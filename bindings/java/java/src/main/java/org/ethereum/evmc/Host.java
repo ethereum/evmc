@@ -5,6 +5,8 @@ package org.ethereum.evmc;
 
 import org.ethereum.evmc.types.*;
 import java.nio.ByteBuffer;
+import org.ethereum.evmc.types.Address;
+import org.ethereum.evmc.types.Bytes32;
 
 /**
  * The Host interface.
@@ -32,7 +34,9 @@ final class Host {
 
   /** Set storage callback function. */
   static int set_storage(HostContext context, byte[] address, byte[] key, byte[] value) {
-    return context.setStorage(new Address(address), new Bytes32(key), new Bytes32(value));
+    StorageStatus status =
+        context.setStorage(new Address(address), new Bytes32(key), new Bytes32(value));
+    return status.code;
   }
   /** Get balance callback function. */
   static ByteBuffer get_balance(HostContext context, byte[] address) {
