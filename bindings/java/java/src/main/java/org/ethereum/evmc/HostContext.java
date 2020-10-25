@@ -166,9 +166,7 @@ public interface HostContext {
    *
    * @param address The address of the contract that generated the log.
    * @param data The unindexed data attached to the log.
-   * @param dataSize The length of the data.
    * @param topics The the array of topics attached to the log.
-   * @param topicCount The number of the topics. Valid values are between 0 and 4 inclusively.
    */
-  void emitLog(Address address, byte[] data, int dataSize, byte[][] topics, int topicCount);
+  void emitLog(Address address, byte[] data, Bytes32[] topics);
 }

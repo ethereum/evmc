@@ -3,8 +3,9 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-import org.ethereum.evmc.types.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.ethereum.evmc.types.*;
 import org.ethereum.evmc.types.Address;
 import org.ethereum.evmc.types.Bytes32;
 
@@ -38,6 +39,7 @@ final class Host {
         context.setStorage(new Address(address), new Bytes32(key), new Bytes32(value));
     return status.code;
   }
+
   /** Get balance callback function. */
   static ByteBuffer get_balance(HostContext context, byte[] address) {
     return context.getBalance(new Address(address)).getByteBuffer();
@@ -86,7 +88,10 @@ final class Host {
       int data_size,
       byte[][] topics,
       int topic_count) {
-    context.emitLog(new Address(address), data, data_size, topics, topic_count);
+    context.emitLog(
+        new Address(address),
+        data,
+        Arrays.stream(topics).map(Bytes32::new).toArray(Bytes32[]::new));
   }
 
   /** Access account callback function. */

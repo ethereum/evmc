@@ -149,6 +149,5 @@ class TestHostContext implements HostContext {
   }
 
   @Override
-  public void emitLog(
-      Address address, byte[] data, int dataSize, byte[][] topics, int topicCount) {}
+  public void emitLog(Address address, byte[] data, Bytes32[] topics) {}
 }
