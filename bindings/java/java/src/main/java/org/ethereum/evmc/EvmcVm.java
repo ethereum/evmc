@@ -25,12 +25,12 @@ public final class EvmcVm implements AutoCloseable {
       System.loadLibrary("libevmc-java");
     } catch (UnsatisfiedLinkError e) {
       String extension = null;
-      String operSys = System.getProperty("os.name").toLowerCase();
-      if (operSys.contains("win")) {
+      String os = System.getProperty("os.name").toLowerCase();
+      if (os.contains("win")) {
         extension = "dll";
-      } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
+      } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
         extension = "so";
-      } else if (operSys.contains("mac")) {
+      } else if (os.contains("mac")) {
         extension = "dylib";
       } else {
         error = e;
