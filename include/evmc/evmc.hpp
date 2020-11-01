@@ -121,11 +121,26 @@ inline constexpr uint64_t load64be(const uint8_t* bytes) noexcept
            (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
 }
 
+/// Loads 64 bits / 8 bytes of data from the given @p bytes array in little-endian order.
+inline constexpr uint64_t load64le(const uint8_t* bytes) noexcept
+{
+    return uint64_t{bytes[0]} | (uint64_t{bytes[1]} << 8) | (uint64_t{bytes[2]} << 16) |
+           (uint64_t{bytes[3]} << 24) | (uint64_t{bytes[4]} << 32) | (uint64_t{bytes[5]} << 40) |
+           (uint64_t{bytes[6]} << 48) | (uint64_t{bytes[7]} << 56);
+}
+
 /// Loads 32 bits / 4 bytes of data from the given @p bytes array in big-endian order.
 inline constexpr uint32_t load32be(const uint8_t* bytes) noexcept
 {
     return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
            uint32_t{bytes[3]};
+}
+
+/// Loads 32 bits / 4 bytes of data from the given @p bytes array in little-endian order.
+inline constexpr uint32_t load32le(const uint8_t* bytes) noexcept
+{
+    return uint32_t{bytes[0]} | (uint32_t{bytes[1]} << 8) | (uint32_t{bytes[2]} << 16) |
+           (uint32_t{bytes[3]} << 24);
 }
 
 namespace fnv
