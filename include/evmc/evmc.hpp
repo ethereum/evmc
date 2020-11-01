@@ -833,8 +833,8 @@ struct hash<evmc::address>
         using namespace evmc;
         using namespace fnv;
         return static_cast<size_t>(fnv1a_by64(
-            fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])), load64be(&s.bytes[8])),
-            load32be(&s.bytes[16])));
+            fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64le(&s.bytes[0])), load64le(&s.bytes[8])),
+            load32le(&s.bytes[16])));
     }
 };
 
@@ -848,10 +848,10 @@ struct hash<evmc::bytes32>
         using namespace evmc;
         using namespace fnv;
         return static_cast<size_t>(
-            fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64be(&s.bytes[0])),
-                                             load64be(&s.bytes[8])),
-                                  load64be(&s.bytes[16])),
-                       load64be(&s.bytes[24])));
+            fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64le(&s.bytes[0])),
+                                             load64le(&s.bytes[8])),
+                                  load64le(&s.bytes[16])),
+                       load64le(&s.bytes[24])));
     }
 };
 }  // namespace std
