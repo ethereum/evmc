@@ -832,10 +832,8 @@ struct hash<evmc::address>
     constexpr size_t operator()(const evmc::address& s) const noexcept
     {
         using namespace evmc;
-        using namespace fnv;
-        return static_cast<size_t>(fnv1a_by64(
-            fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64le(&s.bytes[0])), load64le(&s.bytes[8])),
-            load32le(&s.bytes[16])));
+        return static_cast<size_t>(load64le(&s.bytes[0]) ^ load64le(&s.bytes[8]) ^
+                                   load32le(&s.bytes[16]));
     }
 };
 
@@ -846,13 +844,9 @@ struct hash<evmc::bytes32>
     /// Hash operator using FNV1a-based folding.
     constexpr size_t operator()(const evmc::bytes32& s) const noexcept
     {
-        using namespace evmc;
-        using namespace fnv;
-        return static_cast<size_t>(
-            fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv1a_by64(fnv::offset_basis, load64le(&s.bytes[0])),
-                                             load64le(&s.bytes[8])),
-                                  load64le(&s.bytes[16])),
-                       load64le(&s.bytes[24])));
+        using evmc::load64le;
+        return static_cast<size_t>(load64le(&s.bytes[0]) ^ load64le(&s.bytes[8]) ^
+                                   load64le(&s.bytes[16]) ^ load64le(&s.bytes[24]));
     }
 };
 }  // namespace std
