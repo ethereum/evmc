@@ -111,6 +111,8 @@ TEST(cpp, std_hash)
 #pragma warning(disable : 4307 /* integral constant overflow */)
 #pragma warning(disable : 4309 /* 'static_cast': truncation of constant value */)
 
+    using namespace evmc::literals;
+
     static_assert(std::hash<evmc::address>{}({}) == static_cast<size_t>(0xd94d12186c0f2fb7), "");
     static_assert(std::hash<evmc::bytes32>{}({}) == static_cast<size_t>(0x4d25767f9dce13f5), "");
 
@@ -124,6 +126,12 @@ TEST(cpp, std_hash)
     auto eb = evmc::bytes32{};
     std::fill_n(eb.bytes, sizeof(eb), uint8_t{0xee});
     EXPECT_EQ(std::hash<evmc::bytes32>{}(eb), static_cast<size_t>(0xbb14e5c56b477375));
+
+    auto rand_address = 0xaa00bb00cc00dd00ee00ff001100220033004400_address;
+    EXPECT_EQ(std::hash<evmc::address>{}(rand_address), static_cast<size_t>(0x17f74b6894b0f6b7));
+
+    auto rand_bytes32 = 0xbb01bb02bb03bb04bb05bb06bb07bb08bb09bb0abb0bbb0cbb0dbb0ebb0fbb00_bytes32;
+    EXPECT_EQ(std::hash<evmc::bytes32>{}(rand_bytes32), static_cast<size_t>(0x4efee0983bb6c4f5));
 
 #pragma warning(pop)
 }
