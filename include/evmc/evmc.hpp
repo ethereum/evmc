@@ -113,34 +113,34 @@ struct bytes32 : evmc_bytes32
 using uint256be = bytes32;
 
 
-/// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
-inline constexpr uint64_t load64be(const uint8_t* bytes) noexcept
+/// Loads 64 bits / 8 bytes of data from the given @p data array in big-endian order.
+inline constexpr uint64_t load64be(const uint8_t* data) noexcept
 {
-    return (uint64_t{bytes[0]} << 56) | (uint64_t{bytes[1]} << 48) | (uint64_t{bytes[2]} << 40) |
-           (uint64_t{bytes[3]} << 32) | (uint64_t{bytes[4]} << 24) | (uint64_t{bytes[5]} << 16) |
-           (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
+    return (uint64_t{data[0]} << 56) | (uint64_t{data[1]} << 48) | (uint64_t{data[2]} << 40) |
+           (uint64_t{data[3]} << 32) | (uint64_t{data[4]} << 24) | (uint64_t{data[5]} << 16) |
+           (uint64_t{data[6]} << 8) | uint64_t{data[7]};
 }
 
-/// Loads 64 bits / 8 bytes of data from the given @p bytes array in little-endian order.
-inline constexpr uint64_t load64le(const uint8_t* bytes) noexcept
+/// Loads 64 bits / 8 bytes of data from the given @p data array in little-endian order.
+inline constexpr uint64_t load64le(const uint8_t* data) noexcept
 {
-    return uint64_t{bytes[0]} | (uint64_t{bytes[1]} << 8) | (uint64_t{bytes[2]} << 16) |
-           (uint64_t{bytes[3]} << 24) | (uint64_t{bytes[4]} << 32) | (uint64_t{bytes[5]} << 40) |
-           (uint64_t{bytes[6]} << 48) | (uint64_t{bytes[7]} << 56);
+    return uint64_t{data[0]} | (uint64_t{data[1]} << 8) | (uint64_t{data[2]} << 16) |
+           (uint64_t{data[3]} << 24) | (uint64_t{data[4]} << 32) | (uint64_t{data[5]} << 40) |
+           (uint64_t{data[6]} << 48) | (uint64_t{data[7]} << 56);
 }
 
-/// Loads 32 bits / 4 bytes of data from the given @p bytes array in big-endian order.
-inline constexpr uint32_t load32be(const uint8_t* bytes) noexcept
+/// Loads 32 bits / 4 bytes of data from the given @p data array in big-endian order.
+inline constexpr uint32_t load32be(const uint8_t* data) noexcept
 {
-    return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
-           uint32_t{bytes[3]};
+    return (uint32_t{data[0]} << 24) | (uint32_t{data[1]} << 16) | (uint32_t{data[2]} << 8) |
+           uint32_t{data[3]};
 }
 
-/// Loads 32 bits / 4 bytes of data from the given @p bytes array in little-endian order.
-inline constexpr uint32_t load32le(const uint8_t* bytes) noexcept
+/// Loads 32 bits / 4 bytes of data from the given @p data array in little-endian order.
+inline constexpr uint32_t load32le(const uint8_t* data) noexcept
 {
-    return uint32_t{bytes[0]} | (uint32_t{bytes[1]} << 8) | (uint32_t{bytes[2]} << 16) |
-           (uint32_t{bytes[3]} << 24);
+    return uint32_t{data[0]} | (uint32_t{data[1]} << 8) | (uint32_t{data[2]} << 16) |
+           (uint32_t{data[3]} << 24);
 }
 
 namespace fnv
