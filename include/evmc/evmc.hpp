@@ -53,7 +53,7 @@ struct address : evmc_address
     {}
 
     /// Explicit operator converting to bool.
-    constexpr inline explicit operator bool() const noexcept;
+    inline constexpr explicit operator bool() const noexcept;
 };
 
 /// The fixed size array of 32 bytes for storing 256-bit EVM values.
@@ -113,19 +113,34 @@ struct bytes32 : evmc_bytes32
 using uint256be = bytes32;
 
 
-/// Loads 64 bits / 8 bytes of data from the given @p bytes array in big-endian order.
-constexpr inline uint64_t load64be(const uint8_t* bytes) noexcept
+/// Loads 64 bits / 8 bytes of data from the given @p data array in big-endian order.
+inline constexpr uint64_t load64be(const uint8_t* data) noexcept
 {
-    return (uint64_t{bytes[0]} << 56) | (uint64_t{bytes[1]} << 48) | (uint64_t{bytes[2]} << 40) |
-           (uint64_t{bytes[3]} << 32) | (uint64_t{bytes[4]} << 24) | (uint64_t{bytes[5]} << 16) |
-           (uint64_t{bytes[6]} << 8) | uint64_t{bytes[7]};
+    return (uint64_t{data[0]} << 56) | (uint64_t{data[1]} << 48) | (uint64_t{data[2]} << 40) |
+           (uint64_t{data[3]} << 32) | (uint64_t{data[4]} << 24) | (uint64_t{data[5]} << 16) |
+           (uint64_t{data[6]} << 8) | uint64_t{data[7]};
 }
 
-/// Loads 32 bits / 4 bytes of data from the given @p bytes array in big-endian order.
-constexpr inline uint32_t load32be(const uint8_t* bytes) noexcept
+/// Loads 64 bits / 8 bytes of data from the given @p data array in little-endian order.
+inline constexpr uint64_t load64le(const uint8_t* data) noexcept
 {
-    return (uint32_t{bytes[0]} << 24) | (uint32_t{bytes[1]} << 16) | (uint32_t{bytes[2]} << 8) |
-           uint32_t{bytes[3]};
+    return uint64_t{data[0]} | (uint64_t{data[1]} << 8) | (uint64_t{data[2]} << 16) |
+           (uint64_t{data[3]} << 24) | (uint64_t{data[4]} << 32) | (uint64_t{data[5]} << 40) |
+           (uint64_t{data[6]} << 48) | (uint64_t{data[7]} << 56);
+}
+
+/// Loads 32 bits / 4 bytes of data from the given @p data array in big-endian order.
+inline constexpr uint32_t load32be(const uint8_t* data) noexcept
+{
+    return (uint32_t{data[0]} << 24) | (uint32_t{data[1]} << 16) | (uint32_t{data[2]} << 8) |
+           uint32_t{data[3]};
+}
+
+/// Loads 32 bits / 4 bytes of data from the given @p data array in little-endian order.
+inline constexpr uint32_t load32le(const uint8_t* data) noexcept
+{
+    return uint32_t{data[0]} | (uint32_t{data[1]} << 8) | (uint32_t{data[2]} << 16) |
+           (uint32_t{data[3]} << 24);
 }
 
 namespace fnv
@@ -134,7 +149,7 @@ constexpr auto prime = 0x100000001b3;              ///< The 64-bit FNV prime num
 constexpr auto offset_basis = 0xcbf29ce484222325;  ///< The 64-bit FNV offset basis.
 
 /// The hashing transformation for 64-bit inputs based on the FNV-1a formula.
-constexpr inline uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
+inline constexpr uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
 {
     return (h ^ x) * prime;
 }
@@ -142,22 +157,21 @@ constexpr inline uint64_t fnv1a_by64(uint64_t h, uint64_t x) noexcept
 
 
 /// The "equal to" comparison operator for the evmc::address type.
-constexpr bool operator==(const address& a, const address& b) noexcept
+inline constexpr bool operator==(const address& a, const address& b) noexcept
 {
-    // TODO: Report bug in clang keeping unnecessary bswap.
-    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
-           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
-           load32be(&a.bytes[16]) == load32be(&b.bytes[16]);
+    return load64le(&a.bytes[0]) == load64le(&b.bytes[0]) &&
+           load64le(&a.bytes[8]) == load64le(&b.bytes[8]) &&
+           load32le(&a.bytes[16]) == load32le(&b.bytes[16]);
 }
 
 /// The "not equal to" comparison operator for the evmc::address type.
-constexpr bool operator!=(const address& a, const address& b) noexcept
+inline constexpr bool operator!=(const address& a, const address& b) noexcept
 {
     return !(a == b);
 }
 
 /// The "less than" comparison operator for the evmc::address type.
-constexpr bool operator<(const address& a, const address& b) noexcept
+inline constexpr bool operator<(const address& a, const address& b) noexcept
 {
     return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
            (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
@@ -167,40 +181,40 @@ constexpr bool operator<(const address& a, const address& b) noexcept
 }
 
 /// The "greater than" comparison operator for the evmc::address type.
-constexpr bool operator>(const address& a, const address& b) noexcept
+inline constexpr bool operator>(const address& a, const address& b) noexcept
 {
     return b < a;
 }
 
 /// The "less than or equal to" comparison operator for the evmc::address type.
-constexpr bool operator<=(const address& a, const address& b) noexcept
+inline constexpr bool operator<=(const address& a, const address& b) noexcept
 {
     return !(b < a);
 }
 
 /// The "greater than or equal to" comparison operator for the evmc::address type.
-constexpr bool operator>=(const address& a, const address& b) noexcept
+inline constexpr bool operator>=(const address& a, const address& b) noexcept
 {
     return !(a < b);
 }
 
 /// The "equal to" comparison operator for the evmc::bytes32 type.
-constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator==(const bytes32& a, const bytes32& b) noexcept
 {
-    return load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
-           load64be(&a.bytes[8]) == load64be(&b.bytes[8]) &&
-           load64be(&a.bytes[16]) == load64be(&b.bytes[16]) &&
-           load64be(&a.bytes[24]) == load64be(&b.bytes[24]);
+    return load64le(&a.bytes[0]) == load64le(&b.bytes[0]) &&
+           load64le(&a.bytes[8]) == load64le(&b.bytes[8]) &&
+           load64le(&a.bytes[16]) == load64le(&b.bytes[16]) &&
+           load64le(&a.bytes[24]) == load64le(&b.bytes[24]);
 }
 
 /// The "not equal to" comparison operator for the evmc::bytes32 type.
-constexpr bool operator!=(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator!=(const bytes32& a, const bytes32& b) noexcept
 {
     return !(a == b);
 }
 
 /// The "less than" comparison operator for the evmc::bytes32 type.
-constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
 {
     return load64be(&a.bytes[0]) < load64be(&b.bytes[0]) ||
            (load64be(&a.bytes[0]) == load64be(&b.bytes[0]) &&
@@ -212,41 +226,41 @@ constexpr bool operator<(const bytes32& a, const bytes32& b) noexcept
 }
 
 /// The "greater than" comparison operator for the evmc::bytes32 type.
-constexpr bool operator>(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator>(const bytes32& a, const bytes32& b) noexcept
 {
     return b < a;
 }
 
 /// The "less than or equal to" comparison operator for the evmc::bytes32 type.
-constexpr bool operator<=(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator<=(const bytes32& a, const bytes32& b) noexcept
 {
     return !(b < a);
 }
 
 /// The "greater than or equal to" comparison operator for the evmc::bytes32 type.
-constexpr bool operator>=(const bytes32& a, const bytes32& b) noexcept
+inline constexpr bool operator>=(const bytes32& a, const bytes32& b) noexcept
 {
     return !(a < b);
 }
 
 /// Checks if the given address is the zero address.
-constexpr inline bool is_zero(const address& a) noexcept
+inline constexpr bool is_zero(const address& a) noexcept
 {
     return a == address{};
 }
 
-constexpr address::operator bool() const noexcept
+inline constexpr address::operator bool() const noexcept
 {
     return !is_zero(*this);
 }
 
 /// Checks if the given bytes32 object has all zero bytes.
-constexpr inline bool is_zero(const bytes32& a) noexcept
+inline constexpr bool is_zero(const bytes32& a) noexcept
 {
     return a == bytes32{};
 }
 
-constexpr bytes32::operator bool() const noexcept
+inline constexpr bytes32::operator bool() const noexcept
 {
     return !is_zero(*this);
 }

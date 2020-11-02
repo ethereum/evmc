@@ -153,6 +153,7 @@ jobs:
           command: |
             # Convert to relative paths
             sed -i 's|$(pwd)/||' ~/build/evmc.lcov
+            sudo pip3 install --upgrade --quiet --no-cache-dir codecov
             codecov --file ~/build/evmc.lcov -X gcov
 
 
