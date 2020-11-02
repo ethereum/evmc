@@ -832,7 +832,7 @@ struct hash<evmc::address>
     constexpr size_t operator()(const evmc::address& s) const noexcept
     {
         using namespace evmc;
-        return static_cast<size_t>(load64le(&s.bytes[0]) + load64le(&s.bytes[8]) +
+        return static_cast<size_t>(3 * (3 * load64le(&s.bytes[0]) + load64le(&s.bytes[8])) +
                                    load32le(&s.bytes[16]));
     }
 };
@@ -845,8 +845,8 @@ struct hash<evmc::bytes32>
     constexpr size_t operator()(const evmc::bytes32& s) const noexcept
     {
         using evmc::load64le;
-        return static_cast<size_t>(load64le(&s.bytes[0]) + load64le(&s.bytes[8]) +
-                                   load64le(&s.bytes[16]) + load64le(&s.bytes[24]));
+        return static_cast<size_t>(3 * (3 * load64le(&s.bytes[0]) + load64le(&s.bytes[8])) +
+                                   (3 * load64le(&s.bytes[16]) + load64le(&s.bytes[24])));
     }
 };
 }  // namespace std
