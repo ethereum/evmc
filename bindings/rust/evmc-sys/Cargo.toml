@@ -3,11 +3,11 @@
 # Licensed under the Apache License, Version 2.0.
 
 [package]
-name = "evmc-sys"
+name = "ssvm-evmc-sys"
 version = "7.4.0"
 authors = ["Alex Beregszaszi <alex@rtfs.hu>"]
 license = "Apache-2.0"
-repository = "https://github.com/ethereum/evmc"
+repository = "https://github.com/secondstate/evmc"
 description = "Bindings to EVMC (low-level)"
 categories = ["external-ffi-bindings"]
 edition = "2018"

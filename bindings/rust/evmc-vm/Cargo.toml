@@ -3,13 +3,13 @@
 # Licensed under the Apache License, Version 2.0.
 
 [package]
-name = "evmc-vm"
+name = "ssvm-evmc-vm"
 version = "7.4.0"
 authors = ["Alex Beregszaszi <alex@rtfs.hu>", "Jake Lang <jak3lang@gmail.com>"]
 license = "Apache-2.0"
-repository = "https://github.com/ethereum/evmc"
+repository = "https://github.com/secondstate/evmc"
 description = "Bindings to EVMC (VM specific)"
 edition = "2018"
 
 [dependencies]
-evmc-sys = { path = "../evmc-sys", version = "7.4.0" }
+evmc-sys = { version = "7.4.0", package = "ssvm-evmc-sys" }
