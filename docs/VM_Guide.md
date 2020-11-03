@@ -4,7 +4,7 @@
 
 ## An example
 
-You can start with [the example implementation of EVMC VM interface in C](@ref example_vm.c).
+You can start with [the example implementation of EVMC VM interface in C++](@ref example_vm.cpp).
 
 ## VM instance
 

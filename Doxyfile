@@ -102,7 +102,7 @@ WARN_LOGFILE           =
 INPUT                  = \
     include/evmc/ \
     docs/ \
-    examples/example_vm/example_vm.c
+    examples/example_vm/example_vm.cpp
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = NO

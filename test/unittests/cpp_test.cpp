@@ -418,8 +418,11 @@ TEST(cpp, vm)
     EXPECT_NE(vm.version()[0], 0);
 
     const auto host = evmc_host_interface{};
-    auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, {}, nullptr, 0);
-    EXPECT_EQ(res.status_code, EVMC_FAILURE);
+    auto msg = evmc_message{};
+    msg.gas = 1;
+    auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, msg, nullptr, 0);
+    EXPECT_EQ(res.status_code, EVMC_SUCCESS);
+    EXPECT_EQ(res.gas_left, 1);
 }
 
 TEST(cpp, vm_capabilities)
@@ -427,10 +430,10 @@ TEST(cpp, vm_capabilities)
     const auto vm = evmc::VM{evmc_create_example_vm()};
 
     EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EVM1);
-    EXPECT_TRUE(vm.get_capabilities() & EVMC_CAPABILITY_EWASM);
+    EXPECT_FALSE(vm.get_capabilities() & EVMC_CAPABILITY_EWASM);
     EXPECT_FALSE(vm.get_capabilities() & EVMC_CAPABILITY_PRECOMPILES);
     EXPECT_TRUE(vm.has_capability(EVMC_CAPABILITY_EVM1));
-    EXPECT_TRUE(vm.has_capability(EVMC_CAPABILITY_EWASM));
+    EXPECT_FALSE(vm.has_capability(EVMC_CAPABILITY_EWASM));
     EXPECT_FALSE(vm.has_capability(EVMC_CAPABILITY_PRECOMPILES));
 }
 
@@ -554,8 +557,9 @@ TEST(cpp, vm_execute_with_null_host)
 
     auto vm = evmc::VM{evmc_create_example_vm()};
     evmc_message msg{};
-    auto res = vm.execute(host, EVMC_MAX_REVISION, msg, nullptr, 0);
-    EXPECT_EQ(res.status_code, EVMC_FAILURE);
+    auto res = vm.execute(host, EVMC_FRONTIER, msg, nullptr, 0);
+    EXPECT_EQ(res.status_code, EVMC_SUCCESS);
+    EXPECT_EQ(res.gas_left, 0);
 }
 
 TEST(cpp, host)

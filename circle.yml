@@ -277,7 +277,7 @@ jobs:
             go get -v $(grep -o 'github.com/ethereum/evmc/v.*' ../../go.mod)@$V
             go mod tidy -v
             go mod graph
-            gcc -shared -I../../include ../../examples/example_vm/example_vm.c -o example-vm.so
+            g++ -shared -I../../include ../../examples/example_vm/example_vm.cpp -o example-vm.so
             go test -v
             go mod graph
 

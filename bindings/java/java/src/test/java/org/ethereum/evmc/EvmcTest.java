@@ -70,7 +70,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == 0);
+      assert (gasLeft == 199994);
     }
   }
 
@@ -100,7 +100,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == 0);
+      assert (gasLeft == 199994);
     }
   }
 
@@ -130,7 +130,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == gas / 2);
+      assert (gasLeft == 199994);
     }
   }
 
@@ -162,7 +162,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == gas / 2);
+      assert (gasLeft == 199991);
     }
   }
 
@@ -201,7 +201,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == 0); // gas - gas / 64);
+      assert (gasLeft == 199992);
     }
   }
 
@@ -229,7 +229,7 @@ final class EvmcTest {
       result.getInt(); // padding
       long gasLeft = result.getLong();
       assert (statusCode == 0);
-      assert (gasLeft == gas / 10);
+      assert (gasLeft == 199999);
     }
   }
 
