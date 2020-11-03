@@ -18,6 +18,7 @@ int main(int argc, const char** argv)
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
     std::string input_hex;
+    auto create = false;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
@@ -25,6 +26,9 @@ int main(int argc, const char** argv)
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
     run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
+    run_cmd.add_option(
+        "--create", create,
+        "Create new contract out of the code and then execute this contract with the input");
 
     try
     {
@@ -51,7 +55,7 @@ int main(int argc, const char** argv)
                 return static_cast<int>(ec);
             }
             std::cout << "Config: " << vm_config << "\n";
-            return cmd::run(vm, rev, gas, code_hex, input_hex, std::cout);
+            return cmd::run(vm, rev, gas, code_hex, input_hex, create, std::cout);
         }
 
         return 0;

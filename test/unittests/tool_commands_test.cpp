@@ -31,7 +31,7 @@ TEST(tool_commands, run_empty_code)
     auto vm = evmc::VM{evmc_create_example_vm()};
     std::ostringstream out;
 
-    const auto exit_code = cmd::run(vm, EVMC_FRONTIER, 1, "", "", out);
+    const auto exit_code = cmd::run(vm, EVMC_FRONTIER, 1, "", "", false, out);
     EXPECT_EQ(exit_code, 0);
     EXPECT_EQ(out.str(), out_pattern("Frontier", 1, "success", 0, ""));
 }
@@ -41,7 +41,7 @@ TEST(tool_commands, run_return_my_address)
     auto vm = evmc::VM{evmc_create_example_vm()};
     std::ostringstream out;
 
-    const auto exit_code = cmd::run(vm, EVMC_HOMESTEAD, 200, "30600052596000f3", "", out);
+    const auto exit_code = cmd::run(vm, EVMC_HOMESTEAD, 200, "30600052596000f3", "", false, out);
     EXPECT_EQ(exit_code, 0);
     EXPECT_EQ(out.str(),
               out_pattern("Homestead", 200, "success", 6,
@@ -56,9 +56,22 @@ TEST(tool_commands, run_copy_input_to_output)
 
     const auto exit_code =
         cmd::run(vm, EVMC_TANGERINE_WHISTLE, 200, "600035600052596000f3",
-                 "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f", out);
+                 "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f", false, out);
     EXPECT_EQ(exit_code, 0);
     EXPECT_EQ(out.str(),
               out_pattern("Tangerine Whistle", 200, "success", 7,
                           "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"));
+}
+
+TEST(tool_commands, create_return_1)
+{
+    // Contract: mstore(0, 1) return(31, 1)
+    // Create:   mstore(0, 0x60016000526001601ff3) return(22, 10)
+    auto vm = evmc::VM{evmc_create_example_vm()};
+    std::ostringstream out;
+
+    const auto exit_code = cmd::run(vm, EVMC_SPURIOUS_DRAGON, 200,
+                                    "6960016000526001601ff3600052600a6016f3", "", true, out);
+    EXPECT_EQ(exit_code, 0);
+    EXPECT_EQ(out.str(), out_pattern("Spurious Dragon", 200, "success", 6, "01"));
 }
