@@ -67,6 +67,17 @@ TEST_F(example_vm, empty_code)
     EXPECT_EQ(r.output_size, size_t{0});
 }
 
+TEST_F(example_vm, push)
+{
+    // Yul:
+    // mstore(0, 0xd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeef) return(0, 32)
+    const auto r = execute_in_example_vm(
+        10, "7fd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeef60005260206000f3");
+    EXPECT_EQ(r.status_code, EVMC_SUCCESS);
+    EXPECT_EQ(r.gas_left, 4);
+    EXPECT_EQ(r, Output("d0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeef"));
+}
+
 TEST_F(example_vm, return_address)
 {
     // Yul: mstore(0, address()) return(12, 20)
@@ -101,8 +112,8 @@ TEST_F(example_vm, return_block_number)
 
 TEST_F(example_vm, return_out_of_memory)
 {
-    // Yul: return(add(255, 254), add(add(255, 254), 253))
-    const auto r = execute_in_example_vm(10, "60fd60fe60ff010160fe60ff01f3");
+    // Yul: return(1024, 1)
+    const auto r = execute_in_example_vm(10, "6001610400f3");
     EXPECT_EQ(r.status_code, EVMC_FAILURE);
     EXPECT_EQ(r.gas_left, 0);
     EXPECT_EQ(r, Output(""));
@@ -110,8 +121,8 @@ TEST_F(example_vm, return_out_of_memory)
 
 TEST_F(example_vm, revert_out_of_memory)
 {
-    // Yul: revert(add(255, 254), add(add(255, 254), 253))
-    const auto r = execute_in_example_vm(10, "60fd60fe60ff010160fe60ff01fd");
+    // Yul: revert(512, 513)
+    const auto r = execute_in_example_vm(10, "610201610200fd");
     EXPECT_EQ(r.status_code, EVMC_FAILURE);
     EXPECT_EQ(r.gas_left, 0);
     EXPECT_EQ(r, Output(""));
@@ -187,8 +198,8 @@ TEST_F(example_vm, calldataload_empty)
 
 TEST_F(example_vm, mstore_out_of_memory)
 {
-    // Yul: mstore(add(add(255, 254), add(253, 252)), 1)
-    const auto r = execute_in_example_vm(9, "600160fc60fd0160fe60ff010152");
+    // Yul: mstore(1023, 0xffff)
+    const auto r = execute_in_example_vm(9, "61ffff6103ff52");
     EXPECT_EQ(r.status_code, EVMC_FAILURE);
     EXPECT_EQ(r.gas_left, 0);
     EXPECT_EQ(r, Output(""));

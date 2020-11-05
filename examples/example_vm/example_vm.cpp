@@ -263,9 +263,43 @@ evmc_result execute(evmc_vm* instance,
         }
 
         case OP_PUSH1:
+        case OP_PUSH2:
+        case OP_PUSH3:
+        case OP_PUSH4:
+        case OP_PUSH5:
+        case OP_PUSH6:
+        case OP_PUSH7:
+        case OP_PUSH8:
+        case OP_PUSH9:
+        case OP_PUSH10:
+        case OP_PUSH11:
+        case OP_PUSH12:
+        case OP_PUSH13:
+        case OP_PUSH14:
+        case OP_PUSH15:
+        case OP_PUSH16:
+        case OP_PUSH17:
+        case OP_PUSH18:
+        case OP_PUSH19:
+        case OP_PUSH20:
+        case OP_PUSH21:
+        case OP_PUSH22:
+        case OP_PUSH23:
+        case OP_PUSH24:
+        case OP_PUSH25:
+        case OP_PUSH26:
+        case OP_PUSH27:
+        case OP_PUSH28:
+        case OP_PUSH29:
+        case OP_PUSH30:
+        case OP_PUSH31:
+        case OP_PUSH32:
         {
-            ++pc;
-            evmc_uint256be value = to_uint256(code[pc]);
+            evmc_uint256be value = {};
+            size_t num_push_bytes = size_t{code[pc]} - OP_PUSH1 + 1;
+            size_t offset = sizeof(value) - num_push_bytes;
+            std::memcpy(&value.bytes[offset], &code[pc + 1], num_push_bytes);
+            pc += num_push_bytes;
             stack.push(value);
             break;
         }
