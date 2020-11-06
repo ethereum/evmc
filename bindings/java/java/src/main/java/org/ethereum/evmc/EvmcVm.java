@@ -30,7 +30,7 @@ public final class EvmcVm implements AutoCloseable {
         extension = "dll";
       } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
         extension = "so";
-      } else if (os.contains("mac")) {
+      } else if (os.contains("mac")|| os.contains("darwin")) {
         extension = "dylib";
       } else {
         error = e;
