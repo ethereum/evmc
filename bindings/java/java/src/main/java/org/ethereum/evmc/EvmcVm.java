@@ -21,7 +21,7 @@ public final class EvmcVm implements AutoCloseable {
   static {
     Throwable error = null;
     try {
-      // load so containing the jni bindings to evmc
+      // Load DLL containing the JNI bindings to EVMC.
       System.loadLibrary("libevmc-java");
     } catch (UnsatisfiedLinkError e) {
       String extension = null;
