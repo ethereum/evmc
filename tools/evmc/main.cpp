@@ -5,15 +5,54 @@
 #include "tools/commands/commands.hpp"
 #include <CLI/CLI.hpp>
 #include <evmc/loader.h>
+#include <fstream>
+
+bool is_file_readable(const std::string& path)
+{
+    std::cerr << "Trying " << path;
+    std::ifstream f{path, std::ios::in | std::ios::binary};
+    const auto result = f.is_open();
+    std::cerr << ": " << result << "\n";
+    return result;
+}
 
 int main(int argc, const char** argv)
 {
+    std::string arg0{argv[0]};
+    std::cerr << "argv[0]: " << arg0 << "\n";
+
+    std::string dirname = "./";
+
+    constexpr auto separator = '/';
+    auto pos = arg0.rfind(separator);
+    if (pos == std::string::npos)
+        pos = 0;
+    else
+    {
+        ++pos;
+        dirname = arg0.substr(0, pos);
+    }
+    const auto tool_name = arg0.substr(pos);
+    std::cerr << "tool name: " << tool_name << "\n";
+    std::cerr << "dir name:  " << dirname << "\n";
+
+    bool special_mode = tool_name != "evmc";
+
+    std::string vm_config;
+    if (special_mode)
+    {
+        auto p = dirname + "lib" + tool_name + ".so";
+        if (is_file_readable(p))
+            vm_config = p;
+        else if (is_file_readable(p = dirname + "../lib/" + "lib" + tool_name + ".so"))
+            vm_config = p;
+    }
+
     using namespace evmc;
 
     CLI::App app{"EVMC tool"};
     const auto& version_flag = *app.add_flag("--version", "Print version information");
 
-    std::string vm_config;
     std::string code_hex;
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
@@ -22,7 +61,10 @@ int main(int argc, const char** argv)
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
-    run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
+
+    if (!special_mode)
+        run_cmd.add_option("--vm", vm_config, "EVMC VM module")->required()->envname("EVMC_VM");
+
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
     run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
