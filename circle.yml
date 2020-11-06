@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
 commands:
   build:
     parameters:
@@ -73,38 +76,38 @@ jobs:
     docker:
       - image: ethereum/cpp-build-env:12-lint
     steps:
-    - checkout
-    - run:
-        name: "Check code format"
-        command: |
-          clang-format --version
-          find bindings examples include lib test tools -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
-          git diff --color --exit-code
-    - run:
-        name: "Run codespell"
-        command: |
-          codespell --quiet-level=4 --ignore-words=./.codespell-whitelist --skip=.git
-    - run:
-        name: "Check bumpversion"
-        command: |
-          export PATH="/home/builder/.local/bin:$PATH"
-          pip3 install bumpversion
-          bumpversion --dry-run --verbose major
-          bumpversion --dry-run --verbose minor
-          bumpversion --dry-run --verbose patch
-    - run:
-        name: "Test documentation"
-        command: |
-          cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
-          if [ -s doxygen.warnings ]; then
-            printf '\n\nDoxygen warnings:\n\n'
-            cat doxygen.warnings
-            exit 1
-          fi
-          cat doxygen.log
-    - store_artifacts:
-        path: ~/docs
-        destination: docs
+      - checkout
+      - run:
+          name: "Check code format"
+          command: |
+            clang-format --version
+            find bindings examples include lib test tools -name '*.hpp' -o -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+            git diff --color --exit-code
+      - run:
+          name: "Run codespell"
+          command: |
+            codespell --quiet-level=4 --ignore-words=./.codespell-whitelist --skip=.git
+      - run:
+          name: "Check bumpversion"
+          command: |
+            export PATH="/home/builder/.local/bin:$PATH"
+            pip3 install bumpversion
+            bumpversion --dry-run --verbose major
+            bumpversion --dry-run --verbose minor
+            bumpversion --dry-run --verbose patch
+      - run:
+          name: "Test documentation"
+          command: |
+            cat Doxyfile | sed 's/HTML_OUTPUT            = ./HTML_OUTPUT            = ..\/docs/' | doxygen - > doxygen.log 2> doxygen.warnings
+            if [ -s doxygen.warnings ]; then
+              printf '\n\nDoxygen warnings:\n\n'
+              cat doxygen.warnings
+              exit 1
+            fi
+            cat doxygen.log
+      - store_artifacts:
+          path: ~/docs
+          destination: docs
 
   upload-docs:
     docker:
@@ -310,6 +313,86 @@ jobs:
           command: |
             cd bindings/java && make test
 
+  bindings-java-windows:
+    executor:
+      name: win/default
+    environment:
+      CMAKE_OPTIONS: -DEVMC_JAVA=ON
+    steps:
+      - run:
+          name: "Install CMake, C++ compiler"
+          command: |
+            choco install cmake make mingw -y --installargs 'ADD_CMAKE_TO_PATH=System'
+            refreshenv
+      - checkout
+      - run:
+          name: "Environment"
+          command: |
+            CC=${CC:-gcc}
+            CXX=${CXX:-gcc}
+            echo CC: $CC
+            echo CXX: $CXX
+            $CC --version
+            $CXX --version
+            "C:\Program Files\CMake\bin\cmake" --version
+
+            # Create the toolchain.info file for cache key.
+            $CXX --version >> toolchain.info
+          shell: bash.exe
+      - restore_cache:
+          name: "Restore Hunter Cache"
+          key: &hunter-cache-key hunter-{{arch}}-{{checksum "cmake/Hunter/init.cmake"}}
+      - run:
+          name: "Configure"
+          working_directory: ~/build
+          command: |
+            "C:\Program Files\CMake\bin\cmake" ../project -DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/ -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
+          shell: bash.exe
+      - save_cache:
+          name: "Save Hunter Cache"
+          key: *hunter-cache-key
+          paths:
+            - ~/.hunter/_Base/Cache
+      - run:
+          name: "Build"
+          command: |
+            "C:\Program Files\CMake\bin\cmake" --build ~/build -- -j4
+          shell: bash.exe
+      - run:
+          name: "Install"
+          command: |
+            "C:\Program Files\CMake\bin\cmake" --build ~/build --target install
+          shell: bash.exe
+      - run:
+          name: "Package"
+          command: |
+            "C:\Program Files\CMake\bin\cmake" --build ~/build --target package_source
+            "C:\Program Files\CMake\bin\cmake" --build ~/build --target package
+            mkdir ~/package
+            mv ~/build/evmc-*.tar.gz ~/package
+          shell: bash.exe
+      - store_artifacts:
+          path: ~/package
+          destination: package
+      - persist_to_workspace:
+          root: ~/build
+          paths:
+            - bin/evmc-vmtester
+            - examples/evmc-example
+      - test
+      - run:
+          name: "Java Build"
+          command: |
+            cd bindings/java
+            C:\Program Files\CMake\bin\make clean build
+          shell: bash.exe
+      - run:
+          name: "Java Test"
+          command: |
+            cd bindings/java
+            C:\Program Files\CMake\bin\make test
+          shell: bash.exe
+
   bindings-rust:
     docker:
       - image: rust:1
@@ -401,6 +484,7 @@ workflows:
             tags:
               only: /.*/
       - bindings-java
+      - bindings-java-windows
       - bindings-rust:
           requires:
             - build-gcc8-cxx17
