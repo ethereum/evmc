@@ -656,7 +656,7 @@ public:
         return (get_capabilities() & static_cast<evmc_capabilities_flagset>(capability)) != 0;
     }
 
-    /// @copydoc evmc::vm::get_capabilities
+    /// @copydoc evmc_vm::get_capabilities
     evmc_capabilities_flagset get_capabilities() const noexcept
     {
         return m_instance->get_capabilities(m_instance);

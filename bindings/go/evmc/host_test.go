@@ -62,49 +62,57 @@ func (host *testHostContext) Call(kind CallKind,
 	return output, gas, Address{}, nil
 }
 
-func TestGetTxContext(t *testing.T) {
+func TestGetBlockNumberFromTxContext(t *testing.T) {
+	// Yul: mstore(0, number()) return(0, msize())
+	code := []byte("\x43\x60\x00\x52\x59\x60\x00\xf3")
+
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()
 
 	host := &testHostContext{}
-	code := []byte("\x43\x60\x00\x52\x59\x60\x00\xf3")
-
 	addr := Address{}
 	h := Hash{}
 	output, gasLeft, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code, h)
 
-	if len(output) != 20 {
+	if len(output) != 32 {
 		t.Errorf("unexpected output size: %d", len(output))
 	}
-	if bytes.Compare(output[0:3], []byte("42\x00")) != 0 {
-		t.Errorf("execution unexpected output: %s", output)
+
+	// Should return value 42 (0x2a) as defined in GetTxContext().
+	expectedOutput := []byte("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x2a")
+	if bytes.Compare(output, expectedOutput) != 0 {
+		t.Errorf("execution unexpected output: %x", output)
 	}
-	if gasLeft != 50 {
+	if gasLeft != 94 {
 		t.Errorf("execution gas left is incorrect: %d", gasLeft)
 	}
 	if err != nil {
-		t.Error("execution returned unexpected error")
+		t.Errorf("execution returned unexpected error: %v", err)
 	}
 }
 
 func TestCall(t *testing.T) {
+	// pseudo-Yul: call(0, 0, 0, 0, 0, 0, 34) return(0, msize())
+	code := []byte("\x60\x22\x60\x00\x80\x80\x80\x80\x80\xf1\x59\x60\x00\xf3")
+
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()
 
 	host := &testHostContext{}
-	code := []byte("\x60\x00\x80\x80\x80\x80\x80\x80\xf1")
-
 	addr := Address{}
 	h := Hash{}
 	output, gasLeft, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code, h)
 
+	if len(output) != 34 {
+		t.Errorf("execution unexpected output length: %d", len(output))
+	}
 	if bytes.Compare(output, []byte("output from testHostContext.Call()")) != 0 {
 		t.Errorf("execution unexpected output: %s", output)
 	}
-	if gasLeft != 99 {
+	if gasLeft != 89 {
 		t.Errorf("execution gas left is incorrect: %d", gasLeft)
 	}
 	if err != nil {
-		t.Error("execution returned unexpected error")
+		t.Errorf("execution returned unexpected error: %v", err)
 	}
 }
