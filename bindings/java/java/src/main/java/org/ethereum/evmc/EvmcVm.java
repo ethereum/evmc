@@ -73,7 +73,7 @@ public final class EvmcVm implements AutoCloseable {
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
     if (!isAvailable()) {
-      throw new EvmcLoaderException("Cannot load evmc native library", errorLoadingEvmc);
+      throw new EvmcLoaderException("Cannot load EVMC native library", errorLoadingEvmc);
     }
     return new EvmcVm(filename);
   }
