@@ -6,7 +6,7 @@ set(prefix ${PROJECT_NAME}/evmc-run)
 
 add_test(
     NAME ${prefix}/example1
-    COMMAND evmc::tool run --vm $<TARGET_FILE:evmc::example-vm> 30600052596000f3 --gas 99
+    COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> run 30600052596000f3 --gas 99
 )
 set_tests_properties(
     ${prefix}/example1 PROPERTIES PASS_REGULAR_EXPRESSION
