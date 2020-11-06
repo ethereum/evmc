@@ -16,7 +16,7 @@ int main(int argc, const char** argv)
     auto rev = EVMC_ISTANBUL;
 
     CLI::App app{"EVMC tool"};
-    const auto& version_flag = *app.add_flag("--version", "Print version information");
+    const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
     const auto& vm_option =
         *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
@@ -48,7 +48,13 @@ int main(int argc, const char** argv)
         // Handle the --version flag first and exit when present.
         if (version_flag)
         {
-            std::cout << "EVMC tool " PROJECT_VERSION "\n";
+            if (vm)
+                std::cout << vm.name() << " " << vm.version() << " (" << vm_config << ")\n";
+
+            std::cout << "EVMC " PROJECT_VERSION;
+            if (argc >= 1)
+                std::cout << " (" << argv[0] << ")";
+            std::cout << "\n";
             return 0;
         }
 
