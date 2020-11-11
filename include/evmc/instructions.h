@@ -16,7 +16,7 @@
 #include <evmc/evmc.h>
 #include <evmc/utils.h>
 
-#if __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -219,7 +219,7 @@ EVMC_EXPORT const struct evmc_instruction_metrics* evmc_get_instruction_metrics_
  */
 EVMC_EXPORT const char* const* evmc_get_instruction_names_table(enum evmc_revision revision);
 
-#if __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

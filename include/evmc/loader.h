@@ -14,7 +14,7 @@
  */
 #pragma once
 
-#if __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -163,7 +163,7 @@ struct evmc_vm* evmc_load_and_configure(const char* config,
  */
 const char* evmc_last_error_msg();
 
-#if __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
