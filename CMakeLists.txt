@@ -105,6 +105,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
             -Wno-padded
             -Wno-return-std-move-in-c++11
             -Wno-switch-enum
+            -Wno-cast-qual
+            -Wno-cast-align
+            -Wno-old-style-cast
+            -Wno-weak-vtables
+            -Wno-documentation
+            -Wno-documentation-unknown-command
         )
     endif()
 endif()
