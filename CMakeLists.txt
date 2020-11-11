@@ -76,6 +76,39 @@ elseif(CABLE_COMPILER_GNU)
     set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
 endif()
 
+#    -Wcast-qual
+#    -Wcast-align
+#    $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
+add_compile_options(
+    -Wmissing-declarations
+    $<$<COMPILE_LANGUAGE:CXX>:-Wextra-semi>
+)
+cable_add_cxx_compiler_flag_if_supported(-Wfinal-dtor-non-final-class)
+cable_add_cxx_compiler_flag_if_supported(-Wnewline-eof)
+cable_add_cxx_compiler_flag_if_supported(-Wsuggest-destructor-override)
+cable_add_cxx_compiler_flag_if_supported(-Wunreachable-code-break)
+cable_add_cxx_compiler_flag_if_supported(-Wduplicated-cond)
+cable_add_cxx_compiler_flag_if_supported(-Wduplicate-enum)
+cable_add_cxx_compiler_flag_if_supported(-Wlogical-op)
+cable_add_cxx_compiler_flag_if_supported(-Wno-unknown-attributes)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    option(WEVERYTHING "Enable almost all compiler warnings" OFF)
+    if(WEVERYTHING)
+        add_compile_options(-Weverything)
+        add_compile_options(
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-covered-switch-default
+            -Wno-double-promotion
+            -Wno-float-equal
+            -Wno-padded
+            -Wno-return-std-move-in-c++11
+            -Wno-switch-enum
+        )
+    endif()
+endif()
+
 set(EVMC_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(lib)
