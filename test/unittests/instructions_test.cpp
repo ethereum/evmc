@@ -6,7 +6,8 @@
 
 #include <gtest/gtest.h>
 
-bool operator==(const evmc_instruction_metrics& a, const evmc_instruction_metrics& b) noexcept
+inline bool operator==(const evmc_instruction_metrics& a,
+                       const evmc_instruction_metrics& b) noexcept
 {
     return a.gas_cost == b.gas_cost && a.stack_height_required == b.stack_height_required &&
            a.stack_height_change == b.stack_height_change;
