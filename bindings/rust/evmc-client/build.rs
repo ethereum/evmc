@@ -14,17 +14,48 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use std::path::Path;
+use std::env;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 extern crate cmake;
 use cmake::Config;
 
-fn build_link_evmc_tools() {
-    let dst = Config::new("../../../").build();
+macro_rules! get(($name:expr) => (ok!(env::var($name))));
+macro_rules! ok(($expression:expr) => ($expression.unwrap()));
+
+const REPOSITORY: &'static str = "https://github.com/second-state/evmc.git";
+const TAG: &'static str = "v7.4.0-rust-evmc-client-rc.2";
+
+fn run<F>(name: &str, mut configure: F)
+where
+    F: FnMut(&mut Command) -> &mut Command,
+{
+    let mut command = Command::new(name);
+    let configured = configure(&mut command);
+    if !ok!(configured.status()).success() {
+        panic!("failed to execute {:?}", configured);
+    }
+}
+
+fn build_from_src() {
+    let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/evmc-{}", TAG));
+    if !Path::new(&source.join(".git")).exists() {
+        run("git", |command| {
+            command
+                .arg("clone")
+                .arg(format!("--branch={}", TAG))
+                .arg("--recursive")
+                .arg(REPOSITORY)
+                .arg(&source)
+        });
+    }
+
+    let dst = Config::new(source).build();
     let evmc_path = Path::new(&dst).join("build/lib/loader");
     println!("cargo:rustc-link-search=native={}", evmc_path.display());
     println!("cargo:rustc-link-lib=static=evmc-loader");
 }
 
 fn main() {
-    build_link_evmc_tools();
+    build_from_src();
 }
