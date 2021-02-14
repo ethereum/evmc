@@ -296,7 +296,33 @@ TEST(instructions, berlin_hard_fork)
 
     for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
     {
-        EXPECT_EQ(b[op], i[op]) << op;
-        EXPECT_STREQ(bn[op], in[op]) << op;
+        switch (op)
+        {
+        case OP_EXTCODESIZE:
+        case OP_EXTCODECOPY:
+        case OP_EXTCODEHASH:
+        case OP_BALANCE:
+        case OP_CALL:
+        case OP_CALLCODE:
+        case OP_DELEGATECALL:
+        case OP_STATICCALL:
+        case OP_SLOAD:
+            continue;
+        default:
+            EXPECT_EQ(b[op], i[op]) << op;
+            EXPECT_STREQ(bn[op], in[op]) << op;
+            break;
+        }
     }
+
+    // EIP-2929 WARM_STORAGE_READ_COST
+    EXPECT_EQ(b[OP_EXTCODESIZE].gas_cost, 100);
+    EXPECT_EQ(b[OP_EXTCODECOPY].gas_cost, 100);
+    EXPECT_EQ(b[OP_EXTCODEHASH].gas_cost, 100);
+    EXPECT_EQ(b[OP_BALANCE].gas_cost, 100);
+    EXPECT_EQ(b[OP_CALL].gas_cost, 100);
+    EXPECT_EQ(b[OP_CALLCODE].gas_cost, 100);
+    EXPECT_EQ(b[OP_DELEGATECALL].gas_cost, 100);
+    EXPECT_EQ(b[OP_STATICCALL].gas_cost, 100);
+    EXPECT_EQ(b[OP_SLOAD].gas_cost, 100);
 }
