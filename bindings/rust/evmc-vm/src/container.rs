@@ -137,6 +137,8 @@ mod tests {
             get_tx_context: Some(get_dummy_tx_context),
             get_block_hash: None,
             emit_log: None,
+            access_account: None,
+            access_storage: None,
         };
         let host_context = std::ptr::null_mut();
 
