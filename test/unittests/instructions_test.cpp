@@ -296,6 +296,8 @@ TEST(instructions, berlin_hard_fork)
 
     for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
     {
+        EXPECT_STREQ(bn[op], in[op]) << op;
+
         switch (op)
         {
         case OP_EXTCODESIZE:
@@ -310,7 +312,6 @@ TEST(instructions, berlin_hard_fork)
             continue;
         default:
             EXPECT_EQ(b[op], i[op]) << op;
-            EXPECT_STREQ(bn[op], in[op]) << op;
             break;
         }
     }

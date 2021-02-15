@@ -312,5 +312,22 @@ public:
     {
         recorded_logs.push_back({addr, {data, data_size}, {topics, topics + topics_count}});
     }
+
+    /// Access an account.
+    evmc_access_status access_account(const address& addr) noexcept override
+    {
+        (void)addr;
+        // TODO: Return COLD/WARM depending on recorded_account_accesses.
+        return EVMC_ACCESS_COLD;
+    }
+
+    /// Access the account's storage value at the given key.
+    evmc_access_status access_storage(const address& addr, const bytes32& key) noexcept override
+    {
+        (void)addr;
+        (void)key;
+        // TODO: Return COLD/WARM depending on accounts[].storage.
+        return EVMC_ACCESS_COLD;
+    }
 };
 }  // namespace evmc

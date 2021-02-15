@@ -59,6 +59,16 @@ public:
                   const evmc::bytes32[],
                   size_t) noexcept final
     {}
+
+    evmc_access_status access_account(const evmc::address&) noexcept final
+    {
+        return EVMC_ACCESS_COLD;
+    }
+
+    evmc_access_status access_storage(const evmc::address&, const evmc::bytes32&) noexcept final
+    {
+        return EVMC_ACCESS_COLD;
+    }
 };
 
 TEST(cpp, address)
