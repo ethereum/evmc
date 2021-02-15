@@ -15,13 +15,17 @@ int run(evmc::VM& vm,
         evmc_revision rev,
         int64_t gas,
         const std::string& code_hex,
+        const std::string& input_hex,
         std::ostream& out)
 {
     out << "Executing on " << rev << " with " << gas << " gas limit\n";
 
     const auto code = from_hex(code_hex);
+    const auto input = from_hex(input_hex);
     evmc_message msg{};
     msg.gas = gas;
+    msg.input_data = input.data();
+    msg.input_size = input.size();
     MockedHost host;
 
     const auto result = vm.execute(host, rev, msg, code.data(), code.size());

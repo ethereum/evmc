@@ -14,6 +14,7 @@ int main(int argc, const char** argv)
     std::string code_hex;
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
+    std::string input_hex;
 
     CLI::App app{"EVMC tool"};
     const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
@@ -24,6 +25,7 @@ int main(int argc, const char** argv)
     run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
+    run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
 
     try
     {
@@ -65,7 +67,7 @@ int main(int argc, const char** argv)
                 throw CLI::RequiredError{vm_option.get_name()};
 
             std::cout << "Config: " << vm_config << "\n";
-            return cmd::run(vm, rev, gas, code_hex, std::cout);
+            return cmd::run(vm, rev, gas, code_hex, input_hex, std::cout);
         }
 
         return 0;

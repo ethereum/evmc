@@ -14,6 +14,7 @@ int run(evmc::VM& vm,
         evmc_revision rev,
         int64_t gas,
         const std::string& code_hex,
+        const std::string& input_hex,
         std::ostream& out);
 }
 }  // namespace evmc
