@@ -2,41 +2,34 @@
 # Copyright 2019-2020 The EVMC Authors.
 # Licensed under the Apache License, Version 2.0.
 
-set(PREFIX ${PROJECT_NAME}/evmc-tool)
+function(add_evmc_tool_test NAME ARGUMENTS EXPECTED_OUTPUT)
+    separate_arguments(ARGUMENTS)
+    add_test(NAME ${PROJECT_NAME}/evmc-tool/${NAME} COMMAND evmc::tool ${ARGUMENTS})
+    set_tests_properties(${PROJECT_NAME}/evmc-tool/${NAME} PROPERTIES PASS_REGULAR_EXPRESSION ${EXPECTED_OUTPUT})
+endfunction()
 
-add_test(
-    NAME ${PREFIX}/example1
-    COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> run 30600052596000f3 --gas 99
-)
-set_tests_properties(
-    ${PREFIX}/example1 PROPERTIES PASS_REGULAR_EXPRESSION
+
+add_evmc_tool_test(
+    example1
+    "--vm $<TARGET_FILE:evmc::example-vm> run 30600052596000f3 --gas 99"
     "Result: +success[\r\n]+Gas used: +6[\r\n]+Output: +0000000000000000000000000000000000000000000000000000000000000000[\r\n]"
 )
 
-add_test(
-    NAME ${PREFIX}/version
-    COMMAND evmc::tool --version
-)
-set_tests_properties(
-    ${PREFIX}/version PROPERTIES PASS_REGULAR_EXPRESSION
+add_evmc_tool_test(
+    version
+    "--version"
     "EVMC ${PROJECT_VERSION} \\($<TARGET_FILE:evmc::tool>\\)"
 )
 
-add_test(
-    NAME ${PREFIX}/version_vm
-    COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> --version
-)
-set_tests_properties(
-    ${PREFIX}/version_vm PROPERTIES PASS_REGULAR_EXPRESSION
+add_evmc_tool_test(
+    version_vm
+    "--vm $<TARGET_FILE:evmc::example-vm> --version"
     "example_vm ${PROJECT_VERSION} \\($<TARGET_FILE:evmc::example-vm>\\)[\r\n]EVMC ${PROJECT_VERSION} \\($<TARGET_FILE:evmc::tool>\\)"
 )
 
-add_test(
-    NAME ${PREFIX}/copy_input
-    COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> run 600035600052596000f3 --input aabbccdd
-)
-set_tests_properties(
-    ${PREFIX}/copy_input PROPERTIES PASS_REGULAR_EXPRESSION
+add_evmc_tool_test(
+    copy_input
+    "--vm $<TARGET_FILE:evmc::example-vm> run 600035600052596000f3 --input aabbccdd"
     "Result: +success[\r\n]+Gas used: +7[\r\n]+Output: +aabbccdd00000000000000000000000000000000000000000000000000000000[\r\n]"
 )
 
