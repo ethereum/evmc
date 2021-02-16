@@ -16,6 +16,9 @@ evmc_create_fn evmc_test_create_fn = NULL;
 
 static const char* evmc_test_last_error_msg = NULL;
 
+/* Limited variant of strcpy_s(). Exposed to unittests when building with EVMC_LOADER_MOCK. */
+int strcpy_sx(char* dest, size_t destsz, const char* src);
+
 static int evmc_test_load_library(const char* filename)
 {
     evmc_test_last_error_msg = NULL;
