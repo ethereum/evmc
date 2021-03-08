@@ -25,6 +25,13 @@ inline int from_hex_digit(char h)
 template <typename OutputIt>
 inline void from_hex(const char* hex, size_t size, OutputIt result)
 {
+    // Omit the optional 0x prefix.
+    if (size >= 2 && hex[0] == '0' && hex[1] == 'x')
+    {
+        hex += 2;
+        size -= 2;
+    }
+
     if (size % 2 == 1)
         throw std::length_error{"the length of the input is odd"};
 

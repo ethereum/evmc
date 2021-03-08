@@ -47,3 +47,14 @@ TEST(utils, from_hex_not_hex_digit)
     EXPECT_THROW(from_hex("000h"), std::out_of_range);
     EXPECT_THROW(from_hex("ffffffzz"), std::out_of_range);
 }
+
+TEST(utils, from_hex_0x_prefix)
+{
+    EXPECT_EQ(from_hex("0x"), bytes{});
+    EXPECT_EQ(from_hex("0x00"), bytes{0x00});
+    EXPECT_EQ(from_hex("0x01020304"), (bytes{0x01, 0x02, 0x03, 0x04}));
+    EXPECT_THROW(from_hex("00x"), std::length_error);
+    EXPECT_THROW(from_hex("0x123"), std::length_error);
+    EXPECT_THROW(from_hex("00x0"), std::out_of_range);
+    EXPECT_THROW(from_hex("0x001y"), std::out_of_range);
+}

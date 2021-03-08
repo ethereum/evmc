@@ -36,6 +36,16 @@ TEST(tool_commands, run_empty_code)
     EXPECT_EQ(out.str(), out_pattern("Frontier", 1, "success", 0, ""));
 }
 
+TEST(tool_commands, run_oog)
+{
+    auto vm = evmc::VM{evmc_create_example_vm()};
+    std::ostringstream out;
+
+    const auto exit_code = cmd::run(vm, EVMC_BERLIN, 2, "0x6002600201", "", out);
+    EXPECT_EQ(exit_code, 0);
+    EXPECT_EQ(out.str(), out_pattern("Berlin", 2, "out of gas", 2));
+}
+
 TEST(tool_commands, run_return_my_address)
 {
     auto vm = evmc::VM{evmc_create_example_vm()};
