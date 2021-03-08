@@ -4,11 +4,31 @@
 
 #include "tools/commands/commands.hpp"
 #include <CLI/CLI.hpp>
+#include <evmc/hex.hpp>
 #include <evmc/loader.h>
+
+namespace
+{
+struct HexValidator : public CLI::Validator
+{
+    HexValidator() : CLI::Validator{"HEX"}
+    {
+        name_ = "HEX";
+        func_ = [](const std::string& str) -> std::string {
+            const auto error_code = evmc::validate_hex(str);
+            if (error_code)
+                return error_code.message();
+            return {};
+        };
+    }
+};
+}  // namespace
 
 int main(int argc, const char** argv)
 {
     using namespace evmc;
+
+    static HexValidator Hex;
 
     std::string vm_config;
     std::string code_hex;
@@ -23,10 +43,10 @@ int main(int argc, const char** argv)
         *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
-    run_cmd.add_option("code", code_hex, "Hex-encoded bytecode")->required();
+    run_cmd.add_option("code", code_hex, "Bytecode")->required()->check(Hex);
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
-    run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
+    run_cmd.add_option("--input", input_hex, "Input bytes")->check(Hex);
     run_cmd.add_flag(
         "--create", create,
         "Create new contract out of the code and then execute this contract with the input");

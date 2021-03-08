@@ -29,7 +29,7 @@ add_evmc_tool_test(
 
 add_evmc_tool_test(
     copy_input
-    "--vm $<TARGET_FILE:evmc::example-vm> run 600035600052596000f3 --input aabbccdd"
+    "--vm $<TARGET_FILE:evmc::example-vm> run 600035600052596000f3 --input 0xaabbccdd"
     "Result: +success[\r\n]+Gas used: +7[\r\n]+Output: +aabbccdd00000000000000000000000000000000000000000000000000000000[\r\n]"
 )
 
@@ -37,6 +37,18 @@ add_evmc_tool_test(
     create_return_2
     "--vm $<TARGET_FILE:evmc::example-vm> run --create 6960026000526001601ff3600052600a6016f3"
     "Result: +success[\r\n]+Gas used: +6[\r\n]+Output: +02[\r\n]"
+)
+
+add_evmc_tool_test(
+    invalid_hex_code
+    "--vm $<TARGET_FILE:evmc::example-vm> run 0x600"
+    "code: incomplete hex byte pair"
+)
+
+add_evmc_tool_test(
+    invalid_hex_input
+    "--vm $<TARGET_FILE:evmc::example-vm> run 0x --input aa0y"
+    "--input: invalid hex digit"
 )
 
 get_property(TOOLS_TESTS DIRECTORY PROPERTY TESTS)
