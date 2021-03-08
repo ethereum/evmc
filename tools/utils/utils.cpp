@@ -47,6 +47,18 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
 }
 }  // namespace
 
+void validate_hex(const std::string& hex)
+{
+    struct noop_output_iterator
+    {
+        uint8_t sink = {};
+        uint8_t& operator*() noexcept { return sink; }
+        noop_output_iterator operator++(int) noexcept { return *this; }
+    };
+
+    from_hex(hex.data(), hex.size(), noop_output_iterator{});
+}
+
 bytes from_hex(const std::string& hex)
 {
     bytes bs;

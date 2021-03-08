@@ -58,3 +58,12 @@ TEST(utils, from_hex_0x_prefix)
     EXPECT_THROW(from_hex("00x0"), std::out_of_range);
     EXPECT_THROW(from_hex("0x001y"), std::out_of_range);
 }
+
+TEST(utils, validate_hex)
+{
+    validate_hex("");
+    validate_hex("0x");
+    validate_hex("01");
+    EXPECT_THROW(validate_hex("0"), std::length_error);
+    EXPECT_THROW(validate_hex("WXYZ"), std::out_of_range);
+}
