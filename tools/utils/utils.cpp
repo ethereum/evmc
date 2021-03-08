@@ -8,32 +8,43 @@
 
 namespace evmc
 {
-bytes from_hex(const std::string& hex)
+namespace
 {
-    if (hex.length() % 2 == 1)
+inline int from_hex_digit(char h)
+{
+    if (h >= '0' && h <= '9')
+        return h - '0';
+    else if (h >= 'a' && h <= 'f')
+        return h - 'a' + 10;
+    else if (h >= 'A' && h <= 'F')
+        return h - 'A' + 10;
+    else
+        throw std::out_of_range{"not a hex digit"};
+}
+
+template <typename OutputIt>
+inline void from_hex(const char* hex, size_t size, OutputIt result)
+{
+    if (size % 2 == 1)
         throw std::length_error{"the length of the input is odd"};
 
-    bytes bs;
-    bs.reserve(hex.length() / 2);
     int b = 0;
-    for (size_t i = 0; i < hex.size(); ++i)
+    for (size_t i = 0; i < size; ++i)
     {
-        const auto h = hex[i];
-        int v;
-        if (h >= '0' && h <= '9')
-            v = h - '0';
-        else if (h >= 'a' && h <= 'f')
-            v = h - 'a' + 10;
-        else if (h >= 'A' && h <= 'F')
-            v = h - 'A' + 10;
-        else
-            throw std::out_of_range{"not a hex digit"};
-
+        const int v = from_hex_digit(hex[i]);
         if (i % 2 == 0)
             b = v << 4;
         else
-            bs.push_back(static_cast<uint8_t>(b | v));
+            *result++ = static_cast<uint8_t>(b | v);
     }
+}
+}  // namespace
+
+bytes from_hex(const std::string& hex)
+{
+    bytes bs;
+    bs.reserve(hex.size() / 2);
+    from_hex(hex.data(), hex.size(), std::back_inserter(bs));
     return bs;
 }
 
