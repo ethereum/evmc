@@ -61,6 +61,13 @@ TEST(utils, from_hex_0x_prefix)
     EXPECT_THROW(from_hex("0x001y"), std::out_of_range);
 }
 
+TEST(utils, from_hex_skip_whitespace)
+{
+    EXPECT_EQ(from_hex("0x "), bytes{});
+    EXPECT_EQ(from_hex(" \n\t"), bytes{});
+    EXPECT_EQ(from_hex(" \n\tab\r"), bytes{0xab});
+}
+
 TEST(utils, validate_hex)
 {
     validate_hex("");

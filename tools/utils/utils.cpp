@@ -36,6 +36,8 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
     for (auto it = hex; it != hex_end; ++it)
     {
         const auto h = *it;
+        if (std::isspace(h))
+            continue;
 
         const int v = from_hex_digit(h);
         if (b == empty_byte_mark)
