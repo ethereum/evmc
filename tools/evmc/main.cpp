@@ -6,9 +6,24 @@
 #include <CLI/CLI.hpp>
 #include <evmc/hex.hpp>
 #include <evmc/loader.h>
+#include <fstream>
 
 namespace
 {
+/// Returns the input str if already valid hex string. Otherwise, interprets the str as a file
+/// name and loads the file content.
+/// @todo The file content is expected to be a hex string but not validated.
+std::string load_hex(const std::string& str)
+{
+    const auto error_code = evmc::validate_hex(str);
+    if (!error_code)
+        return str;
+
+    // Must be a file path.
+    std::ifstream file{str};
+    return std::string(std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{});
+}
+
 struct HexValidator : public CLI::Validator
 {
     HexValidator() : CLI::Validator{"HEX"}
@@ -31,10 +46,10 @@ int main(int argc, const char** argv)
     static HexValidator Hex;
 
     std::string vm_config;
-    std::string code_hex;
+    std::string code_arg;
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
-    std::string input_hex;
+    std::string input_arg;
     auto create = false;
 
     CLI::App app{"EVMC tool"};
@@ -43,10 +58,10 @@ int main(int argc, const char** argv)
         *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
-    run_cmd.add_option("code", code_hex, "Bytecode")->required()->check(Hex);
+    run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(Hex | CLI::ExistingFile);
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
-    run_cmd.add_option("--input", input_hex, "Input bytes")->check(Hex);
+    run_cmd.add_option("--input", input_arg, "Input bytes")->check(Hex | CLI::ExistingFile);
     run_cmd.add_flag(
         "--create", create,
         "Create new contract out of the code and then execute this contract with the input");
@@ -91,6 +106,10 @@ int main(int argc, const char** argv)
                 throw CLI::RequiredError{vm_option.get_name()};
 
             std::cout << "Config: " << vm_config << "\n";
+
+            const auto code_hex = load_hex(code_arg);
+            const auto input_hex = load_hex(input_arg);
+            // If code_hex or input_hex is not valid hex string an exception is thrown.
             return cmd::run(vm, rev, gas, code_hex, input_hex, create, std::cout);
         }
 

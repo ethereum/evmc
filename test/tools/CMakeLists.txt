@@ -39,16 +39,40 @@ add_evmc_tool_test(
     "Result: +success[\r\n]+Gas used: +6[\r\n]+Output: +02[\r\n]"
 )
 
+add_test(NAME ${PROJECT_NAME}/evmc-tool/empty_code COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> run "")
+set_tests_properties(${PROJECT_NAME}/evmc-tool/empty_code PROPERTIES PASS_REGULAR_EXPRESSION "Result: +success[\r\n]+Gas used: +0[\r\n]+Output: +[\r\n]")
+
+add_test(NAME ${PROJECT_NAME}/evmc-tool/explicit_empty_input COMMAND evmc::tool --vm $<TARGET_FILE:evmc::example-vm> run 0x6000 --input "")
+set_tests_properties(${PROJECT_NAME}/evmc-tool/explicit_empty_input PROPERTIES PASS_REGULAR_EXPRESSION "Result: +success[\r\n]+Gas used: +1[\r\n]+Output: +[\r\n]")
+
 add_evmc_tool_test(
     invalid_hex_code
     "--vm $<TARGET_FILE:evmc::example-vm> run 0x600"
-    "code: incomplete hex byte pair"
+    "code: \\(incomplete hex byte pair\\) OR \\(File does not exist: 0x600\\)"
 )
 
 add_evmc_tool_test(
     invalid_hex_input
     "--vm $<TARGET_FILE:evmc::example-vm> run 0x --input aa0y"
-    "--input: invalid hex digit"
+    "--input: \\(invalid hex digit\\) OR \\(File does not exist: aa0y\\)"
+)
+
+add_evmc_tool_test(
+    code_from_file
+    "--vm $<TARGET_FILE:evmc::example-vm> run ${CMAKE_CURRENT_SOURCE_DIR}/code.hex --input 0xaabbccdd"
+    "Result: +success[\r\n]+Gas used: +7[\r\n]+Output: +aabbccdd00000000000000000000000000000000000000000000000000000000[\r\n]"
+)
+
+add_evmc_tool_test(
+    input_from_file
+    "--vm $<TARGET_FILE:evmc::example-vm> run 600035600052596000f3 --input ${CMAKE_CURRENT_SOURCE_DIR}/input.hex"
+    "Result: +success[\r\n]+Gas used: +7[\r\n]+Output: +aabbccdd00000000000000000000000000000000000000000000000000000000[\r\n]"
+)
+
+add_evmc_tool_test(
+    invalid_code_file
+    "--vm $<TARGET_FILE:evmc::example-vm> run ${CMAKE_CURRENT_SOURCE_DIR}/invalid_code.evm"
+    "Error: invalid hex digit"
 )
 
 get_property(TOOLS_TESTS DIRECTORY PROPERTY TESTS)
