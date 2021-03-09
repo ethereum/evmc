@@ -25,25 +25,32 @@ inline int from_hex_digit(char h)
 template <typename OutputIt>
 inline void from_hex(const char* hex, size_t size, OutputIt result)
 {
+    const auto hex_end = hex + size;
+
     // Omit the optional 0x prefix.
     if (size >= 2 && hex[0] == '0' && hex[1] == 'x')
-    {
         hex += 2;
-        size -= 2;
-    }
 
-    if (size % 2 == 1)
-        throw std::length_error{"the length of the input is odd"};
-
-    int b = 0;
-    for (size_t i = 0; i < size; ++i)
+    constexpr int empty_byte_mark = -1;
+    int b = empty_byte_mark;
+    for (auto it = hex; it != hex_end; ++it)
     {
-        const int v = from_hex_digit(hex[i]);
-        if (i % 2 == 0)
+        const auto h = *it;
+
+        const int v = from_hex_digit(h);
+        if (b == empty_byte_mark)
+        {
             b = v << 4;
+        }
         else
+        {
             *result++ = static_cast<uint8_t>(b | v);
+            b = empty_byte_mark;
+        }
     }
+
+    if (b != empty_byte_mark)
+        throw std::length_error{"the length of the input is odd"};
 }
 }  // namespace
 
