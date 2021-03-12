@@ -7,10 +7,20 @@
 #include <cstdint>
 #include <iosfwd>
 #include <string>
+#include <system_error>
 
 namespace evmc
 {
 using bytes = std::basic_string<uint8_t>;
+
+enum class hex_errc
+{
+    invalid_hex_digit = 1,
+    incomplete_hex_byte_pair = 2,
+    unknown_error = -1
+};
+
+std::error_code make_error_code(hex_errc errc) noexcept;
 
 /// Encode a byte to a hex string.
 inline std::string hex(uint8_t b) noexcept
@@ -20,7 +30,7 @@ inline std::string hex(uint8_t b) noexcept
 }
 
 /// Validates hex encoded string.
-bool validate_hex(const std::string& hex) noexcept;
+std::error_code validate_hex(const std::string& hex) noexcept;
 
 /// Decodes hex encoded string to bytes.
 ///
@@ -40,3 +50,10 @@ std::ostream& operator<<(std::ostream& os, evmc_status_code status_code);
 std::ostream& operator<<(std::ostream& os, evmc_revision revision);
 
 }  // namespace evmc
+
+namespace std
+{
+template <>
+struct is_error_code_enum<evmc::hex_errc> : true_type
+{};
+}  // namespace std

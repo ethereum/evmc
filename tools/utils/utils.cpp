@@ -10,6 +10,24 @@ namespace evmc
 {
 namespace
 {
+struct hex_error_category : std::error_category
+{
+    const char* name() const noexcept override { return "hex"; }
+
+    std::string message(int ev) const override
+    {
+        switch (static_cast<hex_errc>(ev))
+        {
+        case hex_errc::invalid_hex_digit:
+            return "invalid hex digit";
+        case hex_errc::incomplete_hex_byte_pair:
+            return "incomplete hex byte pair";
+        default:
+            return "unknown error";
+        }
+    }
+};
+
 inline int from_hex_digit(char h)
 {
     if (h >= '0' && h <= '9')
@@ -58,7 +76,13 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
 }
 }  // namespace
 
-bool validate_hex(const std::string& hex) noexcept
+std::error_code make_error_code(hex_errc errc) noexcept
+{
+    static hex_error_category category;
+    return {static_cast<int>(errc), category};
+}
+
+std::error_code validate_hex(const std::string& hex) noexcept
 {
     struct noop_output_iterator
     {
@@ -70,11 +94,19 @@ bool validate_hex(const std::string& hex) noexcept
     try
     {
         from_hex(hex.data(), hex.size(), noop_output_iterator{});
-        return true;
+        return {};
+    }
+    catch (const std::out_of_range&)
+    {
+        return hex_errc::invalid_hex_digit;
+    }
+    catch (const std::length_error&)
+    {
+        return hex_errc::incomplete_hex_byte_pair;
     }
     catch (...)
     {
-        return false;
+        return hex_errc::unknown_error;
     }
 }
 

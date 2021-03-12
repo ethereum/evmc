@@ -70,9 +70,9 @@ TEST(utils, from_hex_skip_whitespace)
 
 TEST(utils, validate_hex)
 {
-    EXPECT_TRUE(validate_hex(""));
-    EXPECT_TRUE(validate_hex("0x"));
-    EXPECT_TRUE(validate_hex("01"));
-    EXPECT_FALSE(validate_hex("0"));
-    EXPECT_FALSE(validate_hex("WXYZ"));
+    EXPECT_FALSE(validate_hex(""));
+    EXPECT_FALSE(validate_hex("0x"));
+    EXPECT_FALSE(validate_hex("01"));
+    EXPECT_EQ(validate_hex("0"), hex_errc::incomplete_hex_byte_pair);
+    EXPECT_EQ(validate_hex("WXYZ"), hex_errc::invalid_hex_digit);
 }
