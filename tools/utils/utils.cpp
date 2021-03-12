@@ -37,7 +37,7 @@ inline int from_hex_digit(char h)
     else if (h >= 'A' && h <= 'F')
         return h - 'A' + 10;
     else
-        throw std::out_of_range{"not a hex digit"};
+        throw hex_error{hex_errc::invalid_hex_digit};
 }
 
 template <typename OutputIt>
@@ -72,7 +72,7 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
     }
 
     if (b != empty_byte_mark)
-        throw std::length_error{"incomplete hex byte pair"};
+        throw hex_error{hex_errc::incomplete_hex_byte_pair};
 }
 }  // namespace
 
@@ -96,17 +96,9 @@ std::error_code validate_hex(const std::string& hex) noexcept
         from_hex(hex.data(), hex.size(), noop_output_iterator{});
         return {};
     }
-    catch (const std::out_of_range&)
+    catch (const hex_error& e)
     {
-        return hex_errc::invalid_hex_digit;
-    }
-    catch (const std::length_error&)
-    {
-        return hex_errc::incomplete_hex_byte_pair;
-    }
-    catch (...)
-    {
-        return hex_errc::unknown_error;
+        return e.code();
     }
 }
 

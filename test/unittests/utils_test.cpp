@@ -36,18 +36,31 @@ TEST(utils, from_hex)
     EXPECT_EQ(from_hex("00bc01000C"), (bytes{0x00, 0xbc, 0x01, 0x00, 0x0c}));
 }
 
+static std::error_code catch_hex_error(const char* input)
+{
+    try
+    {
+        from_hex(input);
+    }
+    catch (const hex_error& e)
+    {
+        return e.code();
+    }
+    return {};
+}
+
 TEST(utils, from_hex_odd_length)
 {
-    EXPECT_THROW(from_hex("0"), std::length_error);
-    EXPECT_THROW(from_hex("1"), std::length_error);
-    EXPECT_THROW(from_hex("123"), std::length_error);
+    EXPECT_EQ(catch_hex_error("0"), hex_errc::incomplete_hex_byte_pair);
+    EXPECT_EQ(catch_hex_error("1"), hex_errc::incomplete_hex_byte_pair);
+    EXPECT_EQ(catch_hex_error("123"), hex_errc::incomplete_hex_byte_pair);
 }
 
 TEST(utils, from_hex_not_hex_digit)
 {
-    EXPECT_THROW(from_hex("0g"), std::out_of_range);
-    EXPECT_THROW(from_hex("000h"), std::out_of_range);
-    EXPECT_THROW(from_hex("ffffffzz"), std::out_of_range);
+    EXPECT_EQ(catch_hex_error("0g"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(catch_hex_error("000h"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(catch_hex_error("ffffffzz"), hex_errc::invalid_hex_digit);
 }
 
 TEST(utils, from_hex_0x_prefix)
@@ -55,10 +68,10 @@ TEST(utils, from_hex_0x_prefix)
     EXPECT_EQ(from_hex("0x"), bytes{});
     EXPECT_EQ(from_hex("0x00"), bytes{0x00});
     EXPECT_EQ(from_hex("0x01020304"), (bytes{0x01, 0x02, 0x03, 0x04}));
-    EXPECT_THROW(from_hex("0x123"), std::length_error);
-    EXPECT_THROW(from_hex("00x"), std::out_of_range);
-    EXPECT_THROW(from_hex("00x0"), std::out_of_range);
-    EXPECT_THROW(from_hex("0x001y"), std::out_of_range);
+    EXPECT_EQ(catch_hex_error("0x123"), hex_errc::incomplete_hex_byte_pair);
+    EXPECT_EQ(catch_hex_error("00x"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(catch_hex_error("00x0"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(catch_hex_error("0x001y"), hex_errc::invalid_hex_digit);
 }
 
 TEST(utils, from_hex_skip_whitespace)
@@ -75,4 +88,15 @@ TEST(utils, validate_hex)
     EXPECT_FALSE(validate_hex("01"));
     EXPECT_EQ(validate_hex("0"), hex_errc::incomplete_hex_byte_pair);
     EXPECT_EQ(validate_hex("WXYZ"), hex_errc::invalid_hex_digit);
+}
+
+TEST(utils, hex_error_code)
+{
+    std::error_code ec1 = hex_errc::invalid_hex_digit;
+    EXPECT_EQ(ec1.value(), 1);
+    EXPECT_EQ(ec1.message(), "invalid hex digit");
+
+    std::error_code ec2 = hex_errc::incomplete_hex_byte_pair;
+    EXPECT_EQ(ec2.value(), 2);
+    EXPECT_EQ(ec2.message(), "incomplete hex byte pair");
 }

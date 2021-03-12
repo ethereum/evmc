@@ -13,11 +13,15 @@ namespace evmc
 {
 using bytes = std::basic_string<uint8_t>;
 
+struct hex_error : std::system_error
+{
+    using system_error::system_error;
+};
+
 enum class hex_errc
 {
     invalid_hex_digit = 1,
     incomplete_hex_byte_pair = 2,
-    unknown_error = -1
 };
 
 std::error_code make_error_code(hex_errc errc) noexcept;
