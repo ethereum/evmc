@@ -58,7 +58,7 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
 }
 }  // namespace
 
-void validate_hex(const std::string& hex)
+bool validate_hex(const std::string& hex) noexcept
 {
     struct noop_output_iterator
     {
@@ -67,7 +67,15 @@ void validate_hex(const std::string& hex)
         noop_output_iterator operator++(int) noexcept { return *this; }
     };
 
-    from_hex(hex.data(), hex.size(), noop_output_iterator{});
+    try
+    {
+        from_hex(hex.data(), hex.size(), noop_output_iterator{});
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
 }
 
 bytes from_hex(const std::string& hex)

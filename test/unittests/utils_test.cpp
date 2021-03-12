@@ -70,9 +70,9 @@ TEST(utils, from_hex_skip_whitespace)
 
 TEST(utils, validate_hex)
 {
-    validate_hex("");
-    validate_hex("0x");
-    validate_hex("01");
-    EXPECT_THROW(validate_hex("0"), std::length_error);
-    EXPECT_THROW(validate_hex("WXYZ"), std::out_of_range);
+    EXPECT_TRUE(validate_hex(""));
+    EXPECT_TRUE(validate_hex("0x"));
+    EXPECT_TRUE(validate_hex("01"));
+    EXPECT_FALSE(validate_hex("0"));
+    EXPECT_FALSE(validate_hex("WXYZ"));
 }

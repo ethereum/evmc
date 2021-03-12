@@ -19,12 +19,8 @@ inline std::string hex(uint8_t b) noexcept
     return {hex_chars[b >> 4], hex_chars[b & 0xf]};
 }
 
-/// Validates hex encoded string and reports errors as exceptions
-///
-/// Exceptions:
-/// - std::length_error when the input has invalid length (must be even).
-/// - std::out_of_range when invalid hex digit encountered.
-void validate_hex(const std::string& hex);
+/// Validates hex encoded string.
+bool validate_hex(const std::string& hex) noexcept;
 
 /// Decodes hex encoded string to bytes.
 ///
