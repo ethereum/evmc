@@ -25,6 +25,8 @@ inline int from_hex_digit(char h)
 template <typename OutputIt>
 inline void from_hex(const char* hex, size_t size, OutputIt result)
 {
+    // TODO: This can be implemented with hex_decode_iterator and std::copy.
+
     const auto hex_end = hex + size;
 
     // Omit the optional 0x prefix.
@@ -52,7 +54,7 @@ inline void from_hex(const char* hex, size_t size, OutputIt result)
     }
 
     if (b != empty_byte_mark)
-        throw std::length_error{"the length of the input is odd"};
+        throw std::length_error{"incomplete hex byte pair"};
 }
 }  // namespace
 
