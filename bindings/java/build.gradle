@@ -18,15 +18,15 @@ allprojects {
     apply plugin: 'com.diffplug.gradle.spotless'
     spotless {
         java {
-        // This path needs to be relative to each project
-        target fileTree('.') {
-            include '**/*.java'
-            exclude '**/.gradle/**'
-        }
-        importOrder 'org.ethereum', 'java', ''
-        trimTrailingWhitespace()
-        endWithNewline()
-        googleJavaFormat('1.7')
+            // This path needs to be relative to each project
+            target fileTree('.') {
+                include '**/*.java'
+                exclude '**/.gradle/**'
+            }
+            importOrder 'org.ethereum', 'java', ''
+            trimTrailingWhitespace()
+            endWithNewline()
+            googleJavaFormat('1.7')
         }
     }
 }
