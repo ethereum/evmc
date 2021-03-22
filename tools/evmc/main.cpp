@@ -15,6 +15,7 @@ int main(int argc, const char** argv)
     int64_t gas = 1000000;
     auto rev = EVMC_ISTANBUL;
     std::string input_hex;
+    auto create = false;
 
     CLI::App app{"EVMC tool"};
     const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
@@ -26,6 +27,9 @@ int main(int argc, const char** argv)
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);
     run_cmd.add_option("--input", input_hex, "Hex-encoded input bytes");
+    run_cmd.add_flag(
+        "--create", create,
+        "Create new contract out of the code and then execute this contract with the input");
 
     try
     {
@@ -67,7 +71,7 @@ int main(int argc, const char** argv)
                 throw CLI::RequiredError{vm_option.get_name()};
 
             std::cout << "Config: " << vm_config << "\n";
-            return cmd::run(vm, rev, gas, code_hex, input_hex, std::cout);
+            return cmd::run(vm, rev, gas, code_hex, input_hex, create, std::cout);
         }
 
         return 0;
