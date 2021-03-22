@@ -3,8 +3,6 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
-import org.ethereum.evmc.EvmcLoaderException;
-
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -21,7 +19,7 @@ public final class EvmcVm implements AutoCloseable {
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
    * @param filename /path/filename of the evm shared object
-   * @throws EvmcLoaderException
+   * @throws org.ethereum.evmc.EvmcLoaderException
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
     if (!EvmcVm.isEvmcLibraryLoaded) {
@@ -49,7 +47,7 @@ public final class EvmcVm implements AutoCloseable {
    *
    * @param Path to the dynamic object representing the EVM implementation.
    * @return Internal object pointer.
-   * @throws EvmcLoaderException
+   * @throws org.ethereum.evmc.EvmcLoaderException
    */
   private static native ByteBuffer load_and_create(String filename) throws EvmcLoaderException;
 
@@ -152,9 +150,7 @@ public final class EvmcVm implements AutoCloseable {
   /** get size of result struct */
   private static native int get_result_size();
 
-  /**
-   * This method cleans up resources.
-   */
+  /** This method cleans up resources. */
   @Override
   public void close() {
     destroy(nativeVm);
