@@ -4,6 +4,7 @@
 
 #include "tools/commands/commands.hpp"
 #include "tools/utils/utils.hpp"
+#include <evmc/hex.hpp>
 #include <evmc/mocked_host.hpp>
 #include <ostream>
 

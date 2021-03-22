@@ -4,8 +4,8 @@
 
 #include "../../examples/example_vm/example_vm.h"
 #include <evmc/evmc.hpp>
+#include <evmc/hex.hpp>
 #include <evmc/mocked_host.hpp>
-#include <tools/utils/utils.hpp>
 #include <gtest/gtest.h>
 #include <cstring>
 
