@@ -57,7 +57,7 @@ int main(int argc, const char** argv)
     const auto& vm_option =
         *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
-    auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode");
+    auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode")->fallthrough();
     run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(Hex | CLI::ExistingFile);
     run_cmd.add_option("--gas", gas, "Execution gas limit", true)->check(CLI::Range(0, 1000000000));
     run_cmd.add_option("--rev", rev, "EVM revision", true);

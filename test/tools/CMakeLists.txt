@@ -75,5 +75,11 @@ add_evmc_tool_test(
     "Error: invalid hex digit"
 )
 
+add_evmc_tool_test(
+    vm_option_fallthrough
+    "run --vm $<TARGET_FILE:evmc::example-vm> 0x600030"
+    "Result: +success[\r\n]+Gas used: +2[\r\n]+Output: +[\r\n]"
+)
+
 get_property(TOOLS_TESTS DIRECTORY PROPERTY TESTS)
 set_tests_properties(${TOOLS_TESTS} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/tools-%p.profraw)
