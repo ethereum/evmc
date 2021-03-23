@@ -83,13 +83,6 @@ add_compile_options(
     -Wmissing-declarations
     $<$<COMPILE_LANGUAGE:CXX>:-Wextra-semi>
 )
-cable_add_cxx_compiler_flag_if_supported(-Wfinal-dtor-non-final-class)
-cable_add_cxx_compiler_flag_if_supported(-Wnewline-eof)
-cable_add_cxx_compiler_flag_if_supported(-Wsuggest-destructor-override)
-cable_add_cxx_compiler_flag_if_supported(-Wunreachable-code-break)
-cable_add_cxx_compiler_flag_if_supported(-Wduplicated-cond)
-cable_add_cxx_compiler_flag_if_supported(-Wduplicate-enum)
-cable_add_cxx_compiler_flag_if_supported(-Wlogical-op)
 cable_add_cxx_compiler_flag_if_supported(-Wno-unknown-attributes)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
