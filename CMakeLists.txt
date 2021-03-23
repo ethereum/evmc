@@ -76,11 +76,11 @@ elseif(CABLE_COMPILER_GNU)
     set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
 endif()
 
-#    -Wcast-qual
-#    -Wcast-align
-#    $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
 add_compile_options(
+    #-Wcast-qual
+    #-Wcast-align
     -Wmissing-declarations
+    $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
     $<$<COMPILE_LANGUAGE:CXX>:-Wextra-semi>
 )
 cable_add_cxx_compiler_flag_if_supported(-Wno-unknown-attributes)
@@ -105,6 +105,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
             -Wno-documentation
             -Wno-documentation-unknown-command
             -Wno-bad-function-cast
+            -Wno-exit-time-destructors
         )
     endif()
 endif()
