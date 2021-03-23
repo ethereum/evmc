@@ -20,6 +20,8 @@ namespace evmc
 {
 struct account
 {
+    virtual ~account() = default;
+
     evmc::uint256be balance = {};
     std::vector<uint8_t> code;
     std::map<evmc::bytes32, evmc::bytes32> storage;
