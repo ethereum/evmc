@@ -4,6 +4,7 @@
 package org.ethereum.evmc.types;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class Message {
   private final boolean is32bit() {
@@ -29,16 +30,16 @@ public class Message {
   public Message() {}
 
   public ByteBuffer getByteBuffer() {
-    // This is big endian by default, which is what we want.
+    // TODO: make this work between 32/64-bit
     return ByteBuffer.allocateDirect(expectedLength() + this.input.remaining())
+        .order(ByteOrder.nativeOrder())
         .putInt(this.kind)
         .putInt(this.flags)
         .putInt(this.depth)
         .putLong(this.gas)
         .put(this.destination.getByteBuffer())
         .put(this.sender.getByteBuffer())
-        // TODO: change this offset field based on endianness
-        .putLong(136)
+        .putLong(expectedLength())
         .putInt(this.input.remaining())
         .put(this.value.getByteBuffer())
         .put(this.create2_salt.getByteBuffer())
