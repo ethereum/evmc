@@ -66,8 +66,8 @@ final class Host {
   }
 
   /** Call callback function. */
-  static ByteBuffer call(HostContext context, ByteBuffer msg) {
-    return ensureDirectBuffer(context.call(msg));
+  static Result call(HostContext context, Message msg) {
+    return context.call(msg);
   }
 
   /** Get transaction context callback function. */

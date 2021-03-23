@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import org.ethereum.evmc.types.*;
 
 /**
  * The Java interface to the evm instance.
@@ -143,17 +144,19 @@ public final class EvmcVm implements AutoCloseable {
    *
    * <p>This is a mandatory method and MUST NOT be set to NULL.
    */
-  private static native ByteBuffer execute(
-      ByteBuffer nativeVm, HostContext context, int rev, ByteBuffer msg, ByteBuffer code);
+  private static native void execute(
+      ByteBuffer nativeVm, HostContext context, int rev, Message msg, ByteBuffer code, Result result);
 
   /**
    * Function is a wrapper around native execute.
    *
    * <p>This allows the context to managed in one method
    */
-  public synchronized ByteBuffer execute(
-      HostContext context, int rev, ByteBuffer msg, ByteBuffer code) {
-    return execute(nativeVm, context, rev, msg, code);
+  public synchronized Result execute(
+      HostContext context, int rev, Message msg, ByteBuffer code) {
+    Result result;
+    execute(nativeVm, context, rev, msg, code, result);
+    return result;
   }
 
   /**

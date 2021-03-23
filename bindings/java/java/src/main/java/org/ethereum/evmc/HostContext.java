@@ -135,7 +135,7 @@ public interface HostContext {
    * @param msg The call parameters.
    * @return The result of the call.
    */
-  ByteBuffer call(ByteBuffer msg);
+  Result call(Message msg);
 
   /**
    * Get transaction context function.
