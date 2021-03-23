@@ -302,13 +302,14 @@ jobs:
       - build
       - test
       - run:
+          name: "Java Lint (spotlessCheck)"
+          command: cd bindings/java && make lint
+      - run:
           name: "Java Build"
-          command: |
-            cd bindings/java && make clean build
+          command: cd bindings/java && make clean build
       - run:
           name: "Java Test"
-          command: |
-            cd bindings/java && make test
+          command: cd bindings/java && make test
 
   bindings-rust:
     docker:

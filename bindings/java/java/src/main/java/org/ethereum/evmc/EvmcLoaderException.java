@@ -4,7 +4,7 @@
 package org.ethereum.evmc;
 
 public class EvmcLoaderException extends Exception {
-   public EvmcLoaderException(String message) {
-      super(message);
-   }
+  public EvmcLoaderException(String message) {
+    super(message);
+  }
 }

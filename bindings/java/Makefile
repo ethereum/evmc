@@ -8,6 +8,9 @@ SOURCE_DIR = $(realpath $(CURDIR)/../..)
 OUT_DIR = $(CURDIR)/c/build
 BUILD_DIR = $(OUT_DIR)/_cmake_build
 
+lint: gradlew
+	./gradlew --no-daemon clean spotlessCheck
+
 build: gradlew $(OUT_DIR)/lib/libevmc-java.so
 	mkdir -p ./java/build
 	./gradlew --no-daemon clean spotlessApply build
