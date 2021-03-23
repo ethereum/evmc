@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning].
 
 ## [7.5.0] — unreleased
 
+### Added
+
+- New option `--input` for `evmc run` tool to specify execution input data (_calldata_).
+  [#564](https://github.com/ethereum/evmc/pull/564)
+- New option `--create` for `evmc run` tool to create new contract with provided init code before 
+  main execution. This allows using Solidity compiler binary outputs directly by the tool.
+  [#566](https://github.com/ethereum/evmc/pull/566)
+  ```bash
+  solc --bin Contract.sol -o .
+  evmc run --create Contract.bin --input 370158ea
+  ```
+- `evmc run` tool accepts both hex-strings or file paths for `code` and 
+  `--input` arguments.
+  [#574](https://github.com/ethereum/evmc/pull/574)
+- New static C++ library `evmc::hex` added with procedures for hex encoding/decoding. 
+  Hex-strings are used by EVMC and related projects for internal testing.
+  [#575](https://github.com/ethereum/evmc/pull/575)
+- New `EVMC_INSUFFICIENT_BALANCE` error code has been registered.
+  [#528](https://github.com/ethereum/evmc/pull/528)
+
+### Changed
+
+- Java bindings fixes and improvements. It must be noted the bindings are in a _work in progress_
+  state and are not suggested for production use.
+  [#535](https://github.com/ethereum/evmc/pull/535)
+  [#537](https://github.com/ethereum/evmc/pull/537)
+  [#541](https://github.com/ethereum/evmc/pull/541)
+  [#545](https://github.com/ethereum/evmc/pull/545)
+  [#549](https://github.com/ethereum/evmc/pull/549)
+  [#550](https://github.com/ethereum/evmc/pull/550)
+  [#551](https://github.com/ethereum/evmc/pull/551)
+  [#552](https://github.com/ethereum/evmc/pull/552)
+  [#553](https://github.com/ethereum/evmc/pull/553)
+  [#557](https://github.com/ethereum/evmc/pull/557)
+  [#579](https://github.com/ethereum/evmc/pull/579)
+  [#580](https://github.com/ethereum/evmc/pull/580)
+  [#581](https://github.com/ethereum/evmc/pull/581)
+- C++'s `std::hash` and comparison operators for EVMC types has been optimized.
+  [#560](https://github.com/ethereum/evmc/pull/5601)
+  [#561](https://github.com/ethereum/evmc/pull/561)
+- `evmc --version` now also informs about the version of the loaded EVM.
+  [#567](https://github.com/ethereum/evmc/pull/567)
+- The Example VM (`evmc::example-vm`) has been converted from C to C++. It now implements a subset
+  of real EVM opcodes so examples and tests can use valid EVM bytecodes.
+  [#539](https://github.com/ethereum/evmc/pull/539)
+
 ## [7.4.0] — 2020-06-24
 
 ### Changed
