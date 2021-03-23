@@ -3,8 +3,11 @@
 // Licensed under the Apache License, Version 2.0.
 package org.ethereum.evmc;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * The Java interface to the evm instance.
@@ -12,9 +15,62 @@ import java.util.Objects;
  * <p>Defines the Java methods capable of accessing the evm implementation.
  */
 public final class EvmcVm implements AutoCloseable {
-  private static EvmcVm evmcVm;
-  private static boolean isEvmcLibraryLoaded = false;
+  private static final Throwable evmcLoadingError;
   private ByteBuffer nativeVm;
+
+  // Load the dynamic library containing the JNI bindings to EVMC.
+  static {
+    Throwable error = null;
+
+    // First try loading from global path.
+    try {
+      System.loadLibrary("libevmc-java");
+    } catch (UnsatisfiedLinkError globalLoadingError) {
+      String extension = null;
+      String os = System.getProperty("os.name").toLowerCase();
+      if (os.contains("win")) {
+        extension = "dll";
+      } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+        extension = "so";
+      } else if (os.contains("mac") || os.contains("darwin")) {
+        extension = "dylib";
+      } else {
+        // Give up, because we are unsure what system we are running on.
+        error = globalLoadingError;
+      }
+
+      // Try loading the binding from the package.
+      if (extension != null) {
+        try {
+          Path evmcLib = Files.createTempFile("libevmc-java", extension);
+          Files.copy(
+              EvmcVm.class.getResourceAsStream("/libevmc-java." + extension),
+              evmcLib,
+              StandardCopyOption.REPLACE_EXISTING);
+          evmcLib.toFile().deleteOnExit();
+          // We are somewhat certain about the file, try loading it.
+          try {
+            System.load(evmcLib.toAbsolutePath().toString());
+          } catch (UnsatisfiedLinkError packageLoadingError) {
+            error = packageLoadingError;
+          }
+        } catch (IOException packageCreationError) {
+          error = packageCreationError;
+        }
+      }
+    }
+    evmcLoadingError = error;
+  }
+
+  /**
+   * Returns true if the native library was loaded successfully and EVMC capabilities are available.
+   *
+   * @return true if the library is available
+   */
+  public static boolean isAvailable() {
+    return evmcLoadingError == null;
+  }
+
   /**
    * This method loads the specified evm shared library and loads/initializes the jni bindings.
    *
@@ -22,19 +78,10 @@ public final class EvmcVm implements AutoCloseable {
    * @throws org.ethereum.evmc.EvmcLoaderException
    */
   public static EvmcVm create(String filename) throws EvmcLoaderException {
-    if (!EvmcVm.isEvmcLibraryLoaded) {
-      try {
-        // load so containing the jni bindings to evmc
-        System.load(System.getProperty("user.dir") + "/../c/build/lib/libevmc-java.so");
-        EvmcVm.isEvmcLibraryLoaded = true;
-      } catch (UnsatisfiedLinkError e) {
-        throw new EvmcLoaderException("EVMC JNI binding library failed to load", e);
-      }
+    if (!isAvailable()) {
+      throw new EvmcLoaderException("EVMC JNI binding library failed to load", evmcLoadingError);
     }
-    if (Objects.isNull(evmcVm)) {
-      evmcVm = new EvmcVm(filename);
-    }
-    return evmcVm;
+    return new EvmcVm(filename);
   }
 
   private EvmcVm(String filename) throws EvmcLoaderException {
@@ -44,7 +91,7 @@ public final class EvmcVm implements AutoCloseable {
   /**
    * This method loads the specified EVM implementation and returns its pointer.
    *
-   * @param Path to the dynamic object representing the EVM implementation.
+   * @param filename Path to the dynamic object representing the EVM implementation
    * @return Internal object pointer.
    * @throws org.ethereum.evmc.EvmcLoaderException
    */
@@ -153,7 +200,5 @@ public final class EvmcVm implements AutoCloseable {
   @Override
   public void close() {
     destroy(nativeVm);
-    isEvmcLibraryLoaded = false;
-    evmcVm = null;
   }
 }
