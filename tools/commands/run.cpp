@@ -80,7 +80,7 @@ int run(evmc::VM& vm,
     out << "\nResult:   " << result.status_code << "\nGas used: " << gas_used << "\n";
 
     if (result.status_code == EVMC_SUCCESS || result.status_code == EVMC_REVERT)
-        out << "Output:   " << hex(result.output_data, result.output_size) << "\n";
+        out << "Output:   " << hex({result.output_data, result.output_size}) << "\n";
 
     return 0;
 }

@@ -20,9 +20,9 @@ TEST(hex, hex_of_byte)
 TEST(hex, hex_of_bytes)
 {
     uint8_t data[] = {0x00, 0x01, 0x00, 0xa0, 0xff, 0x00, 0x55, 0x00};
-    EXPECT_EQ(hex(data, sizeof(data)), "000100a0ff005500");
-    EXPECT_EQ(hex(data, 0), "");
-    EXPECT_EQ(hex(nullptr, 0), "");  // is this working?
+    EXPECT_EQ(hex({data, sizeof(data)}), "000100a0ff005500");
+    EXPECT_EQ(hex({data, 0}), "");  // NOLINT(bugprone-string-constructor)
+    EXPECT_EQ(hex({nullptr, 0}), "");
 }
 
 TEST(hex, from_hex)
