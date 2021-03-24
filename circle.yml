@@ -188,36 +188,28 @@ jobs:
       - build
       - test
 
-  build-clang9-cxx14-asan:
+  build-clang9-asan:
     docker:
       - image: ethereum/cpp-build-env:12-clang-9
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=14 -DSANITIZE=address
+      CMAKE_OPTIONS: -DSANITIZE=address
       UBSAN_OPTIONS: halt_on_error=1
     steps:
       - checkout
       - build
       - test
 
-  build-gcc6:
+  build-gcc-min:
     docker:
-      - image: ethereum/cpp-build-env:12-gcc-6
+      - image: ethereum/cpp-build-env:13-gcc-7
     steps:
       - checkout
       - build
       - test
 
-  build-clang5:
+  build-clang-min:
     docker:
-      - image: ethereum/cpp-build-env:12-clang-5
-    steps:
-      - checkout
-      - build
-      - test
-
-  build-clang38:
-    docker:
-      - image: ethereum/cpp-build-env:12-clang-3.8
+      - image: ethereum/cpp-build-env:13-clang-5
     steps:
       - checkout
       - build
@@ -387,10 +379,9 @@ workflows:
       - build-gcc8-cxx17
       - build-gcc10-cxx17-sanitizers
       - build-clang10-cxx17-sanitizers
-      - build-clang9-cxx14-asan
-      - build-gcc6
-      - build-clang5
-      - build-clang38
+      - build-clang9-asan
+      - build-gcc-min
+      - build-clang-min
       - build-gcc-32bit
       - build-cmake-min
       - bindings-go-latest:
@@ -407,7 +398,7 @@ workflows:
             - build-gcc8-cxx17
       - bindings-rust-asan:
           requires:
-            - build-clang9-cxx14-asan
+            - build-clang9-asan
       - upload-docs:
           requires:
             - lint
