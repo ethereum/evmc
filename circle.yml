@@ -188,11 +188,11 @@ jobs:
       - build
       - test
 
-  build-clang9-cxx14-asan:
+  build-clang9-asan:
     docker:
       - image: ethereum/cpp-build-env:12-clang-9
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=14 -DSANITIZE=address
+      CMAKE_OPTIONS: -DSANITIZE=address
       UBSAN_OPTIONS: halt_on_error=1
     steps:
       - checkout
@@ -387,7 +387,7 @@ workflows:
       - build-gcc8-cxx17
       - build-gcc10-cxx17-sanitizers
       - build-clang10-cxx17-sanitizers
-      - build-clang9-cxx14-asan
+      - build-clang9-asan
       - build-gcc6
       - build-clang5
       - build-clang38
@@ -407,7 +407,7 @@ workflows:
             - build-gcc8-cxx17
       - bindings-rust-asan:
           requires:
-            - build-clang9-cxx14-asan
+            - build-clang9-asan
       - upload-docs:
           requires:
             - lint
