@@ -1,7 +1,7 @@
 package evmc_use
 
 import (
-	"github.com/ethereum/evmc/v7/bindings/go/evmc"
+	"github.com/ethereum/evmc/v8/bindings/go/evmc"
 	"testing"
 )
 

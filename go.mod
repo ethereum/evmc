@@ -1,3 +1,3 @@
-module github.com/ethereum/evmc/v7
+module github.com/ethereum/evmc/v8
 
 go 1.11
