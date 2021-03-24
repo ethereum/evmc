@@ -12,6 +12,16 @@ class TestHostContext implements HostContext {
   }
 
   @Override
+  public int accessAccount(byte[] address) {
+    return 0;
+  }
+
+  @Override
+  public int accessStorage(byte[] address, byte[] key) {
+    return 0;
+  }
+
+  @Override
   public ByteBuffer getStorage(byte[] address, byte[] key) {
     return ByteBuffer.allocateDirect(32).put(new byte[32]);
   }
