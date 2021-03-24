@@ -199,25 +199,17 @@ jobs:
       - build
       - test
 
-  build-gcc6:
+  build-gcc-min:
     docker:
-      - image: ethereum/cpp-build-env:12-gcc-6
+      - image: ethereum/cpp-build-env:13-gcc-7
     steps:
       - checkout
       - build
       - test
 
-  build-clang5:
+  build-clang-min:
     docker:
-      - image: ethereum/cpp-build-env:12-clang-5
-    steps:
-      - checkout
-      - build
-      - test
-
-  build-clang38:
-    docker:
-      - image: ethereum/cpp-build-env:12-clang-3.8
+      - image: ethereum/cpp-build-env:13-clang-5
     steps:
       - checkout
       - build
@@ -388,9 +380,8 @@ workflows:
       - build-gcc10-cxx17-sanitizers
       - build-clang10-cxx17-sanitizers
       - build-clang9-asan
-      - build-gcc6
-      - build-clang5
-      - build-clang38
+      - build-gcc-min
+      - build-clang-min
       - build-gcc-32bit
       - build-cmake-min
       - bindings-go-latest:
