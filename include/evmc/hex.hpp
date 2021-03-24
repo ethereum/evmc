@@ -10,7 +10,11 @@
 
 namespace evmc
 {
+/// String of uint8_t chars.
 using bytes = std::basic_string<uint8_t>;
+
+/// String view of uint8_t chars.
+using bytes_view = std::basic_string_view<uint8_t>;
 
 /// Hex decoding error codes.
 enum class hex_errc
@@ -45,15 +49,15 @@ inline std::string hex(uint8_t b) noexcept
 }
 
 /// Validates hex encoded string.
-std::error_code validate_hex(const std::string& hex) noexcept;
+std::error_code validate_hex(std::string_view hex) noexcept;
 
 /// Decodes hex encoded string to bytes.
 ///
 /// Throws hex_error with the appropriate error code.
-bytes from_hex(const std::string& hex);
+bytes from_hex(std::string_view hex);
 
 /// Encodes bytes as hex string.
-std::string hex(const uint8_t* data, size_t size);
+std::string hex(bytes_view bs);
 }  // namespace evmc
 
 namespace std

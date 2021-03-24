@@ -22,7 +22,7 @@ inline int from_hex_digit(char h)
 }
 
 template <typename OutputIt>
-inline void from_hex(const std::string& hex, OutputIt result)
+inline void from_hex(std::string_view hex, OutputIt result)
 {
     // TODO: This can be implemented with hex_decode_iterator and std::copy.
 
@@ -82,7 +82,7 @@ const std::error_category& hex_category() noexcept
     return category_instance;
 }
 
-std::error_code validate_hex(const std::string& hex) noexcept
+std::error_code validate_hex(std::string_view hex) noexcept
 {
     struct noop_output_iterator
     {
@@ -102,7 +102,7 @@ std::error_code validate_hex(const std::string& hex) noexcept
     }
 }
 
-bytes from_hex(const std::string& hex)
+bytes from_hex(std::string_view hex)
 {
     bytes bs;
     bs.reserve(hex.size() / 2);
@@ -110,12 +110,12 @@ bytes from_hex(const std::string& hex)
     return bs;
 }
 
-std::string hex(const uint8_t* data, size_t size)
+std::string hex(bytes_view bs)
 {
     std::string str;
-    str.reserve(size * 2);
-    for (const auto end = data + size; data != end; ++data)
-        str += hex(*data);
+    str.reserve(bs.size() * 2);
+    for (const auto b : bs)
+        str += hex(b);
     return str;
 }
 
