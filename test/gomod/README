@@ -3,7 +3,7 @@ Integration test for EVMC Go module
 Usage:
 
     go mod init evmc.ethereum.org/evmc_use
-    go get github.com/ethereum/evmc/v7@<commit-hash-to-be-tested>
+    go get github.com/ethereum/evmc/v8@<commit-hash-to-be-tested>
     go mod tidy
     gcc -shared -I../../include ../../examples/example_vm/example_vm.cpp -o example-vm.so
     go test
