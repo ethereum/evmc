@@ -4,7 +4,7 @@
 
 [package]
 name = "example-rust-vm"
-version = "8.0.0-alpha.0"
+version = "8.0.0-alpha.1"
 authors = ["Alex Beregszaszi <alex@rtfs.hu>", "Jake Lang <jak3lang@gmail.com>"]
 edition = "2018"
 publish = false
