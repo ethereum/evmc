@@ -23,12 +23,20 @@ struct storage_value
     /// True means this value has been modified already by the current transaction.
     bool dirty{false};
 
+    /// Is the storage key cold or warm.
+    evmc_access_status access_status{EVMC_ACCESS_COLD};
+
     /// Default constructor.
     storage_value() noexcept = default;
 
     /// Constructor.
     storage_value(const bytes32& _value, bool _dirty = false) noexcept  // NOLINT
       : value{_value}, dirty{_dirty}
+    {}
+
+    /// Constructor with initial access status.
+    storage_value(const bytes32& _value, evmc_access_status _access_status) noexcept
+      : value{_value}, access_status{_access_status}
     {}
 };
 
@@ -137,7 +145,6 @@ private:
     /// The copy of call inputs for the recorded_calls record.
     std::vector<bytes> m_recorded_calls_inputs;
 
-public:
     /// Record an account access.
     /// @param addr  The address of the accessed account.
     void record_account_access(const address& addr) const
@@ -149,6 +156,7 @@ public:
             recorded_account_accesses.emplace_back(addr);
     }
 
+public:
     /// Returns true if an account exists (EVMC Host method).
     bool account_exists(const address& addr) const noexcept override
     {
@@ -313,21 +321,32 @@ public:
         recorded_logs.push_back({addr, {data, data_size}, {topics, topics + topics_count}});
     }
 
-    /// Access an account.
+    /// Record an account access.
+    /// @param addr  The address of the accessed account.
     evmc_access_status access_account(const address& addr) noexcept override
     {
-        (void)addr;
-        // TODO: Return COLD/WARM depending on recorded_account_accesses.
-        return EVMC_ACCESS_COLD;
+        // Check if the address have been already accessed.
+        const auto already_accessed =
+            std::find(recorded_account_accesses.begin(), recorded_account_accesses.end(), addr) !=
+            recorded_account_accesses.end();
+
+        record_account_access(addr);
+
+        // Accessing precompiled contracts is always warm.
+        if (addr >= 0x0000000000000000000000000000000000000001_address &&
+            addr <= 0x0000000000000000000000000000000000000009_address)
+            return EVMC_ACCESS_WARM;
+
+        return already_accessed ? EVMC_ACCESS_WARM : EVMC_ACCESS_COLD;
     }
 
     /// Access the account's storage value at the given key.
     evmc_access_status access_storage(const address& addr, const bytes32& key) noexcept override
     {
-        (void)addr;
-        (void)key;
-        // TODO: Return COLD/WARM depending on accounts[].storage.
-        return EVMC_ACCESS_COLD;
+        auto& value = accounts[addr].storage[key];
+        const auto access_status = value.access_status;
+        value.access_status = EVMC_ACCESS_WARM;
+        return access_status;
     }
 };
 }  // namespace evmc
