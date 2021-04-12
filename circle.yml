@@ -343,15 +343,14 @@ jobs:
 
   bindings-rust-asan:
     docker:
-      - image: rust:1-buster
+      - image: rust:1-bullseye
     steps:
       - checkout
       - run:
           name: Update environment
           command: |
-            echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
             apt -qq update
-            apt -yq install llvm-8-dev clang-8 --no-install-recommends
+            apt -yq install llvm-11-dev clang-11 --no-install-recommends
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
       - run:
           name: Build
