@@ -351,13 +351,14 @@ jobs:
           command: |
             apt -qq update
             apt -yq install llvm-11-dev clang-11 --no-install-recommends
-            rustup toolchain install nightly-x86_64-unknown-linux-gnu
+            rustup toolchain install nightly-2021-04-11  # 2021-04-12 is known to be broken, https://github.com/rust-lang/rust/pull/84130.
       - run:
           name: Build
-          command: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS=detect_leaks=1 cargo +nightly build --target x86_64-unknown-linux-gnu
+          command: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS=detect_leaks=1 cargo +nightly-2021-04-11 build --target x86_64-unknown-linux-gnu
+
       - run:
           name: Test
-          command: RUSTFLAGS="-Z sanitizer=address -C opt-level=0" ASAN_OPTIONS=detect_leaks=1 cargo +nightly test --target x86_64-unknown-linux-gnu
+          command: RUSTFLAGS="-Z sanitizer=address -C opt-level=0" ASAN_OPTIONS=detect_leaks=1 cargo +nightly-2021-04-11 test --target x86_64-unknown-linux-gnu
       - attach_workspace:
           at: ~/build
       - run:
