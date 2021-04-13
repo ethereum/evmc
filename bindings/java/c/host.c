@@ -436,12 +436,70 @@ static void emit_log_fn(struct evmc_host_context* context,
                                  data_size, jtopics, topics_count);
 }
 
+static enum evmc_access_status access_account_fn(struct evmc_host_context* context,
+                                                 const evmc_address* address)
+{
+    const char java_method_name[] = "access_account";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B)I";
+
+    assert(context != NULL);
+    JNIEnv* jenv = attach();
+
+    // get java class
+    jclass host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
+    assert(host_class != NULL);
+
+    // get java method
+    jmethodID method =
+        (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
+    assert(method != NULL);
+
+    // set java method params
+    jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+
+    // call java method
+    jint jresult =
+        (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress);
+    assert(jresult == EVMC_ACCESS_COLD || jresult == EVMC_ACCESS_WARM);
+    return (enum evmc_access_status)jresult;
+}
+
+static enum evmc_access_status access_storage_fn(struct evmc_host_context* context,
+                                                 const evmc_address* address,
+                                                 const evmc_bytes32* key)
+{
+    const char java_method_name[] = "access_storage";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[B)I";
+
+    assert(context != NULL);
+    JNIEnv* jenv = attach();
+
+    // get java class
+    jclass host_class = (*jenv)->FindClass(jenv, "org/ethereum/evmc/Host");
+    assert(host_class != NULL);
+
+    // get java method
+    jmethodID method =
+        (*jenv)->GetStaticMethodID(jenv, host_class, java_method_name, java_method_signature);
+    assert(method != NULL);
+
+    // set java method params
+    jbyteArray jaddress = CopyDataToJava(jenv, address, sizeof(struct evmc_address));
+    jbyteArray jkey = CopyDataToJava(jenv, key, sizeof(struct evmc_bytes32));
+
+    // call java method
+    jint jresult =
+        (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress, jkey);
+    assert(jresult == EVMC_ACCESS_COLD || jresult == EVMC_ACCESS_WARM);
+    return (enum evmc_access_status)jresult;
+}
+
 const struct evmc_host_interface* evmc_java_get_host_interface()
 {
     static const struct evmc_host_interface host = {
-        account_exists_fn, get_storage_fn,    set_storage_fn,    get_balance_fn,
-        get_code_size_fn,  get_code_hash_fn,  copy_code_fn,      selfdestruct_fn,
-        call_fn,           get_tx_context_fn, get_block_hash_fn, emit_log_fn,
+        account_exists_fn, get_storage_fn, set_storage_fn,    get_balance_fn,    get_code_size_fn,
+        get_code_hash_fn,  copy_code_fn,   selfdestruct_fn,   call_fn,           get_tx_context_fn,
+        get_block_hash_fn, emit_log_fn,    access_account_fn, access_storage_fn,
     };
     return &host;
 }

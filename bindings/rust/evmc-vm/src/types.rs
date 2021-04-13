@@ -18,6 +18,9 @@ pub type MessageFlags = ffi::evmc_flags;
 /// EVMC status code.
 pub type StatusCode = ffi::evmc_status_code;
 
+/// EVMC access status.
+pub type AccessStatus = ffi::evmc_access_status;
+
 /// EVMC storage status.
 pub type StorageStatus = ffi::evmc_storage_status;
 
@@ -78,6 +81,18 @@ mod tests {
         assert_eq!(
             StatusCode::EVMC_FAILURE,
             ffi::evmc_status_code::EVMC_FAILURE
+        );
+    }
+
+    #[test]
+    fn access_status() {
+        assert_eq!(
+            AccessStatus::EVMC_ACCESS_COLD,
+            ffi::evmc_access_status::EVMC_ACCESS_COLD
+        );
+        assert_eq!(
+            AccessStatus::EVMC_ACCESS_WARM,
+            ffi::evmc_access_status::EVMC_ACCESS_WARM
         );
     }
 

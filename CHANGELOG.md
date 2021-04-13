@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [8.0.0] — unreleased
 
+### Added
+
+- Support for **Berlin** [EIP-2929](https://eips.ethereum.org/EIPS/eip-2929):
+  `access_account()` and `access_storage()` functions added to `evmc_host_interface`.
+  [#571](https://github.com/ethereum/evmc/pull/571)
+
 ## [7.5.0] — 2021-03-23
 
 ### Added

@@ -356,6 +356,26 @@ impl<'a> ExecutionContext<'a> {
             )
         }
     }
+
+    /// Access an account.
+    pub fn access_account(&mut self, address: &Address) -> AccessStatus {
+        unsafe {
+            assert!((*self.host).access_account.is_some());
+            (*self.host).access_account.unwrap()(self.context, address as *const Address)
+        }
+    }
+
+    /// Access a storage key.
+    pub fn access_storage(&mut self, address: &Address, key: &Bytes32) -> AccessStatus {
+        unsafe {
+            assert!((*self.host).access_storage.is_some());
+            (*self.host).access_storage.unwrap()(
+                self.context,
+                address as *const Address,
+                key as *const Bytes32,
+            )
+        }
+    }
 }
 
 impl From<ffi::evmc_result> for ExecutionResult {
@@ -793,6 +813,8 @@ mod tests {
             get_tx_context: Some(get_dummy_tx_context),
             get_block_hash: None,
             emit_log: None,
+            access_account: None,
+            access_storage: None,
         }
     }
 

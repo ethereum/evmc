@@ -83,4 +83,14 @@ final class Host {
       int topic_count) {
     context.emitLog(address, data, data_size, topics, topic_count);
   }
+
+  /** Access account callback function. */
+  static int access_account(HostContext context, byte[] address) {
+    return context.accessAccount(address);
+  }
+
+  /** Access storage callback function. */
+  static int access_storage(HostContext context, byte[] address, byte[] key) {
+    return context.accessStorage(address, key);
+  }
 }

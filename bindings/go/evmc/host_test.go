@@ -62,6 +62,14 @@ func (host *testHostContext) Call(kind CallKind,
 	return output, gas, Address{}, nil
 }
 
+func (host *testHostContext) AccessAccount(addr Address) AccessStatus {
+	return ColdAccess
+}
+
+func (host *testHostContext) AccessStorage(addr Address, key Hash) AccessStatus {
+	return ColdAccess
+}
+
 func TestGetBlockNumberFromTxContext(t *testing.T) {
 	// Yul: mstore(0, number()) return(0, msize())
 	code := []byte("\x43\x60\x00\x52\x59\x60\x00\xf3")

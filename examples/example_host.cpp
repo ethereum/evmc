@@ -163,6 +163,20 @@ public:
         (void)topics;
         (void)topics_count;
     }
+
+    evmc_access_status access_account(const evmc::address& addr) noexcept final
+    {
+        (void)addr;
+        return EVMC_ACCESS_COLD;
+    }
+
+    evmc_access_status access_storage(const evmc::address& addr,
+                                      const evmc::bytes32& key) noexcept final
+    {
+        (void)addr;
+        (void)key;
+        return EVMC_ACCESS_COLD;
+    }
 };
 
 

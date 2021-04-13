@@ -21,6 +21,31 @@ public interface HostContext {
   boolean accountExists(byte[] address);
 
   /**
+   * Access account function.
+   *
+   * <p>This function is used by the VM to add the given address to accessed_addresses substate (see
+   * EIP-2929).
+   *
+   * @param address The address of the account.
+   * @return 0 if cold access, 1 if warm access.
+   * @todo Change return type to enum.
+   */
+  int accessAccount(byte[] address);
+
+  /**
+   * Access storage function.
+   *
+   * <p>This function is used by the VM to add the given account storage entry to
+   * accessed_storage_keys substate (see EIP-2929).
+   *
+   * @param address The address of the account.
+   * @param key The index of the account's storage entry.
+   * @return 0 if cold access, 1 if warm access.
+   * @todo Change return type to enum.
+   */
+  int accessStorage(byte[] address, byte[] key);
+
+  /**
    * Get storage function.
    *
    * <p>This function is used by a VM to query the given account storage entry.

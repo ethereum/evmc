@@ -26,6 +26,13 @@ const (
 	Create2      CallKind = C.EVMC_CREATE2
 )
 
+type AccessStatus int
+
+const (
+	ColdAccess AccessStatus = C.EVMC_ACCESS_COLD
+	WarmAccess AccessStatus = C.EVMC_ACCESS_WARM
+)
+
 type StorageStatus int
 
 const (
@@ -86,6 +93,8 @@ type HostContext interface {
 	Call(kind CallKind,
 		destination Address, sender Address, value Hash, input []byte, gas int64, depth int,
 		static bool, salt Hash) (output []byte, gasLeft int64, createAddr Address, err error)
+	AccessAccount(addr Address) AccessStatus
+	AccessStorage(addr Address, key Hash) AccessStatus
 }
 
 //export accountExists
@@ -212,4 +221,16 @@ func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result 
 	result := C.evmc_make_result(statusCode, C.int64_t(gasLeft), outputData, C.size_t(len(output)))
 	result.create_address = evmcAddress(createAddr)
 	return result
+}
+
+//export accessAccount
+func accessAccount(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.enum_evmc_access_status {
+	ctx := getHostContext(uintptr(pCtx))
+	return C.enum_evmc_access_status(ctx.AccessAccount(goAddress(*pAddr)))
+}
+
+//export accessStorage
+func accessStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32) C.enum_evmc_access_status {
+	ctx := getHostContext(uintptr(pCtx))
+	return C.enum_evmc_access_status(ctx.AccessStorage(goAddress(*pAddr), goHash(*pKey)))
 }
