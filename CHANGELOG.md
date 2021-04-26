@@ -15,9 +15,13 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 
-- Instruction `SHA3` has been renamed to `KECCAK256` as proposed by 
+- Instruction `SHA3` has been renamed to `KECCAK256` as proposed by
   [EIP-1803](https://eips.ethereum.org/EIPS/eip-1803) to better match the underlying hash function.
   [#590](https://github.com/ethereum/evmc/pull/590)
+- The C++ standard required has been increased to **C++17**. The minimal officially supported Clang
+  version has been increased from 3.8 to 5.
+  [#584](https://github.com/ethereum/evmc/pull/584)
+
 
 ## [7.5.0] — 2021-03-23
 
@@ -71,7 +75,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 
-- The C++ standard required increased to **C++14**.
+- The C++ standard required has been increased to **C++14**.
   [#521](https://github.com/ethereum/evmc/pull/521)
 - The C++ literals for `address` and `bytes32` types have been reimplemented to
   use `static_assert` to report errors. This makes C++ bindings exception-free
