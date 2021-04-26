@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning].
   `access_account()` and `access_storage()` functions added to `evmc_host_interface`.
   [#571](https://github.com/ethereum/evmc/pull/571)
 
+### Changed
+
+- Instruction `SHA3` has been renamed to `KECCAK256` as proposed by 
+  [EIP-1803](https://eips.ethereum.org/EIPS/eip-1803) to better match the underlying hash function.
+  [#590](https://github.com/ethereum/evmc/pull/590)
+
 ## [7.5.0] — 2021-03-23
 
 ### Added
