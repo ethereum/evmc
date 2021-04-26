@@ -53,7 +53,7 @@ enum evmc_opcode
     OP_SHR = 0x1c,
     OP_SAR = 0x1d,
 
-    OP_SHA3 = 0x20,
+    OP_KECCAK256 = 0x20,
 
     OP_ADDRESS = 0x30,
     OP_BALANCE = 0x31,
