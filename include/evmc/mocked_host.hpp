@@ -91,7 +91,7 @@ public:
     };
 
     /// SELFDESTRUCT record.
-    struct selfdestuct_record
+    struct selfdestruct_record
     {
         /// The address of the account which has self-destructed.
         address selfdestructed;
@@ -100,7 +100,7 @@ public:
         address beneficiary;
 
         /// Equal operator.
-        bool operator==(const selfdestuct_record& other) const noexcept
+        bool operator==(const selfdestruct_record& other) const noexcept
         {
             return selfdestructed == other.selfdestructed && beneficiary == other.beneficiary;
         }
@@ -139,7 +139,7 @@ public:
     std::vector<log_record> recorded_logs;
 
     /// The record of all SELFDESTRUCTs from the selfdestruct() method.
-    std::vector<selfdestuct_record> recorded_selfdestructs;
+    std::vector<selfdestruct_record> recorded_selfdestructs;
 
 private:
     /// The copy of call inputs for the recorded_calls record.
