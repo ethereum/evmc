@@ -322,7 +322,21 @@ public:
     }
 
     /// Record an account access.
+    ///
+    /// This method is required by EIP-2929 introduced in ::EVMC_BERLIN. It will record the account
+    /// access in MockedHost::recorded_account_accesses and return previous access status.
+    /// This methods returns ::EVMC_ACCESS_WARM for known addresses of precompiles.
+    /// The EIP-2929 specifies that evmc_message::sender and evmc_message::destination are always
+    /// ::EVMC_ACCESS_WARM. Therefore, you should init the MockedHost with:
+    ///
+    ///     mocked_host.access_account(msg.sender);
+    ///     mocked_host.access_account(msg.destination);
+    ///
+    /// The same way you can mock transaction access list (EIP-2930) for account addresses.
+    ///
     /// @param addr  The address of the accessed account.
+    /// @returns     The ::EVMC_ACCESS_WARM if the account has been accessed before,
+    ///              the ::EVMC_ACCESS_COLD otherwise.
     evmc_access_status access_account(const address& addr) noexcept override
     {
         // Check if the address have been already accessed.
@@ -341,6 +355,18 @@ public:
     }
 
     /// Access the account's storage value at the given key.
+    ///
+    /// This method is required by EIP-2929 introduced in ::EVMC_BERLIN. In records that the given
+    /// account's storage key has been access and returns the previous access status.
+    /// To mock storage access list (EIP-2930), you can pre-init account's storage values with
+    /// the ::EVMC_ACCESS_WARM flag:
+    ///
+    ///     mocked_host.accounts[msg.destination].storage[key] = {value, EVMC_ACCESS_WARM};
+    ///
+    /// @param addr  The account address.
+    /// @param key   The account's storage key.
+    /// @return      The ::EVMC_ACCESS_WARM if the storage key has been accessed before,
+    ///              the ::EVMC_ACCESS_COLD otherwise.
     evmc_access_status access_storage(const address& addr, const bytes32& key) noexcept override
     {
         auto& value = accounts[addr].storage[key];
