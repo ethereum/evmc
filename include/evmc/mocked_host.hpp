@@ -185,11 +185,12 @@ public:
                                     const bytes32& value) noexcept override
     {
         record_account_access(addr);
-        const auto it = accounts.find(addr);
-        if (it == accounts.end())
-            return EVMC_STORAGE_UNCHANGED;
 
-        auto& old = it->second.storage[key];
+        // Get the reference to the old value.
+        // This will create the account in case it was not present.
+        // This is convenient for unit testing and standalone EVM execution to preserve the
+        // storage values after the execution terminates.
+        auto& old = accounts[addr].storage[key];
 
         // Follow https://eips.ethereum.org/EIPS/eip-1283 specification.
         // WARNING! This is not complete implementation as refund is not handled here.

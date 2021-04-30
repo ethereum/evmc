@@ -34,8 +34,11 @@ TEST(mocked_host, storage)
     EXPECT_EQ(chost.get_storage(addr1, {}), evmc::bytes32{});
     EXPECT_EQ(chost.get_storage(addr2, {}), evmc::bytes32{});
 
-    // Set storage on non-existing account has no effect.
-    EXPECT_EQ(host.set_storage(addr2, val1, val2), EVMC_STORAGE_UNCHANGED);
+    // Set storage on non-existing account creates the account.
+    EXPECT_EQ(host.set_storage(addr1, val1, val2), EVMC_STORAGE_ADDED);
+    EXPECT_EQ(chost.accounts.count(addr1), 1u);
+    EXPECT_EQ(host.accounts[addr1].storage.count(val1), 1u);
+    EXPECT_EQ(host.accounts[addr1].storage[val1].value, val2);
 
     auto& acc2 = host.accounts[addr2];
     EXPECT_EQ(chost.get_storage(addr2, val1), evmc::bytes32{});
