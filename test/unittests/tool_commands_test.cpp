@@ -117,3 +117,17 @@ TEST(tool_commands, create_failure_stack_underflow)
               "Creating and executing on Petersburg with 0 gas limit\n"
               "Contract creation failed: undefined instruction\n");
 }
+
+TEST(tool_commands, create_preserve_storage)
+{
+    // Contract: sload(0) mstore(0) return(31, 1)  6000 54 6000 52 6001 601f f3
+    // Create:   sstore(0, 0xbb) mstore(0, "6000546000526001601ff3") return(21, 11)
+    auto vm = evmc::VM{evmc_create_example_vm()};
+    std::ostringstream out;
+
+    const auto exit_code =
+        cmd::run(vm, EVMC_BERLIN, 200, "60bb 6000 55 6a6000546000526001601ff3 6000 52 600b 6015 f3",
+                 "", true, out);
+    EXPECT_EQ(exit_code, 0);
+    EXPECT_EQ(out.str(), out_pattern("Berlin", 200, "success", 7, "bb", true));
+}
