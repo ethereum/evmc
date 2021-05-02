@@ -813,19 +813,26 @@ enum evmc_revision
     /**
      * The Istanbul revision.
      *
-     * The spec draft: https://eips.ethereum.org/EIPS/eip-1679.
+     * https://eips.ethereum.org/EIPS/eip-1679
      */
     EVMC_ISTANBUL = 7,
 
     /**
      * The Berlin revision.
      *
-     * The spec draft: https://eips.ethereum.org/EIPS/eip-2070.
+     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md
      */
     EVMC_BERLIN = 8,
 
+    /**
+     * The London revision.
+     *
+     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md
+     */
+    EVMC_LONDON = 9,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_BERLIN
+    EVMC_MAX_REVISION = EVMC_LONDON
 };
 
 

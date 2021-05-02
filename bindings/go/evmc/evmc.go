@@ -147,6 +147,8 @@ const (
 	Constantinople   Revision = C.EVMC_CONSTANTINOPLE
 	Petersburg       Revision = C.EVMC_PETERSBURG
 	Istanbul         Revision = C.EVMC_ISTANBUL
+	Berlin           Revision = C.EVMC_BERLIN
+	London           Revision = C.EVMC_LONDON
 )
 
 type VM struct {

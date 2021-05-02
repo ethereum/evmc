@@ -327,3 +327,17 @@ TEST(instructions, berlin_hard_fork)
     EXPECT_EQ(b[OP_STATICCALL].gas_cost, 100);
     EXPECT_EQ(b[OP_SLOAD].gas_cost, 100);
 }
+
+TEST(instructions, london_hard_fork)
+{
+    const auto l = evmc_get_instruction_metrics_table(EVMC_LONDON);
+    const auto b = evmc_get_instruction_metrics_table(EVMC_BERLIN);
+    const auto ln = evmc_get_instruction_names_table(EVMC_LONDON);
+    const auto bn = evmc_get_instruction_names_table(EVMC_BERLIN);
+
+    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    {
+        EXPECT_EQ(l[op], b[op]) << op;
+        EXPECT_STREQ(ln[op], bn[op]) << op;
+    }
+}
