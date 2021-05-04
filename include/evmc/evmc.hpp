@@ -344,6 +344,13 @@ constexpr bytes32 operator""_bytes32() noexcept
 {
     return internal::from_literal<bytes32, c...>();
 }
+
+/// Literal for evmc::uint256be.
+template <char... c>
+constexpr uint256be operator""_uint256be() noexcept
+{
+    return internal::from_literal<uint256be, c...>();
+}
 }  // namespace literals
 
 using namespace literals;
