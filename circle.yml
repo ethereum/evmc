@@ -1,6 +1,20 @@
 version: 2.1
 
+executors:
+  linux-gcc-latest:
+    docker:
+      - image: ethereum/cpp-build-env:16-gcc-10
+  linux-clang-latest:
+    docker:
+      - image: ethereum/cpp-build-env:16-clang-11
+
+
 commands:
+  install_doxygen:
+    steps:
+      - run:
+          name: "Install doxygen"
+          command: sudo apt-get -q update && sudo apt-get -qy install doxygen
   build:
     parameters:
       build_type:
@@ -70,8 +84,7 @@ commands:
 jobs:
 
   lint:
-    docker:
-      - image: ethereum/cpp-build-env:12-lint
+    executor: linux-clang-latest
     steps:
     - checkout
     - run:
@@ -92,6 +105,7 @@ jobs:
           bumpversion --dry-run --verbose major
           bumpversion --dry-run --verbose minor
           bumpversion --dry-run --verbose patch
+    - install_doxygen
     - run:
         name: "Test documentation"
         command: |
@@ -107,10 +121,10 @@ jobs:
         destination: docs
 
   upload-docs:
-    docker:
-      - image: ethereum/cpp-build-env:12-lint
+    executor: linux-clang-latest
     steps:
       - checkout
+      - install_doxygen
       - run:
           name: "Generate documentation"
           command: doxygen Doxyfile
@@ -123,9 +137,8 @@ jobs:
             git commit -m "Update docs"
             git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
 
-  build-clang10-coverage:
-    docker:
-      - image: ethereum/cpp-build-env:14-clang-10
+  build-clang-coverage:
+    executor: linux-clang-latest
     steps:
       - checkout
       - build:
@@ -157,31 +170,27 @@ jobs:
             codecov --file ~/build/evmc.lcov -X gcov
 
 
-  build-gcc8-cxx17:
+  build-gcc8:
     docker:
       - image: ethereum/cpp-build-env:12-gcc-8
-    environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17
     steps:
       - checkout
       - build
       - test
 
-  build-gcc10-cxx17-sanitizers:
-    docker:
-      - image: ethereum/cpp-build-env:14-gcc-10
+  build-gcc-sanitizers:
+    executor: linux-gcc-latest
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined
+      CMAKE_OPTIONS: -DSANITIZE=address,undefined
     steps:
       - checkout
       - build
       - test
 
-  build-clang10-cxx17-sanitizers:
-    docker:
-      - image: ethereum/cpp-build-env:14-clang-10
+  build-clang-sanitizers:
+    executor: linux-clang-latest
     environment:
-      CMAKE_OPTIONS: -DCMAKE_CXX_STANDARD=17 -DSANITIZE=address,undefined,nullability,implicit-unsigned-integer-truncation,implicit-signed-integer-truncation
+      CMAKE_OPTIONS: -DSANITIZE=address,undefined,nullability,implicit-unsigned-integer-truncation,implicit-signed-integer-truncation
       UBSAN_OPTIONS: halt_on_error=1
     steps:
       - checkout
@@ -374,10 +383,10 @@ workflows:
   evmc:
     jobs:
       - lint
-      - build-clang10-coverage
-      - build-gcc8-cxx17
-      - build-gcc10-cxx17-sanitizers
-      - build-clang10-cxx17-sanitizers
+      - build-clang-coverage
+      - build-gcc8
+      - build-gcc-sanitizers
+      - build-clang-sanitizers
       - build-clang9-asan
       - build-gcc-min
       - build-clang-min
@@ -394,7 +403,7 @@ workflows:
       - bindings-java
       - bindings-rust:
           requires:
-            - build-gcc8-cxx17
+            - build-gcc8
       - bindings-rust-asan:
           requires:
             - build-clang9-asan
