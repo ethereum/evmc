@@ -272,7 +272,8 @@ namespace internal
 constexpr int from_hex(char c) noexcept
 {
     return (c >= 'a' && c <= 'f') ? c - ('a' - 10) :
-                                    (c >= 'A' && c <= 'F') ? c - ('A' - 10) : c - '0';
+           (c >= 'A' && c <= 'F') ? c - ('A' - 10) :
+                                    c - '0';
 }
 
 constexpr uint8_t byte(const char* s, size_t i) noexcept
