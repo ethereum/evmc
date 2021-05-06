@@ -48,7 +48,7 @@ int main(int argc, const char** argv)
     std::string vm_config;
     std::string code_arg;
     int64_t gas = 1000000;
-    auto rev = EVMC_ISTANBUL;
+    auto rev = EVMC_BERLIN;
     std::string input_arg;
     auto create = false;
 

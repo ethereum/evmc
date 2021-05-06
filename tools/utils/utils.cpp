@@ -114,6 +114,9 @@ std::ostream& operator<<(std::ostream& os, evmc_revision revision)
     case EVMC_BERLIN:
         s = "Berlin";
         break;
+    case EVMC_LONDON:
+        s = "London";
+        break;
     default:
         throw std::invalid_argument{"invalid EVM revision: " + std::to_string(revision)};
     }
