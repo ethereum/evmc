@@ -19,7 +19,6 @@ include(CableCompilerSettings)
 include(CablePackage)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
-include(GNUInstallDirs)
 
 option(EVMC_JAVA "Enable building Java Native Interface (JNI) bindings" OFF)
 
@@ -46,6 +45,8 @@ cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
 set(PROJECT_VERSION 8.1.0-alpha.0)
+
+include(GNUInstallDirs)  # Must be included after any language is enabled.
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 if(CABLE_COMPILER_GNULIKE)
