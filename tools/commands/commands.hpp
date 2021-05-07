@@ -6,9 +6,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace evmc
-{
-namespace cmd
+namespace evmc::cmd
 {
 int run(evmc::VM& vm,
         evmc_revision rev,
@@ -17,5 +15,4 @@ int run(evmc::VM& vm,
         const std::string& input_hex,
         bool create,
         std::ostream& out);
-}
-}  // namespace evmc
+}  // namespace evmc::cmd

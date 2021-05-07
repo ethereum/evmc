@@ -8,9 +8,7 @@
 #include <evmc/mocked_host.hpp>
 #include <ostream>
 
-namespace evmc
-{
-namespace cmd
+namespace evmc::cmd
 {
 namespace
 {
@@ -42,9 +40,7 @@ int run(evmc::VM& vm,
     msg.input_data = input.data();
     msg.input_size = input.size();
 
-    const uint8_t* exec_code_data = nullptr;
-    size_t exec_code_size = 0;
-
+    bytes_view exec_code = code;
     if (create)
     {
         evmc_message create_msg{};
@@ -63,17 +59,10 @@ int run(evmc::VM& vm,
         created_account.code = bytes(create_result.output_data, create_result.output_size);
 
         msg.destination = create_address;
-
-        exec_code_data = created_account.code.data();
-        exec_code_size = created_account.code.size();
-    }
-    else
-    {
-        exec_code_data = code.data();
-        exec_code_size = code.size();
+        exec_code = created_account.code;
     }
 
-    const auto result = vm.execute(host, rev, msg, exec_code_data, exec_code_size);
+    const auto result = vm.execute(host, rev, msg, exec_code.data(), exec_code.size());
 
     const auto gas_used = msg.gas - result.gas_left;
 
@@ -84,5 +73,4 @@ int run(evmc::VM& vm,
 
     return 0;
 }
-}  // namespace cmd
-}  // namespace evmc
+}  // namespace evmc::cmd
