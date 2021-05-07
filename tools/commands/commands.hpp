@@ -14,5 +14,6 @@ int run(evmc::VM& vm,
         const std::string& code_hex,
         const std::string& input_hex,
         bool create,
+        bool bench,
         std::ostream& out);
 }  // namespace evmc::cmd
