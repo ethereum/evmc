@@ -51,6 +51,7 @@ int main(int argc, const char** argv)
     auto rev = EVMC_BERLIN;
     std::string input_arg;
     auto create = false;
+    auto bench = false;
 
     CLI::App app{"EVMC tool"};
     const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
@@ -65,6 +66,9 @@ int main(int argc, const char** argv)
     run_cmd.add_flag(
         "--create", create,
         "Create new contract out of the code and then execute this contract with the input");
+    run_cmd.add_flag(
+        "--bench", bench,
+        "Benchmark execution time (state modification may result in unexpected behaviour)");
 
     try
     {
@@ -110,7 +114,7 @@ int main(int argc, const char** argv)
             const auto code_hex = load_hex(code_arg);
             const auto input_hex = load_hex(input_arg);
             // If code_hex or input_hex is not valid hex string an exception is thrown.
-            return cmd::run(vm, rev, gas, code_hex, input_hex, create, std::cout);
+            return cmd::run(vm, rev, gas, code_hex, input_hex, create, bench, std::cout);
         }
 
         return 0;

@@ -6,11 +6,10 @@
 #include "tools/utils/utils.hpp"
 #include <evmc/hex.hpp>
 #include <evmc/mocked_host.hpp>
+#include <chrono>
 #include <ostream>
 
-namespace evmc
-{
-namespace cmd
+namespace evmc::cmd
 {
 namespace
 {
@@ -19,6 +18,45 @@ constexpr auto create_address = 0xc9ea7ed000000000000000000000000000000001_addre
 
 /// The gas limit for contract creation.
 constexpr auto create_gas = 10'000'000;
+
+auto bench(MockedHost& host,
+           evmc::VM& vm,
+           evmc_revision rev,
+           const evmc_message& msg,
+           bytes_view code,
+           const evmc::result& expected_result,
+           std::ostream& out)
+{
+    {
+        using clock = std::chrono::steady_clock;
+        using unit = std::chrono::nanoseconds;
+        constexpr auto unit_name = " ns";
+        constexpr auto target_bench_time = std::chrono::seconds{1};
+        constexpr auto warning =
+            "WARNING! Inconsistent execution result likely due to the use of storage ";
+
+        // Probe run: execute once again the already warm code to estimate a single run time.
+        const auto probe_start = clock::now();
+        const auto result = vm.execute(host, rev, msg, code.data(), code.size());
+        const auto bench_start = clock::now();
+        const auto probe_time = bench_start - probe_start;
+
+        if (result.gas_left != expected_result.gas_left)
+            out << warning << "(gas used: " << (msg.gas - result.gas_left) << ")\n";
+        if (bytes_view{result.output_data, result.output_size} !=
+            bytes_view{expected_result.output_data, expected_result.output_size})
+            out << warning << "(output: " << hex({result.output_data, result.output_size}) << ")\n";
+
+        // Benchmark loop.
+        const auto num_iterations = std::max(static_cast<int>(target_bench_time / probe_time), 1);
+        for (int i = 0; i < num_iterations; ++i)
+            vm.execute(host, rev, msg, code.data(), code.size());
+        const auto bench_time = (clock::now() - bench_start) / num_iterations;
+
+        out << "Time:     " << std::chrono::duration_cast<unit>(bench_time).count() << unit_name
+            << " (avg of " << num_iterations << " iterations)\n";
+    }
+}
 }  // namespace
 
 int run(evmc::VM& vm,
@@ -27,6 +65,7 @@ int run(evmc::VM& vm,
         const std::string& code_hex,
         const std::string& input_hex,
         bool create,
+        bool bench,
         std::ostream& out)
 {
     out << (create ? "Creating and executing on " : "Executing on ") << rev << " with " << gas
@@ -42,9 +81,7 @@ int run(evmc::VM& vm,
     msg.input_data = input.data();
     msg.input_size = input.size();
 
-    const uint8_t* exec_code_data = nullptr;
-    size_t exec_code_size = 0;
-
+    bytes_view exec_code = code;
     if (create)
     {
         evmc_message create_msg{};
@@ -63,26 +100,21 @@ int run(evmc::VM& vm,
         created_account.code = bytes(create_result.output_data, create_result.output_size);
 
         msg.destination = create_address;
-
-        exec_code_data = created_account.code.data();
-        exec_code_size = created_account.code.size();
+        exec_code = created_account.code;
     }
-    else
-    {
-        exec_code_data = code.data();
-        exec_code_size = code.size();
-    }
+    out << "\n";
 
-    const auto result = vm.execute(host, rev, msg, exec_code_data, exec_code_size);
+    const auto result = vm.execute(host, rev, msg, exec_code.data(), exec_code.size());
+
+    if (bench)
+        cmd::bench(host, vm, rev, msg, exec_code, result, out);
 
     const auto gas_used = msg.gas - result.gas_left;
-
-    out << "\nResult:   " << result.status_code << "\nGas used: " << gas_used << "\n";
+    out << "Result:   " << result.status_code << "\nGas used: " << gas_used << "\n";
 
     if (result.status_code == EVMC_SUCCESS || result.status_code == EVMC_REVERT)
         out << "Output:   " << hex({result.output_data, result.output_size}) << "\n";
 
     return 0;
 }
-}  // namespace cmd
-}  // namespace evmc
+}  // namespace evmc::cmd
