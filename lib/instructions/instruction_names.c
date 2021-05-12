@@ -98,7 +98,7 @@ static const char* istanbul_names[256] = {
     /* 0x59 */ "MSIZE",
     /* 0x5a */ "GAS",
     /* 0x5b */ "JUMPDEST",
-    /* 0x5c */ NULL,
+    /* 0x5c */ "MCOPY",
     /* 0x5d */ NULL,
     /* 0x5e */ NULL,
     /* 0x5f */ NULL,
