@@ -8,119 +8,95 @@
 
 namespace evmc
 {
-std::ostream& operator<<(std::ostream& os, evmc_status_code status_code)
+namespace
 {
-    const char* s = nullptr;
+const char* to_string(evmc_status_code status_code) noexcept
+{
     switch (status_code)
     {
     case EVMC_SUCCESS:
-        s = "success";
-        break;
+        return "success";
     case EVMC_FAILURE:
-        s = "failure";
-        break;
+        return "failure";
     case EVMC_REVERT:
-        s = "revert";
-        break;
+        return "revert";
     case EVMC_OUT_OF_GAS:
-        s = "out of gas";
-        break;
+        return "out of gas";
     case EVMC_INVALID_INSTRUCTION:
-        s = "invalid instruction";
-        break;
+        return "invalid instruction";
     case EVMC_UNDEFINED_INSTRUCTION:
-        s = "undefined instruction";
-        break;
+        return "undefined instruction";
     case EVMC_STACK_OVERFLOW:
-        s = "stack overflow";
-        break;
+        return "stack overflow";
     case EVMC_STACK_UNDERFLOW:
-        s = "stack underflow";
-        break;
+        return "stack underflow";
     case EVMC_BAD_JUMP_DESTINATION:
-        s = "bad jump destination";
-        break;
+        return "bad jump destination";
     case EVMC_INVALID_MEMORY_ACCESS:
-        s = "invalid memory access";
-        break;
+        return "invalid memory access";
     case EVMC_CALL_DEPTH_EXCEEDED:
-        s = "call depth exceeded";
-        break;
+        return "call depth exceeded";
     case EVMC_STATIC_MODE_VIOLATION:
-        s = "static mode violation";
-        break;
+        return "static mode violation";
     case EVMC_PRECOMPILE_FAILURE:
-        s = "precompile failure";
-        break;
+        return "precompile failure";
     case EVMC_CONTRACT_VALIDATION_FAILURE:
-        s = "contract validation failure";
-        break;
+        return "contract validation failure";
     case EVMC_ARGUMENT_OUT_OF_RANGE:
-        s = "argument out of range";
-        break;
+        return "argument out of range";
     case EVMC_WASM_UNREACHABLE_INSTRUCTION:
-        s = "wasm unreachable instruction";
-        break;
+        return "wasm unreachable instruction";
     case EVMC_WASM_TRAP:
-        s = "wasm trap";
-        break;
+        return "wasm trap";
     case EVMC_INSUFFICIENT_BALANCE:
-        s = "insufficient balance";
-        break;
+        return "insufficient balance";
     case EVMC_INTERNAL_ERROR:
-        s = "internal error";
-        break;
+        return "internal error";
     case EVMC_REJECTED:
-        s = "rejected";
-        break;
+        return "rejected";
     case EVMC_OUT_OF_MEMORY:
-        s = "out of memory";
-        break;
-    default:
-        throw std::invalid_argument{"invalid EVMC status code: " + std::to_string(status_code)};
+        return "out of memory";
     }
-    return os << s;
+    return "<unknown>";
 }
 
-std::ostream& operator<<(std::ostream& os, evmc_revision revision)
+const char* to_string(evmc_revision rev) noexcept
 {
-    const char* s = nullptr;
-    switch (revision)
+    switch (rev)
     {
     case EVMC_FRONTIER:
-        s = "Frontier";
-        break;
+        return "Frontier";
     case EVMC_HOMESTEAD:
-        s = "Homestead";
-        break;
+        return "Homestead";
     case EVMC_TANGERINE_WHISTLE:
-        s = "Tangerine Whistle";
-        break;
+        return "Tangerine Whistle";
     case EVMC_SPURIOUS_DRAGON:
-        s = "Spurious Dragon";
-        break;
+        return "Spurious Dragon";
     case EVMC_BYZANTIUM:
-        s = "Byzantium";
-        break;
+        return "Byzantium";
     case EVMC_CONSTANTINOPLE:
-        s = "Constantinople";
-        break;
+        return "Constantinople";
     case EVMC_PETERSBURG:
-        s = "Petersburg";
-        break;
+        return "Petersburg";
     case EVMC_ISTANBUL:
-        s = "Istanbul";
-        break;
+        return "Istanbul";
     case EVMC_BERLIN:
-        s = "Berlin";
-        break;
+        return "Berlin";
     case EVMC_LONDON:
-        s = "London";
-        break;
-    default:
-        throw std::invalid_argument{"invalid EVM revision: " + std::to_string(revision)};
+        return "London";
     }
-    return os << s;
+    return "<unknown>";
+}
+}  // namespace
+
+std::ostream& operator<<(std::ostream& os, evmc_status_code status_code)
+{
+    return os << to_string(status_code);
+}
+
+std::ostream& operator<<(std::ostream& os, evmc_revision rev)
+{
+    return os << to_string(rev);
 }
 
 }  // namespace evmc
