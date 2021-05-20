@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include "tools/commands/commands.hpp"
-#include "tools/utils/utils.hpp"
+#include <evmc/evmc.hpp>
 #include <evmc/hex.hpp>
 #include <evmc/mocked_host.hpp>
 #include <chrono>
