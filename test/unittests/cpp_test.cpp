@@ -13,6 +13,7 @@
 #include <evmc/mocked_host.hpp>
 #include <gtest/gtest.h>
 #include <array>
+#include <cctype>
 #include <cstring>
 #include <map>
 #include <unordered_map>
@@ -774,4 +775,147 @@ TEST(cpp, result_create)
     ASSERT_TRUE(c.release);
     EXPECT_TRUE(std::memcmp(c.output_data, r.output_data, c.output_size) == 0);
     c.release(&c);
+}
+
+TEST(cpp, status_code_to_string)
+{
+    struct TestCase
+    {
+        evmc_status_code status_code;
+        std::string_view str;
+    };
+
+#define TEST_CASE(STATUS_CODE) \
+    TestCase { STATUS_CODE, #STATUS_CODE }
+    constexpr TestCase test_cases[]{
+        TEST_CASE(EVMC_SUCCESS),
+        TEST_CASE(EVMC_FAILURE),
+        TEST_CASE(EVMC_REVERT),
+        TEST_CASE(EVMC_OUT_OF_GAS),
+        TEST_CASE(EVMC_INVALID_INSTRUCTION),
+        TEST_CASE(EVMC_UNDEFINED_INSTRUCTION),
+        TEST_CASE(EVMC_STACK_OVERFLOW),
+        TEST_CASE(EVMC_STACK_UNDERFLOW),
+        TEST_CASE(EVMC_BAD_JUMP_DESTINATION),
+        TEST_CASE(EVMC_INVALID_MEMORY_ACCESS),
+        TEST_CASE(EVMC_CALL_DEPTH_EXCEEDED),
+        TEST_CASE(EVMC_STATIC_MODE_VIOLATION),
+        TEST_CASE(EVMC_PRECOMPILE_FAILURE),
+        TEST_CASE(EVMC_CONTRACT_VALIDATION_FAILURE),
+        TEST_CASE(EVMC_ARGUMENT_OUT_OF_RANGE),
+        TEST_CASE(EVMC_WASM_UNREACHABLE_INSTRUCTION),
+        TEST_CASE(EVMC_WASM_TRAP),
+        TEST_CASE(EVMC_INSUFFICIENT_BALANCE),
+        TEST_CASE(EVMC_INTERNAL_ERROR),
+        TEST_CASE(EVMC_REJECTED),
+        TEST_CASE(EVMC_OUT_OF_MEMORY),
+    };
+#undef TEST_CASE
+
+    std::ostringstream os;
+    for (const auto& t : test_cases)
+    {
+        std::string expected;
+        std::transform(std::cbegin(t.str) + std::strlen("EVMC_"), std::cend(t.str),
+                       std::back_inserter(expected), [](char c) -> char {
+                           return (c == '_') ? ' ' : static_cast<char>(std::tolower(c));
+                       });
+        EXPECT_EQ(evmc::to_string(t.status_code), expected);
+        os << t.status_code;
+        EXPECT_EQ(os.str(), expected);
+        os.str({});
+    }
+}
+
+TEST(cpp, revision_to_string)
+{
+    struct TestCase
+    {
+        evmc_revision rev;
+        std::string_view str;
+    };
+
+#define TEST_CASE(STATUS_CODE) \
+    TestCase { STATUS_CODE, #STATUS_CODE }
+    constexpr TestCase test_cases[]{
+        TEST_CASE(EVMC_FRONTIER),
+        TEST_CASE(EVMC_HOMESTEAD),
+        TEST_CASE(EVMC_TANGERINE_WHISTLE),
+        TEST_CASE(EVMC_SPURIOUS_DRAGON),
+        TEST_CASE(EVMC_BYZANTIUM),
+        TEST_CASE(EVMC_CONSTANTINOPLE),
+        TEST_CASE(EVMC_PETERSBURG),
+        TEST_CASE(EVMC_ISTANBUL),
+        TEST_CASE(EVMC_BERLIN),
+        TEST_CASE(EVMC_LONDON),
+    };
+#undef TEST_CASE
+
+    std::ostringstream os;
+    ASSERT_EQ(std::size(test_cases), size_t{EVMC_MAX_REVISION + 1});
+    for (size_t i = 0; i < std::size(test_cases); ++i)
+    {
+        const auto& t = test_cases[i];
+        EXPECT_EQ(t.rev, static_cast<int>(i));
+        std::string expected;
+        std::transform(std::cbegin(t.str) + std::strlen("EVMC_"), std::cend(t.str),
+                       std::back_inserter(expected), [skip = true](char c) mutable -> char {
+                           if (skip)
+                           {
+                               skip = false;
+                               return c;
+                           }
+                           else if (c == '_')
+                           {
+                               skip = true;
+                               return ' ';
+                           }
+                           else
+                               return static_cast<char>(std::tolower(c));
+                       });
+        EXPECT_EQ(evmc::to_string(t.rev), expected);
+        os << t.rev;
+        EXPECT_EQ(os.str(), expected);
+        os.str({});
+    }
+}
+
+
+#ifdef __GNUC__
+extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);
+#endif
+
+static bool has_ubsan() noexcept
+{
+#ifdef __GNUC__
+    return (__ubsan_handle_builtin_unreachable != nullptr);
+#else
+    return false;
+#endif
+}
+
+TEST(cpp, status_code_to_string_invalid)
+{
+    if (!has_ubsan())
+    {
+        std::ostringstream os;
+        int value = 99;
+        const auto invalid = static_cast<evmc_status_code>(value);
+        EXPECT_STREQ(evmc::to_string(invalid), "<unknown>");
+        os << invalid;
+        EXPECT_EQ(os.str(), "<unknown>");
+    }
+}
+
+TEST(cpp, revision_to_string_invalid)
+{
+    if (!has_ubsan())
+    {
+        std::ostringstream os;
+        int value = 99;
+        const auto invalid = static_cast<evmc_revision>(value);
+        EXPECT_STREQ(evmc::to_string(invalid), "<unknown>");
+        os << invalid;
+        EXPECT_EQ(os.str(), "<unknown>");
+    }
 }
