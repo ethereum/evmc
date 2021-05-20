@@ -4,5 +4,4 @@
 
 add_subdirectory(commands)
 add_subdirectory(evmc)
-add_subdirectory(utils)
 add_subdirectory(vmtester)

@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <initializer_list>
+#include <ostream>
 #include <utility>
 
 /// EVMC C++ API - wrappers and bindings for C++
@@ -336,6 +337,20 @@ constexpr bytes32 operator""_bytes32() noexcept
 }  // namespace literals
 
 using namespace literals;
+
+
+/// @copydoc evmc_status_code_to_string
+inline const char* to_string(evmc_status_code status_code) noexcept
+{
+    return evmc_status_code_to_string(status_code);
+}
+
+/// @copydoc evmc_revision_to_string
+inline const char* to_string(evmc_revision rev) noexcept
+{
+    return evmc_revision_to_string(rev);
+}
+
 
 /// Alias for evmc_make_result().
 constexpr auto make_result = evmc_make_result;
@@ -851,6 +866,24 @@ inline const evmc_host_interface& Host::get_interface() noexcept
 }
 }  // namespace evmc
 
+
+/// "Stream out" operator implementation for ::evmc_status_code.
+///
+/// @note This is defined in global namespace to match ::evmc_status_code definition and allow
+///       convenient operator overloading usage.
+inline std::ostream& operator<<(std::ostream& os, evmc_status_code status_code)
+{
+    return os << evmc::to_string(status_code);
+}
+
+/// "Stream out" operator implementation for ::evmc_revision.
+///
+/// @note This is defined in global namespace to match ::evmc_revision definition and allow
+///       convenient operator overloading usage.
+inline std::ostream& operator<<(std::ostream& os, evmc_revision rev)
+{
+    return os << evmc::to_string(rev);
+}
 
 namespace std
 {

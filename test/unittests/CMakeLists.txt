@@ -36,7 +36,6 @@ target_link_libraries(
     evmc::instructions
     evmc::evmc_cpp
     evmc::tool-commands
-    evmc::tool-utils
     evmc::hex
     GTest::gtest_main
 )
