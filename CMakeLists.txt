@@ -47,6 +47,11 @@ project(evmc)
 set(PROJECT_VERSION 8.1.0-alpha.0)
 
 include(GNUInstallDirs)  # Must be included after any language is enabled.
+if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    # By default put every executable in top-level /bin dir.
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+endif()
+
 
 cable_configure_compiler(NO_STACK_PROTECTION)
 if(CABLE_COMPILER_GNULIKE)
