@@ -39,7 +39,6 @@ target_link_libraries(
     evmc::hex
     GTest::gtest_main
 )
-set_target_properties(evmc-unittests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 gtest_add_tests(TARGET evmc-unittests TEST_PREFIX ${PROJECT_NAME}/unittests/ TEST_LIST unittests)
 

@@ -72,7 +72,7 @@ commands:
           root: ~/build
           paths:
             - bin/evmc-vmtester
-            - examples/evmc-example
+            - bin/evmc-example
 
   test:
     steps:
@@ -151,10 +151,10 @@ jobs:
             find -name '*.profraw'
             llvm-profdata merge *.profraw -o evmc.profdata
             llvm-cov report -instr-profile evmc.profdata \
-              -object test/evmc-unittests \
+              -object bin/evmc-unittests \
               -object bin/evmc-vmtester
             llvm-cov export -instr-profile evmc.profdata -format=lcov > evmc.lcov \
-              -object test/evmc-unittests \
+              -object bin/evmc-unittests \
               -object bin/evmc \
               -object bin/evmc-vmtester
             genhtml evmc.lcov -o coverage -t EVMC
@@ -343,7 +343,7 @@ jobs:
       - run:
           name: Test with evmc-example
           command: |
-            ~/build/examples/evmc-example target/debug/libexamplerustvm.so
+            ~/build/bin/evmc-example target/debug/libexamplerustvm.so
       - run:
           name: Package evmc-sys
           # NOTE: can not be run for evmc-vm and evmc-declare due to version dependencies
@@ -376,7 +376,7 @@ jobs:
       - run:
           name: Test with evmc-example
           command: |
-            ~/build/examples/evmc-example target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
+            ~/build/bin/evmc-example target/x86_64-unknown-linux-gnu/debug/libexamplerustvm.so
 
 workflows:
   version: 2
