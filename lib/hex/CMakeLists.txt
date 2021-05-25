@@ -4,7 +4,7 @@
 
 add_library(
     hex STATIC
-    ${include_dir}/evmc/hex.hpp
+    ${EVMC_INCLUDE_DIR}/evmc/hex.hpp
     hex.cpp
 )
 

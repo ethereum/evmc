@@ -73,7 +73,7 @@ elseif(CABLE_COMPILER_GNU)
     set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
 endif()
 
-set(include_dir ${PROJECT_SOURCE_DIR}/include)
+set(EVMC_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(lib)
 

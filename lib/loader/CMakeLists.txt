@@ -4,7 +4,7 @@
 
 add_library(
     loader STATIC
-    ${include_dir}/evmc/loader.h
+    ${EVMC_INCLUDE_DIR}/evmc/loader.h
     loader.c
 )
 
