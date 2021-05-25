@@ -8,7 +8,9 @@
 
 namespace evmc::tooling
 {
-int main(int argc, const char** argv, const char* name, const char* version);
+using vm_load_fn = int(evmc::VM&, const char* vm_config, std::ostream& err);
+
+int main(int argc, const char** argv, const char* name, const char* version, vm_load_fn vm_load);
 
 int run(evmc::VM& vm,
         evmc_revision rev,

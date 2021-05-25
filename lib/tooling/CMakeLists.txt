@@ -8,7 +8,7 @@ find_package(CLI11 REQUIRED)
 add_library(tooling STATIC)
 add_library(evmc::tooling ALIAS tooling)
 target_compile_features(tooling PUBLIC cxx_std_17)
-target_link_libraries(tooling PUBLIC evmc::evmc_cpp PRIVATE evmc::mocked_host evmc::hex evmc::loader CLI11::CLI11)
+target_link_libraries(tooling PUBLIC evmc::evmc_cpp PRIVATE evmc::mocked_host evmc::hex CLI11::CLI11)
 
 target_sources(
     tooling PRIVATE

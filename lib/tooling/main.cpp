@@ -4,7 +4,6 @@
 
 #include <CLI/CLI.hpp>
 #include <evmc/hex.hpp>
-#include <evmc/loader.h>
 #include <evmc/tooling.hpp>
 #include <fstream>
 
@@ -41,7 +40,7 @@ struct HexValidator : public CLI::Validator
 };
 }  // namespace
 
-int main(int argc, const char** argv, const char* name, const char* version)
+int main(int argc, const char** argv, const char* name, const char* version, vm_load_fn vm_load)
 {
     using namespace evmc;
 
@@ -79,17 +78,9 @@ int main(int argc, const char** argv, const char* name, const char* version)
         evmc::VM vm;
         if (vm_option.count() != 0)
         {
-            evmc_loader_error_code ec;
-            vm = VM{evmc_load_and_configure(vm_config.c_str(), &ec)};
-            if (ec != EVMC_LOADER_SUCCESS)
-            {
-                const auto error = evmc_last_error_msg();
-                if (error != nullptr)
-                    std::cerr << error << "\n";
-                else
-                    std::cerr << "Loading error " << ec << "\n";
-                return static_cast<int>(ec);
-            }
+            const auto error_code = vm_load(vm, vm_config.c_str(), std::cerr);
+            if (error_code != 0)
+                return error_code;
         }
 
         // Handle the --version flag first and exit when present.
