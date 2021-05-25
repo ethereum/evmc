@@ -40,7 +40,12 @@ struct HexValidator : public CLI::Validator
 };
 }  // namespace
 
-int main(int argc, const char** argv, const char* name, const char* version, vm_load_fn vm_load)
+int main(int argc,
+         const char** argv,
+         const char* name,
+         const char* version,
+         vm_load_fn vm_load,
+         evmc::VM default_vm)
 {
     using namespace evmc;
 
@@ -56,8 +61,11 @@ int main(int argc, const char** argv, const char* name, const char* version, vm_
 
     CLI::App app{name};
     const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
-    const auto& vm_option =
-        *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
+
+    const auto* const vm_option =
+        (vm_load != nullptr) ?
+            app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM") :
+            nullptr;
 
     auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode")->fallthrough();
     run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(Hex | CLI::ExistingFile);
@@ -75,8 +83,8 @@ int main(int argc, const char** argv, const char* name, const char* version, vm_
     {
         app.parse(argc, argv);
 
-        evmc::VM vm;
-        if (vm_option.count() != 0)
+        evmc::VM vm = std::move(default_vm);
+        if (vm_option != nullptr && vm_option->count() != 0)
         {
             const auto error_code = vm_load(vm, vm_config.c_str(), std::cerr);
             if (error_code != 0)
@@ -99,8 +107,8 @@ int main(int argc, const char** argv, const char* name, const char* version, vm_
         if (run_cmd)
         {
             // For run command the --vm is required.
-            if (vm_option.count() == 0)
-                throw CLI::RequiredError{vm_option.get_name()};
+            if (!vm && vm_option)
+                throw CLI::RequiredError{vm_option->get_name()};
 
             std::cout << "Config: " << vm_config << "\n";
 

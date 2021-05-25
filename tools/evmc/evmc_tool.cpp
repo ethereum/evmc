@@ -21,5 +21,6 @@ int main(int argc, const char* argv[])
                                        return static_cast<int>(ec);
                                    }
                                    return 0;
-                               });
+                               },
+                               {});
 }
