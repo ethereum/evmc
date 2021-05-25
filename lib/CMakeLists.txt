@@ -16,6 +16,7 @@ add_subdirectory(hex)
 add_subdirectory(instructions)
 add_subdirectory(loader)
 add_subdirectory(mocked_host)
+add_subdirectory(tooling)
 
 if(EVMC_INSTALL)
     install(TARGETS evmc evmc_cpp EXPORT evmcTargets)

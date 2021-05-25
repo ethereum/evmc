@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <system_error>
 
 namespace evmc

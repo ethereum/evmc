@@ -23,7 +23,7 @@ add_executable(
     loader_mock.h
     loader_test.cpp
     mocked_host_test.cpp
-    tool_commands_test.cpp
+    tooling_test.cpp
     hex_test.cpp
 )
 
@@ -35,10 +35,11 @@ target_link_libraries(
     evmc::example-precompiles-vm-static
     evmc::instructions
     evmc::evmc_cpp
-    evmc::tool-commands
+    evmc::tooling
     evmc::hex
     GTest::gtest_main
 )
+target_include_directories(evmc-unittests PRIVATE ${PROJECT_SOURCE_DIR})
 
 gtest_add_tests(TARGET evmc-unittests TEST_PREFIX ${PROJECT_NAME}/unittests/ TEST_LIST unittests)
 

@@ -2,10 +2,10 @@
 // Copyright 2019-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
-#include "tools/commands/commands.hpp"
 #include <CLI/CLI.hpp>
 #include <evmc/hex.hpp>
 #include <evmc/loader.h>
+#include <evmc/tooling.hpp>
 #include <fstream>
 
 namespace
@@ -114,7 +114,7 @@ int main(int argc, const char** argv)
             const auto code_hex = load_hex(code_arg);
             const auto input_hex = load_hex(input_arg);
             // If code_hex or input_hex is not valid hex string an exception is thrown.
-            return cmd::run(vm, rev, gas, code_hex, input_hex, create, bench, std::cout);
+            return tooling::run(vm, rev, gas, code_hex, input_hex, create, bench, std::cout);
         }
 
         return 0;

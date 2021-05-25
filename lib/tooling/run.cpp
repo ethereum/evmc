@@ -2,14 +2,14 @@
 // Copyright 2019-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
-#include "tools/commands/commands.hpp"
 #include <evmc/evmc.hpp>
 #include <evmc/hex.hpp>
 #include <evmc/mocked_host.hpp>
+#include <evmc/tooling.hpp>
 #include <chrono>
 #include <ostream>
 
-namespace evmc::cmd
+namespace evmc::tooling
 {
 namespace
 {
@@ -107,7 +107,7 @@ int run(evmc::VM& vm,
     const auto result = vm.execute(host, rev, msg, exec_code.data(), exec_code.size());
 
     if (bench)
-        cmd::bench(host, vm, rev, msg, exec_code, result, out);
+        tooling::bench(host, vm, rev, msg, exec_code, result, out);
 
     const auto gas_used = msg.gas - result.gas_left;
     out << "Result:   " << result.status_code << "\nGas used: " << gas_used << "\n";
@@ -117,4 +117,4 @@ int run(evmc::VM& vm,
 
     return 0;
 }
-}  // namespace evmc::cmd
+}  // namespace evmc::tooling

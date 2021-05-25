@@ -10,4 +10,4 @@ add_executable(evmc::tool ALIAS evmc-tool)
 set_target_properties(evmc-tool PROPERTIES OUTPUT_NAME evmc)
 set_source_files_properties(main.cpp PROPERTIES
     COMPILE_DEFINITIONS PROJECT_VERSION="${PROJECT_VERSION}")
-target_link_libraries(evmc-tool PRIVATE evmc::tool-commands evmc::loader CLI11::CLI11)
+target_link_libraries(evmc-tool PRIVATE evmc::tooling evmc::loader CLI11::CLI11)
