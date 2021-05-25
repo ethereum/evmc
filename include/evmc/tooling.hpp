@@ -8,6 +8,8 @@
 
 namespace evmc::tooling
 {
+int main(int argc, const char** argv, const char* name, const char* version);
+
 int run(evmc::VM& vm,
         evmc_revision rev,
         int64_t gas,

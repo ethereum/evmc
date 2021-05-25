@@ -8,6 +8,8 @@
 #include <evmc/tooling.hpp>
 #include <fstream>
 
+namespace evmc::tooling
+{
 namespace
 {
 /// Returns the input str if already valid hex string. Otherwise, interprets the str as a file
@@ -39,7 +41,7 @@ struct HexValidator : public CLI::Validator
 };
 }  // namespace
 
-int main(int argc, const char** argv)
+int main(int argc, const char** argv, const char* name, const char* version)
 {
     using namespace evmc;
 
@@ -53,7 +55,7 @@ int main(int argc, const char** argv)
     auto create = false;
     auto bench = false;
 
-    CLI::App app{"EVMC tool"};
+    CLI::App app{name};
     const auto& version_flag = *app.add_flag("--version", "Print version information and exit");
     const auto& vm_option =
         *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
@@ -96,7 +98,7 @@ int main(int argc, const char** argv)
             if (vm)
                 std::cout << vm.name() << " " << vm.version() << " (" << vm_config << ")\n";
 
-            std::cout << "EVMC " PROJECT_VERSION;
+            std::cout << name << ' ' << version;
             if (argc >= 1)
                 std::cout << " (" << argv[0] << ")";
             std::cout << "\n";
@@ -133,3 +135,4 @@ int main(int argc, const char** argv)
         return -2;
     }
 }
+}  // namespace evmc::tooling

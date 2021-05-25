@@ -29,6 +29,9 @@ option(EVMC_TESTING "Build everything (libraries, tools, examples, internal test
 cmake_dependent_option(EVMC_TOOLS "Build EVMC tools" OFF
     "NOT EVMC_TESTING" ON)
 
+cmake_dependent_option(EVMC_TOOLING "Build EVMC tooling library" OFF
+    "NOT EVMC_TOOLS" ON)
+
 cmake_dependent_option(EVMC_EXAMPLES "Build EVMC examples" OFF
     "NOT EVMC_TESTING" ON)
 
