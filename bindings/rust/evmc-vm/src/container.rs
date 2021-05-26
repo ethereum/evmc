@@ -93,6 +93,7 @@ mod tests {
             block_gas_limit: 0,
             block_difficulty: Uint256::default(),
             chain_id: Uint256::default(),
+            block_base_fee: Uint256::default(),
         }
     }
 
