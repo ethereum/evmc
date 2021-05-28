@@ -18,7 +18,8 @@ inline int from_hex_digit(char h)
     else if (h >= 'A' && h <= 'F')
         return h - 'A' + 10;
     else
-        throw hex_error{hex_errc::invalid_hex_digit};
+        return 0;
+        // throw hex_error{hex_errc::invalid_hex_digit};
 }
 
 template <typename OutputIt>
@@ -50,8 +51,8 @@ inline void from_hex(std::string_view hex, OutputIt result)
         }
     }
 
-    if (b != empty_byte_mark)
-        throw hex_error{hex_errc::incomplete_hex_byte_pair};
+    // if (b != empty_byte_mark)
+    //     throw hex_error{hex_errc::incomplete_hex_byte_pair};
 }
 
 struct hex_category_impl : std::error_category
@@ -91,15 +92,15 @@ std::error_code validate_hex(std::string_view hex) noexcept
         noop_output_iterator operator++(int) noexcept { return *this; }
     };
 
-    try
-    {
+    // try
+    // {
         from_hex(hex, noop_output_iterator{});
         return {};
-    }
-    catch (const hex_error& e)
-    {
-        return e.code();
-    }
+    // }
+    // catch (const hex_error& e)
+    // {
+    //     return e.code();
+    // }
 }
 
 bytes from_hex(std::string_view hex)
