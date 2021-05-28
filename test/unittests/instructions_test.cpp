@@ -337,7 +337,18 @@ TEST(instructions, london_hard_fork)
 
     for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
     {
+        if (op == OP_BASEFEE)
+            continue;
+
         EXPECT_EQ(l[op], b[op]) << op;
         EXPECT_STREQ(ln[op], bn[op]) << op;
     }
+
+    // EIP-3198: BASEFEE opcode
+    EXPECT_EQ(l[OP_BASEFEE].gas_cost, 2);
+    EXPECT_EQ(l[OP_BASEFEE].stack_height_required, 0);
+    EXPECT_EQ(l[OP_BASEFEE].stack_height_change, 1);
+    EXPECT_EQ(b[OP_BASEFEE].gas_cost, 0);
+    EXPECT_EQ(ln[OP_BASEFEE], std::string{"BASEFEE"});
+    EXPECT_TRUE(bn[OP_BASEFEE] == nullptr);
 }

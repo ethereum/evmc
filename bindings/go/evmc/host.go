@@ -76,6 +76,7 @@ type TxContext struct {
 	GasLimit   int64
 	Difficulty Hash
 	ChainID    Hash
+	BaseFee    Hash
 }
 
 type HostContext interface {
@@ -174,6 +175,7 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		C.int64_t(txContext.GasLimit),
 		evmcBytes32(txContext.Difficulty),
 		evmcBytes32(txContext.ChainID),
+		evmcBytes32(txContext.BaseFee),
 	}
 }
 
