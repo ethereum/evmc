@@ -285,6 +285,8 @@ static inline const char* evmc_revision_to_string(enum evmc_revision rev)
         return "Berlin";
     case EVMC_LONDON:
         return "London";
+    case EVMC_SHANGHAI:
+        return "Shanghai";
     }
     return "<unknown>";
 }

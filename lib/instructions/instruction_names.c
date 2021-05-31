@@ -1563,6 +1563,7 @@ const char* const* evmc_get_instruction_names_table(enum evmc_revision revision)
 {
     switch (revision)
     {
+    case EVMC_SHANGHAI:
     case EVMC_LONDON:
         return london_names;
     case EVMC_BERLIN:

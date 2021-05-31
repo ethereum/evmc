@@ -352,3 +352,17 @@ TEST(instructions, london_hard_fork)
     EXPECT_EQ(ln[OP_BASEFEE], std::string{"BASEFEE"});
     EXPECT_TRUE(bn[OP_BASEFEE] == nullptr);
 }
+
+TEST(instructions, shanghai_hard_fork)
+{
+    const auto s = evmc_get_instruction_metrics_table(EVMC_SHANGHAI);
+    const auto l = evmc_get_instruction_metrics_table(EVMC_LONDON);
+    const auto sn = evmc_get_instruction_names_table(EVMC_SHANGHAI);
+    const auto ln = evmc_get_instruction_names_table(EVMC_LONDON);
+
+    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    {
+        EXPECT_EQ(s[op], l[op]) << op;
+        EXPECT_STREQ(sn[op], ln[op]) << op;
+    }
+}
