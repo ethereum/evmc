@@ -3,7 +3,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include <evmc/instructions.h>
-
 #include <gtest/gtest.h>
 
 inline bool operator==(const evmc_instruction_metrics& a,
@@ -41,7 +40,7 @@ TEST(instructions, homestead_hard_fork)
     const auto fn = evmc_get_instruction_names_table(EVMC_FRONTIER);
     const auto hn = evmc_get_instruction_names_table(EVMC_HOMESTEAD);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)  // NOLINT
         {
@@ -67,7 +66,7 @@ TEST(instructions, tangerine_whistle_hard_fork)
     const auto hn = evmc_get_instruction_names_table(EVMC_HOMESTEAD);
     const auto twn = evmc_get_instruction_names_table(EVMC_TANGERINE_WHISTLE);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)
         {
@@ -119,7 +118,7 @@ TEST(instructions, spurious_dragon_hard_fork)
     const auto sdn = evmc_get_instruction_names_table(EVMC_SPURIOUS_DRAGON);
     const auto twn = evmc_get_instruction_names_table(EVMC_TANGERINE_WHISTLE);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)  // NOLINT
         {
@@ -143,7 +142,7 @@ TEST(instructions, byzantium_hard_fork)
     const auto bn = evmc_get_instruction_names_table(EVMC_BYZANTIUM);
     const auto sdn = evmc_get_instruction_names_table(EVMC_SPURIOUS_DRAGON);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)
         {
@@ -189,7 +188,7 @@ TEST(instructions, constantinople_hard_fork)
     const auto cn = evmc_get_instruction_names_table(EVMC_CONSTANTINOPLE);
     const auto bn = evmc_get_instruction_names_table(EVMC_BYZANTIUM);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)
         {
@@ -236,7 +235,7 @@ TEST(instructions, petersburg_hard_fork)
     const auto pn = evmc_get_instruction_names_table(EVMC_PETERSBURG);
     const auto cn = evmc_get_instruction_names_table(EVMC_CONSTANTINOPLE);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         EXPECT_EQ(p[op], c[op]) << op;
         EXPECT_STREQ(pn[op], cn[op]) << op;
@@ -250,7 +249,7 @@ TEST(instructions, istanbul_hard_fork)
     const auto in = evmc_get_instruction_names_table(EVMC_ISTANBUL);
     const auto pn = evmc_get_instruction_names_table(EVMC_PETERSBURG);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         switch (op)
         {
@@ -294,7 +293,7 @@ TEST(instructions, berlin_hard_fork)
     const auto bn = evmc_get_instruction_names_table(EVMC_BERLIN);
     const auto in = evmc_get_instruction_names_table(EVMC_ISTANBUL);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         EXPECT_STREQ(bn[op], in[op]) << op;
 
@@ -335,7 +334,7 @@ TEST(instructions, london_hard_fork)
     const auto ln = evmc_get_instruction_names_table(EVMC_LONDON);
     const auto bn = evmc_get_instruction_names_table(EVMC_BERLIN);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         if (op == OP_BASEFEE)
             continue;
@@ -360,7 +359,7 @@ TEST(instructions, shanghai_hard_fork)
     const auto sn = evmc_get_instruction_names_table(EVMC_SHANGHAI);
     const auto ln = evmc_get_instruction_names_table(EVMC_LONDON);
 
-    for (int op{OP_STOP}; op <= OP_SELFDESTRUCT; ++op)
+    for (int op = 0x00; op <= 0xff; ++op)
     {
         EXPECT_EQ(s[op], l[op]) << op;
         EXPECT_STREQ(sn[op], ln[op]) << op;
