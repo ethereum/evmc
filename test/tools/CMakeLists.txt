@@ -34,6 +34,12 @@ add_evmc_tool_test(
 )
 
 add_evmc_tool_test(
+    default_revision
+    "--vm $<TARGET_FILE:evmc::example-vm> run 00"
+    "Executing on London"
+)
+
+add_evmc_tool_test(
     create_return_2
     "--vm $<TARGET_FILE:evmc::example-vm> run --create 6960026000526001601ff3600052600a6016f3"
     "Result: +success[\r\n]+Gas used: +6[\r\n]+Output: +02[\r\n]"

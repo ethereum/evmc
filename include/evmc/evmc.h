@@ -840,7 +840,14 @@ enum evmc_revision
     EVMC_SHANGHAI = 10,
 
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_SHANGHAI
+    EVMC_MAX_REVISION = EVMC_SHANGHAI,
+
+    /**
+     * The latest known EVM revision with finalized specification.
+     *
+     * This is handy for EVM tools to always use the latest revision available.
+     */
+    EVMC_LATEST_STABLE_REVISION = EVMC_LONDON
 };
 
 
