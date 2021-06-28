@@ -832,8 +832,15 @@ enum evmc_revision
      */
     EVMC_LONDON = 9,
 
+    /**
+     * The Shanghai revision.
+     *
+     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/shanghai.md
+     */
+    EVMC_SHANGHAI = 10,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_LONDON
+    EVMC_MAX_REVISION = EVMC_SHANGHAI
 };
 
 
