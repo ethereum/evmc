@@ -59,3 +59,12 @@ func TestExecuteEmptyCode(t *testing.T) {
 		t.Errorf("execution returned unexpected error: %v", err)
 	}
 }
+
+func TestRevision(t *testing.T) {
+	if MaxRevision != London {
+		t.Errorf("missing constant for revision %d", MaxRevision)
+	}
+	if LatestStableRevision != London {
+		t.Errorf("wrong latest stable revision %d", LatestStableRevision)
+	}
+}
