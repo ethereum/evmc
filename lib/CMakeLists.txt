@@ -4,6 +4,7 @@
 
 add_library(evmc INTERFACE)
 add_library(evmc::evmc ALIAS evmc)
+target_compile_features(evmc INTERFACE c_std_99)
 target_include_directories(evmc INTERFACE $<BUILD_INTERFACE:${EVMC_INCLUDE_DIR}>$<INSTALL_INTERFACE:include>)
 
 add_library(evmc_cpp INTERFACE)

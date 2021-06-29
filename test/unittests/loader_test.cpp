@@ -91,7 +91,7 @@ protected:
     static evmc_vm* create_vm_with_wrong_abi()
     {
         constexpr auto wrong_abi_version = 1985;
-        static_assert(wrong_abi_version != EVMC_ABI_VERSION, "");
+        static_assert(wrong_abi_version != EVMC_ABI_VERSION);
         static auto instance =
             evmc_vm{wrong_abi_version, "", "", destroy, nullptr, nullptr, nullptr};
         ++create_count;
@@ -137,9 +137,9 @@ TEST_F(loader, strcpy_sx)
     const char input_that_fits[] = "x";
     const char input_too_big[] = "12";
     char buf[2] = {0x0f, 0x0f};
-    static_assert(sizeof(input_empty) <= sizeof(buf), "");
-    static_assert(sizeof(input_that_fits) <= sizeof(buf), "");
-    static_assert(sizeof(input_too_big) > sizeof(buf), "");
+    static_assert(sizeof(input_empty) <= sizeof(buf));
+    static_assert(sizeof(input_that_fits) <= sizeof(buf));
+    static_assert(sizeof(input_too_big) > sizeof(buf));
 
     EXPECT_EQ(strcpy_sx(buf, sizeof(buf), input_empty), 0);
     EXPECT_EQ(buf[0], 0);
