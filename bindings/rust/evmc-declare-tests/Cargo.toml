@@ -4,7 +4,7 @@
 
 [package]
 name = "evmc-declare-tests"
-version = "9.0.0-alpha.1"
+version = "9.0.0"
 authors = ["Jake Lang <jak3lang@gmail.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
