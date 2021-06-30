@@ -13,7 +13,26 @@ and this project adheres to [Semantic Versioning].
 - Support for **London** [EIP-3198](https://eips.ethereum.org/EIPS/eip-3198):
   `block_base_fee` member added to `evmc_tx_context`,
   `BASEFEE` instruction added.
+  [#603](https://github.com/ethereum/evmc/pull/603)
 
+- Added **Shanghai** EVM revision.
+  [#604](https://github.com/ethereum/evmc/pull/604)
+
+- Added [`EVMC_LATEST_STABLE_REVISON`](https://evmc.ethereum.org/group__EVMC.html#ggae5759b1590071966ccf6a505b52a0ef7a0dd8bdd55816359290e8fb8648aeb03e):
+  alias for the latest known EVM revision with finalized specification.
+  [#605](https://github.com/ethereum/evmc/pull/605)
+
+- The `--bench` flag has been added to `evmc run` to more precisely measure execution time.
+  [#598](https://github.com/ethereum/evmc/pull/598)
+
+- Output stream operators and `to_string()` overloads for EVMC types
+  `evmc_revision` and `evmc_status_code` are now part of public C and C++ API.
+  [#599](https://github.com/ethereum/evmc/pull/599)
+
+### Changed
+
+- Adjustments to `evmc::mocked_host`: storage changes to non-existent keys are now preserved.
+  [#594](https://github.com/ethereum/evmc/pull/594)
 
 ## [8.0.0] — 2021-04-27
 
