@@ -83,52 +83,7 @@ func (err Error) IsInternalError() bool {
 }
 
 func (err Error) Error() string {
-	code := C.enum_evmc_status_code(err)
-
-	switch code {
-	case C.EVMC_FAILURE:
-		return "evmc: failure"
-	case C.EVMC_REVERT:
-		return "evmc: revert"
-	case C.EVMC_OUT_OF_GAS:
-		return "evmc: out of gas"
-	case C.EVMC_INVALID_INSTRUCTION:
-		return "evmc: invalid instruction"
-	case C.EVMC_UNDEFINED_INSTRUCTION:
-		return "evmc: undefined instruction"
-	case C.EVMC_STACK_OVERFLOW:
-		return "evmc: stack overflow"
-	case C.EVMC_STACK_UNDERFLOW:
-		return "evmc: stack underflow"
-	case C.EVMC_BAD_JUMP_DESTINATION:
-		return "evmc: bad jump destination"
-	case C.EVMC_INVALID_MEMORY_ACCESS:
-		return "evmc: invalid memory access"
-	case C.EVMC_CALL_DEPTH_EXCEEDED:
-		return "evmc: call depth exceeded"
-	case C.EVMC_STATIC_MODE_VIOLATION:
-		return "evmc: static mode violation"
-	case C.EVMC_PRECOMPILE_FAILURE:
-		return "evmc: precompile failure"
-	case C.EVMC_CONTRACT_VALIDATION_FAILURE:
-		return "evmc: contract validation failure"
-	case C.EVMC_ARGUMENT_OUT_OF_RANGE:
-		return "evmc: argument out of range"
-	case C.EVMC_WASM_UNREACHABLE_INSTRUCTION:
-		return "evmc: the WebAssembly unreachable instruction has been hit during execution"
-	case C.EVMC_WASM_TRAP:
-		return "evmc: a WebAssembly trap has been hit during execution"
-	case C.EVMC_INSUFFICIENT_BALANCE:
-		return "evmc: insufficient balance"
-	case C.EVMC_REJECTED:
-		return "evmc: rejected"
-	}
-
-	if code < 0 {
-		return fmt.Sprintf("evmc: internal error (%d)", int32(code))
-	}
-
-	return fmt.Sprintf("evmc: unknown non-fatal status code %d", int32(code))
+	return C.GoString(C.evmc_status_code_to_string(C.enum_evmc_status_code(err)))
 }
 
 const (

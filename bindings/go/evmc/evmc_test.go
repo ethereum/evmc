@@ -68,3 +68,18 @@ func TestRevision(t *testing.T) {
 		t.Errorf("wrong latest stable revision %d", LatestStableRevision)
 	}
 }
+
+func TestErrorMessage(t *testing.T) {
+
+	check := func(err Error, expectedMsg string) {
+		if err.Error() != expectedMsg {
+			t.Errorf("wrong error message: '%s', expected: '%s'", err.Error(), expectedMsg)
+		}
+	}
+
+	check(Failure, "failure")
+	check(Revert, "revert")
+	check(Error(3), "out of gas")
+	check(Error(-1), "internal error")
+	check(Error(1000), "<unknown>")
+}
