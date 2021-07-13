@@ -43,6 +43,7 @@ static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 		input_size,
 		*value,
 		{{0}}, // create2_salt: not required for execution
+		{{0}}, // code_address: not required for execution
 	};
 
 	struct evmc_host_context* context = (struct evmc_host_context*)context_index;

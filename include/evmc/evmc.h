@@ -109,7 +109,7 @@ struct evmc_message
     /** The amount of gas for message execution. */
     int64_t gas;
 
-    /** The destination of the message. */
+    /** The destination (recipient) of the message. */
     evmc_address destination;
 
     /** The sender of the message. */
@@ -141,6 +141,18 @@ struct evmc_message
      * Ignored in evmc_execute_fn().
      */
     evmc_bytes32 create2_salt;
+
+    /**
+     * The address of the code to be executed.
+     *
+     * May be different from the evmc_message::destination (recipient) in case of
+     * ::EVMC_CALLCODE or ::EVMC_DELEGATECALL.
+     * See Section 8 "Message Call" of the Yellow Paper for detail.
+     *
+     * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
+     * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
+     */
+    evmc_address code_address;
 };
 
 
