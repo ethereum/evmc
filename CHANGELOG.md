@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning].
 
 ## [10.0.0] — unreleased
 
+### Changed
+
+- Go: The `create2Salt` parameter has been removed from the `VM.Execute()`.
+  [#612](https://github.com/ethereum/evmc/pull/612)
+
 ## [9.0.0] — 2021-06-30
 
 ### Added

@@ -137,7 +137,8 @@ struct evmc_message
     /**
      * The optional value used in new contract address construction.
      *
-     * Ignored unless kind is EVMC_CREATE2.
+     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2.
+     * Ignored in evmc_execute_fn().
      */
     evmc_bytes32 create2_salt;
 };

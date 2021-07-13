@@ -47,7 +47,7 @@ func TestExecuteEmptyCode(t *testing.T) {
 
 	addr := Address{}
 	h := Hash{}
-	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil, h)
+	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
 
 	if bytes.Compare(output, []byte("")) != 0 {
 		t.Errorf("execution unexpected output: %x", output)
