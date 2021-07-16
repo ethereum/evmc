@@ -1,6 +1,6 @@
 # EVMC – Ethereum Client-VM Connector API {#mainpage}
 
-**ABI version 9**
+**ABI version 10**
 
 The EVMC is the low-level ABI between Ethereum Virtual Machines (EVMs) and
 Ethereum Clients. On the EVM-side it supports classic EVM1 and [ewasm].
