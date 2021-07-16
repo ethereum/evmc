@@ -30,7 +30,7 @@ static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
 	const evmc_address* destination, const evmc_address* sender,
 	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
-	const uint8_t* code, size_t code_size, const evmc_bytes32* create2_salt)
+	const uint8_t* code, size_t code_size)
 {
 	struct evmc_message msg = {
 		kind,
@@ -42,7 +42,7 @@ static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 		input_data,
 		input_size,
 		*value,
-		*create2_salt,
+		{{0}}, // create2_salt: not required for execution
 	};
 
 	struct evmc_host_context* context = (struct evmc_host_context*)context_index;
@@ -194,7 +194,7 @@ func (vm *VM) SetOption(name string, value string) (err error) {
 func (vm *VM) Execute(ctx HostContext, rev Revision,
 	kind CallKind, static bool, depth int, gas int64,
 	destination Address, sender Address, input []byte, value Hash,
-	code []byte, create2Salt Hash) (output []byte, gasLeft int64, err error) {
+	code []byte) (output []byte, gasLeft int64, err error) {
 
 	flags := C.uint32_t(0)
 	if static {
@@ -206,11 +206,10 @@ func (vm *VM) Execute(ctx HostContext, rev Revision,
 	evmcDestination := evmcAddress(destination)
 	evmcSender := evmcAddress(sender)
 	evmcValue := evmcBytes32(value)
-	evmcCreate2Salt := evmcBytes32(create2Salt)
 	result := C.execute_wrapper(vm.handle, C.uintptr_t(ctxId), uint32(rev),
 		C.enum_evmc_call_kind(kind), flags, C.int32_t(depth), C.int64_t(gas),
 		&evmcDestination, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
-		bytesPtr(code), C.size_t(len(code)), &evmcCreate2Salt)
+		bytesPtr(code), C.size_t(len(code)))
 	removeHostContext(ctxId)
 
 	output = C.GoBytes(unsafe.Pointer(result.output_data), C.int(result.output_size))
