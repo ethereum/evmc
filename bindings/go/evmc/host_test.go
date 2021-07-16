@@ -57,7 +57,7 @@ func (host *testHostContext) EmitLog(addr Address, topics []Hash, data []byte) {
 
 func (host *testHostContext) Call(kind CallKind,
 	destination Address, sender Address, value Hash, input []byte, gas int64, depth int,
-	static bool, salt Hash) (output []byte, gasLeft int64, createAddr Address, err error) {
+	static bool, salt Hash, codeAddress Address) (output []byte, gasLeft int64, createAddr Address, err error) {
 	output = []byte("output from testHostContext.Call()")
 	return output, gas, Address{}, nil
 }

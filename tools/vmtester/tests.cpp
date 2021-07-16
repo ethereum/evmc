@@ -87,9 +87,17 @@ TEST_F(evmc_vm_test, execute_call)
 TEST_F(evmc_vm_test, execute_create)
 {
     evmc::MockedHost mockedHost;
-    evmc_message msg{
-        EVMC_CREATE,   0, 0, 65536, evmc_address{}, evmc_address{}, nullptr, 0, evmc_uint256be{},
-        evmc_bytes32{}};
+    evmc_message msg{EVMC_CREATE,
+                     0,
+                     0,
+                     65536,
+                     evmc_address{},
+                     evmc_address{},
+                     nullptr,
+                     0,
+                     evmc_uint256be{},
+                     evmc_bytes32{},
+                     evmc_address{}};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
 
     evmc_result result =
@@ -170,9 +178,17 @@ TEST_F(evmc_vm_test, precompile_test)
         destination.bytes[18] = static_cast<uint8_t>(i >> 8);
         destination.bytes[19] = static_cast<uint8_t>(i & 0xff);
 
-        evmc_message msg{
-            EVMC_CALL,     0, 0, 65536, destination, evmc_address{}, nullptr, 0, evmc_uint256be{},
-            evmc_bytes32{}};
+        evmc_message msg{EVMC_CALL,
+                         0,
+                         0,
+                         65536,
+                         destination,
+                         evmc_address{},
+                         nullptr,
+                         0,
+                         evmc_uint256be{},
+                         evmc_bytes32{},
+                         evmc_address{}};
 
         evmc_result result = vm->execute(vm, nullptr, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
 

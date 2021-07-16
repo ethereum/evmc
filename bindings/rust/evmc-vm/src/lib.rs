@@ -50,6 +50,7 @@ pub struct ExecutionMessage {
     input: Option<Vec<u8>>,
     value: Uint256,
     create2_salt: Bytes32,
+    code_address: Address,
 }
 
 /// EVMC transaction context structure.
@@ -126,6 +127,7 @@ impl ExecutionMessage {
         input: Option<&[u8]>,
         value: Uint256,
         create2_salt: Bytes32,
+        code_address: Address,
     ) -> Self {
         ExecutionMessage {
             kind,
@@ -141,6 +143,7 @@ impl ExecutionMessage {
             },
             value,
             create2_salt,
+            code_address,
         }
     }
 
@@ -187,6 +190,11 @@ impl ExecutionMessage {
     /// Read the salt for CREATE2. Only valid if the message kind is CREATE2.
     pub fn create2_salt(&self) -> &Bytes32 {
         &self.create2_salt
+    }
+
+    /// Read the code address of the message.
+    pub fn code_address(&self) -> &Address {
+        &self.code_address
     }
 }
 
@@ -326,6 +334,7 @@ impl<'a> ExecutionContext<'a> {
             input_size: input_size,
             value: *message.value(),
             create2_salt: *message.create2_salt(),
+            code_address: *message.code_address(),
         };
         unsafe {
             assert!((*self.host).call.is_some());
@@ -495,6 +504,7 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             },
             value: message.value,
             create2_salt: message.create2_salt,
+            code_address: message.code_address,
         }
     }
 }
@@ -653,6 +663,7 @@ mod tests {
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
+        let code_address = Address { bytes: [64u8; 20] };
 
         let ret = ExecutionMessage::new(
             MessageKind::EVMC_CALL,
@@ -664,6 +675,7 @@ mod tests {
             Some(&input),
             value,
             create2_salt,
+            code_address,
         );
 
         assert_eq!(ret.kind(), MessageKind::EVMC_CALL);
@@ -676,6 +688,7 @@ mod tests {
         assert_eq!(*ret.input().unwrap(), input);
         assert_eq!(*ret.value(), value);
         assert_eq!(*ret.create2_salt(), create2_salt);
+        assert_eq!(*ret.code_address(), code_address);
     }
 
     #[test]
@@ -684,6 +697,7 @@ mod tests {
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
+        let code_address = Address { bytes: [64u8; 20] };
 
         let msg = ffi::evmc_message {
             kind: MessageKind::EVMC_CALL,
@@ -696,6 +710,7 @@ mod tests {
             input_size: 0,
             value: value,
             create2_salt: create2_salt,
+            code_address: code_address,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -709,6 +724,7 @@ mod tests {
         assert!(ret.input().is_none());
         assert_eq!(*ret.value(), msg.value);
         assert_eq!(*ret.create2_salt(), msg.create2_salt);
+        assert_eq!(*ret.code_address(), msg.code_address);
     }
 
     #[test]
@@ -718,6 +734,7 @@ mod tests {
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
+        let code_address = Address { bytes: [64u8; 20] };
 
         let msg = ffi::evmc_message {
             kind: MessageKind::EVMC_CALL,
@@ -730,6 +747,7 @@ mod tests {
             input_size: input.len(),
             value: value,
             create2_salt: create2_salt,
+            code_address: code_address,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -744,6 +762,7 @@ mod tests {
         assert_eq!(*ret.input().unwrap(), input);
         assert_eq!(*ret.value(), msg.value);
         assert_eq!(*ret.create2_salt(), msg.create2_salt);
+        assert_eq!(*ret.code_address(), msg.code_address);
     }
 
     unsafe extern "C" fn get_dummy_tx_context(
@@ -866,6 +885,7 @@ mod tests {
             None,
             Uint256::default(),
             Bytes32::default(),
+            test_addr,
         );
 
         let b = exe_context.call(&message);
@@ -897,6 +917,7 @@ mod tests {
             Some(&data),
             Uint256::default(),
             Bytes32::default(),
+            test_addr,
         );
 
         let b = exe_context.call(&message);
