@@ -320,6 +320,12 @@ enum evmc_status_code
     EVMC_OUT_OF_MEMORY = -3
 };
 
+struct evmc_destruct_list
+{
+    unsigned count;
+    evmc_address* list;
+}
+
 /* Forward declaration. */
 struct evmc_result;
 
@@ -354,6 +360,17 @@ struct evmc_result
      * the value MUST be 0.
      */
     int64_t gas_left;
+
+    /**
+     * The amount of gas refunded during the execution.
+     *
+     * This field represents the EVM refund mechanism. This is cumulative (includes refunds from all
+     * internal calls) amount of gas refunded during EVM execution. Because of the way it affects
+     * the final transaction gas usage, this is separated from the evmc_result::gas_left.
+     * For internal calls the value MAY be negative but MUST be non-negative for 0-depth messages.
+     * If evmc_result::status_code is not ::EVMC_SUCCESS the value MUST be 0.
+     */
+    int64_t gas_refunded;
 
     /**
      * The reference to output data.
@@ -406,6 +423,8 @@ struct evmc_result
      * In all other cases the address MUST be null bytes.
      */
     evmc_address create_address;
+
+    struct evmc_destruct_list destructed_addresses;
 
     /**
      * Reserved data that MAY be used by a evmc_result object creator.
@@ -469,24 +488,27 @@ enum evmc_storage_status
     EVMC_STORAGE_UNCHANGED = 0,
 
     /**
-     * The value of a storage item has been modified: X -> Y.
-     */
-    EVMC_STORAGE_MODIFIED = 1,
-
-    /**
-     * A storage item has been modified after being modified before: X -> Y -> Z.
-     */
-    EVMC_STORAGE_MODIFIED_AGAIN = 2,
-
-    /**
      * A new storage item has been added: 0 -> X.
      */
-    EVMC_STORAGE_ADDED = 3,
+    EVMC_STORAGE_ADDED,
+
+    /**
+     * The value of a storage item has been modified: X -> Y.
+     */
+    EVMC_STORAGE_MODIFIED,
 
     /**
      * A storage item has been deleted: X -> 0.
      */
-    EVMC_STORAGE_DELETED = 4
+    EVMC_STORAGE_DELETED,
+
+    EVMC_DIRTY_ADDED_TO_DELETED,
+
+    EVMC_DIRTY_DELETED_TO_ADDED,
+    EVMC_DIRTY_MODIFIED_AGAIN,
+    EVMC_DIRTY_MODIFIED_TO_DELETED,
+    EVMC_DIRTY_MODIFIED_REVERTED,
+    EVMC_DIRTY_DELETED_REVERTED,
 };
 
 
