@@ -361,7 +361,31 @@ TEST(instructions, shanghai_hard_fork)
 
     for (int op = 0x00; op <= 0xff; ++op)
     {
+        if (op == OP_RJUMP || op == OP_RJUMPI || op == OP_RJUMPTABLE)
+            continue;
+
         EXPECT_EQ(s[op], l[op]) << op;
         EXPECT_STREQ(sn[op], ln[op]) << op;
     }
+
+    EXPECT_EQ(s[OP_RJUMP].gas_cost, 8);
+    EXPECT_EQ(s[OP_RJUMP].stack_height_required, 0);
+    EXPECT_EQ(s[OP_RJUMP].stack_height_change, 0);
+    EXPECT_EQ(l[OP_RJUMP].gas_cost, 0);
+    EXPECT_EQ(sn[OP_RJUMP], std::string{"RJUMP"});
+    EXPECT_TRUE(ln[OP_RJUMP] == nullptr);
+
+    EXPECT_EQ(s[OP_RJUMPI].gas_cost, 10);
+    EXPECT_EQ(s[OP_RJUMPI].stack_height_required, 1);
+    EXPECT_EQ(s[OP_RJUMPI].stack_height_change, -1);
+    EXPECT_EQ(l[OP_RJUMPI].gas_cost, 0);
+    EXPECT_EQ(sn[OP_RJUMPI], std::string{"RJUMPI"});
+    EXPECT_TRUE(ln[OP_RJUMPI] == nullptr);
+
+    EXPECT_EQ(s[OP_RJUMPTABLE].gas_cost, 10);
+    EXPECT_EQ(s[OP_RJUMPTABLE].stack_height_required, 1);
+    EXPECT_EQ(s[OP_RJUMPTABLE].stack_height_change, -1);
+    EXPECT_EQ(l[OP_RJUMPTABLE].gas_cost, 0);
+    EXPECT_EQ(sn[OP_RJUMPTABLE], std::string{"RJUMPTABLE"});
+    EXPECT_TRUE(ln[OP_RJUMPTABLE] == nullptr);
 }

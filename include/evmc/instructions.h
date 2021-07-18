@@ -94,6 +94,9 @@ enum evmc_opcode
     OP_MSIZE = 0x59,
     OP_GAS = 0x5a,
     OP_JUMPDEST = 0x5b,
+    OP_RJUMP = 0x5c,
+    OP_RJUMPI = 0x5d,
+    OP_RJUMPTABLE = 0x5e,
 
     OP_PUSH1 = 0x60,
     OP_PUSH2 = 0x61,
