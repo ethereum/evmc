@@ -15,6 +15,9 @@ pub type MessageKind = ffi::evmc_call_kind;
 /// EVMC message (call) flags.
 pub type MessageFlags = ffi::evmc_flags;
 
+/// EVMC VM capabilities.
+pub type Capabilities = ffi::evmc_capabilities;
+
 /// EVMC status code.
 pub type StatusCode = ffi::evmc_status_code;
 
@@ -70,6 +73,22 @@ mod tests {
     #[test]
     fn message_flags() {
         assert_eq!(MessageFlags::EVMC_STATIC, ffi::evmc_flags::EVMC_STATIC);
+    }
+
+    #[test]
+    fn capabilities() {
+        assert_eq!(
+            Capabilities::EVMC_CAPABILITY_EVM1,
+            ffi::evmc_capabilities::EVMC_CAPABILITY_EVM1
+        );
+        assert_eq!(
+            Capabilities::EVMC_CAPABILITY_EWASM,
+            ffi::evmc_capabilities::EVMC_CAPABILITY_EWASM
+        );
+        assert_eq!(
+            Capabilities::EVMC_CAPABILITY_PRECOMPILES,
+            ffi::evmc_capabilities::EVMC_CAPABILITY_PRECOMPILES
+        );
     }
 
     #[test]
