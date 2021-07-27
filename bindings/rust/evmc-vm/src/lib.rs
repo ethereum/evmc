@@ -7,6 +7,8 @@
 //! Have a look at evmc-declare to declare an EVMC compatible VM.
 //! This crate documents how to use certain data types.
 
+#![allow(clippy::not_unsafe_ptr_arg_deref, clippy::too_many_arguments)]
+
 mod container;
 mod types;
 
@@ -81,11 +83,7 @@ impl ExecutionResult {
         ExecutionResult {
             status_code: _status_code,
             gas_left: _gas_left,
-            output: if let Some(output) = _output {
-                Some(output.to_vec())
-            } else {
-                None
-            },
+            output: _output.map(|s| s.to_vec()),
             create_address: None,
         }
     }
@@ -147,11 +145,7 @@ impl ExecutionMessage {
             gas,
             recipient,
             sender,
-            input: if let Some(input) = input {
-                Some(input.to_vec())
-            } else {
-                None
-            },
+            input: input.map(|s| s.to_vec()),
             value,
             create2_salt,
             code_address,
@@ -217,7 +211,7 @@ impl<'a> ExecutionContext<'a> {
         };
 
         ExecutionContext {
-            host: host,
+            host,
             context: _context,
             tx_context: _tx_context,
         }
@@ -341,8 +335,8 @@ impl<'a> ExecutionContext<'a> {
             gas: message.gas(),
             recipient: *message.recipient(),
             sender: *message.sender(),
-            input_data: input_data,
-            input_size: input_size,
+            input_data,
+            input_size,
             value: *message.value(),
             create2_salt: *message.create2_salt(),
             code_address: *message.code_address(),
@@ -400,7 +394,7 @@ impl<'a> ExecutionContext<'a> {
 
 impl From<ffi::evmc_result> for ExecutionResult {
     fn from(result: ffi::evmc_result) -> Self {
-        let ret = ExecutionResult {
+        let ret = Self {
             status_code: result.status_code,
             gas_left: result.gas_left,
             output: if result.output_data.is_null() {
@@ -452,9 +446,9 @@ unsafe fn deallocate_output_data(ptr: *const u8, size: usize) {
 }
 
 /// Returns a pointer to a heap-allocated evmc_result.
-impl Into<*const ffi::evmc_result> for ExecutionResult {
-    fn into(self) -> *const ffi::evmc_result {
-        let mut result: ffi::evmc_result = self.into();
+impl From<ExecutionResult> for *const ffi::evmc_result {
+    fn from(value: ExecutionResult) -> Self {
+        let mut result: ffi::evmc_result = value.into();
         result.release = Some(release_heap_result);
         Box::into_raw(Box::new(result))
     }
@@ -469,17 +463,17 @@ extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
 }
 
 /// Returns a pointer to a stack-allocated evmc_result.
-impl Into<ffi::evmc_result> for ExecutionResult {
-    fn into(self) -> ffi::evmc_result {
-        let (buffer, len) = allocate_output_data(self.output.as_ref());
-        ffi::evmc_result {
-            status_code: self.status_code,
-            gas_left: self.gas_left,
+impl From<ExecutionResult> for ffi::evmc_result {
+    fn from(value: ExecutionResult) -> Self {
+        let (buffer, len) = allocate_output_data(value.output.as_ref());
+        Self {
+            status_code: value.status_code,
+            gas_left: value.gas_left,
             output_data: buffer,
             output_size: len,
             release: Some(release_stack_result),
-            create_address: if self.create_address.is_some() {
-                self.create_address.unwrap()
+            create_address: if value.create_address.is_some() {
+                value.create_address.unwrap()
             } else {
                 Address { bytes: [0u8; 20] }
             },
@@ -524,10 +518,10 @@ fn from_buf_raw<T>(ptr: *const T, size: usize) -> Vec<T> {
     // Pre-allocate a vector.
     let mut buf = Vec::with_capacity(size);
     unsafe {
-        // Set the len of the vec manually.
-        buf.set_len(size);
         // Copy from the C buffer to the vec's buffer.
         std::ptr::copy(ptr, buf.as_mut_ptr(), size);
+        // Set the len of the vec manually.
+        buf.set_len(size);
     }
     buf
 }
@@ -715,13 +709,13 @@ mod tests {
             flags: 44,
             depth: 66,
             gas: 4466,
-            recipient: recipient,
-            sender: sender,
+            recipient,
+            sender,
             input_data: std::ptr::null(),
             input_size: 0,
-            value: value,
-            create2_salt: create2_salt,
-            code_address: code_address,
+            value,
+            create2_salt,
+            code_address,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -752,13 +746,13 @@ mod tests {
             flags: 44,
             depth: 66,
             gas: 4466,
-            recipient: recipient,
-            sender: sender,
+            recipient,
+            sender,
             input_data: input.as_ptr(),
             input_size: input.len(),
-            value: value,
-            create2_salt: create2_salt,
-            code_address: code_address,
+            value,
+            create2_salt,
+            code_address,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -796,7 +790,7 @@ mod tests {
         _context: *mut ffi::evmc_host_context,
         _addr: *const Address,
     ) -> usize {
-        105023 as usize
+        105023_usize
     }
 
     unsafe extern "C" fn execute_call(
@@ -805,12 +799,10 @@ mod tests {
     ) -> ffi::evmc_result {
         // Some dumb validation for testing.
         let msg = *_msg;
-        let success = if msg.input_size != 0 && msg.input_data == std::ptr::null() {
-            false
-        } else if msg.input_size == 0 && msg.input_data != std::ptr::null() {
+        let success = if msg.input_size != 0 && msg.input_data.is_null() {
             false
         } else {
-            true
+            msg.input_size != 0 || msg.input_data.is_null()
         };
 
         ffi::evmc_result {
@@ -870,7 +862,7 @@ mod tests {
         let host = get_dummy_host_interface();
         let host_context = std::ptr::null_mut();
 
-        let mut exe_context = ExecutionContext::new(&host, host_context);
+        let exe_context = ExecutionContext::new(&host, host_context);
 
         let a: usize = 105023;
         let b = exe_context.get_code_size(&test_addr);

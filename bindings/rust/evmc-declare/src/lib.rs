@@ -128,7 +128,7 @@ impl VMMetaData {
                 if let Lit::Str(s) = lit {
                     // Add a null terminator here to ensure that it is handled correctly when
                     // converted to a C String.
-                    let mut ret = s.value().to_string();
+                    let mut ret = s.value();
                     ret.push('\0');
                     ret
                 } else {
@@ -141,7 +141,7 @@ impl VMMetaData {
         let vm_capabilities_string = match vm_capabilities_meta {
             NestedMeta::Lit(lit) => {
                 if let Lit::Str(s) = lit {
-                    s.value().to_string()
+                    s.value()
                 } else {
                     panic!("Literal argument type mismatch")
                 }
@@ -157,7 +157,7 @@ impl VMMetaData {
             .collect();
         let capabilities_flags = {
             let mut ret: u32 = 0;
-            for capability in capabilities_list_pruned.split(",") {
+            for capability in capabilities_list_pruned.split(',') {
                 match capability {
                     "evm" => ret |= 1,
                     "ewasm" => ret |= 1 << 1,
@@ -173,7 +173,7 @@ impl VMMetaData {
                 // Add a null terminator here to ensure that it is handled correctly when
                 // converted to a C String.
                 Lit::Str(s) => {
-                    let mut ret = s.value().to_string();
+                    let mut ret = s.value();
                     ret.push('\0');
                     ret
                 }
