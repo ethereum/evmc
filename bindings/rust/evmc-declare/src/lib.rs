@@ -226,6 +226,7 @@ pub fn evmc_declare_vm(args: TokenStream, item: TokenStream) -> TokenStream {
     // Get all the tokens from the respective helpers.
     let static_data_tokens = build_static_data(&names, &vm_data);
     let capabilities_tokens = build_capabilities_fn(vm_data.get_capabilities());
+    let set_option_tokens = build_set_option_fn(&names);
     let create_tokens = build_create_fn(&names);
     let destroy_tokens = build_destroy_fn(&names);
     let execute_tokens = build_execute_fn(&names);
@@ -234,6 +235,7 @@ pub fn evmc_declare_vm(args: TokenStream, item: TokenStream) -> TokenStream {
         #input
         #static_data_tokens
         #capabilities_tokens
+        #set_option_tokens
         #create_tokens
         #destroy_tokens
         #execute_tokens
@@ -276,6 +278,63 @@ fn build_capabilities_fn(capabilities: u32) -> proc_macro2::TokenStream {
     }
 }
 
+fn build_set_option_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
+    let type_name_ident = names.get_type_as_ident();
+
+    quote! {
+        extern "C" fn __evmc_set_option(
+            instance: *mut ::evmc_vm::ffi::evmc_vm,
+            key: *const std::os::raw::c_char,
+            value: *const std::os::raw::c_char,
+        ) -> ::evmc_vm::ffi::evmc_set_option_result
+        {
+            use evmc_vm::{EvmcVm, SetOptionError};
+            use std::ffi::CStr;
+
+            assert!(!instance.is_null());
+
+            if key.is_null() {
+                return ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_INVALID_NAME;
+            }
+
+            let key = unsafe { CStr::from_ptr(key) };
+            let key = match key.to_str() {
+                Ok(k) => k,
+                Err(e) => return ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_INVALID_NAME,
+            };
+
+            let value = if !value.is_null() {
+                unsafe { CStr::from_ptr(value) }
+            } else {
+                unsafe { CStr::from_bytes_with_nul_unchecked(&[0]) }
+            };
+
+            let value = match value.to_str() {
+                Ok(k) => k,
+                Err(e) => return ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_INVALID_VALUE,
+            };
+
+            let mut container = unsafe {
+                // Acquire ownership from EVMC.
+                ::evmc_vm::EvmcContainer::<#type_name_ident>::from_ffi_pointer(instance)
+            };
+
+            let result = match container.set_option(key, value) {
+                Ok(()) => ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_SUCCESS,
+                Err(SetOptionError::InvalidKey) => ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_INVALID_NAME,
+                Err(SetOptionError::InvalidValue) => ::evmc_vm::ffi::evmc_set_option_result::EVMC_SET_OPTION_INVALID_VALUE,
+            };
+
+            unsafe {
+                // Release ownership to EVMC.
+                ::evmc_vm::EvmcContainer::into_ffi_pointer(container);
+            }
+
+            result
+        }
+    }
+}
+
 /// Takes an identifier and struct definition, builds an evmc_create_* function for FFI.
 fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
     let type_ident = names.get_type_as_ident();
@@ -293,7 +352,7 @@ fn build_create_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                 destroy: Some(__evmc_destroy),
                 execute: Some(__evmc_execute),
                 get_capabilities: Some(__evmc_get_capabilities),
-                set_option: None,
+                set_option: Some(__evmc_set_option),
                 name: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_name_ident.as_bytes()).as_ptr() as *const i8 },
                 version: unsafe { ::std::ffi::CStr::from_bytes_with_nul_unchecked(#static_version_ident.as_bytes()).as_ptr() as *const i8 },
             };
