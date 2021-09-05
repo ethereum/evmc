@@ -122,6 +122,7 @@ mod tests {
             input_size: 0,
             value: ::evmc_sys::evmc_uint256be::default(),
             create2_salt: ::evmc_sys::evmc_bytes32::default(),
+            code_address: ::evmc_sys::evmc_address::default(),
         };
         let message: ExecutionMessage = (&message).into();
 

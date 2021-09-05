@@ -19,6 +19,7 @@ public class TestMessage {
   long inputSize;
   char[] value;
   byte[] createSalt;
+  byte[] codeAddress;
 
   public TestMessage(
       int kind,
@@ -38,6 +39,7 @@ public class TestMessage {
     this.inputSize = (long) inputData.length;
     this.value = value;
     this.createSalt = new byte[32];
+    this.codeAddress = new byte[20];
   }
 
   public TestMessage(ByteBuffer msg) {
@@ -56,11 +58,12 @@ public class TestMessage {
     tmpbuf = msg.get(new byte[32]);
     this.value = StandardCharsets.ISO_8859_1.decode(tmpbuf).array();
     this.createSalt = msg.get(new byte[32]).array();
+    this.codeAddress = msg.get(new byte[20]).array();
   }
 
   public ByteBuffer toByteBuffer() {
 
-    return ByteBuffer.allocateDirect(152)
+    return ByteBuffer.allocateDirect(172)
         .order(ByteOrder.nativeOrder())
         .putInt(kind) // 4
         .putInt(flags) // 4
@@ -72,6 +75,7 @@ public class TestMessage {
         .put(StandardCharsets.ISO_8859_1.encode(CharBuffer.wrap(inputData))) // 8
         .putLong(inputSize) // 8
         .put(StandardCharsets.ISO_8859_1.encode(CharBuffer.wrap(value))) // 32
-        .put(createSalt); // 32
+        .put(createSalt) // 32
+        .put(codeAddress); // 20
   }
 }
