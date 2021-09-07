@@ -86,7 +86,7 @@ int run(evmc::VM& vm,
     {
         evmc_message create_msg{};
         create_msg.kind = EVMC_CREATE;
-        create_msg.destination = create_address;
+        create_msg.recipient = create_address;
         create_msg.gas = create_gas;
 
         const auto create_result = vm.execute(host, rev, create_msg, code.data(), code.size());
@@ -99,7 +99,7 @@ int run(evmc::VM& vm,
         auto& created_account = host.accounts[create_address];
         created_account.code = bytes(create_result.output_data, create_result.output_size);
 
-        msg.destination = create_address;
+        msg.recipient = create_address;
         exec_code = created_account.code;
     }
     out << "\n";

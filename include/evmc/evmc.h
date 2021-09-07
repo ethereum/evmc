@@ -129,7 +129,7 @@ struct evmc_message
      *
      * Defined as `r` in the Yellow Paper.
      */
-    evmc_address destination;
+    evmc_address recipient;
 
     /**
      * The sender of the message.
@@ -177,7 +177,7 @@ struct evmc_message
      * The address of the code to be executed.
      *
      * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL this may be different from
-     * the evmc_message::destination (recipient).
+     * the evmc_message::recipient.
      * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
      * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
      *
@@ -542,7 +542,7 @@ enum evmc_storage_status
  * This callback function is used by a VM to update the given account storage entry.
  * The VM MUST make sure that the account exists. This requirement is only a formality because
  * VM implementations only modify storage of the account of the current execution context
- * (i.e. referenced by evmc_message::destination).
+ * (i.e. referenced by evmc_message::recipient).
  *
  * @param context  The pointer to the Host execution context.
  * @param address  The address of the account.

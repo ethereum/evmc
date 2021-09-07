@@ -202,7 +202,7 @@ evmc_result execute(evmc_vm* instance,
 
         case OP_ADDRESS:
         {
-            evmc_uint256be value = to_uint256(msg->destination);
+            evmc_uint256be value = to_uint256(msg->recipient);
             stack.push(value);
             break;
         }
@@ -242,7 +242,7 @@ evmc_result execute(evmc_vm* instance,
         case OP_SLOAD:
         {
             evmc_uint256be index = stack.pop();
-            evmc_uint256be value = host->get_storage(context, &msg->destination, &index);
+            evmc_uint256be value = host->get_storage(context, &msg->recipient, &index);
             stack.push(value);
             break;
         }
@@ -251,7 +251,7 @@ evmc_result execute(evmc_vm* instance,
         {
             evmc_uint256be index = stack.pop();
             evmc_uint256be value = stack.pop();
-            host->set_storage(context, &msg->destination, &index, &value);
+            host->set_storage(context, &msg->recipient, &index, &value);
             break;
         }
 
@@ -316,7 +316,7 @@ evmc_result execute(evmc_vm* instance,
         {
             evmc_message call_msg = {};
             call_msg.gas = to_uint32(stack.pop());
-            call_msg.destination = to_address(stack.pop());
+            call_msg.recipient = to_address(stack.pop());
             call_msg.value = stack.pop();
 
             uint32_t call_input_offset = to_uint32(stack.pop());

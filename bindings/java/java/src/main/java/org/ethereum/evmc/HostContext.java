@@ -62,7 +62,7 @@ public interface HostContext {
    * <p>This function is used by a VM to update the given account storage entry. The VM MUST make
    * sure that the account exists. This requirement is only a formality because VM implementations
    * only modify storage of the account of the current execution context (i.e. referenced by
-   * evmc_message::destination).
+   * evmc_message::recipient).
    *
    * @param address The address of the account.
    * @param key The index of the storage entry.

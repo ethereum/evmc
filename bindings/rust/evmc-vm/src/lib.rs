@@ -45,7 +45,7 @@ pub struct ExecutionMessage {
     flags: u32,
     depth: i32,
     gas: i64,
-    destination: Address,
+    recipient: Address,
     sender: Address,
     input: Option<Vec<u8>>,
     value: Uint256,
@@ -122,7 +122,7 @@ impl ExecutionMessage {
         flags: u32,
         depth: i32,
         gas: i64,
-        destination: Address,
+        recipient: Address,
         sender: Address,
         input: Option<&[u8]>,
         value: Uint256,
@@ -134,7 +134,7 @@ impl ExecutionMessage {
             flags,
             depth,
             gas,
-            destination,
+            recipient,
             sender,
             input: if let Some(input) = input {
                 Some(input.to_vec())
@@ -167,9 +167,9 @@ impl ExecutionMessage {
         self.gas
     }
 
-    /// Read the destination address of the message.
-    pub fn destination(&self) -> &Address {
-        &self.destination
+    /// Read the recipient address of the message.
+    pub fn recipient(&self) -> &Address {
+        &self.recipient
     }
 
     /// Read the sender address of the message.
@@ -328,7 +328,7 @@ impl<'a> ExecutionContext<'a> {
             flags: message.flags(),
             depth: message.depth(),
             gas: message.gas(),
-            destination: *message.destination(),
+            recipient: *message.recipient(),
             sender: *message.sender(),
             input_data: input_data,
             input_size: input_size,
@@ -492,7 +492,7 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             flags: message.flags,
             depth: message.depth,
             gas: message.gas,
-            destination: message.destination,
+            recipient: message.recipient,
             sender: message.sender,
             input: if message.input_data.is_null() {
                 assert_eq!(message.input_size, 0);
@@ -659,7 +659,7 @@ mod tests {
     #[test]
     fn message_new_with_input() {
         let input = vec![0xc0, 0xff, 0xee];
-        let destination = Address { bytes: [32u8; 20] };
+        let recipient = Address { bytes: [32u8; 20] };
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
@@ -670,7 +670,7 @@ mod tests {
             44,
             66,
             4466,
-            destination,
+            recipient,
             sender,
             Some(&input),
             value,
@@ -682,7 +682,7 @@ mod tests {
         assert_eq!(ret.flags(), 44);
         assert_eq!(ret.depth(), 66);
         assert_eq!(ret.gas(), 4466);
-        assert_eq!(*ret.destination(), destination);
+        assert_eq!(*ret.recipient(), recipient);
         assert_eq!(*ret.sender(), sender);
         assert!(ret.input().is_some());
         assert_eq!(*ret.input().unwrap(), input);
@@ -693,7 +693,7 @@ mod tests {
 
     #[test]
     fn message_from_ffi() {
-        let destination = Address { bytes: [32u8; 20] };
+        let recipient = Address { bytes: [32u8; 20] };
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
@@ -704,7 +704,7 @@ mod tests {
             flags: 44,
             depth: 66,
             gas: 4466,
-            destination: destination,
+            recipient: recipient,
             sender: sender,
             input_data: std::ptr::null(),
             input_size: 0,
@@ -719,7 +719,7 @@ mod tests {
         assert_eq!(ret.flags(), msg.flags);
         assert_eq!(ret.depth(), msg.depth);
         assert_eq!(ret.gas(), msg.gas);
-        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.recipient(), msg.recipient);
         assert_eq!(*ret.sender(), msg.sender);
         assert!(ret.input().is_none());
         assert_eq!(*ret.value(), msg.value);
@@ -730,7 +730,7 @@ mod tests {
     #[test]
     fn message_from_ffi_with_input() {
         let input = vec![0xc0, 0xff, 0xee];
-        let destination = Address { bytes: [32u8; 20] };
+        let recipient = Address { bytes: [32u8; 20] };
         let sender = Address { bytes: [128u8; 20] };
         let value = Uint256 { bytes: [0u8; 32] };
         let create2_salt = Bytes32 { bytes: [255u8; 32] };
@@ -741,7 +741,7 @@ mod tests {
             flags: 44,
             depth: 66,
             gas: 4466,
-            destination: destination,
+            recipient: recipient,
             sender: sender,
             input_data: input.as_ptr(),
             input_size: input.len(),
@@ -756,7 +756,7 @@ mod tests {
         assert_eq!(ret.flags(), msg.flags);
         assert_eq!(ret.depth(), msg.depth);
         assert_eq!(ret.gas(), msg.gas);
-        assert_eq!(*ret.destination(), msg.destination);
+        assert_eq!(*ret.recipient(), msg.recipient);
         assert_eq!(*ret.sender(), msg.sender);
         assert!(ret.input().is_some());
         assert_eq!(*ret.input().unwrap(), input);

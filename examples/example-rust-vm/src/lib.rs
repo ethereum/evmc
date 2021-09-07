@@ -50,7 +50,7 @@ impl EvmcVm for ExampleRustVM {
         let storage_key = Bytes32::default();
         let mut storage_value = Bytes32::default();
         storage_value.bytes[31] = block_number;
-        _context.set_storage(&message.destination(), &storage_key, &storage_value);
+        _context.set_storage(&message.recipient(), &storage_key, &storage_value);
 
         let ret = format!("{}", block_number).into_bytes();
         ExecutionResult::success(message.gas() / 2, Some(&ret))
