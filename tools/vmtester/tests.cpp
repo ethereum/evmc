@@ -174,21 +174,21 @@ TEST_F(evmc_vm_test, precompile_test)
     // Iterate every address (as per EIP-1352)
     for (size_t i = 0; i < 0xffff; i++)
     {
-        auto destination = evmc_address{};
-        destination.bytes[18] = static_cast<uint8_t>(i >> 8);
-        destination.bytes[19] = static_cast<uint8_t>(i & 0xff);
+        auto addr = evmc_address{};
+        addr.bytes[18] = static_cast<uint8_t>(i >> 8);
+        addr.bytes[19] = static_cast<uint8_t>(i & 0xff);
 
         evmc_message msg{EVMC_CALL,
                          0,
                          0,
                          65536,
-                         destination,
+                         evmc_address{},
                          evmc_address{},
                          nullptr,
                          0,
                          evmc_uint256be{},
                          evmc_bytes32{},
-                         evmc_address{}};
+                         addr};
 
         evmc_result result = vm->execute(vm, nullptr, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
 
