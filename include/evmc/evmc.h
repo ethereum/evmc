@@ -89,8 +89,9 @@ enum evmc_flags
 };
 
 /**
- * The message describing an EVM call,
- * including a zero-depth calls from a transaction origin.
+ * The message describing an EVM call, including a zero-depth calls from a transaction origin.
+ *
+ * Most of the fields are modelled by the section 8. Message Call of the Ethereum Yellow Paper.
  */
 struct evmc_message
 {
@@ -103,21 +104,48 @@ struct evmc_message
      */
     uint32_t flags;
 
-    /** The call depth. */
+    /**
+     * The present depth of the message call stack.
+     *
+     * Defined as `e` in the Yellow Paper.
+     */
     int32_t depth;
 
-    /** The amount of gas for message execution. */
+    /**
+     * The amount of gas available to the message execution.
+     *
+     * Defined as `g` in the Yellow Paper.
+     */
     int64_t gas;
 
-    /** The destination (recipient) of the message. */
+    /**
+     * The recipient of the message.
+     *
+     * This is the address of the account which storage/balance/nonce is going to be modified
+     * by the message execution. In case of ::EVMC_CALL, this is also the account where the
+     * message value evmc_message::value is going to be transferred.
+     * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL, this may be different from
+     * the evmc_message::code_address.
+     *
+     * Defined as `r` in the Yellow Paper.
+     */
     evmc_address destination;
 
-    /** The sender of the message. */
+    /**
+     * The sender of the message.
+     *
+     * The address of the sender of a message call defined as `s` in the Yellow Paper.
+     * This must be the message recipient of the message at the previous (lower) depth,
+     * except for the ::EVMC_DELEGATECALL where recipient is the 2 levels above the present depth.
+     * At the depth 0 this must be the transaction origin.
+     */
     evmc_address sender;
 
     /**
      * The message input data.
      *
+     * The arbitrary length byte array of the input data of the call,
+     * defined as `d` in the Yellow Paper.
      * This MAY be NULL.
      */
     const uint8_t* input_data;
@@ -131,6 +159,9 @@ struct evmc_message
 
     /**
      * The amount of Ether transferred with the message.
+     *
+     * This is transferred value for ::EVMC_CALL or apparent value for ::EVMC_DELEGATECALL.
+     * Defined as `v` or `v~` in the Yellow Paper.
      */
     evmc_uint256be value;
 
@@ -145,12 +176,15 @@ struct evmc_message
     /**
      * The address of the code to be executed.
      *
-     * May be different from the evmc_message::destination (recipient) in case of
-     * ::EVMC_CALLCODE or ::EVMC_DELEGATECALL.
-     * See Section 8 "Message Call" of the Yellow Paper for detail.
-     *
+     * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL this may be different from
+     * the evmc_message::destination (recipient).
      * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
      * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
+     *
+     * In case of ::EVMC_CAPABILITY_PRECOMPILES implementation, this fields should be inspected
+     * to identify the requested precompile.
+     *
+     * Defined as `c` in the Yellow Paper.
      */
     evmc_address code_address;
 };
@@ -907,7 +941,7 @@ enum evmc_capabilities
 
     /**
      * The VM is capable of executing the precompiled contracts
-     * defined for the range of destination addresses.
+     * defined for the range of code addresses.
      *
      * The EIP-1352 (https://eips.ethereum.org/EIPS/eip-1352) specifies
      * the range 0x000...0000 - 0x000...ffff of addresses

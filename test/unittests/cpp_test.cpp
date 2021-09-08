@@ -563,7 +563,7 @@ TEST(cpp, vm_execute_precompiles)
     constexpr std::array<uint8_t, 3> input{{1, 2, 3}};
 
     evmc_message msg{};
-    msg.destination.bytes[19] = 4;  // Call Identify precompile at address 0x4.
+    msg.code_address.bytes[19] = 4;  // Call Identify precompile at address 0x4.
     msg.input_data = input.data();
     msg.input_size = input.size();
     msg.gas = 18;
