@@ -28,7 +28,7 @@ extern const struct evmc_host_interface evmc_go_host;
 static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 	uintptr_t context_index, enum evmc_revision rev,
 	enum evmc_call_kind kind, uint32_t flags, int32_t depth, int64_t gas,
-	const evmc_address* destination, const evmc_address* sender,
+	const evmc_address* recipient, const evmc_address* sender,
 	const uint8_t* input_data, size_t input_size, const evmc_uint256be* value,
 	const uint8_t* code, size_t code_size)
 {
@@ -37,7 +37,7 @@ static struct evmc_result execute_wrapper(struct evmc_vm* vm,
 		flags,
 		depth,
 		gas,
-		*destination,
+		*recipient,
 		*sender,
 		input_data,
 		input_size,
@@ -194,7 +194,7 @@ func (vm *VM) SetOption(name string, value string) (err error) {
 
 func (vm *VM) Execute(ctx HostContext, rev Revision,
 	kind CallKind, static bool, depth int, gas int64,
-	destination Address, sender Address, input []byte, value Hash,
+	recipient Address, sender Address, input []byte, value Hash,
 	code []byte) (output []byte, gasLeft int64, err error) {
 
 	flags := C.uint32_t(0)
@@ -204,12 +204,12 @@ func (vm *VM) Execute(ctx HostContext, rev Revision,
 
 	ctxId := addHostContext(ctx)
 	// FIXME: Clarify passing by pointer vs passing by value.
-	evmcDestination := evmcAddress(destination)
+	evmcRecipient := evmcAddress(recipient)
 	evmcSender := evmcAddress(sender)
 	evmcValue := evmcBytes32(value)
 	result := C.execute_wrapper(vm.handle, C.uintptr_t(ctxId), uint32(rev),
 		C.enum_evmc_call_kind(kind), flags, C.int32_t(depth), C.int64_t(gas),
-		&evmcDestination, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
+		&evmcRecipient, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
 		bytesPtr(code), C.size_t(len(code)))
 	removeHostContext(ctxId)
 

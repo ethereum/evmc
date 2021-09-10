@@ -116,7 +116,7 @@ mod tests {
             flags: 0,
             depth: 0,
             gas: 0,
-            destination: ::evmc_sys::evmc_address::default(),
+            recipient: ::evmc_sys::evmc_address::default(),
             sender: ::evmc_sys::evmc_address::default(),
             input_data: std::ptr::null(),
             input_size: 0,

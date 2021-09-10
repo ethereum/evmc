@@ -38,7 +38,7 @@ protected:
     example_vm() noexcept
     {
         msg.sender = 0x5000000000000000000000000000000000000005_address;
-        msg.destination = 0xd00000000000000000000000000000000000000d_address;
+        msg.recipient = 0xd00000000000000000000000000000000000000d_address;
     }
 
     evmc::result execute_in_example_vm(int64_t gas,
@@ -90,7 +90,7 @@ TEST_F(example_vm, return_address)
 TEST_F(example_vm, counter_in_storage)
 {
     // Yul: sstore(0, add(sload(0), 1)) stop()
-    auto& storage_value = host.accounts[msg.destination].storage[{}].value;
+    auto& storage_value = host.accounts[msg.recipient].storage[{}].value;
     storage_value = 0x00000000000000000000000000000000000000000000000000000000000000bb_bytes32;
     const auto r = execute_in_example_vm(10, "60016000540160005500");
     EXPECT_EQ(r.status_code, EVMC_SUCCESS);
@@ -162,8 +162,7 @@ TEST_F(example_vm, call)
     EXPECT_EQ(host.recorded_calls[0].gas, 3);
     EXPECT_EQ(host.recorded_calls[0].value,
               0x0000000000000000000000000000000000000000000000000000000000000003_bytes32);
-    EXPECT_EQ(host.recorded_calls[0].destination,
-              0x0000000000000000000000000000000000000003_address);
+    EXPECT_EQ(host.recorded_calls[0].recipient, 0x0000000000000000000000000000000000000003_address);
     EXPECT_EQ(host.recorded_calls[0].input_size, size_t{3});
 }
 
