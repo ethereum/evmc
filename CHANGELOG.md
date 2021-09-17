@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 
+- The `code_address` field has been added to the `evmc_message` type.
+  It represents the address of an account from which the code is being executed
+  and is useful for `DELEGATECALL` implementations.
+  [#611](https://github.com/ethereum/evmc/pull/611)
+  [#615](https://github.com/ethereum/evmc/pull/615)
+- The `evmc_message::destination` field has been renamed to `evmc_message::recipient`
+  to clarify its purpose and match the naming from the Yellow Paper.
+  [#616](https://github.com/ethereum/evmc/pull/616)
 - Go: The `create2Salt` parameter has been removed from the `VM.Execute()`.
   [#612](https://github.com/ethereum/evmc/pull/612)
 
