@@ -116,7 +116,7 @@ type VM struct {
 
 func Load(filename string) (vm *VM, err error) {
 	cfilename := C.CString(filename)
-	var loaderErr C.enum_evmc_loader_error_code
+	loaderErr := C.enum_evmc_loader_error_code(C.EVMC_LOADER_UNSPECIFIED_ERROR)
 	handle := C.evmc_load_and_create(cfilename, &loaderErr)
 	C.free(unsafe.Pointer(cfilename))
 
@@ -136,7 +136,7 @@ func Load(filename string) (vm *VM, err error) {
 
 func LoadAndConfigure(config string) (vm *VM, err error) {
 	cconfig := C.CString(config)
-	var loaderErr C.enum_evmc_loader_error_code
+	loaderErr := C.enum_evmc_loader_error_code(C.EVMC_LOADER_UNSPECIFIED_ERROR)
 	handle := C.evmc_load_and_configure(cconfig, &loaderErr)
 	C.free(unsafe.Pointer(cconfig))
 

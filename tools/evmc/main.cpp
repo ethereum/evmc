@@ -77,7 +77,7 @@ int main(int argc, const char** argv)
         evmc::VM vm;
         if (vm_option.count() != 0)
         {
-            evmc_loader_error_code ec;
+            evmc_loader_error_code ec = EVMC_LOADER_UNSPECIFIED_ERROR;
             vm = VM{evmc_load_and_configure(vm_config.c_str(), &ec)};
             if (ec != EVMC_LOADER_SUCCESS)
             {
