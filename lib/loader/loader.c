@@ -267,16 +267,15 @@ struct evmc_vm* evmc_load_and_configure(const char* config, enum evmc_loader_err
     if (!vm)
         return NULL;
 
-    if (vm->set_option == NULL && strlen(options) != 0)
-    {
-        ec = set_error(EVMC_LOADER_INVALID_OPTION_NAME, "%s (%s) does not support any options",
-                       vm->name, path);
-        goto exit;
-    }
-
-
     while (strlen(options) != 0)
     {
+        if (vm->set_option == NULL)
+        {
+            ec = set_error(EVMC_LOADER_INVALID_OPTION_NAME, "%s (%s) does not support any options",
+                           vm->name, path);
+            goto exit;
+        }
+
         char* option = get_token(&options, ',');
 
         // Slit option into name and value by taking the name token.
