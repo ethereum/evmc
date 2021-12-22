@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
         return EVMC_LOADER_ABI_VERSION_MISMATCH;
 #else
     const char* config_string = (argc > 1) ? argv[1] : "example-vm.so";
-    enum evmc_loader_error_code error_code;
+    enum evmc_loader_error_code error_code = EVMC_LOADER_UNSPECIFIED_ERROR;
     struct evmc_vm* vm = evmc_load_and_configure(config_string, &error_code);
     if (!vm)
     {

@@ -54,9 +54,11 @@ protected:
         evmc_test_create_fn = fn;
     }
 
-    static void destroy(evmc_vm*) noexcept { ++destroy_count; }
+    static void destroy(evmc_vm* /*vm*/) noexcept { ++destroy_count; }
 
-    static evmc_set_option_result set_option(evmc_vm*, const char* name, const char* value) noexcept
+    static evmc_set_option_result set_option(evmc_vm* /*vm*/,
+                                             const char* name,
+                                             const char* value) noexcept
     {
         recorded_options.push_back({name, value});  // NOLINT
 
