@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
         const auto& evmc_module = cli.arguments[0];
         std::cout << "Testing " << evmc_module << "\n";
 
-        evmc_loader_error_code ec;
+        evmc_loader_error_code ec = EVMC_LOADER_UNSPECIFIED_ERROR;
         auto vm = evmc::VM{evmc_load_and_configure(evmc_module.c_str(), &ec)};
         if (ec != EVMC_LOADER_SUCCESS)
         {

@@ -24,7 +24,7 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_load_1and_1create(JNIEnv
     // load the EVM
     const char* filename = (*jenv)->GetStringUTFChars(jenv, jfilename, NULL);
     assert(filename != NULL);
-    enum evmc_loader_error_code loader_error;
+    enum evmc_loader_error_code loader_error = EVMC_LOADER_UNSPECIFIED_ERROR;
     evm = evmc_load_and_create(filename, &loader_error);
     (*jenv)->ReleaseStringUTFChars(jenv, jfilename, filename);
     if (loader_error != EVMC_LOADER_SUCCESS)
