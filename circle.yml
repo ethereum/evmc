@@ -3,10 +3,10 @@ version: 2.1
 executors:
   linux-gcc-latest:
     docker:
-      - image: ethereum/cpp-build-env:16-gcc-10
+      - image: ethereum/cpp-build-env:17-gcc-11
   linux-clang-latest:
     docker:
-      - image: ethereum/cpp-build-env:16-clang-11
+      - image: ethereum/cpp-build-env:17-clang-13
 
 
 commands:
