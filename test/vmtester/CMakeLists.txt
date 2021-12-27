@@ -31,4 +31,4 @@ add_test(NAME ${prefix}/option-long-prefix COMMAND evmc::evmc-vmtester ---)
 set_tests_properties(${prefix}/option-long-prefix PROPERTIES PASS_REGULAR_EXPRESSION "Unknown")
 
 get_property(vmtester_tests DIRECTORY PROPERTY TESTS)
-set_tests_properties(${vmtester_tests} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/vmtester-%p.profraw)
+set_tests_properties(${vmtester_tests} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/vmtester-%m-%p.profraw)

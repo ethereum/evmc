@@ -88,4 +88,4 @@ add_evmc_tool_test(
 )
 
 get_property(TOOLS_TESTS DIRECTORY PROPERTY TESTS)
-set_tests_properties(${TOOLS_TESTS} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/tools-%p.profraw)
+set_tests_properties(${TOOLS_TESTS} PROPERTIES ENVIRONMENT LLVM_PROFILE_FILE=${CMAKE_BINARY_DIR}/tools-%m-%p.profraw)
