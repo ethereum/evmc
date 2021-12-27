@@ -856,7 +856,7 @@ inline evmc_access_status access_storage(evmc_host_context* h,
 
 inline const evmc_host_interface& Host::get_interface() noexcept
 {
-    static constexpr evmc_host_interface interface{
+    static constexpr evmc_host_interface interface = {
         ::evmc::internal::account_exists, ::evmc::internal::get_storage,
         ::evmc::internal::set_storage,    ::evmc::internal::get_balance,
         ::evmc::internal::get_code_size,  ::evmc::internal::get_code_hash,
