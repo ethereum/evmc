@@ -1,7 +1,6 @@
-/* EVMC: Ethereum Client-VM Connector API.
- * Copyright 2016-2019 The EVMC Authors.
- * Licensed under the Apache License, Version 2.0.
- */
+/// EVMC: Ethereum Client-VM Connector API.
+/// Copyright 2016 The EVMC Authors.
+/// Licensed under the Apache License, Version 2.0.
 
 #include "example_host.h"
 #ifdef STATICALLY_LINKED_EXAMPLE
@@ -43,22 +42,23 @@ int main(int argc, char* argv[])
     const evmc_uint256be value = {{1, 0}};
     const evmc_address addr = {{0, 1, 2}};
     const int64_t gas = 200000;
-    struct evmc_tx_context tx_context;
-    memset(&tx_context, 0, sizeof(tx_context));
-    tx_context.block_number = 42;
-    tx_context.block_timestamp = 66;
-    tx_context.block_gas_limit = gas * 2;
+    struct evmc_tx_context tx_context = {
+        .block_number = 42,
+        .block_timestamp = 66,
+        .block_gas_limit = gas * 2,
+    };
     const struct evmc_host_interface* host = example_host_get_interface();
     struct evmc_host_context* ctx = example_host_create_context(tx_context);
-    struct evmc_message msg;
-    msg.kind = EVMC_CALL;
-    msg.sender = addr;
-    msg.recipient = addr;
-    msg.value = value;
-    msg.input_data = input;
-    msg.input_size = sizeof(input);
-    msg.gas = gas;
-    msg.depth = 0;
+    struct evmc_message msg = {
+        .kind = EVMC_CALL,
+        .sender = addr,
+        .recipient = addr,
+        .value = value,
+        .input_data = input,
+        .input_size = sizeof(input),
+        .gas = gas,
+        .depth = 0,
+    };
     struct evmc_result result = evmc_execute(vm, host, ctx, EVMC_HOMESTEAD, &msg, code, code_size);
     printf("Execution result:\n");
     int exit_code = 0;
@@ -73,14 +73,13 @@ int main(int argc, char* argv[])
         printf("  Gas left: %" PRId64 "\n", result.gas_left);
         printf("  Output size: %zd\n", result.output_size);
         printf("  Output: ");
-        size_t i = 0;
-        for (i = 0; i < result.output_size; i++)
+        for (size_t i = 0; i < result.output_size; i++)
             printf("%02x", result.output_data[i]);
         printf("\n");
         const evmc_bytes32 storage_key = {{0}};
         evmc_bytes32 storage_value = host->get_storage(ctx, &msg.recipient, &storage_key);
         printf("  Storage at 0x00..00: ");
-        for (i = 0; i < sizeof(storage_value.bytes) / sizeof(storage_value.bytes[0]); i++)
+        for (size_t i = 0; i < sizeof(storage_value.bytes) / sizeof(storage_value.bytes[0]); i++)
             printf("%02x", storage_value.bytes[i]);
         printf("\n");
     }
