@@ -100,8 +100,6 @@ jobs:
     - run:
         name: "Check bumpversion"
         command: |
-          export PATH="/home/builder/.local/bin:$PATH"
-          pip3 install bumpversion
           bumpversion --dry-run --verbose major
           bumpversion --dry-run --verbose minor
           bumpversion --dry-run --verbose patch
