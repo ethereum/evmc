@@ -1580,6 +1580,7 @@ const char* const* evmc_get_instruction_names_table(enum evmc_revision revision)
         return homestead_names;
     case EVMC_FRONTIER:
         return frontier_names;
+    default:
+        return NULL;
     }
-    return NULL;
 }

@@ -137,6 +137,8 @@ jobs:
 
   build-clang-coverage:
     executor: linux-clang-latest
+    environment:
+      CMAKE_OPTIONS: -DCMAKE_CXX_CLANG_TIDY=clang-tidy -DCMAKE_C_CLANG_TIDY=clang-tidy
     steps:
       - checkout
       - build:

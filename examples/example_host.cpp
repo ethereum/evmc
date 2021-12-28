@@ -30,11 +30,8 @@ struct account
     {
         // Extremely dumb "hash" function.
         evmc::bytes32 ret{};
-        for (std::vector<uint8_t>::size_type i = 0; i != code.size(); i++)
-        {
-            auto v = code[i];
+        for (const auto v : code)
             ret.bytes[v % sizeof(ret.bytes)] ^= v;
-        }
         return ret;
     }
 };

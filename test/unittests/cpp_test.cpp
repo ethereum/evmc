@@ -21,52 +21,62 @@
 class NullHost : public evmc::Host
 {
 public:
-    bool account_exists(const evmc::address&) const noexcept final { return false; }
+    bool account_exists(const evmc::address& /*addr*/) const noexcept final { return false; }
 
-    evmc::bytes32 get_storage(const evmc::address&, const evmc::bytes32&) const noexcept final
+    evmc::bytes32 get_storage(const evmc::address& /*addr*/,
+                              const evmc::bytes32& /*key*/) const noexcept final
     {
         return {};
     }
 
-    evmc_storage_status set_storage(const evmc::address&,
-                                    const evmc::bytes32&,
-                                    const evmc::bytes32&) noexcept final
+    evmc_storage_status set_storage(const evmc::address& /*addr*/,
+                                    const evmc::bytes32& /*key*/,
+                                    const evmc::bytes32& /*value*/) noexcept final
     {
         return {};
     }
 
-    evmc::uint256be get_balance(const evmc::address&) const noexcept final { return {}; }
+    evmc::uint256be get_balance(const evmc::address& /*addr*/) const noexcept final { return {}; }
 
-    size_t get_code_size(const evmc::address&) const noexcept final { return 0; }
+    size_t get_code_size(const evmc::address& /*addr*/) const noexcept final { return 0; }
 
-    evmc::bytes32 get_code_hash(const evmc::address&) const noexcept final { return {}; }
+    evmc::bytes32 get_code_hash(const evmc::address& /*addr*/) const noexcept final { return {}; }
 
-    size_t copy_code(const evmc::address&, size_t, uint8_t*, size_t) const noexcept final
+    size_t copy_code(const evmc::address& /*addr*/,
+                     size_t /*code_offset*/,
+                     uint8_t* /*buffer_data*/,
+                     size_t /*buffer_size*/) const noexcept final
     {
         return 0;
     }
 
-    void selfdestruct(const evmc::address&, const evmc::address&) noexcept final {}
+    void selfdestruct(const evmc::address& /*addr*/,
+                      const evmc::address& /*beneficiary*/) noexcept final
+    {}
 
-    evmc::result call(const evmc_message&) noexcept final { return evmc::result{evmc_result{}}; }
+    evmc::result call(const evmc_message& /*msg*/) noexcept final
+    {
+        return evmc::result{evmc_result{}};
+    }
 
     evmc_tx_context get_tx_context() const noexcept final { return {}; }
 
-    evmc::bytes32 get_block_hash(int64_t) const noexcept final { return {}; }
+    evmc::bytes32 get_block_hash(int64_t /*block_number*/) const noexcept final { return {}; }
 
-    void emit_log(const evmc::address&,
-                  const uint8_t*,
-                  size_t,
-                  const evmc::bytes32[],
-                  size_t) noexcept final
+    void emit_log(const evmc::address& /*addr*/,
+                  const uint8_t* /*data*/,
+                  size_t /*data_size*/,
+                  const evmc::bytes32 /*topics*/[],
+                  size_t /*num_topics*/) noexcept final
     {}
 
-    evmc_access_status access_account(const evmc::address&) noexcept final
+    evmc_access_status access_account(const evmc::address& /*addr*/) noexcept final
     {
         return EVMC_ACCESS_COLD;
     }
 
-    evmc_access_status access_storage(const evmc::address&, const evmc::bytes32&) noexcept final
+    evmc_access_status access_storage(const evmc::address& /*addr*/,
+                                      const evmc::bytes32& /*key*/) noexcept final
     {
         return EVMC_ACCESS_COLD;
     }
@@ -532,12 +542,12 @@ TEST(cpp, vm_move)
         EXPECT_TRUE(vm1);
         auto vm2 = std::move(vm1);
         EXPECT_TRUE(vm2);
-        EXPECT_FALSE(vm1);  // NOLINT
-        EXPECT_EQ(vm1.get_raw_pointer(), nullptr);
+        EXPECT_FALSE(vm1);                          // NOLINT
+        EXPECT_EQ(vm1.get_raw_pointer(), nullptr);  // NOLINT
         auto vm3 = std::move(vm2);
         EXPECT_TRUE(vm3);
-        EXPECT_FALSE(vm2);  // NOLINT
-        EXPECT_EQ(vm2.get_raw_pointer(), nullptr);
+        EXPECT_FALSE(vm2);                          // NOLINT
+        EXPECT_EQ(vm2.get_raw_pointer(), nullptr);  // NOLINT
         EXPECT_FALSE(vm1);
         EXPECT_EQ(vm1.get_raw_pointer(), nullptr);
     }
@@ -785,6 +795,7 @@ TEST(cpp, status_code_to_string)
         std::string_view str;
     };
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(STATUS_CODE) \
     TestCase { STATUS_CODE, #STATUS_CODE }
     constexpr TestCase test_cases[]{
@@ -835,6 +846,7 @@ TEST(cpp, revision_to_string)
         std::string_view str;
     };
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(STATUS_CODE) \
     TestCase { STATUS_CODE, #STATUS_CODE }
     constexpr TestCase test_cases[]{
@@ -883,7 +895,7 @@ TEST(cpp, revision_to_string)
 
 
 #ifdef __GNUC__
-extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);
+extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);  // NOLINT
 #endif
 
 static bool has_ubsan() noexcept

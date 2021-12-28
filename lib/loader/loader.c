@@ -27,6 +27,7 @@
 #define DLL_HANDLE void*
 #define DLL_OPEN(filename) dlopen(filename, RTLD_LAZY)
 #define DLL_CLOSE(handle) dlclose(handle)
+// NOLINTNEXTLINE(performance-no-int-to-ptr)
 #define DLL_GET_CREATE_FN(handle, name) (evmc_create_fn)(uintptr_t) dlsym(handle, name)
 #define DLL_GET_ERROR_MSG() dlerror()
 #endif
@@ -60,6 +61,7 @@ static
         dest[0] = 0;
         return 1;
     }
+    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
     memcpy(dest, src, len);
     dest[len] = 0;
     return 0;
@@ -82,6 +84,7 @@ static enum evmc_loader_error_code set_error(enum evmc_loader_error_code error_c
 {
     va_list args;
     va_start(args, format);
+    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)
     if (vsnprintf(last_error_msg_buffer, LAST_ERROR_MSG_BUFFER_SIZE, format, args) <
         LAST_ERROR_MSG_BUFFER_SIZE)
         last_error_msg = last_error_msg_buffer;

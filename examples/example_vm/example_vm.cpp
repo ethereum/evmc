@@ -52,14 +52,14 @@ evmc_capabilities_flagset get_capabilities(evmc_vm* /*instance*/)
 /// VMs are allowed to omit this method implementation.
 enum evmc_set_option_result set_option(evmc_vm* instance, const char* name, const char* value)
 {
-    ExampleVM* vm = static_cast<ExampleVM*>(instance);
+    auto* vm = static_cast<ExampleVM*>(instance);
     if (std::strcmp(name, "verbose") == 0)
     {
         if (value == nullptr)
             return EVMC_SET_OPTION_INVALID_VALUE;
 
         char* end = nullptr;
-        long int v = std::strtol(value, &end, 0);
+        auto v = std::strtol(value, &end, 0);
         if (end == value)  // Parsing the value failed.
             return EVMC_SET_OPTION_INVALID_VALUE;
         if (v > 9 || v < -1)  // Not in the valid range.
@@ -74,7 +74,7 @@ enum evmc_set_option_result set_option(evmc_vm* instance, const char* name, cons
 /// The Example VM stack representation.
 struct Stack
 {
-    evmc_uint256be items[1024];       ///< The array of stack items, uninitialized.
+    evmc_uint256be items[1024] = {};  ///< The array of stack items.
     evmc_uint256be* pointer = items;  ///< The pointer to the currently first empty stack slot.
 
     /// Pops an item from the top of the stack.
@@ -167,7 +167,7 @@ evmc_result execute(evmc_vm* instance,
                     const uint8_t* code,
                     size_t code_size)
 {
-    ExampleVM* vm = static_cast<ExampleVM*>(instance);
+    auto* vm = static_cast<ExampleVM*>(instance);
 
     if (vm->verbose > 0)
         std::puts("execution started\n");
@@ -333,7 +333,7 @@ evmc_result execute(evmc_vm* instance,
 
             evmc_result call_result = host->call(context, &call_msg);
 
-            evmc_uint256be value = to_uint256(call_result.status_code == EVMC_SUCCESS);
+            evmc_uint256be value = to_uint256(call_result.status_code == EVMC_SUCCESS ? 1 : 0);
             stack.push(value);
 
             if (call_output_size > call_result.output_size)

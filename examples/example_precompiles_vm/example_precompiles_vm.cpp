@@ -47,9 +47,9 @@ static evmc_result not_implemented()
     return result;
 }
 
-static evmc_result execute(evmc_vm*,
-                           const evmc_host_interface*,
-                           evmc_host_context*,
+static evmc_result execute(evmc_vm* /*vm*/,
+                           const evmc_host_interface* /*host*/,
+                           evmc_host_context* /*context*/,
                            enum evmc_revision rev,
                            const evmc_message* msg,
                            const uint8_t* /*code*/,

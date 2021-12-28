@@ -2127,6 +2127,7 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
         return homestead_metrics;
     case EVMC_FRONTIER:
         return frontier_metrics;
+    default:
+        return NULL;
     }
-    return NULL;
 }
