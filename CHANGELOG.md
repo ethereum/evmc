@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning].
 
 ## [10.0.0] — unreleased
 
+### Added
+
+- The error code `EVMC_LOADER_UNSPECIFIED_ERROR` has been defined to provide
+  a convenient way of initializing `evmc_loader_error_code` objects.
+  [#617](https://github.com/ethereum/evmc/pull/617)
+- Support for Visual Studio 2022.
+  [#619](https://github.com/ethereum/evmc/pull/619)
+
 ### Changed
 
 - The `code_address` field has been added to the `evmc_message` type.
@@ -19,6 +27,10 @@ and this project adheres to [Semantic Versioning].
   [#616](https://github.com/ethereum/evmc/pull/616)
 - Go: The `create2Salt` parameter has been removed from the `VM.Execute()`.
   [#612](https://github.com/ethereum/evmc/pull/612)
+- Code quality improvements.
+  [#618](https://github.com/ethereum/evmc/pull/618)
+  [#620](https://github.com/ethereum/evmc/pull/620)
+  [#621](https://github.com/ethereum/evmc/pull/621)
 
 ## [9.0.0] — 2021-06-30
 
