@@ -1,0 +1,4 @@
+rootProject.name = 'ethereum-smart-contract-java-abstraction'
+include 'Smart-Contract-Dependencies'
+include 'Smart-Contracts'
+
