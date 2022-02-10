@@ -1,12 +1,19 @@
 # Cable: CMake Bootstrap Library <https://github.com/ethereum/cable>
-# Copyright 2018-2019 Pawel Bylica.
+# Copyright 2018 Pawel Bylica.
 # Licensed under the Apache License, Version 2.0.
 
-# Cable Build Type, version 1.0.0
+# Cable Build Type, version 1.0.1
 #
 # This CMake module helps with setting default build type
 # and build configurations for multi-configuration generators.
 # Use cable_set_build_type().
+#
+# CHANGELOG
+#
+# 1.0.1 - 2021-05-20
+# - Fix usage in CMake sub-project.
+#
+# 1.0.0 - 2020-01-02
 
 
 if(cable_build_type_included)
@@ -42,7 +49,7 @@ macro(cable_set_build_type)
             endif()
             message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
         endif()
-    elseif(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)  # After the main project().
+    elseif(PROJECT_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)  # After the main project().
         message(FATAL_ERROR "cable_set_build_type() must be used before project()")
     endif()  # Sub-project - silently ignore.
 endmacro()
