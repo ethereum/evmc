@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
+- Information about `PUSH0` instruction from [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855)
+  for Shanghai revision.
+  [#628](https://github.com/ethereum/evmc/pull/628)
 - The [Merge](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/merge.md)
   EVM revision.
   [#627](https://github.com/ethereum/evmc/pull/627) 

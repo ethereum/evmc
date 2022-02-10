@@ -94,6 +94,7 @@ enum evmc_opcode
     OP_GAS = 0x5a,
     OP_JUMPDEST = 0x5b,
 
+    OP_PUSH0 = 0x5f,
     OP_PUSH1 = 0x60,
     OP_PUSH2 = 0x61,
     OP_PUSH3 = 0x62,

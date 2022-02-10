@@ -100,7 +100,7 @@ static const char* shanghai_names[256] = {
     /* 0x5c */ NULL,
     /* 0x5d */ NULL,
     /* 0x5e */ NULL,
-    /* 0x5f */ NULL,
+    /* 0x5f */ "PUSH0",
     /* 0x60 */ "PUSH1",
     /* 0x61 */ "PUSH2",
     /* 0x62 */ "PUSH3",
