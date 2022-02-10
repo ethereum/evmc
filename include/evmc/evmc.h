@@ -2,7 +2,7 @@
  * EVMC: Ethereum Client-VM Connector API
  *
  * @copyright
- * Copyright 2016-2019 The EVMC Authors.
+ * Copyright 2016 The EVMC Authors.
  * Licensed under the Apache License, Version 2.0.
  *
  * @defgroup EVMC EVMC
