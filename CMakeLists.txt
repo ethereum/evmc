@@ -13,7 +13,7 @@ if(TARGET evmc)
     return()
 endif()
 
-include(cmake/cable/bootstrap.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_CURRENT_SOURCE_DIR}/cmake/cable)
 include(CableBuildType)
 include(CableCompilerSettings)
 include(CablePackage)
