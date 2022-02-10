@@ -352,16 +352,30 @@ TEST(instructions, london_hard_fork)
     EXPECT_TRUE(bn[OP_BASEFEE] == nullptr);
 }
 
-TEST(instructions, shanghai_hard_fork)
+TEST(instructions, merge_hard_fork)
 {
-    const auto s = evmc_get_instruction_metrics_table(EVMC_SHANGHAI);
+    const auto m = evmc_get_instruction_metrics_table(EVMC_MERGE);
     const auto l = evmc_get_instruction_metrics_table(EVMC_LONDON);
-    const auto sn = evmc_get_instruction_names_table(EVMC_SHANGHAI);
+    const auto mn = evmc_get_instruction_names_table(EVMC_MERGE);
     const auto ln = evmc_get_instruction_names_table(EVMC_LONDON);
 
     for (int op = 0x00; op <= 0xff; ++op)
     {
-        EXPECT_EQ(s[op], l[op]) << op;
-        EXPECT_STREQ(sn[op], ln[op]) << op;
+        EXPECT_EQ(m[op], l[op]) << op;
+        EXPECT_STREQ(mn[op], ln[op]) << op;
+    }
+}
+
+TEST(instructions, shanghai_hard_fork)
+{
+    const auto s = evmc_get_instruction_metrics_table(EVMC_SHANGHAI);
+    const auto m = evmc_get_instruction_metrics_table(EVMC_MERGE);
+    const auto sn = evmc_get_instruction_names_table(EVMC_SHANGHAI);
+    const auto mn = evmc_get_instruction_names_table(EVMC_MERGE);
+
+    for (int op = 0x00; op <= 0xff; ++op)
+    {
+        EXPECT_EQ(s[op], m[op]) << op;
+        EXPECT_STREQ(sn[op], mn[op]) << op;
     }
 }
