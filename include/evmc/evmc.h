@@ -868,23 +868,30 @@ enum evmc_revision
     /**
      * The Berlin revision.
      *
-     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md
      */
     EVMC_BERLIN = 8,
 
     /**
      * The London revision.
      *
-     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/london.md
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/london.md
      */
     EVMC_LONDON = 9,
 
     /**
+     * The Merge revision.
+     *
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/merge.md
+     */
+    EVMC_MERGE = 10,
+
+    /**
      * The Shanghai revision.
      *
-     * https://github.com/ethereum/eth1.0-specs/blob/master/network-upgrades/mainnet-upgrades/shanghai.md
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/shanghai.md
      */
-    EVMC_SHANGHAI = 10,
+    EVMC_SHANGHAI = 11,
 
     /** The maximum EVM revision supported. */
     EVMC_MAX_REVISION = EVMC_SHANGHAI,
