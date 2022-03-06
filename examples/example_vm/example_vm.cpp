@@ -224,8 +224,9 @@ evmc_result execute(evmc_vm* instance,
 
         case OP_NUMBER:
         {
-            evmc_uint256be value =
-                to_uint256(static_cast<uint32_t>(host->get_tx_context(context).block_number));
+            evmc_tx_context tx = {};
+            host->get_tx_context(&tx, context);
+            evmc_uint256be value = to_uint256(static_cast<uint32_t>(tx.block_number));
             stack.push(value);
             break;
         }

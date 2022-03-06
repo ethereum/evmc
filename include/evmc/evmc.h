@@ -214,13 +214,13 @@ struct evmc_host_context;
 /**
  * Get transaction context callback function.
  *
- *  This callback function is used by an EVM to retrieve the transaction and
- *  block context.
+ * This callback function is used by an EVM to retrieve the transaction and block context.
  *
- *  @param      context  The pointer to the Host execution context.
- *  @return              The transaction context.
+ * @param[out] tx_context  The pointer to the transaction context struct to be filled.
+ * @param      host        The pointer to the Host execution context.
  */
-typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_host_context* context);
+typedef void (*evmc_get_tx_context_fn)(struct evmc_tx_context* tx_context,
+                                       struct evmc_host_context* host);
 
 /**
  * Get block hash callback function.

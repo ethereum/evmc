@@ -571,7 +571,7 @@ public:
     evmc_tx_context get_tx_context() const noexcept final
     {
         if (tx_context.block_timestamp == 0)
-            tx_context = host->get_tx_context(context);
+            host->get_tx_context(&tx_context, context);
         return tx_context;
     }
 
@@ -819,9 +819,9 @@ inline evmc_result call(evmc_host_context* h, const evmc_message* msg) noexcept
     return Host::from_context(h)->call(*msg).release_raw();
 }
 
-inline evmc_tx_context get_tx_context(evmc_host_context* h) noexcept
+inline void get_tx_context(evmc_tx_context* tx, evmc_host_context* h) noexcept
 {
-    return Host::from_context(h)->get_tx_context();
+    *tx = Host::from_context(h)->get_tx_context();
 }
 
 inline evmc_bytes32 get_block_hash(evmc_host_context* h, int64_t block_number) noexcept
