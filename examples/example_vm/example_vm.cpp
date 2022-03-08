@@ -64,7 +64,7 @@ enum evmc_set_option_result set_option(evmc_vm* instance, const char* name, cons
             return EVMC_SET_OPTION_INVALID_VALUE;
         if (v > 9 || v < -1)  // Not in the valid range.
             return EVMC_SET_OPTION_INVALID_VALUE;
-        vm->verbose = (int)v;
+        vm->verbose = static_cast<int>(v);
         return EVMC_SET_OPTION_SUCCESS;
     }
 

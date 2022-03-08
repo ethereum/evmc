@@ -9,8 +9,6 @@
  * These are convenient for languages where invoking function pointers
  * is "ugly" or impossible (such as Go).
  *
- * It also contains helpers (overloaded operators) for using EVMC types effectively in C++.
- *
  * @defgroup helpers EVMC Helpers
  * @{
  */
@@ -19,6 +17,12 @@
 #include <evmc/evmc.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 
 /**
  * Returns true if the VM has a compatible ABI version.
@@ -293,3 +297,8 @@ static inline const char* evmc_revision_to_string(enum evmc_revision rev)
 }
 
 /** @} */
+
+#ifdef __cplusplus
+#pragma GCC diagnostic pop
+}  // extern "C"
+#endif
