@@ -893,8 +893,15 @@ enum evmc_revision
      */
     EVMC_SHANGHAI = 11,
 
+    /**
+     * The Cancun revision.
+     *
+     * The future next revision after Shanghai.
+     */
+    EVMC_CANCUN = 12,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_SHANGHAI,
+    EVMC_MAX_REVISION = EVMC_CANCUN,
 
     /**
      * The latest known EVM revision with finalized specification.
