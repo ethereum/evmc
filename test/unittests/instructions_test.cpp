@@ -375,7 +375,17 @@ TEST(instructions, shanghai_hard_fork)
 
     for (int op = 0x00; op <= 0xff; ++op)
     {
+        if (op == OP_PUSH0)
+            continue;
         EXPECT_EQ(s[op], m[op]) << op;
         EXPECT_STREQ(sn[op], mn[op]) << op;
     }
+
+    // EIP-3855: PUSH0 instruction
+    EXPECT_EQ(s[OP_PUSH0].gas_cost, 2);
+    EXPECT_EQ(s[OP_PUSH0].stack_height_required, 0);
+    EXPECT_EQ(s[OP_PUSH0].stack_height_change, 1);
+    EXPECT_EQ(m[OP_PUSH0].gas_cost, 0);
+    EXPECT_EQ(sn[OP_PUSH0], std::string{"PUSH0"});
+    EXPECT_TRUE(mn[OP_PUSH0] == nullptr);
 }
