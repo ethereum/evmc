@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning].
 - The `evmc_message::destination` field has been renamed to `evmc_message::recipient`
   to clarify its purpose and match the naming from the Yellow Paper.
   [#616](https://github.com/ethereum/evmc/pull/616)
+- C++: The `HostContext` does not cache transaction context (`evmc_tx_context`) anymore.
+  [#631](https://github.com/ethereum/evmc/pull/631)
 - Go: The `create2Salt` parameter has been removed from the `VM.Execute()`.
   [#612](https://github.com/ethereum/evmc/pull/612)
 - Code quality improvements.

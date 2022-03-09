@@ -499,7 +499,6 @@ class HostContext : public HostInterface
 {
     const evmc_host_interface* host = nullptr;
     evmc_host_context* context = nullptr;
-    mutable evmc_tx_context tx_context = {};
 
 public:
     /// Default constructor for null Host context.
@@ -563,17 +562,7 @@ public:
     }
 
     /// @copydoc HostInterface::get_tx_context()
-    ///
-    /// The implementation caches the received transaction context
-    /// by assuming that the block timestamp should never be zero.
-    ///
-    /// @return The cached transaction context.
-    evmc_tx_context get_tx_context() const noexcept final
-    {
-        if (tx_context.block_timestamp == 0)
-            tx_context = host->get_tx_context(context);
-        return tx_context;
-    }
+    evmc_tx_context get_tx_context() const noexcept final { return host->get_tx_context(context); }
 
     bytes32 get_block_hash(int64_t number) const noexcept final
     {
