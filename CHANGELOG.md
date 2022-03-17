@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning].
   (aka The Merge) EVM revision.
   [#627](https://github.com/ethereum/evmc/pull/627)
   [#634](https://github.com/ethereum/evmc/pull/634)
+- The Cancun EVM revision (anticipated after Shanghai)
+  [#633](https://github.com/ethereum/evmc/pull/633)
 - The error code `EVMC_LOADER_UNSPECIFIED_ERROR` has been defined to provide
   a convenient way of initializing `evmc_loader_error_code` objects.
   [#617](https://github.com/ethereum/evmc/pull/617)
