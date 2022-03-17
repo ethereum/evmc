@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning].
   [#618](https://github.com/ethereum/evmc/pull/618)
   [#620](https://github.com/ethereum/evmc/pull/620)
   [#621](https://github.com/ethereum/evmc/pull/621)
+  [#632](https://github.com/ethereum/evmc/pull/632)
 
 ## [9.0.0] — 2021-06-30
 
