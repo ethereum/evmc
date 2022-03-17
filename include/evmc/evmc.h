@@ -880,11 +880,11 @@ enum evmc_revision
     EVMC_LONDON = 9,
 
     /**
-     * The Merge revision.
+     * The Paris revision (aka The Merge).
      *
-     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/merge.md
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md
      */
-    EVMC_MERGE = 10,
+    EVMC_PARIS = 10,
 
     /**
      * The Shanghai revision.

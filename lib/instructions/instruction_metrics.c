@@ -2369,7 +2369,7 @@ const struct evmc_instruction_metrics* evmc_get_instruction_metrics_table(
     {
     case EVMC_SHANGHAI:
         return shanghai_metrics;
-    case EVMC_MERGE:
+    case EVMC_PARIS:
     case EVMC_LONDON:
         return london_metrics;
     case EVMC_BERLIN:

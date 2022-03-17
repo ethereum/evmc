@@ -12,9 +12,10 @@ and this project adheres to [Semantic Versioning].
 - Information about `PUSH0` instruction from [EIP-3855](https://eips.ethereum.org/EIPS/eip-3855)
   for Shanghai revision.
   [#628](https://github.com/ethereum/evmc/pull/628)
-- The [Merge](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/merge.md)
-  EVM revision.
-  [#627](https://github.com/ethereum/evmc/pull/627) 
+- The [Paris](https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/paris.md)
+  (aka The Merge) EVM revision.
+  [#627](https://github.com/ethereum/evmc/pull/627)
+  [#634](https://github.com/ethereum/evmc/pull/634)
 - The error code `EVMC_LOADER_UNSPECIFIED_ERROR` has been defined to provide
   a convenient way of initializing `evmc_loader_error_code` objects.
   [#617](https://github.com/ethereum/evmc/pull/617)

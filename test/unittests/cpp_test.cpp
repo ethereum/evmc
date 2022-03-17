@@ -860,7 +860,7 @@ TEST(cpp, revision_to_string)
         TEST_CASE(EVMC_ISTANBUL),
         TEST_CASE(EVMC_BERLIN),
         TEST_CASE(EVMC_LONDON),
-        TEST_CASE(EVMC_MERGE),
+        TEST_CASE(EVMC_PARIS),
         TEST_CASE(EVMC_SHANGHAI),
     };
 #undef TEST_CASE
