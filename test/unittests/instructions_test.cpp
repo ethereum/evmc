@@ -352,7 +352,7 @@ TEST(instructions, london_hard_fork)
     EXPECT_TRUE(bn[OP_BASEFEE] == nullptr);
 }
 
-TEST(instructions, merge_hard_fork)
+TEST(instructions, paris_hard_fork)
 {
     const auto p = evmc_get_instruction_metrics_table(EVMC_PARIS);
     const auto l = evmc_get_instruction_metrics_table(EVMC_LONDON);
@@ -362,8 +362,13 @@ TEST(instructions, merge_hard_fork)
     for (int op = 0x00; op <= 0xff; ++op)
     {
         EXPECT_EQ(p[op], l[op]) << op;
+        if (op == OP_PREVRANDAO)
+            continue;
         EXPECT_STREQ(pn[op], ln[op]) << op;
     }
+
+    EXPECT_EQ(pn[OP_PREVRANDAO], std::string{"PREVRANDAO"});
+    EXPECT_EQ(ln[OP_PREVRANDAO], std::string{"DIFFICULTY"});
 }
 
 TEST(instructions, shanghai_hard_fork)
