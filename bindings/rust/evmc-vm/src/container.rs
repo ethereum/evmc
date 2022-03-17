@@ -90,7 +90,7 @@ mod tests {
             block_number: 0,
             block_timestamp: 0,
             block_gas_limit: 0,
-            block_difficulty: Uint256::default(),
+            block_prev_randao: Uint256::default(),
             chain_id: Uint256::default(),
             block_base_fee: Uint256::default(),
         }
