@@ -43,6 +43,9 @@ and this project adheres to [Semantic Versioning].
   [#620](https://github.com/ethereum/evmc/pull/620)
   [#621](https://github.com/ethereum/evmc/pull/621)
   [#632](https://github.com/ethereum/evmc/pull/632)
+- According to [EIP-4399](https://eips.ethereum.org/EIPS/eip-4399),
+  `block_difficulty` field was renamed to `block_prev_randao`, and `DIFFICULTY` opcode to `PREVRANDAO`.
+  [#635](https://github.com/ethereum/evmc/pull/635)
 
 ## [9.0.0] — 2021-06-30
 

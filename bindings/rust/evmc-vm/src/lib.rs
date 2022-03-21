@@ -774,7 +774,7 @@ mod tests {
             block_number: 42,
             block_timestamp: 235117,
             block_gas_limit: 105023,
-            block_difficulty: Uint256 { bytes: [0xaa; 32] },
+            block_prev_randao: Uint256 { bytes: [0xaa; 32] },
             chain_id: Uint256::default(),
             block_base_fee: Uint256::default(),
         }

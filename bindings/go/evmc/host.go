@@ -74,7 +74,7 @@ type TxContext struct {
 	Number     int64
 	Timestamp  int64
 	GasLimit   int64
-	Difficulty Hash
+	PrevRandao Hash
 	ChainID    Hash
 	BaseFee    Hash
 }
@@ -173,7 +173,7 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		C.int64_t(txContext.Number),
 		C.int64_t(txContext.Timestamp),
 		C.int64_t(txContext.GasLimit),
-		evmcBytes32(txContext.Difficulty),
+		evmcBytes32(txContext.PrevRandao),
 		evmcBytes32(txContext.ChainID),
 		evmcBytes32(txContext.BaseFee),
 	}

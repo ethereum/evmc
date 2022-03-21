@@ -75,7 +75,7 @@ enum evmc_opcode
     OP_COINBASE = 0x41,
     OP_TIMESTAMP = 0x42,
     OP_NUMBER = 0x43,
-    OP_DIFFICULTY = 0x44,
+    OP_PREVRANDAO = 0x44,
     OP_GASLIMIT = 0x45,
     OP_CHAINID = 0x46,
     OP_SELFBALANCE = 0x47,
