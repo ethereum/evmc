@@ -394,3 +394,33 @@ TEST(instructions, shanghai_hard_fork)
     EXPECT_EQ(sn[OP_PUSH0], std::string{"PUSH0"});
     EXPECT_TRUE(pn[OP_PUSH0] == nullptr);
 }
+
+TEST(instructions, cancun_hard_fork)
+{
+    const auto c = evmc_get_instruction_metrics_table(EVMC_CANCUN);
+    const auto s = evmc_get_instruction_metrics_table(EVMC_SHANGHAI);
+    const auto cn = evmc_get_instruction_names_table(EVMC_CANCUN);
+    const auto sn = evmc_get_instruction_names_table(EVMC_SHANGHAI);
+
+    for (int op = 0x00; op <= 0xff; ++op)
+    {
+        if (op == OP_RJUMP || op == OP_RJUMPI)
+            continue;
+        EXPECT_EQ(c[op], s[op]) << op;
+        EXPECT_STREQ(cn[op], sn[op]) << op;
+    }
+
+    // EIP-4200: Static relative jumps
+    EXPECT_EQ(c[OP_RJUMP].gas_cost, 5);
+    EXPECT_EQ(c[OP_RJUMP].stack_height_required, 0);
+    EXPECT_EQ(c[OP_RJUMP].stack_height_change, 0);
+    EXPECT_EQ(s[OP_RJUMP].gas_cost, 0);
+    EXPECT_EQ(cn[OP_RJUMP], std::string{"RJUMP"});
+    EXPECT_TRUE(sn[OP_RJUMP] == nullptr);
+    EXPECT_EQ(c[OP_RJUMPI].gas_cost, 7);
+    EXPECT_EQ(c[OP_RJUMPI].stack_height_required, 1);
+    EXPECT_EQ(c[OP_RJUMPI].stack_height_change, -1);
+    EXPECT_EQ(s[OP_RJUMPI].gas_cost, 0);
+    EXPECT_EQ(cn[OP_RJUMPI], std::string{"RJUMPI"});
+    EXPECT_TRUE(sn[OP_RJUMPI] == nullptr);
+}
