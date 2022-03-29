@@ -44,7 +44,7 @@ endif()
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
-set(PROJECT_VERSION 10.0.0-alpha.4)
+set(PROJECT_VERSION 10.0.0-alpha.5)
 
 include(GNUInstallDirs)  # Must be included after any language is enabled.
 if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
