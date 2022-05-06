@@ -9,6 +9,7 @@
 #include <functional>
 #include <initializer_list>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 static_assert(EVMC_LATEST_STABLE_REVISION <= EVMC_MAX_REVISION,
@@ -18,6 +19,9 @@ static_assert(EVMC_LATEST_STABLE_REVISION <= EVMC_MAX_REVISION,
 /// @ingroup cpp
 namespace evmc
 {
+/// String view of uint8_t chars.
+using bytes_view = std::basic_string_view<uint8_t>;
+
 /// The big-endian 160-bit hash suitable for keeping an Ethereum address.
 ///
 /// This type wraps C ::evmc_address to make sure objects of this type are always initialized.
@@ -57,6 +61,9 @@ struct address : evmc_address
 
     /// Explicit operator converting to bool.
     inline constexpr explicit operator bool() const noexcept;
+
+    /// Implicit operator converting to bytes_view.
+    inline constexpr operator bytes_view() const noexcept { return {bytes, sizeof(bytes)}; }
 };
 
 /// The fixed size array of 32 bytes for storing 256-bit EVM values.
@@ -109,7 +116,10 @@ struct bytes32 : evmc_bytes32
     {}
 
     /// Explicit operator converting to bool.
-    constexpr inline explicit operator bool() const noexcept;
+    inline constexpr explicit operator bool() const noexcept;
+
+    /// Implicit operator converting to bytes_view.
+    inline constexpr operator bytes_view() const noexcept { return {bytes, sizeof(bytes)}; }
 };
 
 /// The alias for evmc::bytes32 to represent a big-endian 256-bit integer.
