@@ -20,9 +20,9 @@ fn gen_bindings() {
         // force deriving the PratialEq trait on basic types (address, bytes32)
         .derive_partialeq(true)
         .opaque_type("evmc_host_context")
-        .whitelist_type("evmc_.*")
-        .whitelist_function("evmc_.*")
-        .whitelist_var("EVMC_ABI_VERSION")
+        .allowlist_type("evmc_.*")
+        .allowlist_function("evmc_.*")
+        .allowlist_var("EVMC_ABI_VERSION")
         // TODO: consider removing this
         .size_t_is_usize(true)
         .generate()
