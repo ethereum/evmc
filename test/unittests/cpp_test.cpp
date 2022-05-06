@@ -415,6 +415,29 @@ TEST(cpp, address_from_uint)
     EXPECT_EQ(address{0xc1c2c3c4c5c6c7c8}, 0x000000000000000000000000c1c2c3c4c5c6c7c8_address);
 }
 
+TEST(cpp, address_to_bytes_view)
+{
+    using evmc::operator""_address;
+
+    constexpr auto a = 0xa0a1a2a3a4a5a6a7a8a9b0b1b2b3b4b5b6b7b8b9_address;
+    static_assert(static_cast<evmc::bytes_view>(a).size() == 20);
+    const evmc::bytes_view v = a;
+    EXPECT_EQ(v, (evmc::bytes{0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
+                              0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9}));
+}
+
+TEST(cpp, bytes32_to_bytes_view)
+{
+    using evmc::operator""_bytes32;
+
+    constexpr auto b = 0xa0a1a2a3a4a5a6a7a8a9b0b1b2b3b4b5b6b7b8b9c0c1c2c3c4c5c6c7c8c9d0d1_bytes32;
+    static_assert(static_cast<evmc::bytes_view>(b).size() == 32);
+    const evmc::bytes_view v = b;
+    EXPECT_EQ(v, (evmc::bytes{0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xb0,
+                              0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xc0, 0xc1,
+                              0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xd0, 0xd1}));
+}
+
 TEST(cpp, result)
 {
     static const uint8_t output = 0;
@@ -796,8 +819,8 @@ TEST(cpp, status_code_to_string)
     };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TEST_CASE(STATUS_CODE) \
-    TestCase { STATUS_CODE, #STATUS_CODE }
+#define TEST_CASE(NAME) \
+    TestCase { NAME, #NAME }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_SUCCESS),
         TEST_CASE(EVMC_FAILURE),
@@ -847,8 +870,8 @@ TEST(cpp, revision_to_string)
     };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TEST_CASE(STATUS_CODE) \
-    TestCase { STATUS_CODE, #STATUS_CODE }
+#define TEST_CASE(NAME) \
+    TestCase { NAME, #NAME }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_FRONTIER),
         TEST_CASE(EVMC_HOMESTEAD),
