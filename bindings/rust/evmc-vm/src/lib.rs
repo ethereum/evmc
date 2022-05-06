@@ -18,6 +18,11 @@ pub use types::*;
 pub trait EvmcVm {
     /// This is called once at initialisation time.
     fn init() -> Self;
+
+    /// This is called for each supplied option.
+    fn set_option(&mut self, _: &str, _: &str) -> Result<(), SetOptionError> {
+        Ok(())
+    }
     /// This is called for every incoming message.
     fn execute<'a>(
         &self,
@@ -26,6 +31,13 @@ pub trait EvmcVm {
         message: &'a ExecutionMessage,
         context: Option<&'a mut ExecutionContext<'a>>,
     ) -> ExecutionResult;
+}
+
+/// Error codes for set_option.
+#[derive(Debug)]
+pub enum SetOptionError {
+    InvalidKey,
+    InvalidValue,
 }
 
 /// EVMC result structure.

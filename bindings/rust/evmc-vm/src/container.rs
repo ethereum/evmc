@@ -4,7 +4,7 @@
 
 use crate::EvmcVm;
 
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 /// Container struct for EVMC instances and user-defined data.
 pub struct EvmcContainer<T>
@@ -54,6 +54,15 @@ where
 
     fn deref(&self) -> &Self::Target {
         &self.vm
+    }
+}
+
+impl<T> DerefMut for EvmcContainer<T>
+where
+    T: EvmcVm,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.vm
     }
 }
 

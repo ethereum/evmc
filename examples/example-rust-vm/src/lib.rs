@@ -2,15 +2,35 @@
 // Copyright 2019 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+use core::str::FromStr;
 use evmc_declare::evmc_declare_vm;
 use evmc_vm::*;
 
 #[evmc_declare_vm("ExampleRustVM", "evm, precompiles", "10.0.0-alpha.5")]
-pub struct ExampleRustVM;
+pub struct ExampleRustVM {
+    verbosity: i8,
+}
 
 impl EvmcVm for ExampleRustVM {
     fn init() -> Self {
-        ExampleRustVM {}
+        Self { verbosity: 0 }
+    }
+
+    fn set_option(&mut self, key: &str, value: &str) -> Result<(), SetOptionError> {
+        if key == "verbose" {
+            if value.is_empty() {
+                return Err(SetOptionError::InvalidValue);
+            }
+
+            self.verbosity = i8::from_str(value).map_err(|_| SetOptionError::InvalidValue)?;
+            if self.verbosity > 9 {
+                return Err(SetOptionError::InvalidValue);
+            }
+
+            return Ok(());
+        }
+
+        Err(SetOptionError::InvalidKey)
     }
 
     fn execute<'a>(
@@ -24,6 +44,10 @@ impl EvmcVm for ExampleRustVM {
             return ExecutionResult::failure();
         }
         let _context = _context.unwrap();
+
+        if self.verbosity > 0 {
+            println!("execution started");
+        }
 
         if message.kind() != MessageKind::EVMC_CALL {
             return ExecutionResult::failure();
