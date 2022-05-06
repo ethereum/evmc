@@ -27,13 +27,13 @@ pub trait HostContext {
         buffer_size: &usize,
     ) -> usize;
     fn selfdestruct(&mut self, addr: &Address, beneficiary: &Address);
-    fn get_tx_context(&mut self) -> (Bytes32, Address, Address, i64, i64, i64, Bytes32, Bytes32);
+    fn get_tx_context(&mut self) -> (Bytes32, Address, Address, i64, i64, i64, Bytes32, Bytes32, Bytes32);
     fn get_block_hash(&mut self, number: i64) -> Bytes32;
     fn emit_log(&mut self, addr: &Address, topics: &Vec<Bytes32>, data: &Bytes);
     fn call(
         &mut self,
         kind: MessageKind,
-        destination: &Address,
+        recipient: &Address,
         sender: &Address,
         value: &Bytes32,
         input: &Bytes,
@@ -58,6 +58,8 @@ pub(crate) fn get_evmc_host_interface() -> ffi::evmc_host_interface {
         get_tx_context: Some(get_tx_context),
         get_block_hash: Some(get_block_hash),
         emit_log: Some(emit_log),
+        access_account: None, // TODO
+        access_storage: None, // TODO
     }
 }
 
@@ -152,7 +154,7 @@ unsafe extern "C" fn selfdestruct(
 }
 
 unsafe extern "C" fn get_tx_context(context: *mut ffi::evmc_host_context) -> ffi::evmc_tx_context {
-    let (gas_price, origin, coinbase, number, timestamp, gas_limit, difficulty, chain_id) =
+    let (gas_price, origin, coinbase, number, timestamp, gas_limit, prev_randao, chain_id, base_fee) =
         (*(context as *mut ExtendedContext)).hctx.get_tx_context();
     return ffi::evmc_tx_context {
         tx_gas_price: evmc_sys::evmc_bytes32 { bytes: gas_price },
@@ -161,8 +163,9 @@ unsafe extern "C" fn get_tx_context(context: *mut ffi::evmc_host_context) -> ffi
         block_number: number,
         block_timestamp: timestamp,
         block_gas_limit: gas_limit,
-        block_difficulty: evmc_sys::evmc_bytes32 { bytes: difficulty },
+        block_prev_randao: evmc_sys::evmc_bytes32 { bytes: prev_randao },
         chain_id: evmc_sys::evmc_bytes32 { bytes: chain_id },
+        block_base_fee: evmc_sys::evmc_bytes32 { bytes: base_fee },
     };
 }
 
@@ -211,7 +214,7 @@ pub unsafe extern "C" fn call(
     let (output, gas_left, create_address, status_code) =
         (*(context as *mut ExtendedContext)).hctx.call(
             msg.kind,
-            &msg.destination.bytes,
+            &msg.recipient.bytes,
             &msg.sender.bytes,
             &msg.value.bytes,
             &std::slice::from_raw_parts(msg.input_data, msg.input_size),

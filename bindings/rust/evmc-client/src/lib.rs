@@ -56,12 +56,13 @@ impl EvmcVm {
         is_static: bool,
         depth: i32,
         gas: i64,
-        destination: &Address,
+        recipient: &Address,
         sender: &Address,
         input: &Bytes,
         value: &Bytes32,
         code: &Bytes,
         create2_salt: &Bytes32,
+        code_address: &Address,
     ) -> (&Bytes, i64, StatusCode) {
         let ext_ctx = host::ExtendedContext { hctx: ctx };
         let mut evmc_flags: u32 = 0;
@@ -77,8 +78,8 @@ impl EvmcVm {
                 flags: evmc_flags,
                 depth: depth,
                 gas: gas,
-                destination: ffi::evmc_address {
-                    bytes: *destination,
+                recipient: ffi::evmc_address {
+                    bytes: *recipient,
                 },
                 sender: ffi::evmc_address { bytes: *sender },
                 input_data: input.as_ptr(),
@@ -87,6 +88,7 @@ impl EvmcVm {
                 create2_salt: ffi::evmc_bytes32 {
                     bytes: *create2_salt,
                 },
+                code_address: ffi::evmc_address { bytes: *code_address },
             }
         }));
         unsafe {
