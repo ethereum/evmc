@@ -36,7 +36,6 @@ target_link_libraries(
     evmc::instructions
     evmc::evmc_cpp
     evmc::tooling
-    evmc::hex
     GTest::gtest_main
 )
 target_include_directories(evmc-unittests PRIVATE ${PROJECT_SOURCE_DIR})

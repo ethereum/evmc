@@ -5,7 +5,7 @@
 add_library(tooling STATIC)
 add_library(evmc::tooling ALIAS tooling)
 target_compile_features(tooling PUBLIC cxx_std_17)
-target_link_libraries(tooling PUBLIC evmc::evmc_cpp evmc::mocked_host evmc::hex)
+target_link_libraries(tooling PUBLIC evmc::evmc_cpp evmc::mocked_host)
 
 target_sources(
     tooling PRIVATE
