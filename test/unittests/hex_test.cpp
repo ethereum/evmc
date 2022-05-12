@@ -89,7 +89,7 @@ TEST(hex, isspace)
     for (int i = int{std::numeric_limits<char>::min()}; i <= std::numeric_limits<char>::max(); ++i)
     {
         const auto c = static_cast<char>(i);
-        EXPECT_EQ(evmc::internal_hex::isspace(c), (std::isspace(c) != 0));
+        EXPECT_EQ(evmc::internal::isspace(c), (std::isspace(c) != 0));
         switch (c)
         {
         case ' ':
@@ -98,10 +98,10 @@ TEST(hex, isspace)
         case '\r':
         case '\t':
         case '\v':
-            EXPECT_TRUE(evmc::internal_hex::isspace(c));
+            EXPECT_TRUE(evmc::internal::isspace(c));
             break;
         default:
-            EXPECT_FALSE(evmc::internal_hex::isspace(c));
+            EXPECT_FALSE(evmc::internal::isspace(c));
             break;
         }
     }

@@ -35,7 +35,7 @@ inline std::string hex(bytes_view bs)
     return str;
 }
 
-namespace internal_hex
+namespace internal
 {
 /// Extracts the nibble value out of a hex digit.
 /// Returns -1 in case of invalid hex digit.
@@ -89,7 +89,7 @@ inline constexpr bool from_hex(std::string_view hex, OutputIt result) noexcept
 
     return hi_nibble == empty_mark;
 }
-}  // namespace internal_hex
+}  // namespace internal
 
 /// Validates hex encoded string.
 ///
@@ -103,7 +103,7 @@ inline bool validate_hex(std::string_view hex) noexcept
         noop_output_iterator operator++(int) noexcept { return *this; }  // NOLINT(cert-dcl21-cpp)
     };
 
-    return internal_hex::from_hex(hex, noop_output_iterator{});
+    return internal::from_hex(hex, noop_output_iterator{});
 }
 
 /// Decodes hex encoded string to bytes.
@@ -115,7 +115,7 @@ inline std::optional<bytes> from_hex(std::string_view hex)
 {
     bytes bs;
     bs.reserve(hex.size() / 2);
-    if (!internal_hex::from_hex(hex, std::back_inserter(bs)))
+    if (!internal::from_hex(hex, std::back_inserter(bs)))
         return {};
     return bs;
 }
