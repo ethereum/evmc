@@ -43,7 +43,7 @@ protected:
 
     evmc::result execute_in_example_vm(int64_t gas,
                                        const char* code_hex,
-                                       const char* input_hex = "") noexcept
+                                       const char* input_hex = "")
     {
         const auto code = evmc::from_hex(code_hex);
         const auto input = evmc::from_hex(input_hex);

@@ -4,6 +4,7 @@
 
 #include <evmc/hex.hpp>
 #include <gtest/gtest.h>
+#include <cctype>
 
 using namespace evmc;
 
@@ -116,4 +117,30 @@ TEST(hex, hex_category_comparison)
 
     std::error_code ec2 = hex_errc::incomplete_hex_byte_pair;
     EXPECT_EQ(ec2.category(), hex_category());
+}
+
+TEST(hex, isspace)
+{
+    // Test internal isspace() compliance with std::isspace().
+    // The https://en.cppreference.com/w/cpp/string/byte/isspace has the list of "space" characters.
+
+    for (int i = int{std::numeric_limits<char>::min()}; i <= std::numeric_limits<char>::max(); ++i)
+    {
+        const auto c = static_cast<char>(i);
+        EXPECT_EQ(evmc::internal_hex::isspace(c), (std::isspace(c) != 0));
+        switch (c)
+        {
+        case ' ':
+        case '\f':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\v':
+            EXPECT_TRUE(evmc::internal_hex::isspace(c));
+            break;
+        default:
+            EXPECT_FALSE(evmc::internal_hex::isspace(c));
+            break;
+        }
+    }
 }

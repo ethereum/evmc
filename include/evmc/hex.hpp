@@ -3,7 +3,6 @@
 // Licensed under the Apache License, Version 2.0.
 #pragma once
 
-#include <cctype>
 #include <cstdint>
 #include <iterator>
 #include <string>
@@ -100,7 +99,9 @@ inline std::string hex(bytes_view bs)
 
 namespace internal_hex
 {
-inline constexpr int from_hex_digit(char h)
+/// Extracts the nibble value out of a hex digit.
+/// Returns -1 in case of invalid hex digit.
+inline constexpr int from_hex_digit(char h) noexcept
 {
     if (h >= '0' && h <= '9')
         return h - '0';
@@ -109,40 +110,48 @@ inline constexpr int from_hex_digit(char h)
     else if (h >= 'A' && h <= 'F')
         return h - 'A' + 10;
     else
-        throw hex_error{hex_errc::invalid_hex_digit};
+        return -1;
+}
+
+/// The constexpr variant of std::isspace().
+inline constexpr bool isspace(char ch) noexcept
+{
+    // Implementation taken from LLVM's libc.
+    return ch == ' ' || (static_cast<unsigned>(ch) - '\t') < 5;
 }
 
 template <typename OutputIt>
-inline constexpr void from_hex(std::string_view hex, OutputIt result)
+inline constexpr hex_errc from_hex(std::string_view hex, OutputIt result) noexcept
 {
-    // TODO: This can be implemented with hex_decode_iterator and std::copy.
-
     // Omit the optional 0x prefix.
-    const auto hex_begin =
-        (hex.size() >= 2 && hex[0] == '0' && hex[1] == 'x') ? hex.begin() + 2 : hex.begin();
+    if (hex.size() >= 2 && hex[0] == '0' && hex[1] == 'x')
+        hex.remove_prefix(2);
 
-    constexpr int empty_byte_mark = -1;
-    int b = empty_byte_mark;
-    for (auto it = hex_begin; it != hex.end(); ++it)
+    constexpr int empty_mark = -1;
+    int hi_nibble = empty_mark;
+    for (const auto h : hex)
     {
-        const auto h = *it;
-        if (std::isspace(h))
+        if (isspace(h))
             continue;
 
         const int v = from_hex_digit(h);
-        if (b == empty_byte_mark)
+        if (v < 0)
+            return hex_errc::invalid_hex_digit;
+
+        if (hi_nibble == empty_mark)
         {
-            b = v << 4;
+            hi_nibble = v << 4;
         }
         else
         {
-            *result++ = static_cast<uint8_t>(b | v);
-            b = empty_byte_mark;
+            *result++ = static_cast<uint8_t>(hi_nibble | v);
+            hi_nibble = empty_mark;
         }
     }
 
-    if (b != empty_byte_mark)
-        throw hex_error{hex_errc::incomplete_hex_byte_pair};
+    if (hi_nibble != empty_mark)
+        return hex_errc::incomplete_hex_byte_pair;
+    return {};
 }
 }  // namespace internal_hex
 
@@ -156,15 +165,7 @@ inline std::error_code validate_hex(std::string_view hex) noexcept
         noop_output_iterator operator++(int) noexcept { return *this; }  // NOLINT(cert-dcl21-cpp)
     };
 
-    try
-    {
-        internal_hex::from_hex(hex, noop_output_iterator{});
-        return {};
-    }
-    catch (const hex_error& e)
-    {
-        return e.code();
-    }
+    return internal_hex::from_hex(hex, noop_output_iterator{});
 }
 
 /// Decodes hex encoded string to bytes.
@@ -174,7 +175,9 @@ inline bytes from_hex(std::string_view hex)
 {
     bytes bs;
     bs.reserve(hex.size() / 2);
-    internal_hex::from_hex(hex, std::back_inserter(bs));
+    const auto ec = internal_hex::from_hex(hex, std::back_inserter(bs));
+    if (static_cast<int>(ec) != 0)
+        throw hex_error{ec};
     return bs;
 }
 }  // namespace evmc
