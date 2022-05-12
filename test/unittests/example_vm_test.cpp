@@ -17,7 +17,7 @@ struct Output
 {
     evmc::bytes bytes;
 
-    explicit Output(const char* output_hex) noexcept : bytes{evmc::from_hex(output_hex)} {}
+    explicit Output(const char* output_hex) noexcept : bytes{evmc::from_hex(output_hex).value()} {}
 
     friend bool operator==(const evmc::result& result, const Output& expected) noexcept
     {
@@ -45,8 +45,8 @@ protected:
                                        const char* code_hex,
                                        const char* input_hex = "")
     {
-        const auto code = evmc::from_hex(code_hex);
-        const auto input = evmc::from_hex(input_hex);
+        const auto code = evmc::from_hex(code_hex).value();
+        const auto input = evmc::from_hex(input_hex).value();
 
         msg.gas = gas;
         msg.input_data = input.data();
@@ -150,7 +150,7 @@ TEST_F(example_vm, revert_undefined)
 TEST_F(example_vm, call)
 {
     // pseudo-Yul: call(3, 3, 3, 3, 3, 3, 3) return(0, msize())
-    const auto expected_output = evmc::from_hex("aabbcc");
+    const auto expected_output = evmc::from_hex("aabbcc").value();
     host.call_result.output_data = expected_output.data();
     host.call_result.output_size = expected_output.size();
     const auto r = execute_in_example_vm(100, "6003808080808080f1596000f3");

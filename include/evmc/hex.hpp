@@ -5,9 +5,9 @@
 
 #include <cstdint>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <system_error>
 
 namespace evmc
 {
@@ -17,74 +17,12 @@ using bytes = std::basic_string<uint8_t>;
 /// String view of uint8_t chars.
 using bytes_view = std::basic_string_view<uint8_t>;
 
-/// Hex decoding error codes.
-enum class hex_errc
-{
-    /// Invalid hex digit encountered during decoding.
-    invalid_hex_digit = 1,
-
-    /// Input contains incomplete hex byte (length is odd).
-    incomplete_hex_byte_pair = 2,
-};
-}  // namespace evmc
-
-namespace std
-{
-/// Template specialization of std::is_error_code_enum for evmc::hex_errc.
-/// This enables implicit conversions from evmc::hex_errc to std::error_code.
-template <>
-struct is_error_code_enum<evmc::hex_errc> : true_type
-{};
-}  // namespace std
-
-namespace evmc
-{
-
-/// Obtains a reference to the static error category object for hex errors.
-inline const std::error_category& hex_category() noexcept
-{
-    struct hex_category_impl : std::error_category
-    {
-        const char* name() const noexcept final { return "hex"; }
-
-        std::string message(int ev) const final
-        {
-            switch (static_cast<hex_errc>(ev))
-            {
-            case hex_errc::invalid_hex_digit:
-                return "invalid hex digit";
-            case hex_errc::incomplete_hex_byte_pair:
-                return "incomplete hex byte pair";
-            default:
-                return "unknown error";
-            }
-        }
-    };
-
-    // Create static category object. This involves mutex-protected dynamic initialization.
-    // Because of the C++ CWG defect 253, the {} syntax is used.
-    static const hex_category_impl category_instance{};
-
-    return category_instance;
-}
-
-/// Creates error_code object out of a hex error code value.
-inline std::error_code make_error_code(hex_errc errc) noexcept
-{
-    return {static_cast<int>(errc), hex_category()};
-}
-
-/// Hex decoding exception.
-struct hex_error : std::system_error
-{
-    using system_error::system_error;
-};
 
 /// Encode a byte to a hex string.
 inline std::string hex(uint8_t b) noexcept
 {
-    static constexpr auto hex_chars = "0123456789abcdef";
-    return {hex_chars[b >> 4], hex_chars[b & 0xf]};
+    static constexpr auto hex_digits = "0123456789abcdef";
+    return {hex_digits[b >> 4], hex_digits[b & 0xf]};
 }
 
 /// Encodes bytes as hex string.
@@ -121,7 +59,7 @@ inline constexpr bool isspace(char ch) noexcept
 }
 
 template <typename OutputIt>
-inline constexpr hex_errc from_hex(std::string_view hex, OutputIt result) noexcept
+inline constexpr bool from_hex(std::string_view hex, OutputIt result) noexcept
 {
     // Omit the optional 0x prefix.
     if (hex.size() >= 2 && hex[0] == '0' && hex[1] == 'x')
@@ -136,7 +74,7 @@ inline constexpr hex_errc from_hex(std::string_view hex, OutputIt result) noexce
 
         const int v = from_hex_digit(h);
         if (v < 0)
-            return hex_errc::invalid_hex_digit;
+            return false;
 
         if (hi_nibble == empty_mark)
         {
@@ -149,14 +87,14 @@ inline constexpr hex_errc from_hex(std::string_view hex, OutputIt result) noexce
         }
     }
 
-    if (hi_nibble != empty_mark)
-        return hex_errc::incomplete_hex_byte_pair;
-    return {};
+    return hi_nibble == empty_mark;
 }
 }  // namespace internal_hex
 
 /// Validates hex encoded string.
-inline std::error_code validate_hex(std::string_view hex) noexcept
+///
+/// @return  True if the input is valid hex.
+inline bool validate_hex(std::string_view hex) noexcept
 {
     struct noop_output_iterator
     {
@@ -170,14 +108,15 @@ inline std::error_code validate_hex(std::string_view hex) noexcept
 
 /// Decodes hex encoded string to bytes.
 ///
-/// Throws hex_error with the appropriate error code.
-inline bytes from_hex(std::string_view hex)
+/// In case the input is invalid the returned value is std::nullopt.
+/// This can happen if a non-hex digit or odd number of digits is encountered.
+/// Whitespace in the input is ignored.
+inline std::optional<bytes> from_hex(std::string_view hex)
 {
     bytes bs;
     bs.reserve(hex.size() / 2);
-    const auto ec = internal_hex::from_hex(hex, std::back_inserter(bs));
-    if (static_cast<int>(ec) != 0)
-        throw hex_error{ec};
+    if (!internal_hex::from_hex(hex, std::back_inserter(bs)))
+        return {};
     return bs;
 }
 }  // namespace evmc
