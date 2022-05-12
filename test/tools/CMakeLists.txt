@@ -54,13 +54,13 @@ set_tests_properties(${PROJECT_NAME}/evmc-tool/explicit_empty_input PROPERTIES P
 add_evmc_tool_test(
     invalid_hex_code
     "--vm $<TARGET_FILE:evmc::example-vm> run 0x600"
-    "code: \\(incomplete hex byte pair\\) OR \\(File does not exist: 0x600\\)"
+    "code: \\(invalid hex\\) OR \\(File does not exist: 0x600\\)"
 )
 
 add_evmc_tool_test(
     invalid_hex_input
     "--vm $<TARGET_FILE:evmc::example-vm> run 0x --input aa0y"
-    "--input: \\(invalid hex digit\\) OR \\(File does not exist: aa0y\\)"
+    "--input: \\(invalid hex\\) OR \\(File does not exist: aa0y\\)"
 )
 
 add_evmc_tool_test(
@@ -78,7 +78,7 @@ add_evmc_tool_test(
 add_evmc_tool_test(
     invalid_code_file
     "--vm $<TARGET_FILE:evmc::example-vm> run ${CMAKE_CURRENT_SOURCE_DIR}/invalid_code.evm"
-    "Error: invalid hex digit"
+    "Error: invalid hex"
 )
 
 add_evmc_tool_test(
