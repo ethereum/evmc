@@ -138,6 +138,7 @@ public:
 
     evmc_tx_context get_tx_context() const noexcept final { return tx_context; }
 
+    // NOLINTNEXTLINE(bugprone-exception-escape)
     evmc::bytes32 get_block_hash(int64_t number) const noexcept final
     {
         const int64_t current_block_number = get_tx_context().block_number;
