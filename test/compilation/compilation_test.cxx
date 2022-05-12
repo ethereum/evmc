@@ -11,6 +11,7 @@
 #include <evmc/loader.h>
 #include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
+#include <evmc/hex.hpp>
 
 // Include again to check if headers have proper include guards.
 #include <evmc/evmc.h>
@@ -20,3 +21,4 @@
 #include <evmc/loader.h>
 #include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
+#include <evmc/hex.hpp>
