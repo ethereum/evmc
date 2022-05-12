@@ -22,6 +22,17 @@ namespace evmc
 /// String view of uint8_t chars.
 using bytes_view = std::basic_string_view<uint8_t>;
 
+template <typename T>
+[[noreturn]] inline void throw_(const char* what)
+{
+#if __cpp_exceptions
+    throw T{what};
+#else
+    std::fputs(what, stderr);
+    std::abort();
+#endif
+}
+
 /// The big-endian 160-bit hash suitable for keeping an Ethereum address.
 ///
 /// This type wraps C ::evmc_address to make sure objects of this type are always initialized.
@@ -282,69 +293,59 @@ namespace literals
 {
 namespace internal
 {
-constexpr int from_hex(char c) noexcept
+constexpr inline int from_hex_digit(char h)
 {
-    return (c >= 'a' && c <= 'f') ? c - ('a' - 10) :
-           (c >= 'A' && c <= 'F') ? c - ('A' - 10) :
-                                    c - '0';
-}
-
-constexpr uint8_t byte(const char* s, size_t i) noexcept
-{
-    return static_cast<uint8_t>((from_hex(s[2 * i]) << 4) | from_hex(s[2 * i + 1]));
+    if (h >= '0' && h <= '9')
+        return h - '0';
+    else if (h >= 'a' && h <= 'f')
+        return h - 'a' + 10;
+    else if (h >= 'A' && h <= 'F')
+        return h - 'A' + 10;
+    else
+        throw_<std::invalid_argument>("invalid hex digit");
 }
 
 template <typename T>
-T from_hex(const char*) noexcept;
-
-template <>
-constexpr bytes32 from_hex<bytes32>(const char* s) noexcept
+constexpr T from_hex(const char* s)
 {
-    return {
-        {{byte(s, 0),  byte(s, 1),  byte(s, 2),  byte(s, 3),  byte(s, 4),  byte(s, 5),  byte(s, 6),
-          byte(s, 7),  byte(s, 8),  byte(s, 9),  byte(s, 10), byte(s, 11), byte(s, 12), byte(s, 13),
-          byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19), byte(s, 20),
-          byte(s, 21), byte(s, 22), byte(s, 23), byte(s, 24), byte(s, 25), byte(s, 26), byte(s, 27),
-          byte(s, 28), byte(s, 29), byte(s, 30), byte(s, 31)}}};
+    T r;
+    for (auto& b : r.bytes)
+    {
+        b = static_cast<uint8_t>((from_hex_digit(s[0]) << 4) | from_hex_digit(s[1]));
+        s += 2;
+    }
+    return r;
 }
 
-template <>
-constexpr address from_hex<address>(const char* s) noexcept
+template <typename T>
+inline constexpr T from_literal(const char* s) noexcept
 {
-    return {
-        {{byte(s, 0),  byte(s, 1),  byte(s, 2),  byte(s, 3),  byte(s, 4),  byte(s, 5),  byte(s, 6),
-          byte(s, 7),  byte(s, 8),  byte(s, 9),  byte(s, 10), byte(s, 11), byte(s, 12), byte(s, 13),
-          byte(s, 14), byte(s, 15), byte(s, 16), byte(s, 17), byte(s, 18), byte(s, 19)}}};
-}
+    if (s[0] == '0' && s[1] == '\0')
+        return T{};
 
-template <typename T, char... c>
-constexpr T from_literal() noexcept
-{
-    constexpr auto size = sizeof...(c);
-    constexpr char literal[] = {c...};
-    constexpr bool is_simple_zero = size == 1 && literal[0] == '0';
+    const auto size = std::char_traits<char>::length(s);
 
-    static_assert(is_simple_zero || (literal[0] == '0' && literal[1] == 'x'),
-                  "literal must be in hexadecimal notation");
-    static_assert(is_simple_zero || size == 2 * sizeof(T) + 2,
-                  "literal must match the result type size");
+    if (s[0] != '0' || s[1] != 'x')
+        throw_<std::invalid_argument>("literal must be in hexadecimal notation");
 
-    return is_simple_zero ? T{} : from_hex<T>(&literal[2]);
+
+    if (size != 2 * sizeof(T) + 2)
+        throw_<std::invalid_argument>("literal must match the result type size");
+
+    return from_hex<T>(&s[2]);
 }
 }  // namespace internal
 
 /// Literal for evmc::address.
-template <char... c>
-constexpr address operator""_address() noexcept
+constexpr address operator""_address(const char* s) noexcept
 {
-    return internal::from_literal<address, c...>();
+    return internal::from_literal<address>(s);
 }
 
 /// Literal for evmc::bytes32.
-template <char... c>
-constexpr bytes32 operator""_bytes32() noexcept
+constexpr bytes32 operator""_bytes32(const char* s) noexcept
 {
-    return internal::from_literal<bytes32, c...>();
+    return internal::from_literal<bytes32>(s);
 }
 }  // namespace literals
 
