@@ -15,8 +15,7 @@ namespace
 /// @todo The file content is expected to be a hex string but not validated.
 std::string load_hex(const std::string& str)
 {
-    const auto error_code = evmc::validate_hex(str);
-    if (!error_code)
+    if (evmc::validate_hex(str))
         return str;
 
     // Must be a file path.
@@ -30,9 +29,8 @@ struct HexValidator : public CLI::Validator
     {
         name_ = "HEX";
         func_ = [](const std::string& str) -> std::string {
-            const auto error_code = evmc::validate_hex(str);
-            if (error_code)
-                return error_code.message();
+            if (!evmc::validate_hex(str))
+                return "invalid hex";
             return {};
         };
     }

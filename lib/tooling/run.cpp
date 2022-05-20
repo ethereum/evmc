@@ -71,8 +71,13 @@ int run(evmc::VM& vm,
     out << (create ? "Creating and executing on " : "Executing on ") << rev << " with " << gas
         << " gas limit\n";
 
-    const auto code = from_hex(code_hex);
-    const auto input = from_hex(input_hex);
+    auto opt_code = from_hex(code_hex);
+    auto opt_input = from_hex(input_hex);
+    if (!opt_code || !opt_input)
+        throw std::invalid_argument{"invalid hex"};
+
+    const auto& code = *opt_code;
+    const auto& input = *opt_input;
 
     MockedHost host;
 

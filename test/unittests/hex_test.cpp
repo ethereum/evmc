@@ -4,6 +4,7 @@
 
 #include <evmc/hex.hpp>
 #include <gtest/gtest.h>
+#include <cctype>
 
 using namespace evmc;
 
@@ -39,31 +40,18 @@ TEST(hex, from_hex)
     EXPECT_EQ(from_hex("00bc01000C"), (bytes{0x00, 0xbc, 0x01, 0x00, 0x0c}));
 }
 
-static std::error_code catch_hex_error(const char* input)
-{
-    try
-    {
-        from_hex(input);
-    }
-    catch (const hex_error& e)
-    {
-        return e.code();
-    }
-    return {};
-}
-
 TEST(hex, from_hex_odd_length)
 {
-    EXPECT_EQ(catch_hex_error("0"), hex_errc::incomplete_hex_byte_pair);
-    EXPECT_EQ(catch_hex_error("1"), hex_errc::incomplete_hex_byte_pair);
-    EXPECT_EQ(catch_hex_error("123"), hex_errc::incomplete_hex_byte_pair);
+    EXPECT_EQ(from_hex("0"), std::nullopt);
+    EXPECT_EQ(from_hex("1"), std::nullopt);
+    EXPECT_EQ(from_hex("123"), std::nullopt);
 }
 
 TEST(hex, from_hex_not_hex_digit)
 {
-    EXPECT_EQ(catch_hex_error("0g"), hex_errc::invalid_hex_digit);
-    EXPECT_EQ(catch_hex_error("000h"), hex_errc::invalid_hex_digit);
-    EXPECT_EQ(catch_hex_error("ffffffzz"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(from_hex("0g"), std::nullopt);
+    EXPECT_EQ(from_hex("000h"), std::nullopt);
+    EXPECT_EQ(from_hex("ffffffzz"), std::nullopt);
 }
 
 TEST(hex, from_hex_0x_prefix)
@@ -71,10 +59,10 @@ TEST(hex, from_hex_0x_prefix)
     EXPECT_EQ(from_hex("0x"), bytes{});
     EXPECT_EQ(from_hex("0x00"), bytes{0x00});
     EXPECT_EQ(from_hex("0x01020304"), (bytes{0x01, 0x02, 0x03, 0x04}));
-    EXPECT_EQ(catch_hex_error("0x123"), hex_errc::incomplete_hex_byte_pair);
-    EXPECT_EQ(catch_hex_error("00x"), hex_errc::invalid_hex_digit);
-    EXPECT_EQ(catch_hex_error("00x0"), hex_errc::invalid_hex_digit);
-    EXPECT_EQ(catch_hex_error("0x001y"), hex_errc::invalid_hex_digit);
+    EXPECT_EQ(from_hex("0x123"), std::nullopt);
+    EXPECT_EQ(from_hex("00x"), std::nullopt);
+    EXPECT_EQ(from_hex("00x0"), std::nullopt);
+    EXPECT_EQ(from_hex("0x001y"), std::nullopt);
 }
 
 TEST(hex, from_hex_skip_whitespace)
@@ -86,34 +74,35 @@ TEST(hex, from_hex_skip_whitespace)
 
 TEST(hex, validate_hex)
 {
-    EXPECT_FALSE(validate_hex(""));
-    EXPECT_FALSE(validate_hex("0x"));
-    EXPECT_FALSE(validate_hex("01"));
-    EXPECT_EQ(validate_hex("0"), hex_errc::incomplete_hex_byte_pair);
-    EXPECT_EQ(validate_hex("WXYZ"), hex_errc::invalid_hex_digit);
+    EXPECT_TRUE(validate_hex(""));
+    EXPECT_TRUE(validate_hex("0x"));
+    EXPECT_TRUE(validate_hex("01"));
+    EXPECT_FALSE(validate_hex("0"));
+    EXPECT_FALSE(validate_hex("WXYZ"));
 }
 
-TEST(hex, hex_error_code)
+TEST(hex, isspace)
 {
-    std::error_code ec1 = hex_errc::invalid_hex_digit;
-    EXPECT_EQ(ec1.value(), 1);
-    EXPECT_EQ(ec1.message(), "invalid hex digit");
+    // Test internal isspace() compliance with std::isspace().
+    // The https://en.cppreference.com/w/cpp/string/byte/isspace has the list of "space" characters.
 
-    std::error_code ec2 = hex_errc::incomplete_hex_byte_pair;
-    EXPECT_EQ(ec2.value(), 2);
-    EXPECT_EQ(ec2.message(), "incomplete hex byte pair");
-}
-
-TEST(hex, hex_category_inspection)
-{
-    EXPECT_STREQ(hex_category().name(), "hex");
-}
-
-TEST(hex, hex_category_comparison)
-{
-    std::error_code ec1 = hex_errc::invalid_hex_digit;
-    EXPECT_EQ(ec1.category(), hex_category());
-
-    std::error_code ec2 = hex_errc::incomplete_hex_byte_pair;
-    EXPECT_EQ(ec2.category(), hex_category());
+    for (int i = int{std::numeric_limits<char>::min()}; i <= std::numeric_limits<char>::max(); ++i)
+    {
+        const auto c = static_cast<char>(i);
+        EXPECT_EQ(evmc::internal_hex::isspace(c), (std::isspace(c) != 0));
+        switch (c)
+        {
+        case ' ':
+        case '\f':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\v':
+            EXPECT_TRUE(evmc::internal_hex::isspace(c));
+            break;
+        default:
+            EXPECT_FALSE(evmc::internal_hex::isspace(c));
+            break;
+        }
+    }
 }
