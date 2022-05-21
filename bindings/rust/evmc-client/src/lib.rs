@@ -6,9 +6,7 @@
 #[macro_use]
 extern crate enum_primitive;
 pub mod host;
-mod loader;
 pub mod types;
-pub use crate::loader::{load_and_create, EvmcLoaderErrorCode};
 use crate::types::*;
 use evmc_loader;
 use evmc_sys as ffi;
