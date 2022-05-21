@@ -74,9 +74,7 @@ impl EvmcVm {
                 flags: evmc_flags,
                 depth: depth,
                 gas: gas,
-                recipient: ffi::evmc_address {
-                    bytes: *recipient,
-                },
+                recipient: ffi::evmc_address { bytes: *recipient },
                 sender: ffi::evmc_address { bytes: *sender },
                 input_data: input.as_ptr(),
                 input_size: input.len(),
@@ -84,7 +82,9 @@ impl EvmcVm {
                 create2_salt: ffi::evmc_bytes32 {
                     bytes: *create2_salt,
                 },
-                code_address: ffi::evmc_address { bytes: *code_address },
+                code_address: ffi::evmc_address {
+                    bytes: *code_address,
+                },
             }
         }));
         unsafe {

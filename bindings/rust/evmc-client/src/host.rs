@@ -27,7 +27,19 @@ pub trait HostContext {
         buffer_size: &usize,
     ) -> usize;
     fn selfdestruct(&mut self, addr: &Address, beneficiary: &Address);
-    fn get_tx_context(&mut self) -> (Bytes32, Address, Address, i64, i64, i64, Bytes32, Bytes32, Bytes32);
+    fn get_tx_context(
+        &mut self,
+    ) -> (
+        Bytes32,
+        Address,
+        Address,
+        i64,
+        i64,
+        i64,
+        Bytes32,
+        Bytes32,
+        Bytes32,
+    );
     fn get_block_hash(&mut self, number: i64) -> Bytes32;
     fn emit_log(&mut self, addr: &Address, topics: &Vec<Bytes32>, data: &Bytes);
     fn call(
@@ -154,8 +166,17 @@ unsafe extern "C" fn selfdestruct(
 }
 
 unsafe extern "C" fn get_tx_context(context: *mut ffi::evmc_host_context) -> ffi::evmc_tx_context {
-    let (gas_price, origin, coinbase, number, timestamp, gas_limit, prev_randao, chain_id, base_fee) =
-        (*(context as *mut ExtendedContext)).hctx.get_tx_context();
+    let (
+        gas_price,
+        origin,
+        coinbase,
+        number,
+        timestamp,
+        gas_limit,
+        prev_randao,
+        chain_id,
+        base_fee,
+    ) = (*(context as *mut ExtendedContext)).hctx.get_tx_context();
     return ffi::evmc_tx_context {
         tx_gas_price: evmc_sys::evmc_bytes32 { bytes: gas_price },
         tx_origin: evmc_sys::evmc_address { bytes: origin },
