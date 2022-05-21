@@ -13,10 +13,6 @@ use crate::types::*;
 use evmc_sys as ffi;
 use std::ffi::CStr;
 
-extern "C" {
-    fn evmc_create() -> *mut ffi::evmc_vm;
-}
-
 pub struct EvmcVm {
     handle: *mut ffi::evmc_vm,
     host_interface: *mut ffi::evmc_host_interface,
@@ -129,13 +125,4 @@ pub fn load(fname: &str) -> (EvmcVm, Result<EvmcLoaderErrorCode, &'static str>) 
         },
         ec,
     )
-}
-
-pub fn create() -> EvmcVm {
-    unsafe {
-        EvmcVm {
-            handle: evmc_create(),
-            host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
-        }
-    }
 }
