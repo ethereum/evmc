@@ -17,6 +17,13 @@ pub struct EvmcVm {
     host_interface: *mut ffi::evmc_host_interface,
 }
 
+impl Drop for EvmcVm {
+    fn drop(&mut self) {
+        debug_assert!(!self.handle.is_null());
+        unsafe { ((*self.handle).destroy.unwrap())(self.handle) }
+    }
+}
+
 impl EvmcVm {
     pub fn get_abi_version(&self) -> i32 {
         unsafe {
@@ -37,10 +44,6 @@ impl EvmcVm {
             let c_str: &CStr = CStr::from_ptr((*self.handle).version);
             c_str.to_str().unwrap()
         }
-    }
-
-    pub fn destroy(&self) {
-        unsafe { ((*self.handle).destroy.unwrap())(self.handle) }
     }
 
     pub fn execute(
