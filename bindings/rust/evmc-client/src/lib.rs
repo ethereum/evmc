@@ -10,6 +10,7 @@ mod loader;
 pub mod types;
 pub use crate::loader::{load_and_create, EvmcLoaderErrorCode};
 use crate::types::*;
+use evmc_loader;
 use evmc_sys as ffi;
 use std::ffi::CStr;
 
@@ -116,13 +117,11 @@ impl EvmcVm {
     }
 }
 
-pub fn load(fname: &str) -> (EvmcVm, Result<EvmcLoaderErrorCode, &'static str>) {
-    let (instance, ec) = load_and_create(fname);
-    (
-        EvmcVm {
-            handle: instance,
-            host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
-        },
-        ec,
-    )
+pub fn load_and_configure(
+    config: &str,
+) -> Result<EvmcVm, (evmc_loader::sys::evmc_loader_error_code, String)> {
+    Ok(EvmcVm {
+        handle: evmc_loader::load_and_configure(config)? as *mut ffi::evmc_vm,
+        host_interface: Box::into_raw(Box::new(host::get_evmc_host_interface())),
+    })
 }

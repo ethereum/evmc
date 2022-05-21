@@ -4,7 +4,7 @@
 
 use std::ffi::{CStr, CString};
 
-mod sys;
+pub mod sys;
 
 pub fn load_and_configure(
     config: &str,
