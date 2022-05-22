@@ -19,7 +19,7 @@ fn gen_bindings() {
         .derive_hash(true)
         // force deriving the PratialEq trait on basic types (address, bytes32)
         .derive_partialeq(true)
-        .opaque_type("evmc_host_context")
+        .blocklist_type("evmc_host_context")
         .allowlist_type("evmc_.*")
         .allowlist_function("evmc_.*")
         .allowlist_var("EVMC_ABI_VERSION")

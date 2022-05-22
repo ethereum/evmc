@@ -8,6 +8,11 @@
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
+// Defining evmc_host_context here, because bindgen cannot create a useful declaration yet.
+
+/// This is a void type given host context is an opaque pointer. Functions allow it to be a null ptr.
+pub type evmc_host_context = ::std::os::raw::c_void;
+
 // TODO: add `.derive_default(true)` to bindgen instead?
 
 impl Default for evmc_address {
