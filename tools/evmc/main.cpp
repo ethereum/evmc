@@ -10,25 +10,27 @@
 
 namespace
 {
-/// Returns the input str if already valid hex string. Otherwise, interprets the str as a file
-/// name and loads the file content.
+/// If the argument starts with @ returns the content of the file at the path following @.
+/// Otherwise, returns the argument.
 /// @todo The file content is expected to be a hex string but not validated.
 std::string load_hex(const std::string& str)
 {
-    if (evmc::validate_hex(str))
-        return str;
+    if (str[0] == '@')  // The argument is file path.
+    {
+        std::ifstream file{str.c_str() + 1};
+        return {std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+    }
 
-    // Must be a file path.
-    std::ifstream file{str};
-    return {std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+    return str;
 }
 
-struct HexValidator : public CLI::Validator
+struct HexOrFileValidator : public CLI::Validator
 {
-    HexValidator() : CLI::Validator{"HEX"}
+    HexOrFileValidator() : CLI::Validator{"HEX|@FILE"}
     {
-        name_ = "HEX";
         func_ = [](const std::string& str) -> std::string {
+            if (!str.empty() && str[0] == '@')
+                return CLI::ExistingFile(str.substr(1));
             if (!evmc::validate_hex(str))
                 return "invalid hex";
             return {};
@@ -43,7 +45,7 @@ int main(int argc, const char** argv) noexcept
 
     try
     {
-        HexValidator Hex;
+        HexOrFileValidator HexOrFile;
 
         std::string vm_config;
         std::string code_arg;
@@ -59,13 +61,11 @@ int main(int argc, const char** argv) noexcept
             *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
         auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode")->fallthrough();
-        run_cmd.add_option("code", code_arg, "Bytecode")
-            ->required()
-            ->check(Hex | CLI::ExistingFile);
+        run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(HexOrFile);
         run_cmd.add_option("--gas", gas, "Execution gas limit", true)
             ->check(CLI::Range(0, 1000000000));
         run_cmd.add_option("--rev", rev, "EVM revision", true);
-        run_cmd.add_option("--input", input_arg, "Input bytes")->check(Hex | CLI::ExistingFile);
+        run_cmd.add_option("--input", input_arg, "Input bytes")->check(HexOrFile);
         run_cmd.add_flag(
             "--create", create,
             "Create new contract out of the code and then execute this contract with the input");
