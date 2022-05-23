@@ -133,9 +133,8 @@ TEST(tool_commands, create_preserve_storage)
     std::ostringstream out;
 
     const auto exit_code =
-        run(vm, EVMC_BERLIN, 200,
-            *from_hex("60bb 6000 55 6a6000546000526001601ff3 6000 52 600b 6015 f3"), {}, true,
-            false, out);
+        run(vm, EVMC_BERLIN, 200, *from_hex("60bb6000556a6000546000526001601ff3600052600b6015f3"),
+            {}, true, false, out);
     EXPECT_EQ(exit_code, 0);
     EXPECT_EQ(out.str(), out_pattern("Berlin", 200, "success", 7, "bb", true));
 }
@@ -145,7 +144,7 @@ TEST(tool_commands, bench_add)
     auto vm = evmc::VM{evmc_create_example_vm()};
     std::ostringstream out;
 
-    const auto exit_code = run(vm, EVMC_LONDON, 200, *from_hex("6002 80 01"), {}, false, true, out);
+    const auto exit_code = run(vm, EVMC_LONDON, 200, *from_hex("60028001"), {}, false, true, out);
     EXPECT_EQ(exit_code, 0);
 
     const auto o = out.str();
@@ -160,7 +159,7 @@ TEST(tool_commands, bench_inconsistent_output)
     auto vm = evmc::VM{evmc_create_example_vm()};
     std::ostringstream out;
 
-    const auto code = *from_hex("6000 54 6001 6000 55 6000 52 6001 601f f3");
+    const auto code = *from_hex("60005460016000556000526001601ff3");
     const auto exit_code = run(vm, EVMC_BYZANTIUM, 200, code, {}, false, true, out);
     EXPECT_EQ(exit_code, 0);
 
