@@ -3,6 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include <evmc/hex.hpp>
+#include <tools/evmc/filter_iterator.hpp>
 #include <gtest/gtest.h>
 
 using namespace evmc;
@@ -71,4 +72,21 @@ TEST(hex, validate_hex)
     EXPECT_TRUE(validate_hex("01"));
     EXPECT_FALSE(validate_hex("0"));
     EXPECT_FALSE(validate_hex("WXYZ"));
+}
+
+TEST(hex, from_hex_skip_space)
+{
+    // Combine from_hex with skip_space_iterator.
+    static constexpr auto from_hex_skip_space = [](std::string_view hex) {
+        bytes out;
+        const auto status =
+            from_hex(skip_space_iterator{hex.begin(), hex.end()},
+                     skip_space_iterator{hex.end(), hex.end()}, std::back_inserter(out));
+        EXPECT_TRUE(status);
+        return out;
+    };
+    EXPECT_EQ(from_hex_skip_space("0x010203"), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space("0x 010203 "), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space(" 0 x 0 1 0 2 0 3 "), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space("\f 0\r x  0  1\t 0  2 \v0  3 \n"), (bytes{0x01, 0x02, 0x03}));
 }
