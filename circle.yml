@@ -14,7 +14,12 @@ commands:
     steps:
       - run:
           name: "Install doxygen"
-          command: sudo apt-get -q update && sudo apt-get -qy install doxygen
+          working_directory: "~"
+          command: |
+            export DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.4.linux.bin.tar.gz
+            export DOXYGEN_CHECKSUM=d157f247d579d0c976bb2595e7806bc4d0ffad105cbe0406b243afa1dc686a32
+            curl $DOXYGEN_URL | tee >(tar -xz --strip-components=1) | sha256sum --check <(echo $DOXYGEN_CHECKSUM -)
+            sudo ln -s $PWD/bin/doxygen /usr/bin
   build:
     parameters:
       build_type:
