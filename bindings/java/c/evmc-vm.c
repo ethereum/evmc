@@ -97,7 +97,8 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
                                                                 jobject jcontext,
                                                                 jint jrev,
                                                                 jobject jmsg,
-                                                                jobject jcode)
+                                                                jobject jcode,
+                                                                jobject jinput_data)
 {
     (void)jcls;
     struct evmc_message* msg = (struct evmc_message*)(*jenv)->GetDirectBufferAddress(jenv, jmsg);
@@ -112,6 +113,7 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
+    msg->input_data = GetDirectBuffer(jenv, jinput_data, &msg->input_size);
     *result = evmc_execute(evm, host, (struct evmc_host_context*)jcontext, (enum evmc_revision)jrev,
                            msg, code, code_size);
     return jresult;

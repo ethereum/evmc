@@ -144,7 +144,12 @@ public final class EvmcVm implements AutoCloseable {
    * <p>This is a mandatory method and MUST NOT be set to NULL.
    */
   private static native ByteBuffer execute(
-      ByteBuffer nativeVm, HostContext context, int rev, ByteBuffer msg, ByteBuffer code);
+      ByteBuffer nativeVm,
+      HostContext context,
+      int rev,
+      ByteBuffer msg,
+      ByteBuffer code,
+      ByteBuffer input_data);
 
   /**
    * Function is a wrapper around native execute.
@@ -152,8 +157,8 @@ public final class EvmcVm implements AutoCloseable {
    * <p>This allows the context to managed in one method
    */
   public synchronized ByteBuffer execute(
-      HostContext context, int rev, ByteBuffer msg, ByteBuffer code) {
-    return execute(nativeVm, context, rev, msg, code);
+      HostContext context, int rev, ByteBuffer msg, ByteBuffer code, ByteBuffer inputdata) {
+    return execute(nativeVm, context, rev, msg, code, inputdata);
   }
 
   /**
