@@ -369,7 +369,7 @@ static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* contex
 
 static evmc_bytes32 get_block_hash_fn(struct evmc_host_context* context, int64_t number)
 {
-    char java_method_name[] = "get_code_hash";
+    char java_method_name[] = "get_block_hash";
     char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;J)Ljava/nio/ByteBuffer;";
 
     assert(context != NULL);
