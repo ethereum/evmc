@@ -70,17 +70,22 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
 
       byte[] code = {0x30, 0x60, 0x00, 0x52, 0x59, 0x60, 0x00, (byte) 0xf3}; // return_address
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -100,17 +105,22 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
 
       byte[] code = {0x60, 0x01, 0x60, 0x00, 0x54, 0x01, 0x60, 0x00, 0x55}; // counter
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -130,17 +140,22 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
 
       byte[] code = {0x43, 0x60, 0x00, 0x52, 0x59, 0x60, 0x00, (byte) 0xf3}; // return_block_number(
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -160,11 +175,15 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
 
       byte[] code = {
         0x43, 0x60, 0x00, 0x55, 0x43, 0x60, 0x00, 0x52, 0x59, 0x60, 0x00, (byte) 0xf3
@@ -172,7 +191,8 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -192,11 +212,15 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
       byte[] code = {
         0x60,
         0x00,
@@ -211,7 +235,8 @@ final class EvmcTest {
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
@@ -230,16 +255,21 @@ final class EvmcTest {
       char[] sender = "39bf71de1b7d7be3b51\\0".toCharArray();
       char[] recipient = "53cf77204eEef952e25\0".toCharArray();
       char[] value = "1\0".toCharArray();
-      char[] inputData = "hello w\0".toCharArray();
+      char[] inputDataPlaceholder = {};
+      byte[] inputDataBytes = {0x68, 0x65, 0x6c, 0x6c, 0x6f};
+      ByteBuffer inputDataByteBuffer =
+          ByteBuffer.wrap(inputDataBytes).order(ByteOrder.nativeOrder());
       long gas = 200000;
       int depth = 0;
       ByteBuffer msg =
-          new TestMessage(kind, sender, recipient, value, inputData, gas, depth).toByteBuffer();
+          new TestMessage(kind, sender, recipient, value, inputDataPlaceholder, gas, depth)
+              .toByteBuffer();
       byte[] code = {0x00};
       ByteBuffer bbcode = ByteBuffer.allocateDirect(code.length).put(code);
 
       ByteBuffer result =
-          vm.execute(context, BYZANTIUM, msg, bbcode).order(ByteOrder.nativeOrder());
+          vm.execute(context, BYZANTIUM, msg, bbcode, inputDataByteBuffer)
+              .order(ByteOrder.nativeOrder());
       int statusCode = result.getInt();
       result.getInt(); // padding
       long gasLeft = result.getLong();
