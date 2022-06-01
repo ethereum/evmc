@@ -144,7 +144,7 @@ public:
 
         return (number < current_block_number && number >= current_block_number - 256) ?
                    0xb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5fb10c8a5f_bytes32 :
-                   0_bytes32;
+                   0x0000000000000000000000000000000000000000000000000000000000000000_bytes32;
     }
 
     void emit_log(const evmc::address& addr,

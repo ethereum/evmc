@@ -322,14 +322,12 @@ constexpr T from_literal() noexcept
 {
     constexpr auto size = sizeof...(c);
     constexpr char literal[] = {c...};
-    constexpr bool is_simple_zero = size == 1 && literal[0] == '0';
 
-    static_assert(is_simple_zero || (literal[0] == '0' && literal[1] == 'x'),
+    static_assert(size > 2 && literal[0] == '0' && literal[1] == 'x',
                   "literal must be in hexadecimal notation");
-    static_assert(is_simple_zero || size == 2 * sizeof(T) + 2,
-                  "literal must match the result type size");
+    static_assert(size == 2 * sizeof(T) + 2, "literal must match the result type size");
 
-    return is_simple_zero ? T{} : from_hex<T>(&literal[2]);
+    return from_hex<T>(&literal[2]);
 }
 }  // namespace internal
 
