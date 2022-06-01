@@ -348,8 +348,9 @@ TEST(cpp, literals)
     constexpr auto address1 = 0xa0a1a2a3a4a5a6a7a8a9d0d1d2d3d4d5d6d7d8d9_address;
     constexpr auto hash1 =
         0x01020304050607080910a1a2a3a4a5a6a7a8a9b0c1c2c3c4c5c6c7c8c9d0d1d2_bytes32;
-    constexpr auto zero_address = 0_address;
-    constexpr auto zero_hash = 0_bytes32;
+    constexpr auto zero_address = 0x0000000000000000000000000000000000000000_address;
+    constexpr auto zero_hash =
+        0x0000000000000000000000000000000000000000000000000000000000000000_bytes32;
 
     static_assert(address1.bytes[0] == 0xa0);
     static_assert(address1.bytes[9] == 0xa9);
@@ -361,8 +362,9 @@ TEST(cpp, literals)
     static_assert(zero_address == evmc::address{});
     static_assert(zero_hash == evmc::bytes32{});
 
-    EXPECT_EQ(0_address, evmc::address{});
-    EXPECT_EQ(0_bytes32, evmc::bytes32{});
+    EXPECT_EQ(0x0000000000000000000000000000000000000000_address, evmc::address{});
+    EXPECT_EQ(0x0000000000000000000000000000000000000000000000000000000000000000_bytes32,
+              evmc::bytes32{});
 
     auto a1 = 0xa0a1a2a3a4a5a6a7a8a9d0d1d2d3d4d5d6d7d8d9_address;
     evmc::address e1{{{0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
