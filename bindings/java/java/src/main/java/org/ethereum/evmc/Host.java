@@ -69,7 +69,7 @@ final class Host {
   }
 
   /** Get block hash callback function. */
-  static ByteBuffer get_block_hash_fn(HostContext context, long number) {
+  static ByteBuffer get_block_hash(HostContext context, long number) {
     return ensureDirectBuffer(context.getBlockHash(number));
   }
 
