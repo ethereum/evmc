@@ -59,25 +59,17 @@ auto bench(MockedHost& host,
 }
 }  // namespace
 
-int run(evmc::VM& vm,
+int run(VM& vm,
         evmc_revision rev,
         int64_t gas,
-        const std::string& code_hex,
-        const std::string& input_hex,
+        bytes_view code,
+        bytes_view input,
         bool create,
         bool bench,
         std::ostream& out)
 {
     out << (create ? "Creating and executing on " : "Executing on ") << rev << " with " << gas
         << " gas limit\n";
-
-    auto opt_code = from_hex(code_hex);
-    auto opt_input = from_hex(input_hex);
-    if (!opt_code || !opt_input)
-        throw std::invalid_argument{"invalid hex"};
-
-    const auto& code = *opt_code;
-    const auto& input = *opt_input;
 
     MockedHost host;
 

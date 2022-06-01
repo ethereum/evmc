@@ -78,7 +78,7 @@ add_evmc_tool_test(
 add_evmc_tool_test(
     invalid_code_file
     "--vm $<TARGET_FILE:evmc::example-vm> run @${CMAKE_CURRENT_SOURCE_DIR}/invalid_code.evm"
-    "Error: invalid hex"
+    "Error: invalid hex in ${CMAKE_CURRENT_SOURCE_DIR}/invalid_code.evm"
 )
 
 add_evmc_tool_test(

@@ -10,18 +10,24 @@
 
 namespace
 {
-/// If the argument starts with @ returns the content of the file at the path following @.
-/// Otherwise, returns the argument.
+/// If the argument starts with @ returns the hex-decoded contents of the file
+/// at the path following the @. Otherwise, returns the argument.
 /// @todo The file content is expected to be a hex string but not validated.
-std::string load_hex(const std::string& str)
+evmc::bytes load_from_hex(const std::string& str)
 {
     if (str[0] == '@')  // The argument is file path.
     {
-        std::ifstream file{str.c_str() + 1};
-        return {std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+        const auto path = str.substr(1);
+        std::ifstream file{path};
+        const std::string content{std::istreambuf_iterator<char>{file},
+                                  std::istreambuf_iterator<char>{}};
+        auto o = evmc::from_hex(content);
+        if (!o)
+            throw std::invalid_argument{"invalid hex in " + path};
+        return std::move(*o);
     }
 
-    return str;
+    return evmc::from_hex(str).value();  // Should be validated already.
 }
 
 struct HexOrFileValidator : public CLI::Validator
@@ -114,10 +120,10 @@ int main(int argc, const char** argv) noexcept
 
                 std::cout << "Config: " << vm_config << "\n";
 
-                const auto code_hex = load_hex(code_arg);
-                const auto input_hex = load_hex(input_arg);
-                // If code_hex or input_hex is not valid hex string an exception is thrown.
-                return tooling::run(vm, rev, gas, code_hex, input_hex, create, bench, std::cout);
+                // If code_arg or input_arg contains invalid hex string an exception is thrown.
+                const auto code = load_from_hex(code_arg);
+                const auto input = load_from_hex(input_arg);
+                return tooling::run(vm, rev, gas, code, input, create, bench, std::cout);
             }
 
             return 0;
