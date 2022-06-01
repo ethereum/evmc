@@ -157,8 +157,8 @@ public final class EvmcVm implements AutoCloseable {
    * <p>This allows the context to managed in one method
    */
   public synchronized ByteBuffer execute(
-      HostContext context, int rev, ByteBuffer msg, ByteBuffer code, ByteBuffer inputdata) {
-    return execute(nativeVm, context, rev, msg, code, inputdata);
+      HostContext context, int rev, ByteBuffer msg, ByteBuffer code, ByteBuffer input_data) {
+    return execute(nativeVm, context, rev, msg, code, input_data);
   }
 
   /**
