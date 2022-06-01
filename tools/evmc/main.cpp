@@ -10,25 +10,33 @@
 
 namespace
 {
-/// Returns the input str if already valid hex string. Otherwise, interprets the str as a file
-/// name and loads the file content.
+/// If the argument starts with @ returns the hex-decoded contents of the file
+/// at the path following the @. Otherwise, returns the argument.
 /// @todo The file content is expected to be a hex string but not validated.
-std::string load_hex(const std::string& str)
+evmc::bytes load_from_hex(const std::string& str)
 {
-    if (evmc::validate_hex(str))
-        return str;
+    if (str[0] == '@')  // The argument is file path.
+    {
+        const auto path = str.substr(1);
+        std::ifstream file{path};
+        const std::string content{std::istreambuf_iterator<char>{file},
+                                  std::istreambuf_iterator<char>{}};
+        auto o = evmc::from_hex(content);
+        if (!o)
+            throw std::invalid_argument{"invalid hex in " + path};
+        return std::move(*o);
+    }
 
-    // Must be a file path.
-    std::ifstream file{str};
-    return {std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+    return evmc::from_hex(str).value();  // Should be validated already.
 }
 
-struct HexValidator : public CLI::Validator
+struct HexOrFileValidator : public CLI::Validator
 {
-    HexValidator() : CLI::Validator{"HEX"}
+    HexOrFileValidator() : CLI::Validator{"HEX|@FILE"}
     {
-        name_ = "HEX";
         func_ = [](const std::string& str) -> std::string {
+            if (!str.empty() && str[0] == '@')
+                return CLI::ExistingFile(str.substr(1));
             if (!evmc::validate_hex(str))
                 return "invalid hex";
             return {};
@@ -43,7 +51,7 @@ int main(int argc, const char** argv) noexcept
 
     try
     {
-        HexValidator Hex;
+        HexOrFileValidator HexOrFile;
 
         std::string vm_config;
         std::string code_arg;
@@ -59,13 +67,11 @@ int main(int argc, const char** argv) noexcept
             *app.add_option("--vm", vm_config, "EVMC VM module")->envname("EVMC_VM");
 
         auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode")->fallthrough();
-        run_cmd.add_option("code", code_arg, "Bytecode")
-            ->required()
-            ->check(Hex | CLI::ExistingFile);
+        run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(HexOrFile);
         run_cmd.add_option("--gas", gas, "Execution gas limit", true)
             ->check(CLI::Range(0, 1000000000));
         run_cmd.add_option("--rev", rev, "EVM revision", true);
-        run_cmd.add_option("--input", input_arg, "Input bytes")->check(Hex | CLI::ExistingFile);
+        run_cmd.add_option("--input", input_arg, "Input bytes")->check(HexOrFile);
         run_cmd.add_flag(
             "--create", create,
             "Create new contract out of the code and then execute this contract with the input");
@@ -114,10 +120,10 @@ int main(int argc, const char** argv) noexcept
 
                 std::cout << "Config: " << vm_config << "\n";
 
-                const auto code_hex = load_hex(code_arg);
-                const auto input_hex = load_hex(input_arg);
-                // If code_hex or input_hex is not valid hex string an exception is thrown.
-                return tooling::run(vm, rev, gas, code_hex, input_hex, create, bench, std::cout);
+                // If code_arg or input_arg contains invalid hex string an exception is thrown.
+                const auto code = load_from_hex(code_arg);
+                const auto input = load_from_hex(input_arg);
+                return tooling::run(vm, rev, gas, code, input, create, bench, std::cout);
             }
 
             return 0;
