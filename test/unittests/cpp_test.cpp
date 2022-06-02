@@ -362,6 +362,10 @@ TEST(cpp, literals)
     static_assert(zero_address == evmc::address{});
     static_assert(zero_hash == evmc::bytes32{});
 
+    static_assert(0x00_address == 0x0000000000000000000000000000000000000000_address);
+    static_assert(0x01_address == 0x0000000000000000000000000000000000000001_address);
+    static_assert(0xf101_address == 0x000000000000000000000000000000000000f101_address);
+
     EXPECT_EQ(0x0000000000000000000000000000000000000000_address, evmc::address{});
     EXPECT_EQ(0x0000000000000000000000000000000000000000000000000000000000000000_bytes32,
               evmc::bytes32{});
