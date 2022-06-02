@@ -5,7 +5,7 @@
 hunter_add_package(CLI11)
 find_package(CLI11 REQUIRED)
 
-add_executable(evmc-tool main.cpp)
+add_executable(evmc-tool main.cpp filter_iterator.hpp)
 add_executable(evmc::tool ALIAS evmc-tool)
 set_target_properties(evmc-tool PROPERTIES OUTPUT_NAME evmc)
 set_source_files_properties(main.cpp PROPERTIES

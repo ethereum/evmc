@@ -3,8 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 #include <evmc/hex.hpp>
+#include <tools/evmc/filter_iterator.hpp>
 #include <gtest/gtest.h>
-#include <cctype>
 
 using namespace evmc;
 
@@ -65,13 +65,6 @@ TEST(hex, from_hex_0x_prefix)
     EXPECT_EQ(from_hex("0x001y"), std::nullopt);
 }
 
-TEST(hex, from_hex_skip_whitespace)
-{
-    EXPECT_EQ(from_hex("0x "), bytes{});
-    EXPECT_EQ(from_hex(" \n\t"), bytes{});
-    EXPECT_EQ(from_hex(" \n\tab\r"), bytes{0xab});
-}
-
 TEST(hex, validate_hex)
 {
     EXPECT_TRUE(validate_hex(""));
@@ -81,28 +74,19 @@ TEST(hex, validate_hex)
     EXPECT_FALSE(validate_hex("WXYZ"));
 }
 
-TEST(hex, isspace)
+TEST(hex, from_hex_skip_space)
 {
-    // Test internal isspace() compliance with std::isspace().
-    // The https://en.cppreference.com/w/cpp/string/byte/isspace has the list of "space" characters.
-
-    for (int i = int{std::numeric_limits<char>::min()}; i <= std::numeric_limits<char>::max(); ++i)
-    {
-        const auto c = static_cast<char>(i);
-        EXPECT_EQ(evmc::internal_hex::isspace(c), (std::isspace(c) != 0));
-        switch (c)
-        {
-        case ' ':
-        case '\f':
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\v':
-            EXPECT_TRUE(evmc::internal_hex::isspace(c));
-            break;
-        default:
-            EXPECT_FALSE(evmc::internal_hex::isspace(c));
-            break;
-        }
-    }
+    // Combine from_hex with skip_space_iterator.
+    static constexpr auto from_hex_skip_space = [](std::string_view hex) {
+        bytes out;
+        const auto status =
+            from_hex(skip_space_iterator{hex.begin(), hex.end()},
+                     skip_space_iterator{hex.end(), hex.end()}, std::back_inserter(out));
+        EXPECT_TRUE(status);
+        return out;
+    };
+    EXPECT_EQ(from_hex_skip_space("0x010203"), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space("0x 010203 "), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space(" 0 x 0 1 0 2 0 3 "), (bytes{0x01, 0x02, 0x03}));
+    EXPECT_EQ(from_hex_skip_space("\f 0\r x  0  1\t 0  2 \v0  3 \n"), (bytes{0x01, 0x02, 0x03}));
 }

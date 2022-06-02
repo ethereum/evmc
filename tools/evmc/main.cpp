@@ -2,6 +2,7 @@
 // Copyright 2019-2020 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+#include "filter_iterator.hpp"
 #include <CLI/CLI.hpp>
 #include <evmc/hex.hpp>
 #include <evmc/loader.h>
@@ -19,12 +20,13 @@ evmc::bytes load_from_hex(const std::string& str)
     {
         const auto path = str.substr(1);
         std::ifstream file{path};
-        const std::string content{std::istreambuf_iterator<char>{file},
-                                  std::istreambuf_iterator<char>{}};
-        auto o = evmc::from_hex(content);
-        if (!o)
+        const std::istreambuf_iterator<char> file_begin{file};
+        const std::istreambuf_iterator<char> file_end;
+        evmc::bytes out;
+        if (!evmc::from_hex(evmc::skip_space_iterator{file_begin, file_end},
+                            evmc::skip_space_iterator{file_end, file_end}, std::back_inserter(out)))
             throw std::invalid_argument{"invalid hex in " + path};
-        return std::move(*o);
+        return out;
     }
 
     return evmc::from_hex(str).value();  // Should be validated already.
