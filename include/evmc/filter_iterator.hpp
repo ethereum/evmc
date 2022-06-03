@@ -14,6 +14,7 @@ inline constexpr bool isspace(char ch) noexcept
     return ch == ' ' || (static_cast<unsigned>(ch) - '\t') < 5;
 }
 
+/// Checks if a character is not a white space.
 inline constexpr bool is_not_space(char ch) noexcept
 {
     return !isspace(ch);
@@ -32,10 +33,19 @@ template <typename BaseIterator,
           bool predicate(typename std::iterator_traits<BaseIterator>::value_type) noexcept>
 struct filter_iterator
 {
+    /// The iterator difference type.
     using difference_type = typename std::iterator_traits<BaseIterator>::difference_type;
+
+    /// The iterator value type.
     using value_type = typename std::iterator_traits<BaseIterator>::value_type;
+
+    /// The iterator pointer type.
     using pointer = typename std::iterator_traits<BaseIterator>::pointer;
+
+    /// The iterator reference type.
     using reference = typename std::iterator_traits<BaseIterator>::reference;
+
+    /// The iterator category.
     using iterator_category = std::input_iterator_tag;
 
 private:
@@ -54,11 +64,13 @@ private:
     }
 
 public:
+    /// The constructor of the base iterator pair.
     constexpr filter_iterator(BaseIterator it, BaseIterator end) noexcept : base{it}, base_end{end}
     {
         forward_to_next_value();
     }
 
+    /// The dereference operator.
     constexpr auto operator*() noexcept
     {
         // We should not read from an input base iterator twice. So the only read is in
@@ -66,14 +78,18 @@ public:
         return value;
     }
 
+    /// The increment operator.
     constexpr void operator++() noexcept
     {
         ++base;
         forward_to_next_value();
     }
 
-    constexpr bool operator!=(const filter_iterator& o) const noexcept { return base != o.base; }
+    /// The equality operator.
     constexpr bool operator==(const filter_iterator& o) const noexcept { return base == o.base; }
+
+    /// The inequality operator.
+    constexpr bool operator!=(const filter_iterator& o) const noexcept { return base != o.base; }
 };
 
 /// The input filter iterator which skips whitespace characters from the base input iterator.
@@ -83,6 +99,7 @@ struct skip_space_iterator : filter_iterator<BaseIterator, is_not_space>
     using filter_iterator<BaseIterator, is_not_space>::filter_iterator;
 };
 
+/// Class template argument deduction guide.
 template <typename BaseIterator>
 skip_space_iterator(BaseIterator, BaseIterator) -> skip_space_iterator<BaseIterator>;
 }  // namespace evmc
