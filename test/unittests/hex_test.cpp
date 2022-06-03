@@ -2,8 +2,8 @@
 // Copyright 2021 The EVMC Authors.
 // Licensed under the Apache License, Version 2.0.
 
+#include <evmc/filter_iterator.hpp>
 #include <evmc/hex.hpp>
-#include <tools/evmc/filter_iterator.hpp>
 #include <gtest/gtest.h>
 
 using namespace evmc;
