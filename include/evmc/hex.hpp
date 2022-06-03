@@ -3,8 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 #pragma once
 
+#include <evmc/filter_iterator.hpp>
 #include <cstdint>
-#include <iterator>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -104,7 +104,6 @@ inline bool validate_hex(std::string_view hex) noexcept
 ///
 /// In case the input is invalid the returned value is std::nullopt.
 /// This can happen if a non-hex digit or odd number of digits is encountered.
-/// Whitespace in the input is ignored.
 inline std::optional<bytes> from_hex(std::string_view hex)
 {
     bytes bs;
@@ -134,5 +133,26 @@ constexpr std::optional<T> from_hex(std::string_view s) noexcept
     if (!from_hex(s.begin(), s.end(), &r.bytes[num_out_bytes - num_in_bytes]))
         return {};
     return r;
+}
+
+/// Decodes hex encoded string to bytes. The whitespace in the input is ignored.
+///
+/// In case the input is invalid the returned value is std::nullopt.
+/// This can happen if a non-hex digit or odd number of digits is encountered.
+/// The whitespace (as defined by std::isspace) in the input is ignored.
+template <typename InputIterator>
+std::optional<bytes> from_spaced_hex(InputIterator begin, InputIterator end) noexcept
+{
+    bytes bs;
+    if (!from_hex(skip_space_iterator{begin, end}, skip_space_iterator{end, end},
+                  std::back_inserter(bs)))
+        return {};
+    return bs;
+}
+
+/// @copydoc from_spaced_hex
+inline std::optional<bytes> from_spaced_hex(std::string_view hex) noexcept
+{
+    return from_spaced_hex(hex.begin(), hex.end());
 }
 }  // namespace evmc
