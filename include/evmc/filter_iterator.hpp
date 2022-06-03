@@ -72,8 +72,8 @@ public:
         forward_to_next_value();
     }
 
-    constexpr bool operator!=(const filter_iterator& o) noexcept { return base != o.base; }
-    constexpr bool operator==(const filter_iterator& o) noexcept { return base == o.base; }
+    constexpr bool operator!=(const filter_iterator& o) const noexcept { return base != o.base; }
+    constexpr bool operator==(const filter_iterator& o) const noexcept { return base == o.base; }
 };
 
 /// The input filter iterator which skips whitespace characters from the base input iterator.
