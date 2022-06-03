@@ -12,6 +12,7 @@
 #include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
 #include <evmc/hex.hpp>
+#include <evmc/filter_iterator.hpp>
 
 // Include again to check if headers have proper include guards.
 #include <evmc/evmc.h>
@@ -22,3 +23,4 @@
 #include <evmc/mocked_host.hpp>
 #include <evmc/utils.h>
 #include <evmc/hex.hpp>
+#include <evmc/filter_iterator.hpp>
