@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning].
   [#617](https://github.com/ethereum/evmc/pull/617)
 - Support for Visual Studio 2022.
   [#619](https://github.com/ethereum/evmc/pull/619)
+- C++ types `evmc::address` and `evmc::bytes32` are convertible to `std::basic_string_view<uint8_t>`.
+  [#636](https://github.com/ethereum/evmc/pull/636)
+- Rust: The `EvmcVm::set_option` has been added.
+  [#614](https://github.com/ethereum/evmc/pull/614)
 
 ### Changed
 
@@ -46,6 +50,24 @@ and this project adheres to [Semantic Versioning].
 - According to [EIP-4399](https://eips.ethereum.org/EIPS/eip-4399),
   `block_difficulty` field was renamed to `block_prev_randao`, and `DIFFICULTY` opcode to `PREVRANDAO`.
   [#635](https://github.com/ethereum/evmc/pull/635)
+- The `evmc::hex` support C++ library has been refactored and converted to a single-header library.
+  [#643](https://github.com/ethereum/evmc/pull/643)
+  [#648](https://github.com/ethereum/evmc/pull/648)
+  [#649](https://github.com/ethereum/evmc/pull/649)
+  [#654](https://github.com/ethereum/evmc/pull/654)
+- For command-line tools to load input/code from a file the `@file` syntax must be used.
+  E.g. `evmc run @contract.evm --input @data.in`.
+  [#647](https://github.com/ethereum/evmc/pull/647)
+
+### Fixed
+
+- Java bindings fixes.
+  [#653](https://github.com/ethereum/evmc/pull/653)
+
+### Removed
+
+- The support for C++ `0_address` and `0_bytes32` literals has been removed.
+  [#652](https://github.com/ethereum/evmc/pull/652)
 
 ## [9.0.0] — 2021-06-30
 
