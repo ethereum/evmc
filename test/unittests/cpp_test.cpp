@@ -371,14 +371,14 @@ TEST(cpp, literals)
               evmc::bytes32{});
 
     auto a1 = 0xa0a1a2a3a4a5a6a7a8a9d0d1d2d3d4d5d6d7d8d9_address;
-    evmc::address e1{{{0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
-                       0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9}}};
+    const evmc::address e1{{{0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
+                             0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9}}};
     EXPECT_EQ(a1, e1);
 
     auto h1 = 0x01020304050607080910a1a2a3a4a5a6a7a8a9b0c1c2c3c4c5c6c7c8c9d0d1d2_bytes32;
-    evmc::bytes32 f1{{{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0xa1,
-                       0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xb0, 0xc1, 0xc2,
-                       0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xd0, 0xd1, 0xd2}}};
+    const evmc::bytes32 f1{{{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0xa1,
+                             0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xb0, 0xc1, 0xc2,
+                             0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xd0, 0xd1, 0xd2}}};
     EXPECT_EQ(h1, f1);
 }
 
@@ -532,7 +532,7 @@ TEST(cpp, vm_set_option_in_constructor)
 
 TEST(cpp, vm_null)
 {
-    evmc::VM vm;
+    const evmc::VM vm;
     EXPECT_FALSE(vm);
     EXPECT_TRUE(!vm);
     EXPECT_EQ(vm.get_raw_pointer(), nullptr);
@@ -622,7 +622,7 @@ TEST(cpp, vm_execute_with_null_host)
     auto host = NullHost{};
 
     auto vm = evmc::VM{evmc_create_example_vm()};
-    evmc_message msg{};
+    const evmc_message msg{};
     auto res = vm.execute(host, EVMC_FRONTIER, msg, nullptr, 0);
     EXPECT_EQ(res.status_code, EVMC_SUCCESS);
     EXPECT_EQ(res.gas_left, 0);
@@ -943,7 +943,7 @@ TEST(cpp, status_code_to_string_invalid)
     if (!has_ubsan())
     {
         std::ostringstream os;
-        int value = 99;
+        int value = 99;  // NOLINT(misc-const-correctness) Not const because GCC complains.
         const auto invalid = static_cast<evmc_status_code>(value);
         EXPECT_STREQ(evmc::to_string(invalid), "<unknown>");
         os << invalid;
@@ -956,7 +956,7 @@ TEST(cpp, revision_to_string_invalid)
     if (!has_ubsan())
     {
         std::ostringstream os;
-        int value = 99;
+        int value = 99;  // NOLINT(misc-const-correctness) Not const because GCC complains.
         const auto invalid = static_cast<evmc_revision>(value);
         EXPECT_STREQ(evmc::to_string(invalid), "<unknown>");
         os << invalid;

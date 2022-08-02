@@ -277,7 +277,7 @@ TEST_F(loader, load_windows_path)
 
     for (auto& path : paths)
     {
-        bool should_open = is_windows || std::strchr(path, '\\') == nullptr;
+        const bool should_open = is_windows || std::strchr(path, '\\') == nullptr;
         setup(should_open ? path : nullptr, "evmc_create_eee_bbb", create_eee_bbb);
 
         evmc_loader_error_code ec = EVMC_LOADER_UNSPECIFIED_ERROR;
