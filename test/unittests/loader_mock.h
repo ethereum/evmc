@@ -42,7 +42,7 @@ static evmc_create_fn evmc_test_get_symbol_address(int handle, const char* symbo
     return NULL;
 }
 
-static const char* evmc_test_get_last_error_msg()
+static const char* evmc_test_get_last_error_msg(void)
 {
     // Return the last error message only once.
     const char* m = evmc_test_last_error_msg;
