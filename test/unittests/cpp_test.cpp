@@ -54,10 +54,7 @@ public:
                       const evmc::address& /*beneficiary*/) noexcept final
     {}
 
-    evmc::result call(const evmc_message& /*msg*/) noexcept final
-    {
-        return evmc::result{evmc_result{}};
-    }
+    evmc::result call(const evmc_message& /*msg*/) noexcept final { return evmc::result{}; }
 
     evmc_tx_context get_tx_context() const noexcept final { return {}; }
 
@@ -788,7 +785,7 @@ TEST(cpp, result_move)
 
 TEST(cpp, result_create_no_output)
 {
-    auto r = evmc::result{EVMC_REVERT, 1, nullptr, 0};
+    auto r = evmc::result{EVMC_REVERT, 1};
     EXPECT_EQ(r.status_code, EVMC_REVERT);
     EXPECT_EQ(r.gas_left, 1);
     EXPECT_FALSE(r.output_data);
