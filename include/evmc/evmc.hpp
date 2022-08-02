@@ -354,7 +354,9 @@ public:
     {}
 
     /// Converting constructor from raw evmc_result.
-    explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
+    ///
+    /// This object takes ownership of the resources of @p res.
+    explicit result(const evmc_result& res) noexcept : evmc_result{res} {}
 
     /// Destructor responsible for automatically releasing attached resources.
     ~result() noexcept
@@ -371,7 +373,7 @@ public:
 
     /// Move assignment operator.
     ///
-    /// The self-assigment MUST never happen.
+    /// The self-assignment MUST never happen.
     ///
     /// @param other The other result object.
     /// @return      The reference to the left-hand side object.
