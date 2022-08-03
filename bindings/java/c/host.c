@@ -42,7 +42,7 @@ static void CopyFromByteBuffer(JNIEnv* jenv, jobject src, void* dst, size_t size
     {
         jclass exception_class = (*jenv)->FindClass(jenv, "java/lang/IllegalArgumentException");
         assert(exception_class != NULL);
-        (*jenv)->ThrowNew(jenv, exception_class, "Unexpected length.");
+        (*jenv)->ThrowNew(jenv, exception_class, "Unexpected ByteBuffer length.");
     }
     memcpy(dst, ptr, size);
 }

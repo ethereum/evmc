@@ -22,7 +22,7 @@
 //!     }
 //!
 //!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, code: &[u8], message: &evmc_vm::ExecutionMessage, context: Option<&mut evmc_vm::ExecutionContext>) -> evmc_vm::ExecutionResult {
-//!             evmc_vm::ExecutionResult::success(1337, None)
+//!             evmc_vm::ExecutionResult::success(1337, 0, None)
 //!     }
 //! }
 //! ```
@@ -446,7 +446,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
             let result = if result.is_err() {
                 // Consider a panic an internal error.
-                ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, None)
+                ::evmc_vm::ExecutionResult::new(::evmc_vm::ffi::evmc_status_code::EVMC_INTERNAL_ERROR, 0, 0, None)
             } else {
                 result.unwrap()
             };

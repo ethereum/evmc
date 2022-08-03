@@ -18,13 +18,14 @@ and this project adheres to [Semantic Versioning].
   [#634](https://github.com/ethereum/evmc/pull/634)
 - The Cancun EVM revision (anticipated after Shanghai)
   [#633](https://github.com/ethereum/evmc/pull/633)
+- The gas refund counter has been added to the `evmc_result`.
+  [#666](https://github.com/ethereum/evmc/pull/666)
 - The error code `EVMC_LOADER_UNSPECIFIED_ERROR` has been defined to provide
   a convenient way of initializing `evmc_loader_error_code` objects.
   [#617](https://github.com/ethereum/evmc/pull/617)
 - Support for Visual Studio 2022.
   [#619](https://github.com/ethereum/evmc/pull/619)
-- C++ types `evmc::address` and `evmc::bytes32` are convertible to `std::basic_string_view<uint8_t>`
-  .
+- C++ types `evmc::address` and `evmc::bytes32` are convertible to `std::basic_string_view<uint8_t>`.
   [#636](https://github.com/ethereum/evmc/pull/636)
 - Convenient constructors for C++ `evmc::result`.
   [#660](https://github.com/ethereum/evmc/pull/660)
@@ -41,7 +42,7 @@ and this project adheres to [Semantic Versioning].
 - The `evmc_message::destination` field has been renamed to `evmc_message::recipient`
   to clarify its purpose and match the naming from the Yellow Paper.
   [#616](https://github.com/ethereum/evmc/pull/616)
-- The `evmc_storage_status` has been extended to provide information about every possible case of 
+- The `evmc_storage_status` has been extended to provide information about every possible case of
   storage net gas metering ([EIP-2200](https://eips.ethereum.org/EIPS/eip-2200)).
   [#661](https://github.com/ethereum/evmc/pull/661)
 - The `selfdestruct` method returns the information if the given address
