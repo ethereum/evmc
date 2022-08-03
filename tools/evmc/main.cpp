@@ -50,7 +50,7 @@ int main(int argc, const char** argv) noexcept
 
     try
     {
-        HexOrFileValidator HexOrFile;
+        const HexOrFileValidator HexOrFile;
 
         std::string vm_config;
         std::string code_arg;

@@ -183,7 +183,7 @@ exit:
     return create_fn;
 }
 
-const char* evmc_last_error_msg()
+const char* evmc_last_error_msg(void)
 {
     const char* m = last_error_msg;
     last_error_msg = NULL;
