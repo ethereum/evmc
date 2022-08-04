@@ -99,8 +99,8 @@ mod tests {
     #[test]
     fn storage_status() {
         assert_eq!(
-            StorageStatus::EVMC_STORAGE_UNCHANGED,
-            ffi::evmc_storage_status::EVMC_STORAGE_UNCHANGED
+            StorageStatus::EVMC_STORAGE_MODIFIED_AGAIN,
+            ffi::evmc_storage_status::EVMC_STORAGE_MODIFIED_AGAIN
         );
         assert_eq!(
             StorageStatus::EVMC_STORAGE_MODIFIED,

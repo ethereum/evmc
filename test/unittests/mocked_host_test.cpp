@@ -46,7 +46,7 @@ TEST(mocked_host, storage)
     EXPECT_EQ(host.set_storage(addr2, val1, val2), EVMC_STORAGE_ADDED);
     EXPECT_EQ(chost.get_storage(addr2, val1), val2);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
-    EXPECT_EQ(host.set_storage(addr2, val1, val2), EVMC_STORAGE_UNCHANGED);
+    EXPECT_EQ(host.set_storage(addr2, val1, val2), EVMC_STORAGE_MODIFIED_AGAIN);
     EXPECT_EQ(chost.get_storage(addr2, val1), val2);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
     EXPECT_EQ(host.set_storage(addr2, val1, val3), EVMC_STORAGE_MODIFIED_AGAIN);
@@ -62,7 +62,7 @@ TEST(mocked_host, storage)
     acc2.storage[val3] = val2;
     EXPECT_EQ(chost.get_storage(addr2, val3), val2);
     EXPECT_FALSE(acc2.storage.find(val3)->second.dirty);
-    EXPECT_EQ(host.set_storage(addr2, val3, val2), EVMC_STORAGE_UNCHANGED);
+    EXPECT_EQ(host.set_storage(addr2, val3, val2), EVMC_STORAGE_MODIFIED_AGAIN);
     EXPECT_EQ(chost.get_storage(addr2, val3), val2);
     EXPECT_EQ(host.set_storage(addr2, val3, val3), EVMC_STORAGE_MODIFIED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val3);

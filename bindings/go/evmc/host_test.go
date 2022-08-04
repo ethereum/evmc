@@ -20,7 +20,7 @@ func (host *testHostContext) GetStorage(addr Address, key Hash) Hash {
 }
 
 func (host *testHostContext) SetStorage(addr Address, key Hash, value Hash) (status StorageStatus) {
-	return StorageUnchanged
+	return StorageModifiedAgain
 }
 
 func (host *testHostContext) GetBalance(addr Address) Hash {

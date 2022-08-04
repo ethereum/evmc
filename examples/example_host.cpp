@@ -77,7 +77,7 @@ public:
         auto prev_value = account.storage[key];
         account.storage[key] = value;
 
-        return (prev_value == value) ? EVMC_STORAGE_UNCHANGED : EVMC_STORAGE_MODIFIED;
+        return (prev_value == value) ? EVMC_STORAGE_MODIFIED_AGAIN : EVMC_STORAGE_MODIFIED;
     }
 
     evmc::uint256be get_balance(const evmc::address& addr) const noexcept final
