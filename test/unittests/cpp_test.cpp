@@ -645,7 +645,7 @@ TEST(cpp, host)
     EXPECT_TRUE(host.account_exists(a));
 
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_MODIFIED);
-    EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_UNCHANGED);
+    EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_ASSIGNED);
     EXPECT_EQ(host.get_storage(a, {}), v);
 
     EXPECT_TRUE(evmc::is_zero(host.get_balance(a)));

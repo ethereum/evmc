@@ -181,7 +181,7 @@ public:
         // WARNING! This is not complete implementation as refund is not handled here.
 
         if (old.value == value)
-            return EVMC_STORAGE_UNCHANGED;
+            return EVMC_STORAGE_ASSIGNED;
 
         evmc_storage_status status{};
         if (!old.dirty)
@@ -195,7 +195,7 @@ public:
                 status = EVMC_STORAGE_DELETED;
         }
         else
-            status = EVMC_STORAGE_MODIFIED_AGAIN;
+            status = EVMC_STORAGE_ASSIGNED;
 
         old.value = value;
         return status;

@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning].
 - The `evmc_message::destination` field has been renamed to `evmc_message::recipient`
   to clarify its purpose and match the naming from the Yellow Paper.
   [#616](https://github.com/ethereum/evmc/pull/616)
+- The `evmc_storage_status` has been extended to provide information about every possible case of 
+  storage net gas metering ([EIP-2200](https://eips.ethereum.org/EIPS/eip-2200)).
+  [#661](https://github.com/ethereum/evmc/pull/661)
 - The `selfdestruct` method returns the information if the given address
   has not been registered as selfdestructed yet.
   [#662](https://github.com/ethereum/evmc/pull/662)
