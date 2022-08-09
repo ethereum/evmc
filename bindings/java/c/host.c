@@ -70,7 +70,7 @@ static bool account_exists_fn(struct evmc_host_context* context, const evmc_addr
     // call java method
     jboolean jresult =
         (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, (jobject)context, jaddress);
-    return jresult != 0;
+    return jresult != JNI_FALSE;
 }
 
 static evmc_bytes32 get_storage_fn(struct evmc_host_context* context,
@@ -281,12 +281,12 @@ static size_t copy_code_fn(struct evmc_host_context* context,
     return length;
 }
 
-static void selfdestruct_fn(struct evmc_host_context* context,
+static bool selfdestruct_fn(struct evmc_host_context* context,
                             const evmc_address* address,
                             const evmc_address* beneficiary)
 {
     const char java_method_name[] = "selfdestruct";
-    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[B)V";
+    const char java_method_signature[] = "(Lorg/ethereum/evmc/HostContext;[B[B)Z";
 
     assert(context != NULL);
     JNIEnv* jenv = attach();
@@ -305,8 +305,9 @@ static void selfdestruct_fn(struct evmc_host_context* context,
     jbyteArray jbeneficiary = CopyDataToJava(jenv, beneficiary, sizeof(struct evmc_address));
 
     // call java method
-    (*jenv)->CallStaticIntMethod(jenv, host_class, method, (jobject)context, jaddress,
-                                 jbeneficiary);
+    jboolean jresult = (*jenv)->CallStaticBooleanMethod(jenv, host_class, method, (jobject)context,
+                                                        jaddress, jbeneficiary);
+    return jresult != JNI_FALSE;
 }
 
 static struct evmc_result call_fn(struct evmc_host_context* context, const struct evmc_message* msg)

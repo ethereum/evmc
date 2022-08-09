@@ -457,7 +457,7 @@ public:
                              size_t buffer_size) const noexcept = 0;
 
     /// @copydoc evmc_host_interface::selfdestruct
-    virtual void selfdestruct(const address& addr, const address& beneficiary) noexcept = 0;
+    virtual bool selfdestruct(const address& addr, const address& beneficiary) noexcept = 0;
 
     /// @copydoc evmc_host_interface::call
     virtual Result call(const evmc_message& msg) noexcept = 0;
@@ -542,9 +542,9 @@ public:
         return host->copy_code(context, &address, code_offset, buffer_data, buffer_size);
     }
 
-    void selfdestruct(const address& addr, const address& beneficiary) noexcept final
+    bool selfdestruct(const address& addr, const address& beneficiary) noexcept final
     {
-        host->selfdestruct(context, &addr, &beneficiary);
+        return host->selfdestruct(context, &addr, &beneficiary);
     }
 
     Result call(const evmc_message& message) noexcept final
@@ -787,11 +787,11 @@ inline size_t copy_code(evmc_host_context* h,
     return Host::from_context(h)->copy_code(*addr, code_offset, buffer_data, buffer_size);
 }
 
-inline void selfdestruct(evmc_host_context* h,
+inline bool selfdestruct(evmc_host_context* h,
                          const evmc_address* addr,
                          const evmc_address* beneficiary) noexcept
 {
-    Host::from_context(h)->selfdestruct(*addr, *beneficiary);
+    return Host::from_context(h)->selfdestruct(*addr, *beneficiary);
 }
 
 inline evmc_result call(evmc_host_context* h, const evmc_message* msg) noexcept

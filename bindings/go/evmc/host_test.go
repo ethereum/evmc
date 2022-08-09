@@ -39,7 +39,8 @@ func (host *testHostContext) GetCode(addr Address) []byte {
 	return nil
 }
 
-func (host *testHostContext) Selfdestruct(addr Address, beneficiary Address) {
+func (host *testHostContext) Selfdestruct(addr Address, beneficiary Address) bool {
+	return false
 }
 
 func (host *testHostContext) GetTxContext() TxContext {

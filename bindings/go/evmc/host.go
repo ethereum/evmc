@@ -87,7 +87,7 @@ type HostContext interface {
 	GetCodeSize(addr Address) int
 	GetCodeHash(addr Address) Hash
 	GetCode(addr Address) []byte
-	Selfdestruct(addr Address, beneficiary Address)
+	Selfdestruct(addr Address, beneficiary Address) bool
 	GetTxContext() TxContext
 	GetBlockHash(number int64) Hash
 	EmitLog(addr Address, topics []Hash, data []byte)
@@ -155,9 +155,9 @@ func copyCode(pCtx unsafe.Pointer, pAddr *C.evmc_address, offset C.size_t, p *C.
 }
 
 //export selfdestruct
-func selfdestruct(pCtx unsafe.Pointer, pAddr *C.evmc_address, pBeneficiary *C.evmc_address) {
+func selfdestruct(pCtx unsafe.Pointer, pAddr *C.evmc_address, pBeneficiary *C.evmc_address) C.bool {
 	ctx := getHostContext(uintptr(pCtx))
-	ctx.Selfdestruct(goAddress(*pAddr), goAddress(*pBeneficiary))
+	return C.bool(ctx.Selfdestruct(goAddress(*pAddr), goAddress(*pBeneficiary)))
 }
 
 //export getTxContext

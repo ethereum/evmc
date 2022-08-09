@@ -625,8 +625,10 @@ typedef size_t (*evmc_copy_code_fn)(struct evmc_host_context* context,
  * @param context      The pointer to the Host execution context. See ::evmc_host_context.
  * @param address      The address of the contract to be selfdestructed.
  * @param beneficiary  The address where the remaining ETH is going to be transferred.
+ * @return             The information if the given address has not been registered as
+ *                     selfdestructed yet. True if registered for the first time, false otherwise.
  */
-typedef void (*evmc_selfdestruct_fn)(struct evmc_host_context* context,
+typedef bool (*evmc_selfdestruct_fn)(struct evmc_host_context* context,
                                      const evmc_address* address,
                                      const evmc_address* beneficiary);
 
