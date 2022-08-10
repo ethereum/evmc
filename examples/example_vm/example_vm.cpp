@@ -181,15 +181,15 @@ evmc_result execute(evmc_vm* instance,
         // Check remaining gas, assume each instruction costs 1.
         gas_left -= 1;
         if (gas_left < 0)
-            return evmc_make_result(EVMC_OUT_OF_GAS, 0, nullptr, 0);
+            return evmc_make_result(EVMC_OUT_OF_GAS, 0, 0, nullptr, 0);
 
         switch (code[pc])
         {
         default:
-            return evmc_make_result(EVMC_UNDEFINED_INSTRUCTION, 0, nullptr, 0);
+            return evmc_make_result(EVMC_UNDEFINED_INSTRUCTION, 0, 0, nullptr, 0);
 
         case OP_STOP:
-            return evmc_make_result(EVMC_SUCCESS, gas_left, nullptr, 0);
+            return evmc_make_result(EVMC_SUCCESS, gas_left, 0, nullptr, 0);
 
         case OP_ADD:
         {
@@ -235,7 +235,7 @@ evmc_result execute(evmc_vm* instance,
             uint32_t index = to_uint32(stack.pop());
             evmc_uint256be value = stack.pop();
             if (!memory.store(index, value.bytes, sizeof(value)))
-                return evmc_make_result(EVMC_FAILURE, 0, nullptr, 0);
+                return evmc_make_result(EVMC_FAILURE, 0, 0, nullptr, 0);
             break;
         }
 
@@ -329,7 +329,7 @@ evmc_result execute(evmc_vm* instance,
             uint8_t* call_output_ptr = memory.expand(call_output_offset, call_output_size);
 
             if (call_msg.input_data == nullptr || call_output_ptr == nullptr)
-                return evmc_make_result(EVMC_FAILURE, 0, nullptr, 0);
+                return evmc_make_result(EVMC_FAILURE, 0, 0, nullptr, 0);
 
             evmc_result call_result = host->call(context, &call_msg);
 
@@ -351,28 +351,28 @@ evmc_result execute(evmc_vm* instance,
             uint32_t output_size = to_uint32(stack.pop());
             uint8_t* output_ptr = memory.expand(output_offset, output_size);
             if (output_ptr == nullptr)
-                return evmc_make_result(EVMC_FAILURE, 0, nullptr, 0);
+                return evmc_make_result(EVMC_FAILURE, 0, 0, nullptr, 0);
 
-            return evmc_make_result(EVMC_SUCCESS, gas_left, output_ptr, output_size);
+            return evmc_make_result(EVMC_SUCCESS, gas_left, 0, output_ptr, output_size);
         }
 
         case OP_REVERT:
         {
             if (rev < EVMC_BYZANTIUM)
-                return evmc_make_result(EVMC_UNDEFINED_INSTRUCTION, 0, nullptr, 0);
+                return evmc_make_result(EVMC_UNDEFINED_INSTRUCTION, 0, 0, nullptr, 0);
 
             uint32_t output_offset = to_uint32(stack.pop());
             uint32_t output_size = to_uint32(stack.pop());
             uint8_t* output_ptr = memory.expand(output_offset, output_size);
             if (output_ptr == nullptr)
-                return evmc_make_result(EVMC_FAILURE, 0, nullptr, 0);
+                return evmc_make_result(EVMC_FAILURE, 0, 0, nullptr, 0);
 
-            return evmc_make_result(EVMC_REVERT, gas_left, output_ptr, output_size);
+            return evmc_make_result(EVMC_REVERT, gas_left, 0, output_ptr, output_size);
         }
         }
     }
 
-    return evmc_make_result(EVMC_SUCCESS, gas_left, nullptr, 0);
+    return evmc_make_result(EVMC_SUCCESS, gas_left, 0, nullptr, 0);
 }
 
 
