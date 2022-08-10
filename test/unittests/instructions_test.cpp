@@ -404,7 +404,7 @@ TEST(instructions, cancun_hard_fork)
 
     for (int op = 0x00; op <= 0xff; ++op)
     {
-        if (op == OP_RJUMP || op == OP_RJUMPI)
+        if (op == OP_RJUMP || op == OP_RJUMPI || op == OP_CALLF || op == OP_RETF)
             continue;
         EXPECT_EQ(c[op], s[op]) << op;
         EXPECT_STREQ(cn[op], sn[op]) << op;
@@ -423,4 +423,18 @@ TEST(instructions, cancun_hard_fork)
     EXPECT_EQ(s[OP_RJUMPI].gas_cost, 0);
     EXPECT_EQ(cn[OP_RJUMPI], std::string{"RJUMPI"});
     EXPECT_TRUE(sn[OP_RJUMPI] == nullptr);
+
+    // EIP-4750: EOF Functions
+    EXPECT_EQ(c[OP_CALLF].gas_cost, 8);
+    EXPECT_EQ(c[OP_CALLF].stack_height_required, 0);
+    EXPECT_EQ(c[OP_CALLF].stack_height_change, 0);
+    EXPECT_EQ(s[OP_CALLF].gas_cost, 0);
+    EXPECT_EQ(cn[OP_CALLF], std::string{"CALLF"});
+    EXPECT_TRUE(sn[OP_CALLF] == nullptr);
+    EXPECT_EQ(c[OP_RETF].gas_cost, 8);
+    EXPECT_EQ(c[OP_RETF].stack_height_required, 0);
+    EXPECT_EQ(c[OP_RETF].stack_height_change, 0);
+    EXPECT_EQ(s[OP_RETF].gas_cost, 0);
+    EXPECT_EQ(cn[OP_RETF], std::string{"RETF"});
+    EXPECT_TRUE(sn[OP_RETF] == nullptr);
 }
