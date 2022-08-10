@@ -18,6 +18,8 @@
 #include <map>
 #include <unordered_map>
 
+using namespace evmc::literals;
+
 class NullHost : public evmc::Host
 {
 public:
@@ -641,7 +643,7 @@ TEST(cpp, host)
 
     EXPECT_FALSE(host.account_exists(a));
 
-    mockedHost.accounts[a].storage[{}].value.bytes[0] = 1;
+    mockedHost.accounts[a].storage[{}] = {0x01_bytes32};
     EXPECT_TRUE(host.account_exists(a));
 
     EXPECT_EQ(host.set_storage(a, {}, v), EVMC_STORAGE_MODIFIED);

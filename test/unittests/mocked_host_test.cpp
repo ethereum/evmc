@@ -38,7 +38,7 @@ TEST(mocked_host, storage)
     EXPECT_EQ(host.set_storage(addr1, val1, val2), EVMC_STORAGE_ADDED);
     EXPECT_EQ(chost.accounts.count(addr1), 1u);
     EXPECT_EQ(host.accounts[addr1].storage.count(val1), 1u);
-    EXPECT_EQ(host.accounts[addr1].storage[val1].value, val2);
+    EXPECT_EQ(host.accounts[addr1].storage[val1].current, val2);
 
     auto& acc2 = host.accounts[addr2];
     EXPECT_EQ(chost.get_storage(addr2, val1), evmc::bytes32{});
@@ -52,21 +52,22 @@ TEST(mocked_host, storage)
     EXPECT_EQ(host.set_storage(addr2, val1, val3), EVMC_STORAGE_ASSIGNED);
     EXPECT_EQ(chost.get_storage(addr2, val1), val3);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
+    EXPECT_NE(acc2.storage[val1].current, acc2.storage[val1].original);
     EXPECT_EQ(host.set_storage(addr2, val1, val1), EVMC_STORAGE_ASSIGNED);
     EXPECT_EQ(chost.get_storage(addr2, val1), val1);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
     EXPECT_EQ(acc2.storage.size(), 1u);
-    EXPECT_TRUE(acc2.storage.find(val1)->second.dirty);
+    EXPECT_EQ(acc2.storage[val1].current, acc2.storage[val1].original);
 
     EXPECT_EQ(chost.get_storage(addr2, val3), evmc::bytes32{});
     acc2.storage[val3] = val2;
     EXPECT_EQ(chost.get_storage(addr2, val3), val2);
-    EXPECT_FALSE(acc2.storage.find(val3)->second.dirty);
+    EXPECT_EQ(acc2.storage.find(val3)->second.current, acc2.storage.find(val3)->second.original);
     EXPECT_EQ(host.set_storage(addr2, val3, val2), EVMC_STORAGE_ASSIGNED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val2);
     EXPECT_EQ(host.set_storage(addr2, val3, val3), EVMC_STORAGE_MODIFIED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val3);
-    acc2.storage[val3].dirty = false;
+    acc2.storage[val3].original = acc2.storage[val3].current;
     EXPECT_EQ(host.set_storage(addr2, val3, val1), EVMC_STORAGE_DELETED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val1);
 }
