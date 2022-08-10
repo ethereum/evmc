@@ -19,7 +19,7 @@ struct Output
 
     explicit Output(const char* output_hex) noexcept : bytes{evmc::from_hex(output_hex).value()} {}
 
-    friend bool operator==(const evmc::result& result, const Output& expected) noexcept
+    friend bool operator==(const evmc::Result& result, const Output& expected) noexcept
     {
         return expected.bytes.compare(0, evmc::bytes::npos, result.output_data,
                                       result.output_size) == 0;
@@ -41,7 +41,7 @@ protected:
         msg.recipient = 0xd00000000000000000000000000000000000000d_address;
     }
 
-    evmc::result execute_in_example_vm(int64_t gas,
+    evmc::Result execute_in_example_vm(int64_t gas,
                                        const char* code_hex,
                                        const char* input_hex = "")
     {

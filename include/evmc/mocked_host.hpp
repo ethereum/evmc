@@ -278,7 +278,7 @@ public:
     }
 
     /// Call/create other contract (EVMC host method).
-    result call(const evmc_message& msg) noexcept override
+    Result call(const evmc_message& msg) noexcept override
     {
         record_account_access(msg.recipient);
 
@@ -299,7 +299,7 @@ public:
                 call_msg.input_data = input_copy.data();
             }
         }
-        return result{call_result};
+        return Result{call_result};
     }
 
     /// Get transaction context (EVMC host method).
