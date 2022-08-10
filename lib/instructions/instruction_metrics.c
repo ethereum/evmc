@@ -5,30 +5,33 @@
 #include <evmc/instructions.h>
 
 /**
- * Marks an instruction as undefined.
- *
- * The gas cost for undefined instructions is 0 because this is the cost of executing them
- * in practice in EVM implementations.
+ * Gas cost tiers, names from Yellow Paper.
  */
-#define UNDEFINED 0
+enum
+{
+    ZERO = 0,
+    BASE = 2,
+    VERYLOW = 3,
+    LOW = 5,
+    MID = 8,
+    HIGH = 10,
 
-/**
- * Gas price tiers, names from Yellow Paper.
- * @{
- */
-#define ZERO 0
-#define BASE 2
-#define VERYLOW 3
-#define LOW 5
-#define MID 8
-#define HIGH 10
+    /**
+     * Marks an instruction as undefined.
+     *
+     * The gas cost for undefined instructions is 0 because this is the cost of executing them
+     * in practice in EVM implementations.
+     */
+    UNDEFINED = ZERO
+};
 
-/** @} */
-
-/**
- * Defined in EIP-2929: Gas cost increases for state access opcodes.
- */
-#define WARM_STORAGE_READ_COST 100
+enum
+{
+    /**
+     * Defined in EIP-2929: Gas cost increases for state access opcodes.
+     */
+    WARM_STORAGE_READ_COST = 100
+};
 
 
 static struct evmc_instruction_metrics cancun_metrics[256] = {
