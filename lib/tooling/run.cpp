@@ -24,7 +24,7 @@ auto bench(MockedHost& host,
            evmc_revision rev,
            const evmc_message& msg,
            bytes_view code,
-           const evmc::result& expected_result,
+           const evmc::Result& expected_result,
            std::ostream& out)
 {
     {

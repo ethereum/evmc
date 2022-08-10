@@ -54,7 +54,7 @@ public:
                       const evmc::address& /*beneficiary*/) noexcept final
     {}
 
-    evmc::result call(const evmc_message& /*msg*/) noexcept final { return evmc::result{}; }
+    evmc::Result call(const evmc_message& /*msg*/) noexcept final { return evmc::Result{}; }
 
     evmc_tx_context get_tx_context() const noexcept final { return {}; }
 
@@ -457,11 +457,11 @@ TEST(cpp, result)
         };
         EXPECT_EQ(release_called, 0);
 
-        auto res1 = evmc::result{raw_result};
+        auto res1 = evmc::Result{raw_result};
         auto res2 = std::move(res1);
         EXPECT_EQ(release_called, 0);
 
-        auto f = [](evmc::result r) { EXPECT_EQ(r.output_data, &output); };
+        auto f = [](evmc::Result r) { EXPECT_EQ(r.output_data, &output); };
         f(std::move(res2));
 
         EXPECT_EQ(release_called, 1);
@@ -720,7 +720,7 @@ TEST(cpp, result_raii)
         raw_result.status_code = EVMC_INTERNAL_ERROR;
         raw_result.release = release_fn;
 
-        auto raii_result = evmc::result{raw_result};
+        auto raii_result = evmc::Result{raw_result};
         EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
         EXPECT_EQ(raii_result.gas_left, 0);
         raii_result.gas_left = -1;
@@ -740,7 +740,7 @@ TEST(cpp, result_raii)
         raw_result.status_code = EVMC_INTERNAL_ERROR;
         raw_result.release = release_fn;
 
-        auto raii_result = evmc::result{raw_result};
+        auto raii_result = evmc::Result{raw_result};
         EXPECT_EQ(raii_result.status_code, EVMC_INTERNAL_ERROR);
     }
     EXPECT_EQ(release_called, 1);
@@ -757,7 +757,7 @@ TEST(cpp, result_move)
         raw.gas_left = -1;
         raw.release = release_fn;
 
-        auto r0 = evmc::result{raw};
+        auto r0 = evmc::Result{raw};
         EXPECT_EQ(r0.gas_left, raw.gas_left);
 
         auto r1 = std::move(r0);
@@ -775,8 +775,8 @@ TEST(cpp, result_move)
         raw2.gas_left = 1;
         raw2.release = release_fn;
 
-        auto r1 = evmc::result{raw1};
-        auto r2 = evmc::result{raw2};
+        auto r1 = evmc::Result{raw1};
+        auto r2 = evmc::Result{raw2};
 
         r2 = std::move(r1);
     }
@@ -785,7 +785,7 @@ TEST(cpp, result_move)
 
 TEST(cpp, result_create_no_output)
 {
-    auto r = evmc::result{EVMC_REVERT, 1};
+    auto r = evmc::Result{EVMC_REVERT, 1};
     EXPECT_EQ(r.status_code, EVMC_REVERT);
     EXPECT_EQ(r.gas_left, 1);
     EXPECT_FALSE(r.output_data);
@@ -795,7 +795,7 @@ TEST(cpp, result_create_no_output)
 TEST(cpp, result_create)
 {
     const uint8_t output[] = {1, 2};
-    auto r = evmc::result{EVMC_FAILURE, -1, output, sizeof(output)};
+    auto r = evmc::Result{EVMC_FAILURE, -1, output, sizeof(output)};
     EXPECT_EQ(r.status_code, EVMC_FAILURE);
     EXPECT_EQ(r.gas_left, -1);
     ASSERT_TRUE(r.output_data);
