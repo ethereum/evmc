@@ -23,8 +23,11 @@ and this project adheres to [Semantic Versioning].
   [#617](https://github.com/ethereum/evmc/pull/617)
 - Support for Visual Studio 2022.
   [#619](https://github.com/ethereum/evmc/pull/619)
-- C++ types `evmc::address` and `evmc::bytes32` are convertible to `std::basic_string_view<uint8_t>`.
+- C++ types `evmc::address` and `evmc::bytes32` are convertible to `std::basic_string_view<uint8_t>`
+  .
   [#636](https://github.com/ethereum/evmc/pull/636)
+- Convenient constructors for C++ `evmc::result`.
+  [#660](https://github.com/ethereum/evmc/pull/660)
 - Rust: The `EvmcVm::set_option` has been added.
   [#614](https://github.com/ethereum/evmc/pull/614)
 

@@ -133,7 +133,7 @@ public:
 
     evmc::result call(const evmc_message& msg) noexcept final
     {
-        return {EVMC_REVERT, msg.gas, msg.input_data, msg.input_size};
+        return evmc::result{EVMC_REVERT, msg.gas, msg.input_data, msg.input_size};
     }
 
     evmc_tx_context get_tx_context() const noexcept final { return tx_context; }

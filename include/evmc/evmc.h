@@ -443,12 +443,11 @@ struct evmc_result
     evmc_release_result_fn release;
 
     /**
-     * The address of the contract created by create instructions.
+     * The address of the possibly created contract.
      *
-     * This field has valid value only if:
-     * - it is a result of the Host method evmc_host_interface::call
-     * - and the result describes successful contract creation
-     *   (evmc_result::status_code is ::EVMC_SUCCESS).
+     * The create address may be provided even though the contract creation has failed
+     * (evmc_result::status_code is not ::EVMC_SUCCESS). This is useful in situations
+     * when the address is observable, e.g. access to it remains warm.
      * In all other cases the address MUST be null bytes.
      */
     evmc_address create_address;

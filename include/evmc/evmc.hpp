@@ -346,15 +346,39 @@ public:
     /// @param _gas_left     The amount of gas left.
     /// @param _output_data  The pointer to the output.
     /// @param _output_size  The output size.
-    result(evmc_status_code _status_code,
-           int64_t _gas_left,
-           const uint8_t* _output_data,
-           size_t _output_size) noexcept
+    explicit result(evmc_status_code _status_code,
+                    int64_t _gas_left,
+                    const uint8_t* _output_data,
+                    size_t _output_size) noexcept
       : evmc_result{make_result(_status_code, _gas_left, _output_data, _output_size)}
     {}
 
+    /// Creates the result without output.
+    ///
+    /// @param _status_code  The status code.
+    /// @param _gas_left     The amount of gas left.
+    explicit result(evmc_status_code _status_code = EVMC_INTERNAL_ERROR,
+                    int64_t _gas_left = 0) noexcept
+      : evmc_result{make_result(_status_code, _gas_left, nullptr, 0)}
+    {}
+
+    /// Creates the result of contract creation.
+    ///
+    /// @param _status_code     The status code.
+    /// @param _gas_left        The amount of gas left.
+    /// @param _create_address  The address of the possibly created account.
+    explicit result(evmc_status_code _status_code,
+                    int64_t _gas_left,
+                    const evmc_address& _create_address) noexcept
+      : evmc_result{make_result(_status_code, _gas_left, nullptr, 0)}
+    {
+        create_address = _create_address;
+    }
+
     /// Converting constructor from raw evmc_result.
-    explicit result(evmc_result const& res) noexcept : evmc_result{res} {}
+    ///
+    /// This object takes ownership of the resources of @p res.
+    explicit result(const evmc_result& res) noexcept : evmc_result{res} {}
 
     /// Destructor responsible for automatically releasing attached resources.
     ~result() noexcept
@@ -371,7 +395,7 @@ public:
 
     /// Move assignment operator.
     ///
-    /// The self-assigment MUST never happen.
+    /// The self-assignment MUST never happen.
     ///
     /// @param other The other result object.
     /// @return      The reference to the left-hand side object.
