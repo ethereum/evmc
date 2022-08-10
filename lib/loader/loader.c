@@ -66,11 +66,13 @@ static
     return 0;
 }
 
-#define PATH_MAX_LENGTH 4096
+enum
+{
+    PATH_MAX_LENGTH = 4096,
+    LAST_ERROR_MSG_BUFFER_SIZE = 511
+};
 
 static const char* last_error_msg = NULL;
-
-#define LAST_ERROR_MSG_BUFFER_SIZE 511
 
 // Buffer for formatted error messages.
 // It has one null byte extra to avoid buffer read overflow during concurrent access.
