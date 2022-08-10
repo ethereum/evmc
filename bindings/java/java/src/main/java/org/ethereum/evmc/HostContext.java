@@ -125,8 +125,10 @@ public interface HostContext {
    *
    * @param address The address of the contract to be selfdestructed.
    * @param beneficiary The address where the remaining ETH is going to be transferred.
+   * @return The information if the given address has not been registered as selfdestructed yet.
+   *     True if registered for the first time, false otherwise.
    */
-  void selfdestruct(byte[] address, byte[] beneficiary);
+  boolean selfdestruct(byte[] address, byte[] beneficiary);
 
   /**
    * This function supports EVM calls.

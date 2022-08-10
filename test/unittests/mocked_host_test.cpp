@@ -70,3 +70,27 @@ TEST(mocked_host, storage)
     EXPECT_EQ(host.set_storage(addr2, val3, val1), EVMC_STORAGE_DELETED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val1);
 }
+
+TEST(mocked_host, selfdestruct)
+{
+    evmc::MockedHost host;
+    EXPECT_TRUE(host.recorded_selfdestructs.empty());
+
+    EXPECT_TRUE(host.selfdestruct(0xdead01_address, 0xbece01_address));
+    ASSERT_EQ(host.recorded_selfdestructs[0xdead01_address].size(), 1u);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead01_address][0], 0xbece01_address);
+
+    EXPECT_FALSE(host.selfdestruct(0xdead01_address, 0xbece02_address));
+    ASSERT_EQ(host.recorded_selfdestructs[0xdead01_address].size(), 2u);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead01_address][0], 0xbece01_address);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead01_address][1], 0xbece02_address);
+
+    EXPECT_TRUE(host.selfdestruct(0xdead02_address, 0xbece01_address));
+    ASSERT_EQ(host.recorded_selfdestructs[0xdead02_address].size(), 1u);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead02_address][0], 0xbece01_address);
+
+    EXPECT_FALSE(host.selfdestruct(0xdead02_address, 0xbece01_address));
+    ASSERT_EQ(host.recorded_selfdestructs[0xdead02_address].size(), 2u);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead02_address][0], 0xbece01_address);
+    EXPECT_EQ(host.recorded_selfdestructs[0xdead02_address][1], 0xbece01_address);
+}

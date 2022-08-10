@@ -300,7 +300,7 @@ impl<'a> ExecutionContext<'a> {
     }
 
     /// Self-destruct the current account.
-    pub fn selfdestruct(&mut self, address: &Address, beneficiary: &Address) {
+    pub fn selfdestruct(&mut self, address: &Address, beneficiary: &Address) -> bool {
         unsafe {
             assert!((*self.host).selfdestruct.is_some());
             (*self.host).selfdestruct.unwrap()(

@@ -90,22 +90,6 @@ public:
         }
     };
 
-    /// SELFDESTRUCT record.
-    struct selfdestruct_record
-    {
-        /// The address of the account which has self-destructed.
-        address selfdestructed;
-
-        /// The address of the beneficiary account.
-        address beneficiary;
-
-        /// Equal operator.
-        bool operator==(const selfdestruct_record& other) const noexcept
-        {
-            return selfdestructed == other.selfdestructed && beneficiary == other.beneficiary;
-        }
-    };
-
     /// The set of all accounts in the Host, organized by their addresses.
     std::unordered_map<address, MockedAccount> accounts;
 
@@ -138,8 +122,9 @@ public:
     /// The record of all LOGs passed to the emit_log() method.
     std::vector<log_record> recorded_logs;
 
-    /// The record of all SELFDESTRUCTs from the selfdestruct() method.
-    std::vector<selfdestruct_record> recorded_selfdestructs;
+    /// The record of all SELFDESTRUCTs from the selfdestruct() method
+    /// as a map selfdestructed_address => [beneficiary1, beneficiary2, ...].
+    std::unordered_map<address, std::vector<address>> recorded_selfdestructs;
 
 private:
     /// The copy of call inputs for the recorded_calls record.
@@ -271,10 +256,12 @@ public:
     }
 
     /// Selfdestruct the account (EVMC host method).
-    void selfdestruct(const address& addr, const address& beneficiary) noexcept override
+    bool selfdestruct(const address& addr, const address& beneficiary) noexcept override
     {
         record_account_access(addr);
-        recorded_selfdestructs.push_back({addr, beneficiary});
+        auto& beneficiaries = recorded_selfdestructs[addr];
+        beneficiaries.emplace_back(beneficiary);
+        return beneficiaries.size() == 1;
     }
 
     /// Call/create other contract (EVMC host method).

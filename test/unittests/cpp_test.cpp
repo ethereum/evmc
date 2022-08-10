@@ -50,9 +50,11 @@ public:
         return 0;
     }
 
-    void selfdestruct(const evmc::address& /*addr*/,
+    bool selfdestruct(const evmc::address& /*addr*/,
                       const evmc::address& /*beneficiary*/) noexcept final
-    {}
+    {
+        return false;
+    }
 
     evmc::Result call(const evmc_message& /*msg*/) noexcept final { return evmc::Result{}; }
 

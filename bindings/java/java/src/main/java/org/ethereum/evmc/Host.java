@@ -54,8 +54,8 @@ final class Host {
   }
 
   /** Selfdestruct callback function. */
-  static void selfdestruct(HostContext context, byte[] address, byte[] beneficiary) {
-    context.selfdestruct(address, beneficiary);
+  static boolean selfdestruct(HostContext context, byte[] address, byte[] beneficiary) {
+    return context.selfdestruct(address, beneficiary);
   }
 
   /** Call callback function. */

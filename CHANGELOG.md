@@ -41,7 +41,10 @@ and this project adheres to [Semantic Versioning].
 - The `evmc_message::destination` field has been renamed to `evmc_message::recipient`
   to clarify its purpose and match the naming from the Yellow Paper.
   [#616](https://github.com/ethereum/evmc/pull/616)
-- C++: The `evmc::result` has been renamed to `evmc::Result` for consistency 
+- The `selfdestruct` method returns the information if the given address
+  has not been registered as selfdestructed yet.
+  [#662](https://github.com/ethereum/evmc/pull/662)
+- C++: The `evmc::result` has been renamed to `evmc::Result` for consistency
   with C++ types of similar kind.
   [#665](https://github.com/ethereum/evmc/pull/665)
 - C++: The `HostContext` does not cache transaction context (`evmc_tx_context`) anymore.
