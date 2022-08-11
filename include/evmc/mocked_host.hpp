@@ -192,7 +192,9 @@ public:
         // - current != 0
         // - value != 0
         const auto status = [&original = s.original, &current = s.current, &value]() {
-            // Rule 1 is about gas left and stipend, not relevant here.
+            // Clause 1 is irrelevant:
+            // 1. "If gasleft is less than or equal to gas stipend,
+            //    fail the current call frame with ‘out of gas’ exception"
 
             // 2. "If current value equals new value (this is a no-op)"
             if (current == value)
@@ -246,7 +248,7 @@ public:
                         RestoredBySet = 1 << 2,
                         RestoredByReset = 1 << 3,
                     };
-                    int triggered_rules = None;
+                    int triggered_clauses = None;
 
                     // 3.2.1. "If original value is not 0"
                     if (!is_zero(original))
@@ -257,7 +259,7 @@ public:
                             // "(also means that new value is not 0)"
                             assert(!is_zero(value));
                             // "remove SSTORE_CLEARS_SCHEDULE gas from refund counter"
-                            triggered_rules |= RemoveClearsSchedule;
+                            triggered_clauses |= RemoveClearsSchedule;
                         }
                         // 3.2.1.2. "If new value is 0"
                         if (is_zero(value))
@@ -265,7 +267,7 @@ public:
                             // "(also means that current value is not 0)"
                             assert(!is_zero(current));
                             // "add SSTORE_CLEARS_SCHEDULE gas to refund counter"
-                            triggered_rules |= AddClearsSchedule;
+                            triggered_clauses |= AddClearsSchedule;
                         }
                     }
 
@@ -277,17 +279,17 @@ public:
                         if (is_zero(original))
                         {
                             // "add SSTORE_SET_GAS - SLOAD_GAS to refund counter"
-                            triggered_rules |= RestoredBySet;
+                            triggered_clauses |= RestoredBySet;
                         }
                         // 3.2.2.2. "Otherwise"
                         else
                         {
                             // "add SSTORE_RESET_GAS - SLOAD_GAS gas to refund counter"
-                            triggered_rules |= RestoredByReset;
+                            triggered_clauses |= RestoredByReset;
                         }
                     }
 
-                    switch (triggered_rules)
+                    switch (triggered_clauses)
                     {
                     case RemoveClearsSchedule:
                         return EVMC_STORAGE_DELETED_ADDED;
