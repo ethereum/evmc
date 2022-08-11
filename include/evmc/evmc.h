@@ -526,7 +526,7 @@ enum evmc_storage_status
      * This is "catch all remaining" status. I.e. if all other statuses are correctly matched
      * this status should be assigned to all remaining cases.
      *
-     * This corresponds to the EIP-2200 rule 2 or rule 3.2 without sub-rules, where:
+     * This corresponds to the EIP-2200 clause 2 or clause 3.2 without sub-clauses, where:
      * c == v or (c != v, o != c, (o == 0 or (o != 0, c != 0, v != 0)), o != v)
      */
     EVMC_STORAGE_MODIFIED_AGAIN = 0,
@@ -536,7 +536,7 @@ enum evmc_storage_status
      * the current clean zero to a nonzero value.
      * 0 -> 0 -> Z
      *
-     * This corresponds to the EIP-2200 rule 3.1.1 where:
+     * This corresponds to the EIP-2200 clause 3.1.1 where:
      * c != v, o == c, c == 0.
      */
     EVMC_STORAGE_ADDED = 1,
@@ -546,7 +546,7 @@ enum evmc_storage_status
      * the current clean nonzero to the zero value.
      * X -> X -> 0
      *
-     * This corresponds to the v == 0 variant of the EIP-2200 rule 3.1.2 where:
+     * This corresponds to the v == 0 variant of the EIP-2200 clause 3.1.2 where:
      * c != v, o == c, c != 0, v == 0.
      */
     EVMC_STORAGE_DELETED = 2,
@@ -556,7 +556,7 @@ enum evmc_storage_status
      * the current clean nonzero to other nonzero value.
      * X -> X -> Z
      *
-     * This corresponds to the v != 0 variant of the EIP-2200 rule 3.1.2 where:
+     * This corresponds to the v != 0 variant of the EIP-2200 clause 3.1.2 where:
      * c != v, o == c, c != 0, v != 0.
      */
     EVMC_STORAGE_MODIFIED = 3,
@@ -566,7 +566,7 @@ enum evmc_storage_status
      * the current dirty zero to a nonzero value other than the original value.
      * X -> 0 -> Z
      *
-     * This corresponds to the EIP-2200 rule 3.2.1.1 without the rule 3.2.2, where:
+     * This corresponds to the EIP-2200 clause 3.2.1.1 without the clause 3.2.2, where:
      * c != v, o != c, o != 0, c == 0, o != v.
      */
     EVMC_STORAGE_DELETED_ADDED = 4,
@@ -576,7 +576,7 @@ enum evmc_storage_status
      * the current dirty nonzero to the zero value and the original value is not zero.
      * X -> Y -> 0
      *
-     * This corresponds to the EIP-2200 rule 3.2.1.2 where:
+     * This corresponds to the EIP-2200 clause 3.2.1.2 where:
      * c != v, o != c, o != 0, v == 0 (therefore o != v).
      */
     EVMC_STORAGE_MODIFIED_DELETED = 5,
@@ -586,7 +586,7 @@ enum evmc_storage_status
      * the current dirty zero to the original value.
      * X -> 0 -> X
      *
-     * This corresponds to the EIP-2200 rules 3.2.1.1 and 3.2.2.2 combined, where:
+     * This corresponds to the EIP-2200 clauses 3.2.1.1 and 3.2.2.2 combined, where:
      * c != v, o != c, o != 0, c == 0, o == v.
      */
     EVMC_STORAGE_DELETED_RESTORED = 6,
@@ -596,7 +596,7 @@ enum evmc_storage_status
      * the current dirty nonzero to the original zero value.
      * 0 -> Y -> 0
      *
-     * This corresponds to the EIP-2200 rule 3.2.2.1 where:
+     * This corresponds to the EIP-2200 clause 3.2.2.1 where:
      * c != v, o != c, o == 0, c != 0, o == v, v == 0.
      */
     EVMC_STORAGE_ADDED_DELETED = 7,
@@ -606,7 +606,7 @@ enum evmc_storage_status
      * the current dirty nonzero to the original nonzero value other than the current value.
      * X -> Y -> X
      *
-     * This corresponds to the EIP-2200 rule 3.2.2.2 where:
+     * This corresponds to the EIP-2200 clause 3.2.2.2 where:
      * c != v, o != c, o != 0, c != 0, o == v, v != 0.
      */
     EVMC_STORAGE_MODIFIED_RESTORED = 8
