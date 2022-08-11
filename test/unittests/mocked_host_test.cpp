@@ -53,7 +53,7 @@ TEST(mocked_host, storage)
     EXPECT_EQ(chost.get_storage(addr2, val1), val3);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
     EXPECT_NE(acc2.storage[val1].current, acc2.storage[val1].original);
-    EXPECT_EQ(host.set_storage(addr2, val1, val1), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(host.set_storage(addr2, val1, val1), EVMC_STORAGE_ADDED_DELETED);
     EXPECT_EQ(chost.get_storage(addr2, val1), val1);
     EXPECT_EQ(acc2.storage.count(val1), 1u);
     EXPECT_EQ(acc2.storage.size(), 1u);
@@ -70,6 +70,42 @@ TEST(mocked_host, storage)
     acc2.storage[val3].original = acc2.storage[val3].current;
     EXPECT_EQ(host.set_storage(addr2, val3, val1), EVMC_STORAGE_DELETED);
     EXPECT_EQ(chost.get_storage(addr2, val3), val1);
+}
+
+TEST(mocked_host, storage_update_scenarios)
+{
+    static constexpr auto addr = 0xff_address;
+    static constexpr auto key = 0xfe_bytes32;
+
+    static constexpr auto execute_scenario = [](const evmc::bytes32& original,
+                                                const evmc::bytes32& current,
+                                                const evmc::bytes32& value) {
+        evmc::MockedHost host;
+        host.accounts[addr].storage[key] = {current, original};
+        return host.set_storage(addr, key, value);
+    };
+
+    static constexpr auto O = 0x00_bytes32;
+    static constexpr auto X = 0x01_bytes32;
+    static constexpr auto Y = 0x02_bytes32;
+    static constexpr auto Z = 0x03_bytes32;
+
+    EXPECT_EQ(execute_scenario(O, O, O), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(X, O, O), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(O, Y, Y), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(X, Y, Y), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(Y, Y, Y), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(O, Y, Z), EVMC_STORAGE_ASSIGNED);
+    EXPECT_EQ(execute_scenario(X, Y, Z), EVMC_STORAGE_ASSIGNED);
+
+    EXPECT_EQ(execute_scenario(O, O, Z), EVMC_STORAGE_ADDED);
+    EXPECT_EQ(execute_scenario(X, X, O), EVMC_STORAGE_DELETED);
+    EXPECT_EQ(execute_scenario(X, X, Z), EVMC_STORAGE_MODIFIED);
+    EXPECT_EQ(execute_scenario(X, O, Z), EVMC_STORAGE_DELETED_ADDED);
+    EXPECT_EQ(execute_scenario(X, Y, O), EVMC_STORAGE_MODIFIED_DELETED);
+    EXPECT_EQ(execute_scenario(X, O, X), EVMC_STORAGE_DELETED_RESTORED);
+    EXPECT_EQ(execute_scenario(O, Y, O), EVMC_STORAGE_ADDED_DELETED);
+    EXPECT_EQ(execute_scenario(X, Y, X), EVMC_STORAGE_MODIFIED_RESTORED);
 }
 
 TEST(mocked_host, selfdestruct)
