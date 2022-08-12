@@ -498,40 +498,97 @@ typedef evmc_bytes32 (*evmc_get_storage_fn)(struct evmc_host_context* context,
 /**
  * The effect of an attempt to modify a contract storage item.
  *
+ * See @ref storagestatus for additional information about design of this enum
+ * and analysis of the specification.
+ *
  * For the purpose of explaining the meaning of each element, the following
  * notation is used:
  * - 0 is zero value,
  * - X != 0 (X is any value other than 0),
- * - Y != X, Y != 0 (Y is any value other than X and 0),
- * - Z != Y (Z is any value other than Y),
- * - the "->" means the change from one value to another.
+ * - Y != 0, Y != X,  (Y is any value other than X and 0),
+ * - Z != 0, Z != X, Z != X (Z is any value other than Y and X and 0),
+ * - the "o -> c -> v" triple describes the change status in the context of:
+ *   - o: original value (cold value before a transaction started),
+ *   - c: current storage value,
+ *   - v: new storage value to be set.
+ *
+ * The order of elements follows EIPs introducing net storage gas costs:
+ * - EIP-2200: https://eips.ethereum.org/EIPS/eip-2200,
+ * - EIP-1283: https://eips.ethereum.org/EIPS/eip-1283.
  */
 enum evmc_storage_status
 {
     /**
-     * The value of a storage item has been left unchanged: 0 -> 0 and X -> X.
+     * The new/same value is assigned to the storage item without affecting the cost structure.
+     *
+     * The storage value item is either:
+     * - left unchanged (c == v) or
+     * - the dirty value (o != c) is modified again (c != v).
+     * This is the group of cases related to minimal gas cost of only accessing warm storage.
+     * 0|X   -> 0 -> 0 (current value unchanged)
+     * 0|X|Y -> Y -> Y (current value unchanged)
+     * 0|X   -> Y -> Z (modified previously added/modified value)
+     *
+     * This is "catch all remaining" status. I.e. if all other statuses are correctly matched
+     * this status should be assigned to all remaining cases.
      */
-    EVMC_STORAGE_UNCHANGED = 0,
+    EVMC_STORAGE_ASSIGNED = 0,
 
     /**
-     * The value of a storage item has been modified: X -> Y.
+     * A new storage item is added by changing
+     * the current clean zero to a nonzero value.
+     * 0 -> 0 -> Z
      */
-    EVMC_STORAGE_MODIFIED = 1,
+    EVMC_STORAGE_ADDED = 1,
 
     /**
-     * A storage item has been modified after being modified before: X -> Y -> Z.
+     * A storage item is deleted by changing
+     * the current clean nonzero to the zero value.
+     * X -> X -> 0
      */
-    EVMC_STORAGE_MODIFIED_AGAIN = 2,
+    EVMC_STORAGE_DELETED = 2,
 
     /**
-     * A new storage item has been added: 0 -> X.
+     * A storage item is modified by changing
+     * the current clean nonzero to other nonzero value.
+     * X -> X -> Z
      */
-    EVMC_STORAGE_ADDED = 3,
+    EVMC_STORAGE_MODIFIED = 3,
 
     /**
-     * A storage item has been deleted: X -> 0.
+     * A storage item is added by changing
+     * the current dirty zero to a nonzero value other than the original value.
+     * X -> 0 -> Z
      */
-    EVMC_STORAGE_DELETED = 4
+    EVMC_STORAGE_DELETED_ADDED = 4,
+
+    /**
+     * A storage item is deleted by changing
+     * the current dirty nonzero to the zero value and the original value is not zero.
+     * X -> Y -> 0
+     */
+    EVMC_STORAGE_MODIFIED_DELETED = 5,
+
+    /**
+     * A storage item is added by changing
+     * the current dirty zero to the original value.
+     * X -> 0 -> X
+     */
+    EVMC_STORAGE_DELETED_RESTORED = 6,
+
+    /**
+     * A storage item is deleted by changing
+     * the current dirty nonzero to the original zero value.
+     * 0 -> Y -> 0
+     */
+    EVMC_STORAGE_ADDED_DELETED = 7,
+
+    /**
+     * A storage item is modified by changing
+     * the current dirty nonzero to the original nonzero value other than the current value.
+     * X -> Y -> X
+     */
+    EVMC_STORAGE_MODIFIED_RESTORED = 8
 };
 
 

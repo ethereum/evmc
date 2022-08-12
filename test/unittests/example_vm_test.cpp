@@ -90,7 +90,7 @@ TEST_F(example_vm, return_address)
 TEST_F(example_vm, counter_in_storage)
 {
     // Yul: sstore(0, add(sload(0), 1)) stop()
-    auto& storage_value = host.accounts[msg.recipient].storage[{}].value;
+    auto& storage_value = host.accounts[msg.recipient].storage[{}].current;
     storage_value = 0x00000000000000000000000000000000000000000000000000000000000000bb_bytes32;
     const auto r = execute_in_example_vm(10, "60016000540160005500");
     EXPECT_EQ(r.status_code, EVMC_SUCCESS);

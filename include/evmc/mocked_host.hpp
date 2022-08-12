@@ -5,6 +5,7 @@
 
 #include <evmc/evmc.hpp>
 #include <algorithm>
+#include <cassert>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -14,29 +15,34 @@ namespace evmc
 /// The string of bytes.
 using bytes = std::basic_string<uint8_t>;
 
-/// Extended value (by dirty flag) for account storage.
-struct storage_value
+/// Extended value (with original value and access flag) for account storage.
+struct StorageValue
 {
-    /// The storage value.
-    bytes32 value;
+    /// The current storage value.
+    bytes32 current;
 
-    /// True means this value has been modified already by the current transaction.
-    bool dirty{false};
+    /// The original storage value.
+    bytes32 original;
 
     /// Is the storage key cold or warm.
     evmc_access_status access_status{EVMC_ACCESS_COLD};
 
     /// Default constructor.
-    storage_value() noexcept = default;
+    StorageValue() noexcept = default;
 
     /// Constructor.
-    storage_value(const bytes32& _value, bool _dirty = false) noexcept  // NOLINT
-      : value{_value}, dirty{_dirty}
+    StorageValue(const bytes32& _value) noexcept  // NOLINT
+      : current{_value}, original{_value}
+    {}
+
+    /// Constructor with original value.
+    StorageValue(const bytes32& _value, const bytes32& _original) noexcept
+      : current{_value}, original{_original}
     {}
 
     /// Constructor with initial access status.
-    storage_value(const bytes32& _value, evmc_access_status _access_status) noexcept
-      : value{_value}, access_status{_access_status}
+    StorageValue(const bytes32& _value, evmc_access_status _access_status) noexcept
+      : current{_value}, original{_value}, access_status{_access_status}
     {}
 };
 
@@ -56,7 +62,7 @@ struct MockedAccount
     uint256be balance;
 
     /// The account storage map.
-    std::unordered_map<bytes32, storage_value> storage;
+    std::unordered_map<bytes32, StorageValue> storage;
 
     /// Helper method for setting balance by numeric type.
     void set_balance(uint64_t x) noexcept
@@ -160,7 +166,7 @@ public:
 
         const auto storage_iter = account_iter->second.storage.find(key);
         if (storage_iter != account_iter->second.storage.end())
-            return storage_iter->second.value;
+            return storage_iter->second.current;
         return {};
     }
 
@@ -171,33 +177,141 @@ public:
     {
         record_account_access(addr);
 
-        // Get the reference to the old value.
+        // Get the reference to the storage entry value.
         // This will create the account in case it was not present.
         // This is convenient for unit testing and standalone EVM execution to preserve the
         // storage values after the execution terminates.
-        auto& old = accounts[addr].storage[key];
+        auto& s = accounts[addr].storage[key];
 
-        // Follow https://eips.ethereum.org/EIPS/eip-1283 specification.
-        // WARNING! This is not complete implementation as refund is not handled here.
+        // Follow the EIP-2200 specification as closely as possible.
+        // https://eips.ethereum.org/EIPS/eip-2200
+        // Warning: this is not the most efficient implementation. The storage status can be
+        // figured out by combining only 4 checks:
+        // - original != current (dirty)
+        // - original == value (restored)
+        // - current != 0
+        // - value != 0
+        const auto status = [&original = s.original, &current = s.current, &value]() {
+            // Clause 1 is irrelevant:
+            // 1. "If gasleft is less than or equal to gas stipend,
+            //    fail the current call frame with ‘out of gas’ exception"
 
-        if (old.value == value)
-            return EVMC_STORAGE_UNCHANGED;
-
-        evmc_storage_status status{};
-        if (!old.dirty)
-        {
-            old.dirty = true;
-            if (!old.value)
-                status = EVMC_STORAGE_ADDED;
-            else if (value)
-                status = EVMC_STORAGE_MODIFIED;
+            // 2. "If current value equals new value (this is a no-op)"
+            if (current == value)
+            {
+                // "SLOAD_GAS is deducted"
+                return EVMC_STORAGE_ASSIGNED;
+            }
+            // 3. "If current value does not equal new value"
             else
-                status = EVMC_STORAGE_DELETED;
-        }
-        else
-            status = EVMC_STORAGE_MODIFIED_AGAIN;
+            {
+                // 3.1. "If original value equals current value
+                //      (this storage slot has not been changed by the current execution context)"
+                if (original == current)
+                {
+                    // 3.1.1 "If original value is 0"
+                    if (is_zero(original))
+                    {
+                        // "SSTORE_SET_GAS is deducted"
+                        return EVMC_STORAGE_ADDED;
+                    }
+                    // 3.1.2 "Otherwise"
+                    else
+                    {
+                        // "SSTORE_RESET_GAS gas is deducted"
+                        auto st = EVMC_STORAGE_MODIFIED;
 
-        old.value = value;
+                        // "If new value is 0"
+                        if (is_zero(value))
+                        {
+                            // "add SSTORE_CLEARS_SCHEDULE gas to refund counter"
+                            st = EVMC_STORAGE_DELETED;
+                        }
+
+                        return st;
+                    }
+                }
+                // 3.2. "If original value does not equal current value
+                //      (this storage slot is dirty),
+                //      SLOAD_GAS gas is deducted.
+                //      Apply both of the following clauses."
+                else
+                {
+                    // Because we need to apply "both following clauses"
+                    // we first collect information which clause is triggered
+                    // then assign status code to combination of these clauses.
+                    enum
+                    {
+                        None = 0,
+                        RemoveClearsSchedule = 1 << 0,
+                        AddClearsSchedule = 1 << 1,
+                        RestoredBySet = 1 << 2,
+                        RestoredByReset = 1 << 3,
+                    };
+                    int triggered_clauses = None;
+
+                    // 3.2.1. "If original value is not 0"
+                    if (!is_zero(original))
+                    {
+                        // 3.2.1.1. "If current value is 0"
+                        if (is_zero(current))
+                        {
+                            // "(also means that new value is not 0)"
+                            assert(!is_zero(value));
+                            // "remove SSTORE_CLEARS_SCHEDULE gas from refund counter"
+                            triggered_clauses |= RemoveClearsSchedule;
+                        }
+                        // 3.2.1.2. "If new value is 0"
+                        if (is_zero(value))
+                        {
+                            // "(also means that current value is not 0)"
+                            assert(!is_zero(current));
+                            // "add SSTORE_CLEARS_SCHEDULE gas to refund counter"
+                            triggered_clauses |= AddClearsSchedule;
+                        }
+                    }
+
+                    // 3.2.2. "If original value equals new value (this storage slot is reset)"
+                    // Except: we use term 'storage slot restored'.
+                    if (original == value)
+                    {
+                        // 3.2.2.1. "If original value is 0"
+                        if (is_zero(original))
+                        {
+                            // "add SSTORE_SET_GAS - SLOAD_GAS to refund counter"
+                            triggered_clauses |= RestoredBySet;
+                        }
+                        // 3.2.2.2. "Otherwise"
+                        else
+                        {
+                            // "add SSTORE_RESET_GAS - SLOAD_GAS gas to refund counter"
+                            triggered_clauses |= RestoredByReset;
+                        }
+                    }
+
+                    switch (triggered_clauses)
+                    {
+                    case RemoveClearsSchedule:
+                        return EVMC_STORAGE_DELETED_ADDED;
+                    case AddClearsSchedule:
+                        return EVMC_STORAGE_MODIFIED_DELETED;
+                    case RemoveClearsSchedule | RestoredByReset:
+                        return EVMC_STORAGE_DELETED_RESTORED;
+                    case RestoredBySet:
+                        return EVMC_STORAGE_ADDED_DELETED;
+                    case RestoredByReset:
+                        return EVMC_STORAGE_MODIFIED_RESTORED;
+                    case None:
+                        return EVMC_STORAGE_ASSIGNED;
+                    default:
+                        assert(false);  // Other combinations are impossible.
+                        return evmc_storage_status{};
+                    }
+                }
+            }
+        }();
+
+        s.current = value;  // Finally update the current storage value.
         return status;
     }
 
@@ -344,16 +458,18 @@ public:
 
     /// Access the account's storage value at the given key.
     ///
-    /// This method is required by EIP-2929 introduced in ::EVMC_BERLIN. In records that the given
-    /// account's storage key has been access and returns the previous access status.
-    /// To mock storage access list (EIP-2930), you can pre-init account's storage values with
-    /// the ::EVMC_ACCESS_WARM flag:
+    /// This method is required by EIP-2929 introduced in ::EVMC_BERLIN. In records
+    /// that the given account's storage key has been access and returns the
+    /// previous access status. To mock storage access list (EIP-2930), you can
+    /// pre-init account's storage values with the ::EVMC_ACCESS_WARM flag:
     ///
-    ///     mocked_host.accounts[msg.recipient].storage[key] = {value, EVMC_ACCESS_WARM};
+    ///     mocked_host.accounts[msg.recipient].storage[key] = {value,
+    ///     EVMC_ACCESS_WARM};
     ///
     /// @param addr  The account address.
     /// @param key   The account's storage key.
-    /// @return      The ::EVMC_ACCESS_WARM if the storage key has been accessed before,
+    /// @return      The ::EVMC_ACCESS_WARM if the storage key has been accessed
+    /// before,
     ///              the ::EVMC_ACCESS_COLD otherwise.
     evmc_access_status access_storage(const address& addr, const bytes32& key) noexcept override
     {
