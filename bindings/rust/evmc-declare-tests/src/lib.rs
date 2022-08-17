@@ -35,6 +35,6 @@ impl EvmcVm for FooVM {
         _message: &ExecutionMessage,
         _context: Option<&mut ExecutionContext>,
     ) -> ExecutionResult {
-        ExecutionResult::success(1337, None)
+        ExecutionResult::success(1337, 21, None)
     }
 }

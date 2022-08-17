@@ -1,5 +1,5 @@
 # EVMC: Ethereum Client-VM Connector API.
-# Copyright 2019-2020 The EVMC Authors.
+# Copyright 2019 The EVMC Authors.
 # Licensed under the Apache License, Version 2.0.
 
 JAVA_HOME:=$(shell java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | sed 's/\s*java.home = //' | sed 's/\/jre//')

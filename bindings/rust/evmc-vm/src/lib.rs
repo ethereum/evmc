@@ -47,6 +47,7 @@ pub enum SetOptionError {
 pub struct ExecutionResult {
     status_code: StatusCode,
     gas_left: i64,
+    gas_refund: i64,
     output: Option<Vec<u8>>,
     create_address: Option<Address>,
 }
@@ -79,10 +80,16 @@ pub struct ExecutionContext<'a> {
 
 impl ExecutionResult {
     /// Manually create a result.
-    pub fn new(_status_code: StatusCode, _gas_left: i64, _output: Option<&[u8]>) -> Self {
+    pub fn new(
+        _status_code: StatusCode,
+        _gas_left: i64,
+        _gas_refund: i64,
+        _output: Option<&[u8]>,
+    ) -> Self {
         ExecutionResult {
             status_code: _status_code,
             gas_left: _gas_left,
+            gas_refund: _gas_refund,
             output: _output.map(|s| s.to_vec()),
             create_address: None,
         }
@@ -90,17 +97,17 @@ impl ExecutionResult {
 
     /// Create failure result.
     pub fn failure() -> Self {
-        ExecutionResult::new(StatusCode::EVMC_FAILURE, 0, None)
+        ExecutionResult::new(StatusCode::EVMC_FAILURE, 0, 0, None)
     }
 
     /// Create a revert result.
     pub fn revert(_gas_left: i64, _output: Option<&[u8]>) -> Self {
-        ExecutionResult::new(StatusCode::EVMC_REVERT, _gas_left, _output)
+        ExecutionResult::new(StatusCode::EVMC_REVERT, _gas_left, 0, _output)
     }
 
     /// Create a successful result.
-    pub fn success(_gas_left: i64, _output: Option<&[u8]>) -> Self {
-        ExecutionResult::new(StatusCode::EVMC_SUCCESS, _gas_left, _output)
+    pub fn success(_gas_left: i64, _gas_refund: i64, _output: Option<&[u8]>) -> Self {
+        ExecutionResult::new(StatusCode::EVMC_SUCCESS, _gas_left, _gas_refund, _output)
     }
 
     /// Read the status code.
@@ -111,6 +118,11 @@ impl ExecutionResult {
     /// Read the amount of gas left.
     pub fn gas_left(&self) -> i64 {
         self.gas_left
+    }
+
+    /// Read the amount of gas refunded.
+    pub fn gas_refund(&self) -> i64 {
+        self.gas_refund
     }
 
     /// Read the output returned.
@@ -397,6 +409,7 @@ impl From<ffi::evmc_result> for ExecutionResult {
         let ret = Self {
             status_code: result.status_code,
             gas_left: result.gas_left,
+            gas_refund: result.gas_refund,
             output: if result.output_data.is_null() {
                 assert_eq!(result.output_size, 0);
                 None
@@ -469,6 +482,7 @@ impl From<ExecutionResult> for ffi::evmc_result {
         Self {
             status_code: value.status_code,
             gas_left: value.gas_left,
+            gas_refund: value.gas_refund,
             output_data: buffer,
             output_size: len,
             release: Some(release_stack_result),
@@ -532,10 +546,11 @@ mod tests {
 
     #[test]
     fn result_new() {
-        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, None);
+        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, 21, None);
 
         assert_eq!(r.status_code(), StatusCode::EVMC_FAILURE);
         assert_eq!(r.gas_left(), 420);
+        assert_eq!(r.gas_refund(), 21);
         assert!(r.output().is_none());
         assert!(r.create_address().is_none());
     }
@@ -559,6 +574,7 @@ mod tests {
         let f = ffi::evmc_result {
             status_code: StatusCode::EVMC_SUCCESS,
             gas_left: 1337,
+            gas_refund: 21,
             output_data: Box::into_raw(Box::new([0xde, 0xad, 0xbe, 0xef])) as *const u8,
             output_size: 4,
             release: Some(test_result_dispose),
@@ -570,6 +586,7 @@ mod tests {
 
         assert_eq!(r.status_code(), StatusCode::EVMC_SUCCESS);
         assert_eq!(r.gas_left(), 1337);
+        assert_eq!(r.gas_refund(), 21);
         assert!(r.output().is_some());
         assert_eq!(r.output().unwrap().len(), 4);
         assert!(r.create_address().is_some());
@@ -580,6 +597,7 @@ mod tests {
         let r = ExecutionResult::new(
             StatusCode::EVMC_FAILURE,
             420,
+            21,
             Some(&[0xc0, 0xff, 0xee, 0x71, 0x75]),
         );
 
@@ -588,6 +606,7 @@ mod tests {
         unsafe {
             assert_eq!((*f).status_code, StatusCode::EVMC_FAILURE);
             assert_eq!((*f).gas_left, 420);
+            assert_eq!((*f).gas_refund, 21);
             assert!(!(*f).output_data.is_null());
             assert_eq!((*f).output_size, 5);
             assert_eq!(
@@ -603,13 +622,14 @@ mod tests {
 
     #[test]
     fn result_into_heap_ffi_empty_data() {
-        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, None);
+        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, 21, None);
 
         let f: *const ffi::evmc_result = r.into();
         assert!(!f.is_null());
         unsafe {
             assert_eq!((*f).status_code, StatusCode::EVMC_FAILURE);
             assert_eq!((*f).gas_left, 420);
+            assert_eq!((*f).gas_refund, 21);
             assert!((*f).output_data.is_null());
             assert_eq!((*f).output_size, 0);
             assert_eq!((*f).create_address.bytes, [0u8; 20]);
@@ -624,6 +644,7 @@ mod tests {
         let r = ExecutionResult::new(
             StatusCode::EVMC_FAILURE,
             420,
+            21,
             Some(&[0xc0, 0xff, 0xee, 0x71, 0x75]),
         );
 
@@ -631,6 +652,7 @@ mod tests {
         unsafe {
             assert_eq!(f.status_code, StatusCode::EVMC_FAILURE);
             assert_eq!(f.gas_left, 420);
+            assert_eq!(f.gas_refund, 21);
             assert!(!f.output_data.is_null());
             assert_eq!(f.output_size, 5);
             assert_eq!(
@@ -646,12 +668,13 @@ mod tests {
 
     #[test]
     fn result_into_stack_ffi_empty_data() {
-        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, None);
+        let r = ExecutionResult::new(StatusCode::EVMC_FAILURE, 420, 21, None);
 
         let f: ffi::evmc_result = r.into();
         unsafe {
             assert_eq!(f.status_code, StatusCode::EVMC_FAILURE);
             assert_eq!(f.gas_left, 420);
+            assert_eq!(f.gas_refund, 21);
             assert!(f.output_data.is_null());
             assert_eq!(f.output_size, 0);
             assert_eq!(f.create_address.bytes, [0u8; 20]);
@@ -812,6 +835,7 @@ mod tests {
                 StatusCode::EVMC_INTERNAL_ERROR
             },
             gas_left: 2,
+            gas_refund: 0,
             // NOTE: we are passing the input pointer here, but for testing the lifetime is ok
             output_data: msg.input_data,
             output_size: msg.input_size,

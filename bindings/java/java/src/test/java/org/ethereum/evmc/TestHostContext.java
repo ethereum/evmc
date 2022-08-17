@@ -58,7 +58,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer call(ByteBuffer msg) {
-    return ByteBuffer.allocateDirect(64).put(new byte[64]);
+    return ByteBuffer.allocateDirect(72).put(new byte[72]);
   }
 
   @Override

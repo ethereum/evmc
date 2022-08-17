@@ -97,7 +97,8 @@ type HostContext interface {
 	EmitLog(addr Address, topics []Hash, data []byte)
 	Call(kind CallKind,
 		recipient Address, sender Address, value Hash, input []byte, gas int64, depth int,
-		static bool, salt Hash, codeAddress Address) (output []byte, gasLeft int64, createAddr Address, err error)
+		static bool, salt Hash, codeAddress Address) (output []byte, gasLeft int64, gasRefund int64,
+		createAddr Address, err error)
 	AccessAccount(addr Address) AccessStatus
 	AccessStorage(addr Address, key Hash) AccessStatus
 }
@@ -211,7 +212,7 @@ func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result 
 	ctx := getHostContext(uintptr(pCtx))
 
 	kind := CallKind(msg.kind)
-	output, gasLeft, createAddr, err := ctx.Call(kind, goAddress(msg.recipient), goAddress(msg.sender), goHash(msg.value),
+	output, gasLeft, gasRefund, createAddr, err := ctx.Call(kind, goAddress(msg.recipient), goAddress(msg.sender), goHash(msg.value),
 		goByteSlice(msg.input_data, msg.input_size), int64(msg.gas), int(msg.depth), msg.flags != 0, goHash(msg.create2_salt),
 		goAddress(msg.code_address))
 
@@ -225,7 +226,7 @@ func call(pCtx unsafe.Pointer, msg *C.struct_evmc_message) C.struct_evmc_result 
 		outputData = (*C.uint8_t)(&output[0])
 	}
 
-	result := C.evmc_make_result(statusCode, C.int64_t(gasLeft), outputData, C.size_t(len(output)))
+	result := C.evmc_make_result(statusCode, C.int64_t(gasLeft), C.int64_t(gasRefund), outputData, C.size_t(len(output)))
 	result.create_address = evmcAddress(createAddr)
 	return result
 }

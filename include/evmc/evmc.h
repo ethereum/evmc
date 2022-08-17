@@ -402,6 +402,14 @@ struct evmc_result
     int64_t gas_left;
 
     /**
+     * The refunded gas accumulated from this execution and its sub-calls.
+     *
+     * The transaction gas refund limit is not applied.
+     * If evmc_result::status_code is other than ::EVMC_SUCCESS the value MUST be 0.
+     */
+    int64_t gas_refund;
+
+    /**
      * The reference to output data.
      *
      *  The output contains data coming from RETURN opcode (iff evmc_result::code
