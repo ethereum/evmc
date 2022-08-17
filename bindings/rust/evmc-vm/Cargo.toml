@@ -4,7 +4,7 @@
 
 [package]
 name = "evmc-vm"
-version = "10.0.0-alpha.6"
+version = "10.0.0-rc.1"
 authors = ["Alex Beregszaszi <alex@rtfs.hu>", "Jake Lang <jak3lang@gmail.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/ethereum/evmc"
@@ -12,4 +12,4 @@ description = "Bindings to EVMC (VM specific)"
 edition = "2018"
 
 [dependencies]
-evmc-sys = { path = "../evmc-sys", version = "10.0.0-alpha.6" }
+evmc-sys = { path = "../evmc-sys", version = "10.0.0-rc.1" }
