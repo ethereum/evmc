@@ -295,27 +295,25 @@ jobs:
 
   bindings-java:
     docker:
-      - image: circleci/openjdk:13-buster
+      - image: cimg/openjdk:18.0
     environment:
       CMAKE_OPTIONS: -DEVMC_JAVA=ON
     steps:
-      - run:
-          name: "Install CMake"
-          command: |
-            sudo apt -qq update
-            sudo apt -yq install cmake
       - checkout
       - build
       - test
       - run:
           name: "Java Lint (spotlessCheck)"
-          command: cd bindings/java && make lint
+          working_directory: bindings/java
+          command: make lint
       - run:
           name: "Java Build"
-          command: cd bindings/java && make clean build
+          working_directory: bindings/java
+          command: make clean build
       - run:
           name: "Java Test"
-          command: cd bindings/java && make test
+          working_directory: bindings/java
+          command: make test
 
   bindings-rust:
     docker:

@@ -1,4 +1,4 @@
 task setup(type: Wrapper) {
     description = "Download the gradle wrapper and requisite files. Overwrites existing wrapper files."
-    gradleVersion = "6.3"
+    gradleVersion = "7.5.1"
 }
