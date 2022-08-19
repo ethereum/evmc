@@ -67,9 +67,10 @@ int main(int argc, const char** argv) noexcept
 
         auto& run_cmd = *app.add_subcommand("run", "Execute EVM bytecode")->fallthrough();
         run_cmd.add_option("code", code_arg, "Bytecode")->required()->check(HexOrFile);
-        run_cmd.add_option("--gas", gas, "Execution gas limit", true)
+        run_cmd.add_option("--gas", gas, "Execution gas limit")
+            ->capture_default_str()
             ->check(CLI::Range(0, 1000000000));
-        run_cmd.add_option("--rev", rev, "EVM revision", true);
+        run_cmd.add_option("--rev", rev, "EVM revision")->capture_default_str();
         run_cmd.add_option("--input", input_arg, "Input bytes")->check(HexOrFile);
         run_cmd.add_flag(
             "--create", create,
