@@ -13,7 +13,7 @@ add_test(NAME ${prefix}/help COMMAND evmc::evmc-vmtester --version --help)
 set_tests_properties(${prefix}/help PROPERTIES PASS_REGULAR_EXPRESSION "Usage:")
 
 add_test(NAME ${prefix}/nonexistingvm COMMAND evmc::evmc-vmtester nonexistingvm)
-set_tests_properties(${prefix}/nonexistingvm PROPERTIES PASS_REGULAR_EXPRESSION "[Cc]annot open")
+set_tests_properties(${prefix}/nonexistingvm PROPERTIES PASS_REGULAR_EXPRESSION "[Cc]annot open|no such file")
 
 add_test(NAME ${prefix}/noarg COMMAND evmc::evmc-vmtester)
 set_tests_properties(${prefix}/noarg PROPERTIES PASS_REGULAR_EXPRESSION "is required")
