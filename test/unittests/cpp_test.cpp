@@ -934,13 +934,13 @@ TEST(cpp, revision_to_string)
 }
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
 extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);  // NOLINT
 #endif
 
 static bool has_ubsan() noexcept
 {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
     return (__ubsan_handle_builtin_unreachable != nullptr);
 #else
     return false;
