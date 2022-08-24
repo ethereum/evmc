@@ -829,7 +829,10 @@ TEST(cpp, status_code_to_string)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(NAME) \
-    TestCase { NAME, #NAME }
+    TestCase            \
+    {                   \
+        NAME, #NAME     \
+    }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_SUCCESS),
         TEST_CASE(EVMC_FAILURE),
@@ -880,7 +883,10 @@ TEST(cpp, revision_to_string)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(NAME) \
-    TestCase { NAME, #NAME }
+    TestCase            \
+    {                   \
+        NAME, #NAME     \
+    }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_FRONTIER),
         TEST_CASE(EVMC_HOMESTEAD),
