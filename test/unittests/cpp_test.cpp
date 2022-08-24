@@ -829,7 +829,10 @@ TEST(cpp, status_code_to_string)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(NAME) \
-    TestCase { NAME, #NAME }
+    TestCase            \
+    {                   \
+        NAME, #NAME     \
+    }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_SUCCESS),
         TEST_CASE(EVMC_FAILURE),
@@ -880,7 +883,10 @@ TEST(cpp, revision_to_string)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TEST_CASE(NAME) \
-    TestCase { NAME, #NAME }
+    TestCase            \
+    {                   \
+        NAME, #NAME     \
+    }
     constexpr TestCase test_cases[]{
         TEST_CASE(EVMC_FRONTIER),
         TEST_CASE(EVMC_HOMESTEAD),
@@ -928,13 +934,13 @@ TEST(cpp, revision_to_string)
 }
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
 extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);  // NOLINT
 #endif
 
 static bool has_ubsan() noexcept
 {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
     return (__ubsan_handle_builtin_unreachable != nullptr);
 #else
     return false;
