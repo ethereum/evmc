@@ -25,24 +25,22 @@ struct StorageValue
     bytes32 original;
 
     /// Is the storage key cold or warm.
-    evmc_access_status access_status{EVMC_ACCESS_COLD};
+    evmc_access_status access_status = EVMC_ACCESS_COLD;
 
     /// Default constructor.
     StorageValue() noexcept = default;
 
-    /// Constructor.
-    StorageValue(const bytes32& _value) noexcept  // NOLINT
-      : current{_value}, original{_value}
-    {}
-
-    /// Constructor with original value.
-    StorageValue(const bytes32& _value, const bytes32& _original) noexcept
-      : current{_value}, original{_original}
-    {}
-
-    /// Constructor with initial access status.
-    StorageValue(const bytes32& _value, evmc_access_status _access_status) noexcept
+    /// Constructor sets the current and original to the same value. Optional access status.
+    StorageValue(const bytes32& _value,  // NOLINT(hicpp-explicit-conversions)
+                 evmc_access_status _access_status = EVMC_ACCESS_COLD) noexcept
       : current{_value}, original{_value}, access_status{_access_status}
+    {}
+
+    /// Constructor with original value and optional access status
+    StorageValue(const bytes32& _value,
+                 const bytes32& _original,
+                 evmc_access_status _access_status = EVMC_ACCESS_COLD) noexcept
+      : current{_value}, original{_original}, access_status{_access_status}
     {}
 };
 
