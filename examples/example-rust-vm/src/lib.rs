@@ -6,7 +6,7 @@ use core::str::FromStr;
 use evmc_declare::evmc_declare_vm;
 use evmc_vm::*;
 
-#[evmc_declare_vm("ExampleRustVM", "evm, precompiles", "10.0.0-rc.1")]
+#[evmc_declare_vm("ExampleRustVM", "evm, precompiles", "10.0.0")]
 pub struct ExampleRustVM {
     verbosity: i8,
 }

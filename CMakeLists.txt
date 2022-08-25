@@ -44,7 +44,7 @@ endif()
 cable_set_build_type(DEFAULT Release CONFIGURATION_TYPES Debug Release)
 
 project(evmc)
-set(PROJECT_VERSION 10.0.0-rc.1)
+set(PROJECT_VERSION 10.0.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 
