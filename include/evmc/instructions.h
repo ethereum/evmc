@@ -175,7 +175,8 @@ enum evmc_opcode
     OP_CREATE2 = 0xf5,
 
     OP_STATICCALL = 0xfa,
-
+    OP_CALLF = 0xfb,
+    OP_RETF = 0xfc,
     OP_REVERT = 0xfd,
     OP_INVALID = 0xfe,
     OP_SELFDESTRUCT = 0xff
