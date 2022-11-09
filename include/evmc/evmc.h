@@ -412,20 +412,20 @@ struct evmc_result
     /**
      * The reference to output data.
      *
-     *  The output contains data coming from RETURN opcode (iff evmc_result::code
-     *  field is ::EVMC_SUCCESS) or from REVERT opcode.
+     * The output contains data coming from RETURN opcode (iff evmc_result::code
+     * field is ::EVMC_SUCCESS) or from REVERT opcode.
      *
-     *  The memory containing the output data is owned by EVM and has to be
-     *  freed with evmc_result::release().
+     * The memory containing the output data is owned by EVM and has to be
+     * freed with evmc_result::release().
      *
-     *  This MAY be NULL.
+     * This MAY be NULL.
      */
     const uint8_t* output_data;
 
     /**
      * The size of the output data.
      *
-     *  If output_data is NULL this MUST be 0.
+     * If output_data is NULL this MUST be 0.
      */
     size_t output_size;
 
@@ -463,13 +463,13 @@ struct evmc_result
     /**
      * Reserved data that MAY be used by a evmc_result object creator.
      *
-     *  This reserved 4 bytes together with 20 bytes from create_address form
-     *  24 bytes of memory called "optional data" within evmc_result struct
-     *  to be optionally used by the evmc_result object creator.
+     * This reserved 4 bytes together with 20 bytes from create_address form
+     * 24 bytes of memory called "optional data" within evmc_result struct
+     * to be optionally used by the evmc_result object creator.
      *
-     *  @see evmc_result_optional_data, evmc_get_optional_data().
+     * @see evmc_result_optional_data, evmc_get_optional_data().
      *
-     *  Also extends the size of the evmc_result to 64 bytes (full cache line).
+     * Also extends the size of the evmc_result to 64 bytes (full cache line).
      */
     uint8_t padding[4];
 };
@@ -1111,7 +1111,7 @@ struct evmc_vm
     /**
      * Optional pointer to function modifying VM's options.
      *
-     *  If the VM does not support this feature the pointer can be NULL.
+     * If the VM does not support this feature the pointer can be NULL.
      */
     evmc_set_option_fn set_option;
 };
