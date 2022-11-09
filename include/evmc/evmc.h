@@ -418,14 +418,15 @@ struct evmc_result
      * The memory containing the output data is owned by EVM and has to be
      * freed with evmc_result::release().
      *
-     * This MAY be NULL.
+     * This pointer MAY be NULL.
+     * If evmc_result::output_size is 0 this pointer MUST NOT be dereferenced.
      */
     const uint8_t* output_data;
 
     /**
      * The size of the output data.
      *
-     * If output_data is NULL this MUST be 0.
+     * If evmc_result::output_data is NULL this MUST be 0.
      */
     size_t output_size;
 
