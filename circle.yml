@@ -317,7 +317,10 @@ jobs:
     steps:
       - run:
           name: "Install mingw"
-          command: choco install -y mingw
+          command: |
+            # Version 12.2 (latest when we pinned 11.2) was failing.
+            # TODO: remove the pin in the future
+            choco install -y mingw --version 11.2
       - go_test
 
   bindings-java:
