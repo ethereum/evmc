@@ -17,3 +17,4 @@ crate-type = ["staticlib", "cdylib"]
 evmc-sys = { path = "../../bindings/rust/evmc-sys" }
 evmc-vm = { path = "../../bindings/rust/evmc-vm" }
 evmc-declare = { path = "../../bindings/rust/evmc-declare" }
+libc = { version = "0.2", default-features = false }
