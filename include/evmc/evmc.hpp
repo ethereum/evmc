@@ -289,7 +289,8 @@ namespace literals
 template <typename T>
 constexpr T parse(std::string_view s) noexcept
 {
-    return from_hex<T>(s).value();
+    auto const v = from_hex<T>(s);
+    return v.has_value() ? v.value() : T{};
 }
 
 /// Literal for evmc::address.
