@@ -975,7 +975,7 @@ enum evmc_revision
      *
      * This is handy for EVM tools to always use the latest revision available.
      */
-    EVMC_LATEST_STABLE_REVISION = EVMC_LONDON
+    EVMC_LATEST_STABLE_REVISION = EVMC_PARIS
 };
 
 
