@@ -901,6 +901,7 @@ TEST(cpp, revision_to_string)
         TEST_CASE(EVMC_PARIS),
         TEST_CASE(EVMC_SHANGHAI),
         TEST_CASE(EVMC_CANCUN),
+        TEST_CASE(EVMC_PRAGUE),
     };
 #undef TEST_CASE
 
