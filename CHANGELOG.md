@@ -5,6 +5,14 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [11.0.0] — unreleased
+
+### Added
+
+- The Prague EVM revision (anticipated after Cancun)
+  [#683](https://github.com/ethereum/evmc/pull/683)
+
+
 ## [10.0.0] — 2022-08-25
 
 ### Added

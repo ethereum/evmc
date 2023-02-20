@@ -964,11 +964,19 @@ enum evmc_revision
      * The Cancun revision.
      *
      * The future next revision after Shanghai.
+     * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/cancun.md
      */
     EVMC_CANCUN = 12,
 
+    /**
+     * The Prague revision.
+     *
+     * The future next revision after Cancun.
+     */
+    EVMC_PRAGUE = 13,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_CANCUN,
+    EVMC_MAX_REVISION = EVMC_PRAGUE,
 
     /**
      * The latest known EVM revision with finalized specification.
