@@ -134,6 +134,8 @@ mod tests {
             value: ::evmc_sys::evmc_uint256be::default(),
             create2_salt: ::evmc_sys::evmc_bytes32::default(),
             code_address: ::evmc_sys::evmc_address::default(),
+            init_code: std::ptr::null(),
+            init_code_size: 0,
         };
         let message: ExecutionMessage = (&message).into();
 

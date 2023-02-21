@@ -65,6 +65,7 @@ pub struct ExecutionMessage {
     value: Uint256,
     create2_salt: Bytes32,
     code_address: Address,
+    init_code: Option<Vec<u8>>,
 }
 
 /// EVMC transaction context structure.
@@ -149,6 +150,7 @@ impl ExecutionMessage {
         value: Uint256,
         create2_salt: Bytes32,
         code_address: Address,
+        init_code: Option<&[u8]>,
     ) -> Self {
         ExecutionMessage {
             kind,
@@ -161,6 +163,7 @@ impl ExecutionMessage {
             value,
             create2_salt,
             code_address,
+            init_code: init_code.map(|s| s.to_vec()),
         }
     }
 
@@ -212,6 +215,11 @@ impl ExecutionMessage {
     /// Read the code address of the message.
     pub fn code_address(&self) -> &Address {
         &self.code_address
+    }
+
+    /// Read the optional init code.
+    pub fn init_code(&self) -> Option<&Vec<u8>> {
+        self.init_code.as_ref()
     }
 }
 
@@ -338,6 +346,17 @@ impl<'a> ExecutionContext<'a> {
         } else {
             std::ptr::null() as *const u8
         };
+        let init_code = message.init_code();
+        let init_code_size = if let Some(init_code) = init_code {
+            init_code.len()
+        } else {
+            0
+        };
+        let init_code_data = if let Some(init_code) = init_code {
+            init_code.as_ptr()
+        } else {
+            std::ptr::null() as *const u8
+        };
         // Cannot use a nice from trait here because that complicates memory management,
         // evmc_message doesn't have a release() method we could abstract it with.
         let message = ffi::evmc_message {
@@ -352,6 +371,8 @@ impl<'a> ExecutionContext<'a> {
             value: *message.value(),
             create2_salt: *message.create2_salt(),
             code_address: *message.code_address(),
+            init_code: init_code_data,
+            init_code_size,
         };
         unsafe {
             assert!((*self.host).call.is_some());
@@ -524,6 +545,17 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             value: message.value,
             create2_salt: message.create2_salt,
             code_address: message.code_address,
+            init_code: if message.init_code.is_null() {
+                assert_eq!(message.init_code_size, 0);
+                None
+            } else if message.init_code_size == 0 {
+                None
+            } else {
+                Some(from_buf_raw::<u8>(
+                    message.init_code,
+                    message.init_code_size,
+                ))
+            },
         }
     }
 }
@@ -704,6 +736,7 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            None,
         );
 
         assert_eq!(ret.kind(), MessageKind::EVMC_CALL);
@@ -739,6 +772,8 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            init_code: std::ptr::null(),
+            init_code_size: 0,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -776,6 +811,8 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            init_code: std::ptr::null(),
+            init_code_size: 0,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -918,6 +955,7 @@ mod tests {
             Uint256::default(),
             Bytes32::default(),
             test_addr,
+            None,
         );
 
         let b = exe_context.call(&message);
@@ -950,6 +988,7 @@ mod tests {
             Uint256::default(),
             Bytes32::default(),
             test_addr,
+            None,
         );
 
         let b = exe_context.call(&message);

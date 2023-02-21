@@ -65,6 +65,8 @@ mod tests {
             ffi::evmc_call_kind::EVMC_DELEGATECALL
         );
         assert_eq!(MessageKind::EVMC_CREATE, ffi::evmc_call_kind::EVMC_CREATE);
+        assert_eq!(MessageKind::EVMC_CREATE2, ffi::evmc_call_kind::EVMC_CREATE2);
+        assert_eq!(MessageKind::EVMC_CREATE3, ffi::evmc_call_kind::EVMC_CREATE3);
     }
 
     #[test]
