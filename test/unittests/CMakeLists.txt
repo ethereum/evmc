@@ -7,9 +7,6 @@ include(GoogleTest)
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
-# Disable support for std::tr1::tuple in GTest. This causes problems in Visual Studio 2015.
-set_target_properties(GTest::gtest PROPERTIES INTERFACE_COMPILE_DEFINITIONS GTEST_HAS_TR1_TUPLE=0)
-
 add_library(loader-mocked STATIC ${PROJECT_SOURCE_DIR}/lib/loader/loader.c)
 target_link_libraries(loader-mocked PRIVATE evmc::evmc)
 target_compile_definitions(loader-mocked PRIVATE EVMC_LOADER_MOCK=1)
@@ -40,6 +37,10 @@ target_link_libraries(
     GTest::gtest_main
 )
 target_include_directories(evmc-unittests PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_options(
+    evmc-unittests PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:-wd4068> # allow unknown pragma
+)
 
 gtest_add_tests(TARGET evmc-unittests TEST_PREFIX ${PROJECT_NAME}/unittests/ TEST_LIST unittests)
 
