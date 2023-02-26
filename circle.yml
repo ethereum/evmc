@@ -6,10 +6,10 @@ orbs:
 executors:
   linux-gcc-latest:
     docker:
-      - image: ethereum/cpp-build-env:18-gcc-12
+      - image: ethereum/cpp-build-env:19-gcc-12
   linux-clang-latest:
     docker:
-      - image: ethereum/cpp-build-env:18-clang-14
+      - image: ethereum/cpp-build-env:19-clang-15
 
 
 commands:
@@ -207,21 +207,28 @@ jobs:
           path: ~/build/coverage
           destination: coverage
       - run:
+          name: "Install codecov"
+          command: |
+            # TODO: This should go to cpp-build-env image
+            gpg --no-default-keyring --keyring trustedkeys.gpg --keyserver keyserver.ubuntu.com --recv-key ED779869
+
+            export CODECOV_VERSION=v0.4.1
+            curl -Os https://uploader.codecov.io/$CODECOV_VERSION/linux/codecov
+            curl -Os https://uploader.codecov.io/$CODECOV_VERSION/linux/codecov.SHA256SUM
+            curl -Os https://uploader.codecov.io/$CODECOV_VERSION/linux/codecov.SHA256SUM.sig
+
+            gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+            shasum -c codecov.SHA256SUM
+
+            chmod +x codecov
+            sudo mv codecov /usr/local/bin
+      - run:
           name: "Upload to Codecov"
           command: |
             # Convert to relative paths
             sed -i 's|$(pwd)/||' ~/build/evmc.lcov
-            sudo pip3 install --upgrade --quiet --no-cache-dir codecov==2.1.11
             codecov --file ~/build/evmc.lcov -X gcov
 
-
-  build-gcc8:
-    docker:
-      - image: ethereum/cpp-build-env:12-gcc-8
-    steps:
-      - checkout
-      - build
-      - test
 
   build-gcc-sanitizers:
     executor: linux-gcc-latest
@@ -244,7 +251,7 @@ jobs:
 
   build-clang9-asan:
     docker:
-      - image: ethereum/cpp-build-env:12-clang-9
+      - image: ethereum/cpp-build-env:15-clang-9
     environment:
       CMAKE_OPTIONS: -DSANITIZE=address
       UBSAN_OPTIONS: halt_on_error=1
@@ -255,7 +262,7 @@ jobs:
 
   build-gcc-min:
     docker:
-      - image: ethereum/cpp-build-env:13-gcc-7
+      - image: ethereum/cpp-build-env:15-gcc-8
     steps:
       - checkout
       - build
@@ -263,7 +270,7 @@ jobs:
 
   build-clang-min:
     docker:
-      - image: ethereum/cpp-build-env:13-clang-5
+      - image: ethereum/cpp-build-env:15-clang-9
     steps:
       - checkout
       - build
@@ -280,7 +287,7 @@ jobs:
 
   build-cmake-min:
     docker:
-      - image: cimg/base:stable-18.04
+      - image: cimg/base:stable-20.04
     steps:
       - run:
           name: "Install default CMake"
@@ -290,8 +297,9 @@ jobs:
       - test
 
   build-macos:
+    resource_class: macos.x86.medium.gen2
     macos:
-      xcode: 14.0.0
+      xcode: 14.3.0
     steps:
       - run:
           name: "Install System Dependencies"
@@ -370,7 +378,7 @@ jobs:
 
   bindings-go-latest:
     docker:
-      - image: cimg/go:1.19
+      - image: cimg/go:1.20
     steps:
       - go_test
 
@@ -485,7 +493,6 @@ workflows:
     jobs:
       - lint
       - build-clang-coverage
-      - build-gcc8
       - build-gcc-sanitizers
       - build-clang-sanitizers
       - build-clang9-asan
@@ -508,7 +515,7 @@ workflows:
       - bindings-java
       - bindings-rust:
           requires:
-            - build-gcc8
+            - build-gcc-min
       - bindings-rust-asan:
           requires:
             - build-clang9-asan
