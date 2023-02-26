@@ -20,8 +20,10 @@
 
 #ifdef __cplusplus
 extern "C" {
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 #endif
 
 /**
@@ -306,6 +308,8 @@ static inline const char* evmc_revision_to_string(enum evmc_revision rev)
 /** @} */
 
 #ifdef __cplusplus
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 }  // extern "C"
 #endif
