@@ -25,7 +25,7 @@ before_build:
   - if "%VS%" == "2019" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\Common7\Tools\vsdevcmd" -arch=amd64)
   - if "%VS%" == "2017" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd" -arch=amd64)
   - if "%VS%" == "2017-32bit" (call "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd" -arch=x86)
-  - if defined VS cmake -B build -G Ninja -Wno-dev -DEVMC_TESTING=ON
+  - if defined VS cmake -B build -G Ninja -Wno-dev -DCMAKE_COMPILE_WARNING_AS_ERROR=TRUE -DEVMC_TESTING=ON
 
 build_script:
   - cmake --build build --target package

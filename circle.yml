@@ -54,7 +54,7 @@ commands:
           name: "Configure"
           working_directory: ~/build
           command: |
-            cmake ../project <<#parameters.build_type>>-DCMAKE_BUILD_TYPE=<<parameters.build_type>><</parameters.build_type>> <<#parameters.toolchain>>-DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/<<parameters.toolchain>>.cmake<</parameters.toolchain>> -DCMAKE_INSTALL_PREFIX=~/install -DEVMC_TESTING=ON $CMAKE_OPTIONS
+            cmake ../project <<#parameters.build_type>>-DCMAKE_BUILD_TYPE=<<parameters.build_type>><</parameters.build_type>> <<#parameters.toolchain>>-DCMAKE_TOOLCHAIN_FILE=~/project/cmake/cable/toolchains/<<parameters.toolchain>>.cmake<</parameters.toolchain>> -DCMAKE_INSTALL_PREFIX=~/install -DCMAKE_COMPILE_WARNING_AS_ERROR=TRUE -DEVMC_TESTING=ON $CMAKE_OPTIONS
       - save_cache:
           name: "Save Hunter Cache"
           key: *hunter-cache-key
@@ -318,7 +318,7 @@ jobs:
             $ErrorActionPreference = "Stop"
             & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1' -Arch amd64
             which cmake
-            cmake -S . -B ~/build -G Ninja -DCMAKE_INSTALL_PREFIX=C:\install -DEVMC_TESTING=ON
+            cmake -S . -B ~/build -G Ninja -DCMAKE_COMPILE_WARNING_AS_ERROR=TRUE -DCMAKE_INSTALL_PREFIX=C:\install -DEVMC_TESTING=ON
       - run:
           name: 'Build'
           shell: powershell
@@ -352,7 +352,7 @@ jobs:
             $ErrorActionPreference = "Stop"
             & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1' -Arch x86
             which cmake
-            cmake -S . -B ~/build -G Ninja -DCMAKE_INSTALL_PREFIX=C:\install -DEVMC_TESTING=ON
+            cmake -S . -B ~/build -G Ninja -DCMAKE_COMPILE_WARNING_AS_ERROR=TRUE -DCMAKE_INSTALL_PREFIX=C:\install -DEVMC_TESTING=ON
       - run:
           name: 'Build'
           shell: powershell
