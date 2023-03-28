@@ -80,7 +80,8 @@ enum evmc_call_kind
     EVMC_CALLCODE = 2,     /**< Request CALLCODE. */
     EVMC_CREATE = 3,       /**< Request CREATE. */
     EVMC_CREATE2 = 4,      /**< Request CREATE2. Valid since Constantinople.*/
-    EVMC_CREATE3 = 5       /**< Request CREATE3. Valid since Prague.*/
+    EVMC_CREATE3 = 5,      /**< Request CREATE3. Valid since Prague.*/
+    EVMC_CREATE4 = 6       /**< Request CREATE4. Valid since Prague.*/
 };
 
 /** The flags for ::evmc_message. */
