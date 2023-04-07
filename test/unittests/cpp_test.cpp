@@ -973,3 +973,25 @@ TEST(cpp, revision_to_string_invalid)
         EXPECT_EQ(os.str(), "<unknown>");
     }
 }
+
+TEST(cpp, result_c_const_access)
+{
+    static constexpr auto get_status = [](const evmc_result& c_result) noexcept {
+        return c_result.status_code;
+    };
+
+    const evmc::Result r{EVMC_REVERT};
+    EXPECT_EQ(get_status(r.raw()), EVMC_REVERT);
+}
+
+TEST(cpp, result_c_nonconst_access)
+{
+    static constexpr auto set_status = [](evmc_result& c_result) noexcept {
+        c_result.status_code = EVMC_SUCCESS;
+    };
+
+    evmc::Result r;
+    EXPECT_EQ(r.status_code, EVMC_INTERNAL_ERROR);
+    set_status(r.raw());
+    EXPECT_EQ(r.status_code, EVMC_SUCCESS);
+}
