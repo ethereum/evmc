@@ -192,10 +192,12 @@ enum relation
     greater
 };
 
+namespace
+{
 /// Compares x and y using all comparison operators (also with reversed argument order)
 /// and validates results against the expected relation: eq: x == y, less: x < y.
 template <typename T>
-static void expect_cmp(const T& x, const T& y, relation expected)
+void expect_cmp(const T& x, const T& y, relation expected)
 {
     switch (expected)
     {
@@ -246,6 +248,7 @@ static void expect_cmp(const T& x, const T& y, relation expected)
         break;
     }
 }
+}  // namespace
 
 TEST(cpp, address_comparison)
 {
@@ -933,7 +936,7 @@ TEST(cpp, revision_to_string)
 extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);  // NOLINT
 #endif
 
-static bool has_ubsan() noexcept
+static bool has_ubsan() noexcept  // NOLINT(misc-use-anonymous-namespace)
 {
 #if defined(__GNUC__) && !defined(__APPLE__)
     return (__ubsan_handle_builtin_unreachable != nullptr);
