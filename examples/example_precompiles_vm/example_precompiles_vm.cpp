@@ -5,7 +5,9 @@
 #include "example_precompiles_vm.h"
 #include <algorithm>
 
-static evmc_result execute_identity(const evmc_message* msg)
+namespace
+{
+evmc_result execute_identity(const evmc_message* msg)
 {
     auto result = evmc_result{};
 
@@ -31,7 +33,7 @@ static evmc_result execute_identity(const evmc_message* msg)
     return result;
 }
 
-static evmc_result execute_empty(const evmc_message* msg)
+evmc_result execute_empty(const evmc_message* msg)
 {
     auto result = evmc_result{};
     result.status_code = EVMC_SUCCESS;
@@ -39,20 +41,20 @@ static evmc_result execute_empty(const evmc_message* msg)
     return result;
 }
 
-static evmc_result not_implemented()
+evmc_result not_implemented()
 {
     auto result = evmc_result{};
     result.status_code = EVMC_REJECTED;
     return result;
 }
 
-static evmc_result execute(evmc_vm* /*vm*/,
-                           const evmc_host_interface* /*host*/,
-                           evmc_host_context* /*context*/,
-                           enum evmc_revision rev,
-                           const evmc_message* msg,
-                           const uint8_t* /*code*/,
-                           size_t /*code_size*/)
+evmc_result execute(evmc_vm* /*vm*/,
+                    const evmc_host_interface* /*host*/,
+                    evmc_host_context* /*context*/,
+                    enum evmc_revision rev,
+                    const evmc_message* msg,
+                    const uint8_t* /*code*/,
+                    size_t /*code_size*/)
 {
     // The EIP-1352 (https://eips.ethereum.org/EIPS/eip-1352) defines
     // the range 0 - 0xffff (2 bytes) of addresses reserved for precompiled contracts.
@@ -93,6 +95,7 @@ static evmc_result execute(evmc_vm* /*vm*/,
         return execute_empty(msg);
     }
 }
+}  // namespace
 
 evmc_vm* evmc_create_example_precompiles_vm()
 {

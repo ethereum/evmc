@@ -118,20 +118,23 @@ std::vector<std::pair<std::string, std::string>> loader::recorded_options;
 /// The option name that will return unexpected error code from the set_option() method.
 const std::string loader::option_name_causing_unknown_error{"raise_unknown"};
 
-static evmc_vm* create_aaa()
+namespace
+{
+evmc_vm* create_aaa()
 {
     return reinterpret_cast<evmc_vm*>(0xaaa);
 }
 
-static evmc_vm* create_eee_bbb()
+evmc_vm* create_eee_bbb()
 {
     return reinterpret_cast<evmc_vm*>(0xeeebbb);
 }
 
-static evmc_vm* create_failure()
+evmc_vm* create_failure()
 {
     return nullptr;
 }
+}  // namespace
 
 TEST_F(loader, strcpy_sx)
 {

@@ -129,10 +129,6 @@ TEST(cpp, bytes32)
 
 TEST(cpp, std_hash)
 {
-#pragma warning(push)
-#pragma warning(disable : 4307 /* integral constant overflow */)
-#pragma warning(disable : 4309 /* 'static_cast': truncation of constant value */)
-
     using namespace evmc::literals;
 
     static_assert(std::hash<evmc::address>{}({}) == static_cast<size_t>(0xd94d12186c0f2fb7));
@@ -162,8 +158,6 @@ TEST(cpp, std_hash)
     const auto rand_bytes32_2 =
         0x04bb03bb02bb01bb08bb07bb06bb05bb0cbb0bbb0abb09bb00bb0fbb0ebb0dbb_bytes32;
     EXPECT_EQ(std::hash<evmc::bytes32>{}(rand_bytes32_2), static_cast<size_t>(0x4efee0983bb6c4f5));
-
-#pragma warning(pop)
 }
 
 TEST(cpp, std_maps)
@@ -198,10 +192,12 @@ enum relation
     greater
 };
 
+namespace
+{
 /// Compares x and y using all comparison operators (also with reversed argument order)
 /// and validates results against the expected relation: eq: x == y, less: x < y.
 template <typename T>
-static void expect_cmp(const T& x, const T& y, relation expected)
+void expect_cmp(const T& x, const T& y, relation expected)
 {
     switch (expected)
     {
@@ -252,6 +248,7 @@ static void expect_cmp(const T& x, const T& y, relation expected)
         break;
     }
 }
+}  // namespace
 
 TEST(cpp, address_comparison)
 {
@@ -939,7 +936,7 @@ TEST(cpp, revision_to_string)
 extern "C" [[gnu::weak]] void __ubsan_handle_builtin_unreachable(void*);  // NOLINT
 #endif
 
-static bool has_ubsan() noexcept
+static bool has_ubsan() noexcept  // NOLINT(misc-use-anonymous-namespace)
 {
 #if defined(__GNUC__) && !defined(__APPLE__)
     return (__ubsan_handle_builtin_unreachable != nullptr);
