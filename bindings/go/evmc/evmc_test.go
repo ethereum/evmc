@@ -64,7 +64,7 @@ func TestRevision(t *testing.T) {
 	if MaxRevision != Prague {
 		t.Errorf("missing constant for revision %d", MaxRevision)
 	}
-	if LatestStableRevision != Paris {
+	if LatestStableRevision != Shanghai {
 		t.Errorf("wrong latest stable revision %d", LatestStableRevision)
 	}
 }
