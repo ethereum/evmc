@@ -19,8 +19,8 @@ commands:
           name: "Install doxygen"
           working_directory: "~"
           command: |
-            export DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.5.linux.bin.tar.gz
-            export DOXYGEN_CHECKSUM=3b46471e7d4c3496e194d95042c7e5f738b93debacd22193aacc3df4dfe66267
+            export DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.6.linux.bin.tar.gz
+            export DOXYGEN_CHECKSUM=8354583f86416586d35397c8ee7e719f5aa5804140af83cf7ba39a8c5076bdb8
             curl $DOXYGEN_URL | tee >(tar -xz --strip-components=1) | sha256sum --check <(echo $DOXYGEN_CHECKSUM -)
             sudo ln -s $PWD/bin/doxygen /usr/bin
   build:
@@ -171,14 +171,19 @@ jobs:
       - run:
           name: "Generate documentation"
           command: doxygen Doxyfile
+      - add_ssh_keys:
+          fingerprints: [ 57:0c:50:3c:a3:72:4c:a9:28:e8:77:44:87:3b:a2:9a ]
       - run:
           name: "Upload documentation"
           command: |
+            # Remove problematic symbolic link
+            rm bindings/rust/evmc-sys/evmc.h
+            
+            git config user.name  "Documentation Bot"
             git config user.email "docs-bot@ethereum.org"
-            git config user.name "Documentation Bot"
             git add --all
             git commit -m "Update docs"
-            git push -f "https://$GITHUB_TOKEN@github.com/ethereum/evmc.git" HEAD:gh-pages
+            git push -f origin HEAD:gh-pages
 
   build-clang-coverage:
     executor: linux-clang-latest
