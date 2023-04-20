@@ -21,8 +21,8 @@ Please visit the [documentation].
 
 | Language                      | Supported Versions   | Supported Compilers          | Feature Support   |
 |-------------------------------|----------------------|------------------------------|-------------------|
-| **C**                         | C99, C11             | GCC 7+, clang 5+, MSVC 2017+ | Host- and VM-side |
-| **C++**                       | C++17                | GCC 7+, clang 5+, MSVC 2017+ | Host- and VM-side |
+| **C**                         | C99, C11             | GCC 8+, clang 9+, MSVC 2017+ | Host- and VM-side |
+| **C++**                       | C++17                | GCC 8+, clang 9+, MSVC 2017+ | Host- and VM-side |
 | **Go** _(bindings)_           | 1.11+ (with modules) |                              | Host-side only    |
 | **Rust** _(bindings)_[¹](#n1) | 2018 edition         | 1.47.0 and newer             | VM-side only      |
 | **Java** _(bindings)_[²](#n2) | 11                   |                              | Host-side only    |

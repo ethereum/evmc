@@ -5,12 +5,24 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [11.0.0] — unreleased
+## [10.1.0] — unreleased
 
 ### Added
 
 - The Prague EVM revision (anticipated after Cancun)
   [#683](https://github.com/ethereum/evmc/pull/683)
+- C++: Make `evmc::Result` accessible via `evmc_result` reference
+  [#686](https://github.com/ethereum/evmc/pull/686)
+
+### Changed
+
+- Set Shanghai as the latest stable revision `EVMC_LATEST_STABLE_REVISION`.
+  [#687](https://github.com/ethereum/evmc/pull/687)
+- Bump minimum supported compiler versions:
+  [#685](https://github.com/ethereum/evmc/pull/685)
+  - GCC: 7 → 8
+  - Clang: 5 → 9
+  - CMake: 3.10 → 3.16
 
 
 ## [10.0.0] — 2022-08-25
@@ -671,6 +683,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[10.1.0]: https://github.com/ethereum/evmc/compare/v10.0.0..master
 [10.0.0]: https://github.com/ethereum/evmc/releases/tag/v10.0.0
 [9.0.0]: https://github.com/ethereum/evmc/releases/tag/v9.0.0
 [8.0.0]: https://github.com/ethereum/evmc/releases/tag/v8.0.0
