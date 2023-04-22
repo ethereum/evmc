@@ -5,7 +5,7 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [10.1.0] — unreleased
+## [10.1.0] — 2023-04-22
 
 ### Added
 
@@ -683,7 +683,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
-[10.1.0]: https://github.com/ethereum/evmc/compare/v10.0.0..master
+[10.1.0]: https://github.com/ethereum/evmc/releases/tag/v10.1.0
 [10.0.0]: https://github.com/ethereum/evmc/releases/tag/v10.0.0
 [9.0.0]: https://github.com/ethereum/evmc/releases/tag/v9.0.0
 [8.0.0]: https://github.com/ethereum/evmc/releases/tag/v8.0.0
