@@ -49,11 +49,33 @@ func TestExecuteEmptyCode(t *testing.T) {
 	h := Hash{}
 	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
 
-	if bytes.Compare(output, []byte("")) != 0 {
+	if !bytes.Equal(output, []byte("")) {
 		t.Errorf("execution unexpected output: %x", output)
 	}
 	if gasLeft != 999 {
 		t.Errorf("execution gas left is incorrect: %d", gasLeft)
+	}
+	if err != nil {
+		t.Errorf("execution returned unexpected error: %v", err)
+	}
+}
+
+func TestExecuteEmptyCode2(t *testing.T) {
+	vm, _ := Load(modulePath)
+	defer vm.Destroy()
+
+	addr := Address{}
+	h := Hash{}
+	result, err := vm.Execute2(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
+
+	if !bytes.Equal(result.Output, []byte("")) {
+		t.Errorf("execution unexpected output: %x", result.Output)
+	}
+	if result.GasLeft != 999 {
+		t.Errorf("execution gas left is incorrect: %d", result.GasLeft)
+	}
+	if result.GasRefund != 0 {
+		t.Errorf("execution gas refund is incorrect: %d", result.GasRefund)
 	}
 	if err != nil {
 		t.Errorf("execution returned unexpected error: %v", err)
