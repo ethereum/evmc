@@ -195,12 +195,18 @@ func (vm *VM) SetOption(name string, value string) (err error) {
 	return err
 }
 
-func (vm *VM) Execute(ctx HostContext, rev Revision,
-	kind CallKind, static bool, depth int, gas int64,
-	recipient Address, sender Address, input []byte, value Hash,
-	code []byte) (output []byte, gasLeft int64, err error) {
-	result, err := vm.Execute2(ctx, rev, kind, static, depth, gas, recipient, sender, input, value, code)
-	return result.Output, result.GasLeft, err
+type Parameters struct {
+	Context   HostContext
+	Revision  Revision
+	Kind      CallKind
+	Static    bool
+	Depth     int
+	Gas       int64
+	Recipient Address
+	Sender    Address
+	Input     []byte
+	Value     Hash
+	Code      []byte
 }
 
 type Result struct {
@@ -209,25 +215,23 @@ type Result struct {
 	GasRefund int64
 }
 
-func (vm *VM) Execute2(ctx HostContext, rev Revision,
-	kind CallKind, static bool, depth int, gas int64,
-	recipient Address, sender Address, input []byte, value Hash,
-	code []byte) (res Result, err error) {
+func (vm *VM) Execute(params Parameters) (res Result, err error) {
 
 	flags := C.uint32_t(0)
-	if static {
+	if params.Static {
 		flags |= C.EVMC_STATIC
 	}
 
-	ctxId := addHostContext(ctx)
+	ctxId := addHostContext(params.Context)
 	// FIXME: Clarify passing by pointer vs passing by value.
-	evmcRecipient := evmcAddress(recipient)
-	evmcSender := evmcAddress(sender)
-	evmcValue := evmcBytes32(value)
-	result := C.execute_wrapper(vm.handle, C.uintptr_t(ctxId), uint32(rev),
-		C.enum_evmc_call_kind(kind), flags, C.int32_t(depth), C.int64_t(gas),
-		&evmcRecipient, &evmcSender, bytesPtr(input), C.size_t(len(input)), &evmcValue,
-		bytesPtr(code), C.size_t(len(code)))
+	evmcRecipient := evmcAddress(params.Recipient)
+	evmcSender := evmcAddress(params.Sender)
+	evmcValue := evmcBytes32(params.Value)
+	result := C.execute_wrapper(vm.handle, C.uintptr_t(ctxId),
+		uint32(params.Revision), C.enum_evmc_call_kind(params.Kind), flags,
+		C.int32_t(params.Depth), C.int64_t(params.Gas), &evmcRecipient,
+		&evmcSender, bytesPtr(params.Input), C.size_t(len(params.Input)),
+		&evmcValue, bytesPtr(params.Code), C.size_t(len(params.Code)))
 	removeHostContext(ctxId)
 
 	res.Output = C.GoBytes(unsafe.Pointer(result.output_data), C.int(result.output_size))
