@@ -102,6 +102,8 @@ mod tests {
             block_prev_randao: Uint256::default(),
             chain_id: Uint256::default(),
             block_base_fee: Uint256::default(),
+            blob_hashes: std::ptr::null(),
+            blob_hashes_count: 0,
         }
     }
 
