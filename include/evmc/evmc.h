@@ -44,7 +44,7 @@ enum
      *
      * @see @ref versioning
      */
-    EVMC_ABI_VERSION = 10
+    EVMC_ABI_VERSION = 11
 };
 
 
