@@ -181,6 +181,8 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		evmcBytes32(txContext.PrevRandao),
 		evmcBytes32(txContext.ChainID),
 		evmcBytes32(txContext.BaseFee),
+		nil, // TODO: Add support for blob hashes.
+		0,
 	}
 }
 
