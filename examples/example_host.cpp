@@ -24,6 +24,7 @@ struct account
     evmc::uint256be balance = {};
     std::vector<uint8_t> code;
     std::map<evmc::bytes32, evmc::bytes32> storage;
+    std::map<evmc::bytes32, evmc::bytes32> transient_storage;
 
     virtual evmc::bytes32 code_hash() const
     {
@@ -174,6 +175,26 @@ public:
         (void)addr;
         (void)key;
         return EVMC_ACCESS_COLD;
+    }
+
+    evmc::bytes32 get_transient_storage(const evmc::address& addr,
+                                        const evmc::bytes32& key) const noexcept override
+    {
+        const auto account_iter = accounts.find(addr);
+        if (account_iter == accounts.end())
+            return {};
+
+        const auto transient_storage_iter = account_iter->second.transient_storage.find(key);
+        if (transient_storage_iter != account_iter->second.transient_storage.end())
+            return transient_storage_iter->second;
+        return {};
+    }
+
+    void set_transient_storage(const evmc::address& addr,
+                               const evmc::bytes32& key,
+                               const evmc::bytes32& value) noexcept override
+    {
+        accounts[addr].transient_storage[key] = value;
     }
 };
 
