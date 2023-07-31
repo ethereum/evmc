@@ -437,6 +437,8 @@ jobs:
             apt -qq update
             apt -yq install libclang-dev clang --no-install-recommends
             rustup component add rustfmt
+            rustc --version
+            cargo version
       - run:
           name: Check formatting
           command: |
