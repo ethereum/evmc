@@ -45,12 +45,9 @@ func TestExecuteEmptyCode(t *testing.T) {
 	vm, _ := Load(modulePath)
 	defer vm.Destroy()
 
-	result, err := vm.Execute(Parameters{
-		Revision: Byzantium,
-		Kind:     Call,
-		Depth:    1,
-		Gas:      999,
-	})
+	addr := Address{}
+	h := Hash{}
+	result, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
 
 	if !bytes.Equal(result.Output, []byte("")) {
 		t.Errorf("execution unexpected output: %x", result.Output)
