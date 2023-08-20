@@ -81,6 +81,17 @@ public:
     {
         return EVMC_ACCESS_COLD;
     }
+
+    evmc::bytes32 get_transient_storage(const evmc::address& /*addr*/,
+                                        const evmc::bytes32& /*key*/) const noexcept override
+    {
+        return {};
+    }
+
+    void set_transient_storage(const evmc::address& /*addr*/,
+                               const evmc::bytes32& /*key*/,
+                               const evmc::bytes32& /*value*/) noexcept override
+    {}
 };
 
 TEST(cpp, address)
@@ -661,6 +672,14 @@ TEST(cpp, host)
     EXPECT_EQ(host.get_block_hash(0), evmc::bytes32{});
 
     host.emit_log(a, nullptr, 0, nullptr, 0);
+    ASSERT_EQ(mockedHost.recorded_logs.size(), 1);
+    EXPECT_EQ(mockedHost.recorded_logs[0].creator, a);
+
+    EXPECT_EQ(host.access_storage(a, {}), EVMC_ACCESS_COLD);
+    EXPECT_EQ(host.access_storage(a, {}), EVMC_ACCESS_WARM);
+
+    host.set_transient_storage(a, 0x01_bytes32, v);
+    EXPECT_EQ(host.get_transient_storage(a, 0x01_bytes32), v);
 }
 
 TEST(cpp, host_call)

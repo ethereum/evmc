@@ -131,3 +131,23 @@ TEST(mocked_host, selfdestruct)
     EXPECT_EQ(host.recorded_selfdestructs[0xdead02_address][0], 0xbece01_address);
     EXPECT_EQ(host.recorded_selfdestructs[0xdead02_address][1], 0xbece01_address);
 }
+
+TEST(mocked_host, transient_storage)
+{
+    evmc::MockedHost host;
+
+    // Get from non-existing account.
+    EXPECT_EQ(host.get_transient_storage(0xa1_address, 0xc1_bytes32), 0x00_bytes32);
+    EXPECT_EQ(host.accounts.size(), 0);
+
+    host.set_transient_storage(0xa1_address, 0xc1_bytes32, 0x01_bytes32);
+    EXPECT_EQ(host.accounts[0xa1_address].transient_storage[0xc1_bytes32], 0x01_bytes32);
+    EXPECT_EQ(host.get_transient_storage(0xa1_address, 0xc1_bytes32), 0x01_bytes32);
+
+    host.set_transient_storage(0xa1_address, 0xc1_bytes32, 0x00_bytes32);
+    EXPECT_EQ(host.accounts[0xa1_address].transient_storage[0xc1_bytes32], 0x00_bytes32);
+    EXPECT_EQ(host.get_transient_storage(0xa1_address, 0xc1_bytes32), 0x00_bytes32);
+
+    // Get non-existing key of existing account.
+    EXPECT_EQ(host.get_transient_storage(0xa1_address, 0xc2_bytes32), 0x00_bytes32);
+}

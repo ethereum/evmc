@@ -151,6 +151,8 @@ mod tests {
             emit_log: None,
             access_account: None,
             access_storage: None,
+            get_transient_storage: None,
+            set_transient_storage: None,
         };
         let host_context = std::ptr::null_mut();
 
