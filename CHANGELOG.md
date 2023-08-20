@@ -5,6 +5,15 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [11.0.0] — unreleased
+
+### Added
+
+- Extended `tx_context` with [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) blob hashes
+  [#691](https://github.com/ethereum/evmc/pull/691)
+- Added [EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) transient storage support
+  [#693](https://github.com/ethereum/evmc/pull/693)
+
 ## [10.1.0] — 2023-04-22
 
 ### Added
@@ -683,6 +692,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[11.0.0]: https://github.com/ethereum/evmc/compare/v10.1.0..master
 [10.1.0]: https://github.com/ethereum/evmc/releases/tag/v10.1.0
 [10.0.0]: https://github.com/ethereum/evmc/releases/tag/v10.0.0
 [9.0.0]: https://github.com/ethereum/evmc/releases/tag/v9.0.0
