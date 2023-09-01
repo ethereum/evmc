@@ -220,6 +220,9 @@ struct evmc_tx_context
     evmc_uint256be blob_base_fee;     /**< The blob base fee (EIP-7516). */
     const evmc_bytes32* blob_hashes;  /**< The array of blob hashes (EIP-4844). */
     size_t blob_hashes_count;         /**< The number of blob hashes (EIP-4844). */
+    const uint8_t* const* initcodes;  /**< The array of initcode data (CREATE4). */
+    const size_t* initcode_sizes;     /**< The array of initcode sizes (CREATE4). */
+    size_t initcodes_count;           /**< The number of initcodes (CREATE4). */
 };
 
 /**
