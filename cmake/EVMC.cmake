@@ -14,5 +14,5 @@ function(evmc_add_vm_test)
     endif()
 
     cmake_parse_arguments("" "" NAME;TARGET "" ${ARGN})
-    add_test(NAME ${_NAME} COMMAND $<TARGET_FILE:evmc::evmc-vmtester> $<TARGET_FILE:${_TARGET}>)
+    add_test(NAME ${_NAME} COMMAND evmc::evmc-vmtester $<TARGET_FILE:${_TARGET}>)
 endfunction()

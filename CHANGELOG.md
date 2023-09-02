@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning].
 - Added [EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) transient storage support
   [#693](https://github.com/ethereum/evmc/pull/693)
 
+## [10.1.1] — 2023-09-02
+
+### Fixed
+
+- cmake: Fix `evmc_add_vm_test()` not working in cross-compilation
+  [#695](https://github.com/ethereum/evmc/pull/695)
+
 ## [10.1.0] — 2023-04-22
 
 ### Added
@@ -692,7 +699,8 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
-[11.0.0]: https://github.com/ethereum/evmc/compare/v10.1.0..master
+[11.0.0]: https://github.com/ethereum/evmc/compare/v10.1.1..master
+[10.1.1]: https://github.com/ethereum/evmc/releases/tag/v10.1.1
 [10.1.0]: https://github.com/ethereum/evmc/releases/tag/v10.1.0
 [10.0.0]: https://github.com/ethereum/evmc/releases/tag/v10.0.0
 [9.0.0]: https://github.com/ethereum/evmc/releases/tag/v9.0.0
