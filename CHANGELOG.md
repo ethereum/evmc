@@ -5,6 +5,13 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [10.1.1] — 2023-09-02
+
+### Fixed
+
+- cmake: Fix `evmc_add_vm_test()` not working in cross-compilation
+  [#695](https://github.com/ethereum/evmc/pull/695)
+
 ## [10.1.0] — 2023-04-22
 
 ### Added
@@ -683,6 +690,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[10.1.1]: https://github.com/ethereum/evmc/releases/tag/v10.1.1
 [10.1.0]: https://github.com/ethereum/evmc/releases/tag/v10.1.0
 [10.0.0]: https://github.com/ethereum/evmc/releases/tag/v10.0.0
 [9.0.0]: https://github.com/ethereum/evmc/releases/tag/v9.0.0
