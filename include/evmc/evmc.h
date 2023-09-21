@@ -202,6 +202,7 @@ struct evmc_tx_context
     evmc_uint256be block_prev_randao; /**< The block previous RANDAO (EIP-4399). */
     evmc_uint256be chain_id;          /**< The blockchain's ChainID. */
     evmc_uint256be block_base_fee;    /**< The block base fee per gas (EIP-1559, EIP-3198). */
+    evmc_uint256be blob_base_fee;     /**< The blob base fee (EIP-7516). */
     const evmc_bytes32* blob_hashes;  /**< The array of blob hashes (EIP-4844). */
     size_t blob_hashes_count;         /**< The number of blob hashes (EIP-4844). */
 };

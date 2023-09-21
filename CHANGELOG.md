@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
-- Extended `tx_context` with [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) blob hashes
+- Extended `tx_context` with the [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) blob hashes
   [#691](https://github.com/ethereum/evmc/pull/691)
+- Extended `tx_context` with the [EIP-7516](https://eips.ethereum.org/EIPS/eip-7516) "blob base fee"
+  for the `BLOBBASEFEE` EVM instruction.
+  [#696](https://github.com/ethereum/evmc/pull/696)
 - Added [EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) transient storage support
   [#693](https://github.com/ethereum/evmc/pull/693)
 
