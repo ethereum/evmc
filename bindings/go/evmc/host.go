@@ -72,15 +72,16 @@ func goByteSlice(data *C.uint8_t, size C.size_t) []byte {
 
 // TxContext contains information about current transaction and block.
 type TxContext struct {
-	GasPrice   Hash
-	Origin     Address
-	Coinbase   Address
-	Number     int64
-	Timestamp  int64
-	GasLimit   int64
-	PrevRandao Hash
-	ChainID    Hash
-	BaseFee    Hash
+	GasPrice    Hash
+	Origin      Address
+	Coinbase    Address
+	Number      int64
+	Timestamp   int64
+	GasLimit    int64
+	PrevRandao  Hash
+	ChainID     Hash
+	BaseFee     Hash
+	BlobBaseFee Hash
 }
 
 type HostContext interface {
@@ -181,6 +182,7 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		evmcBytes32(txContext.PrevRandao),
 		evmcBytes32(txContext.ChainID),
 		evmcBytes32(txContext.BaseFee),
+		evmcBytes32(txContext.BlobBaseFee),
 		nil, // TODO: Add support for blob hashes.
 		0,
 	}

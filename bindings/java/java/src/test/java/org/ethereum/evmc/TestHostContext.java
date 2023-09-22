@@ -63,7 +63,7 @@ class TestHostContext implements HostContext {
 
   @Override
   public ByteBuffer getTxContext() {
-    return ByteBuffer.allocateDirect(208).put(new byte[208]);
+    return ByteBuffer.allocateDirect(240).put(new byte[240]);
   }
 
   @Override
