@@ -909,6 +909,17 @@ typedef enum evmc_set_option_result (*evmc_set_option_fn)(struct evmc_vm* vm,
                                                           char const* name,
                                                           char const* value);
 
+/**
+ * EVM execution ID
+ *
+ * Allow to specialize parts of the execution to adapt for different chains types
+ */
+enum evmc_execution_id
+{
+    EVMC_ETHEREUM = 0,
+    EVMC_AVAX
+};
+
 
 /**
  * EVM revision.
@@ -1030,6 +1041,23 @@ enum evmc_revision
     EVMC_LATEST_STABLE_REVISION = EVMC_SHANGHAI
 };
 
+enum evmc_avax_revision
+{
+    EVMC_AVAX_ISTANBUL = 0,
+    EVMC_AVAX_APRICOT_1,
+    EVMC_AVAX_APRICOT_2,
+    EVMC_AVAX_APRICOT_3,
+    EVMC_AVAX_APRICOT_4,
+    EVMC_AVAX_APRICOT_5,
+    EVMC_AVAX_APRICOT_6_PRE,
+    EVMC_AVAX_APRICOT_6,
+    EVMC_AVAX_APRICOT_6_POST,
+    EVMC_AVAX_BANFF,
+
+    EVMC_AVAX_MAX_REVISION = EVMC_AVAX_BANFF,
+    EVMC_AVAX_LATEST_STABLE_REVISION = EVMC_AVAX_BANFF,
+};
+
 
 /**
  * Executes the given code using the input from the message.
@@ -1052,7 +1080,7 @@ enum evmc_revision
 typedef struct evmc_result (*evmc_execute_fn)(struct evmc_vm* vm,
                                               const struct evmc_host_interface* host,
                                               struct evmc_host_context* context,
-                                              enum evmc_revision rev,
+                                              size_t rev,
                                               const struct evmc_message* msg,
                                               uint8_t const* code,
                                               size_t code_size);
