@@ -786,7 +786,7 @@ public:
     /// but without providing the Host context and interface.
     /// This method is for experimental precompiles support where execution is
     /// guaranteed not to require any Host access.
-    Result execute(evmc_revision rev,
+    Result execute(size_t rev,
                    const evmc_message& msg,
                    const uint8_t* code,
                    size_t code_size) noexcept
