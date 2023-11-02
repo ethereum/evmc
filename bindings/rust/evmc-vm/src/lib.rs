@@ -898,6 +898,7 @@ mod tests {
             selfdestruct: None,
             call: Some(execute_call),
             get_tx_context: Some(get_dummy_tx_context),
+            // FIXME(piotr) get_tx_initcode_by_hash
             get_block_hash: None,
             emit_log: None,
             access_account: None,

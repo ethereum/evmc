@@ -170,8 +170,8 @@ struct evmc_message
     /**
      * The optional value used in new contract address construction.
      *
-     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2.
-     * Ignored in evmc_execute_fn().
+     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2,
+     * ::EVMC_CREATE3 or ::EVMC_CREATE4. Ignored in evmc_execute_fn().
      */
     evmc_bytes32 create2_salt;
 
@@ -181,7 +181,7 @@ struct evmc_message
      * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL this may be different from
      * the evmc_message::recipient.
      * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
-     * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
+     * Ignored if kind is ::EVMC_CREATE, ::EVMC_CREATE2, ::EVMC_CREATE3 or ::EVMC_CREATE4.
      *
      * In case of ::EVMC_CAPABILITY_PRECOMPILES implementation, this fields should be inspected
      * to identify the requested precompile.
@@ -193,14 +193,14 @@ struct evmc_message
     /**
      * The init code for creation message.
      *
-     * Ignored unless kind is ::EVMC_CREATE3.
+     * Ignored unless kind is ::EVMC_CREATE3 or ::EVMC_CREATE4.
      */
     const uint8_t* init_code;
 
     /**
      * The size of the init code for creation message.
      *
-     * Ignored unless kind is ::EVMC_CREATE3.
+     * Ignored unless kind is ::EVMC_CREATE3 or ::EVMC_CREATE4.
      */
     size_t init_code_size;
 };
@@ -221,9 +221,13 @@ struct evmc_tx_context
     evmc_uint256be blob_base_fee;     /**< The blob base fee (EIP-7516). */
     const evmc_bytes32* blob_hashes;  /**< The array of blob hashes (EIP-4844). */
     size_t blob_hashes_count;         /**< The number of blob hashes (EIP-4844). */
-    const uint8_t* const* initcodes;  /**< The array of initcode data (CREATE4). */
-    const size_t* initcode_sizes;     /**< The array of initcode sizes (CREATE4). */
-    size_t initcodes_count;           /**< The number of initcodes (CREATE4). */
+};
+
+/** Return value of the get initcode by hash query (CREATE4). */
+struct evmc_tx_initcode
+{
+    const uint8_t* data; /**< Initcode. NULL means no initcode with such hash given. */
+    size_t size;         /**< Size of data. */
 };
 
 /**
@@ -243,6 +247,20 @@ struct evmc_host_context;
  *  @return              The transaction context.
  */
 typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_host_context* context);
+
+/**
+ * Get transaction initcode by hash callback function.
+ *
+ *  This callback function is used by an EVM to retrieve an initcode to
+ *  be supplied to a CREATE4 function. Should return result with NULL in case there is no
+ *  initcode with such hash.
+ *
+ *  @param      context  The pointer to the Host execution context.
+ *  @param      hash     The hash of the initcode to get.
+ *  @return              The initcode.
+ */
+typedef struct evmc_tx_initcode (
+    *evmc_get_tx_initcode_by_hash_fn)(struct evmc_host_context* context, const evmc_bytes32* hash);
 
 /**
  * Get block hash callback function.
@@ -888,6 +906,9 @@ struct evmc_host_interface
 
     /** Set transient storage callback function. */
     evmc_set_transient_storage_fn set_transient_storage;
+
+    /** Get transaction initcode by hash callback function. */
+    evmc_get_tx_initcode_by_hash_fn get_tx_initcode_by_hash;
 };
 
 

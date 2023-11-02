@@ -342,6 +342,8 @@ static struct evmc_result call_fn(struct evmc_host_context* context, const struc
     return result;
 }
 
+
+// FIXME(piotr) get_tx_initcode_by_hash
 static struct evmc_tx_context get_tx_context_fn(struct evmc_host_context* context)
 {
     const char java_method_name[] = "get_tx_context";

@@ -66,6 +66,8 @@ class TestHostContext implements HostContext {
     return ByteBuffer.allocateDirect(240).put(new byte[240]);
   }
 
+  // FIXME(piotr) get_tx_initcode_by_hash
+  
   @Override
   public ByteBuffer getBlockHash(long number) {
     return ByteBuffer.allocateDirect(32).put(new byte[32]);

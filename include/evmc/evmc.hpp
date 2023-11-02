@@ -478,6 +478,9 @@ public:
     /// @copydoc evmc_host_interface::get_tx_context
     virtual evmc_tx_context get_tx_context() const noexcept = 0;
 
+    /// @copydoc evmc_host_interface::get_tx_initcode_by_hash
+    virtual evmc_tx_initcode get_tx_initcode_by_hash(const evmc_bytes32& hash) const noexcept = 0;
+
     /// @copydoc evmc_host_interface::get_block_hash
     virtual bytes32 get_block_hash(int64_t block_number) const noexcept = 0;
 
@@ -576,6 +579,12 @@ public:
 
     /// @copydoc HostInterface::get_tx_context()
     evmc_tx_context get_tx_context() const noexcept final { return host->get_tx_context(context); }
+
+    /// @copydoc HostInterface::get_tx_initcode_by_hash()
+    evmc_tx_initcode get_tx_initcode_by_hash(const evmc_bytes32& hash) const noexcept final
+    {
+        return host->get_tx_initcode_by_hash(context, &hash);
+    }
 
     bytes32 get_block_hash(int64_t number) const noexcept final
     {
@@ -838,6 +847,12 @@ inline evmc_tx_context get_tx_context(evmc_host_context* h) noexcept
     return Host::from_context(h)->get_tx_context();
 }
 
+inline evmc_tx_initcode get_tx_initcode_by_hash(evmc_host_context* h,
+                                                const evmc_bytes32* hash) noexcept
+{
+    return Host::from_context(h)->get_tx_initcode_by_hash(*hash);
+}
+
 inline evmc_bytes32 get_block_hash(evmc_host_context* h, int64_t block_number) noexcept
 {
     return Host::from_context(h)->get_block_hash(block_number);
@@ -901,6 +916,7 @@ inline const evmc_host_interface& Host::get_interface() noexcept
         ::evmc::internal::access_storage,
         ::evmc::internal::get_transient_storage,
         ::evmc::internal::set_transient_storage,
+        ::evmc::internal::get_tx_initcode_by_hash,
     };
     return interface;
 }
