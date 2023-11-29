@@ -23,6 +23,7 @@ const struct evmc_host_interface evmc_go_host = {
     (evmc_selfdestruct_fn)selfdestruct,
     (evmc_call_fn)call,
     (evmc_get_tx_context_fn)getTxContext,
+    // FIXME(piotr) get_tx_initcode_by_hash
     (evmc_get_block_hash_fn)getBlockHash,
     (evmc_emit_log_fn)emitLog,
     (evmc_access_account_fn)accessAccount,
@@ -45,6 +46,8 @@ static inline void go_exported_functions_type_checks()
     (void)uint256be;
     struct evmc_tx_context tx_context;
     (void)tx_context;
+    struct evmc_tx_initcode tx_initcode;
+    (void)tx_initcode;
     struct evmc_result result;
     (void)result;
     enum evmc_access_status access_status;
@@ -93,6 +96,8 @@ static inline void go_exported_functions_type_checks()
     evmc_get_tx_context_fn get_tx_context_fn = NULL;
     tx_context = get_tx_context_fn(context);
     tx_context = getTxContext(context);
+
+    // FIXME(piotr) get_tx_initcode_by_hash
 
     evmc_get_block_hash_fn get_block_hash_fn = NULL;
     bytes32 = get_block_hash_fn(context, number);

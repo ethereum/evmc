@@ -68,6 +68,8 @@ final class Host {
     return ensureDirectBuffer(context.getTxContext());
   }
 
+  // FIXME(piotr) get_tx_initcode_by_hash
+
   /** Get block hash callback function. */
   static ByteBuffer get_block_hash(HostContext context, long number) {
     return ensureDirectBuffer(context.getBlockHash(number));

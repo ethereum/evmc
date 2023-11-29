@@ -147,6 +147,8 @@ public interface HostContext {
    */
   ByteBuffer getTxContext();
 
+  // FIXME(piotr) get_tx_initcode_by_hash
+  
   /**
    * Get block hash function.
    *

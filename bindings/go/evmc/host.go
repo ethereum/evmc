@@ -189,6 +189,8 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 	}
 }
 
+// FIXME(piotr) get_tx_initcode_by_hash
+
 //export getBlockHash
 func getBlockHash(pCtx unsafe.Pointer, number int64) C.evmc_bytes32 {
 	ctx := getHostContext(uintptr(pCtx))

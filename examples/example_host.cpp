@@ -4,6 +4,7 @@
 
 /// @file
 /// Example implementation of an EVMC Host.
+/// TODO: Doesn't support CREATE4 transaction initcodes.
 
 #include "example_host.h"
 
@@ -139,6 +140,11 @@ public:
     }
 
     evmc_tx_context get_tx_context() const noexcept final { return tx_context; }
+
+    evmc_tx_initcode get_tx_initcode_by_hash(const evmc_bytes32& /* hash */) const noexcept final
+    {
+        return {nullptr, 0};
+    }
 
     // NOLINTNEXTLINE(bugprone-exception-escape)
     evmc::bytes32 get_block_hash(int64_t number) const noexcept final

@@ -103,6 +103,9 @@ public:
     /// The EVMC transaction context to be returned by get_tx_context().
     evmc_tx_context tx_context = {};
 
+    /// The CREATE4 initcodes to be returned by get_tx_initcode_by_hash(hash).
+    std::unordered_map<bytes32, bytes> tx_initcodes;
+
     /// The block header hash value to be returned by get_block_hash().
     bytes32 block_hash = {};
 
@@ -406,6 +409,17 @@ public:
 
     /// Get transaction context (EVMC host method).
     evmc_tx_context get_tx_context() const noexcept override { return tx_context; }
+
+    /// Get transaction initcode by hash (EVMC host method).
+    evmc_tx_initcode get_tx_initcode_by_hash(const evmc_bytes32& hash) const noexcept override
+    {
+        if (const auto& it = tx_initcodes.find(hash); it != tx_initcodes.end())
+        {
+            return evmc_tx_initcode{it->second.data(), it->second.size()};
+        }
+
+        return evmc_tx_initcode{nullptr, 0};
+    }
 
     /// Get the block header hash (EVMC host method).
     bytes32 get_block_hash(int64_t block_number) const noexcept override
