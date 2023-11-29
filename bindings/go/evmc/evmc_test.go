@@ -47,13 +47,16 @@ func TestExecuteEmptyCode(t *testing.T) {
 
 	addr := Address{}
 	h := Hash{}
-	output, gasLeft, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
+	result, err := vm.Execute(nil, Byzantium, Call, false, 1, 999, addr, addr, nil, h, nil)
 
-	if bytes.Compare(output, []byte("")) != 0 {
-		t.Errorf("execution unexpected output: %x", output)
+	if !bytes.Equal(result.Output, []byte("")) {
+		t.Errorf("execution unexpected output: %x", result.Output)
 	}
-	if gasLeft != 999 {
-		t.Errorf("execution gas left is incorrect: %d", gasLeft)
+	if result.GasLeft != 999 {
+		t.Errorf("execution gas left is incorrect: %d", result.GasLeft)
+	}
+	if result.GasRefund != 0 {
+		t.Errorf("execution gas refund is incorrect: %d", result.GasRefund)
 	}
 	if err != nil {
 		t.Errorf("execution returned unexpected error: %v", err)
