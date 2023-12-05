@@ -66,7 +66,7 @@ mod tests {
         );
         assert_eq!(MessageKind::EVMC_CREATE, ffi::evmc_call_kind::EVMC_CREATE);
         assert_eq!(MessageKind::EVMC_CREATE2, ffi::evmc_call_kind::EVMC_CREATE2);
-        assert_eq!(MessageKind::EVMC_CREATE3, ffi::evmc_call_kind::EVMC_CREATE3);
+        assert_eq!(MessageKind::EVMC_CREATE3_4, ffi::evmc_call_kind::EVMC_CREATE3_4);
     }
 
     #[test]

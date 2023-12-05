@@ -24,7 +24,7 @@ const (
 	CallCode     CallKind = C.EVMC_CALLCODE
 	Create       CallKind = C.EVMC_CREATE
 	Create2      CallKind = C.EVMC_CREATE2
-	Create3      CallKind = C.EVMC_CREATE3
+	Create3      CallKind = C.EVMC_CREATE3_4
 )
 
 type AccessStatus int
