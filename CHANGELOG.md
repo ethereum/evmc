@@ -5,6 +5,13 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [11.0.1] — unreleased
+
+### Changed
+
+- Improved compatibility with CMake 3.27.
+  [#701](https://github.com/ethereum/evmc/pull/701)
+
 ## [11.0.0] — 2023-11-29
 
 ### Added
@@ -704,6 +711,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[11.0.1]: https://github.com/ethereum/evmc/compare/v11.0.0..master
 [11.0.0]: https://github.com/ethereum/evmc/releases/tag/v11.0.0
 [10.1.1]: https://github.com/ethereum/evmc/releases/tag/v10.1.1
 [10.1.0]: https://github.com/ethereum/evmc/releases/tag/v10.1.0
