@@ -162,7 +162,7 @@ inline evmc_address to_address(evmc_uint256be value)
 evmc_result execute(evmc_vm* instance,
                     const evmc_host_interface* host,
                     evmc_host_context* context,
-                    enum evmc_revision rev,
+                    size_t rev,
                     const evmc_message* msg,
                     const uint8_t* code,
                     size_t code_size)

@@ -11,7 +11,9 @@
 #include <initializer_list>
 #include <ostream>
 #include <string_view>
+#include <type_traits>
 #include <utility>
+#include <variant>
 
 static_assert(EVMC_LATEST_STABLE_REVISION <= EVMC_MAX_REVISION,
               "latest stable revision ill-defined");
@@ -22,6 +24,45 @@ namespace evmc
 {
 /// String view of uint8_t chars.
 using bytes_view = std::basic_string_view<uint8_t>;
+using Revision = std::variant<evmc_revision, evmc_avax_revision>;
+
+template <evmc_execution_id Id>
+struct RevisionTypeImpl;
+
+template <>
+struct RevisionTypeImpl<EVMC_ETHEREUM>
+{
+    using type = evmc_revision;
+};
+
+template <>
+struct RevisionTypeImpl<EVMC_AVAX>
+{
+    using type = evmc_avax_revision;
+};
+
+template <evmc_execution_id Id>
+using RevisionType = typename RevisionTypeImpl<Id>::type;
+
+template <typename EthereumFunction, typename AvaxFunction>
+auto visit(const Revision revision,
+           EthereumFunction ethereum,
+           AvaxFunction avax) noexcept(noexcept(ethereum) && noexcept(avax))
+{
+    return std::visit(
+        [&](const auto rev) {
+            if constexpr (std::is_same_v<decltype(rev), evmc_revision>)
+            {
+                return ethereum(rev);
+            }
+            else
+            {
+                return avax(rev);
+            }
+        },
+        revision);
+}
+
 
 /// The big-endian 160-bit hash suitable for keeping an Ethereum address.
 ///
@@ -745,7 +786,7 @@ public:
     /// but without providing the Host context and interface.
     /// This method is for experimental precompiles support where execution is
     /// guaranteed not to require any Host access.
-    Result execute(evmc_revision rev,
+    Result execute(size_t rev,
                    const evmc_message& msg,
                    const uint8_t* code,
                    size_t code_size) noexcept

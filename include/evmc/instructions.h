@@ -165,6 +165,11 @@ enum evmc_opcode
     OP_LOG3 = 0xa3,
     OP_LOG4 = 0xa4,
 
+    // AVAX SPECIAL OPCODES (begin)
+    OP_BALANCEMC = 0xcd,
+    OP_CALLEX = 0xcf,
+    // AVAX SPECIAL OPCODES (end)
+
     OP_CREATE = 0xf0,
     OP_CALL = 0xf1,
     OP_CALLCODE = 0xf2,
@@ -219,6 +224,8 @@ EVMC_EXPORT const struct evmc_instruction_metrics* evmc_get_instruction_metrics_
  *                  an invalid EVM revision provided.
  */
 EVMC_EXPORT const char* const* evmc_get_instruction_names_table(enum evmc_revision revision);
+EVMC_EXPORT const char* const* evmc_get_instruction_names_table_avax(
+    enum evmc_avax_revision revision);
 
 #ifdef __cplusplus
 }

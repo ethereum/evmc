@@ -112,8 +112,8 @@ JNIEXPORT jobject JNICALL Java_org_ethereum_evmc_EvmcVm_execute(JNIEnv* jenv,
     struct evmc_result* result =
         (struct evmc_result*)(*jenv)->GetDirectBufferAddress(jenv, jresult);
     assert(result != NULL);
-    *result = evmc_execute(evm, host, (struct evmc_host_context*)jcontext, (enum evmc_revision)jrev,
-                           msg, code, code_size);
+    *result = evmc_execute(evm, host, (struct evmc_host_context*)jcontext, (size_t)jrev, msg, code,
+                           code_size);
     return jresult;
 }
 
