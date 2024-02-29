@@ -51,8 +51,10 @@ protected:
         msg.gas = gas;
         msg.input_data = input.data();
         msg.input_size = input.size();
+        msg.code = code.data();
+        msg.code_size = code.size();
 
-        return vm.execute(host, rev, msg, code.data(), code.size());
+        return vm.execute(host, rev, msg);
     }
 };
 
