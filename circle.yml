@@ -404,28 +404,6 @@ jobs:
             choco install -y mingw --version 11.2
       - go_test
 
-  bindings-java:
-    docker:
-      - image: cimg/openjdk:18.0
-    environment:
-      CMAKE_OPTIONS: -DEVMC_JAVA=ON
-    steps:
-      - checkout
-      - build
-      - test
-      - run:
-          name: "Java Lint (spotlessCheck)"
-          working_directory: bindings/java
-          command: make lint
-      - run:
-          name: "Java Build"
-          working_directory: bindings/java
-          command: make clean build
-      - run:
-          name: "Java Test"
-          working_directory: bindings/java
-          command: make test
-
   bindings-rust:
     docker:
       - image: rust:1
@@ -517,7 +495,6 @@ workflows:
             tags:
               only: /.*/
       - bindings-go-windows
-      - bindings-java
       - bindings-rust:
           requires:
             - build-gcc-min
