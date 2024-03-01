@@ -65,6 +65,7 @@ pub struct ExecutionMessage {
     value: Uint256,
     create2_salt: Bytes32,
     code_address: Address,
+    code: Option<Vec<u8>>,
 }
 
 /// EVMC transaction context structure.
@@ -149,6 +150,7 @@ impl ExecutionMessage {
         value: Uint256,
         create2_salt: Bytes32,
         code_address: Address,
+        code: Option<&[u8]>,
     ) -> Self {
         ExecutionMessage {
             kind,
@@ -161,6 +163,7 @@ impl ExecutionMessage {
             value,
             create2_salt,
             code_address,
+            code: code.map(|s| s.to_vec()),
         }
     }
 
@@ -212,6 +215,11 @@ impl ExecutionMessage {
     /// Read the code address of the message.
     pub fn code_address(&self) -> &Address {
         &self.code_address
+    }
+
+    /// Read the optional init code.
+    pub fn code(&self) -> Option<&Vec<u8>> {
+        self.code.as_ref()
     }
 }
 
@@ -338,6 +346,13 @@ impl<'a> ExecutionContext<'a> {
         } else {
             std::ptr::null() as *const u8
         };
+        let code = message.code();
+        let code_size = if let Some(code) = code { code.len() } else { 0 };
+        let code_data = if let Some(code) = code {
+            code.as_ptr()
+        } else {
+            std::ptr::null() as *const u8
+        };
         // Cannot use a nice from trait here because that complicates memory management,
         // evmc_message doesn't have a release() method we could abstract it with.
         let message = ffi::evmc_message {
@@ -352,6 +367,8 @@ impl<'a> ExecutionContext<'a> {
             value: *message.value(),
             create2_salt: *message.create2_salt(),
             code_address: *message.code_address(),
+            code: code_data,
+            code_size,
         };
         unsafe {
             assert!((*self.host).call.is_some());
@@ -524,6 +541,14 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             value: message.value,
             create2_salt: message.create2_salt,
             code_address: message.code_address,
+            code: if message.code.is_null() {
+                assert_eq!(message.code_size, 0);
+                None
+            } else if message.code_size == 0 {
+                None
+            } else {
+                Some(from_buf_raw::<u8>(message.code, message.code_size))
+            },
         }
     }
 }
@@ -704,6 +729,7 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            None,
         );
 
         assert_eq!(ret.kind(), MessageKind::EVMC_CALL);
@@ -717,6 +743,42 @@ mod tests {
         assert_eq!(*ret.value(), value);
         assert_eq!(*ret.create2_salt(), create2_salt);
         assert_eq!(*ret.code_address(), code_address);
+    }
+
+    #[test]
+    fn message_new_with_code() {
+        let recipient = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
+        let code_address = Address { bytes: [64u8; 20] };
+        let code = vec![0x5f, 0x5f, 0xfd];
+
+        let ret = ExecutionMessage::new(
+            MessageKind::EVMC_CALL,
+            44,
+            66,
+            4466,
+            recipient,
+            sender,
+            None,
+            value,
+            create2_salt,
+            code_address,
+            Some(&code),
+        );
+
+        assert_eq!(ret.kind(), MessageKind::EVMC_CALL);
+        assert_eq!(ret.flags(), 44);
+        assert_eq!(ret.depth(), 66);
+        assert_eq!(ret.gas(), 4466);
+        assert_eq!(*ret.recipient(), recipient);
+        assert_eq!(*ret.sender(), sender);
+        assert_eq!(*ret.value(), value);
+        assert_eq!(*ret.create2_salt(), create2_salt);
+        assert_eq!(*ret.code_address(), code_address);
+        assert!(ret.code().is_some());
+        assert_eq!(*ret.code().unwrap(), code);
     }
 
     #[test]
@@ -739,6 +801,8 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            code: std::ptr::null(),
+            code_size: 0,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -753,6 +817,7 @@ mod tests {
         assert_eq!(*ret.value(), msg.value);
         assert_eq!(*ret.create2_salt(), msg.create2_salt);
         assert_eq!(*ret.code_address(), msg.code_address);
+        assert!(ret.code().is_none());
     }
 
     #[test]
@@ -776,6 +841,8 @@ mod tests {
             value,
             create2_salt,
             code_address,
+            code: std::ptr::null(),
+            code_size: 0,
         };
 
         let ret: ExecutionMessage = (&msg).into();
@@ -791,6 +858,48 @@ mod tests {
         assert_eq!(*ret.value(), msg.value);
         assert_eq!(*ret.create2_salt(), msg.create2_salt);
         assert_eq!(*ret.code_address(), msg.code_address);
+        assert!(ret.code().is_none());
+    }
+
+    #[test]
+    fn message_from_ffi_with_code() {
+        let recipient = Address { bytes: [32u8; 20] };
+        let sender = Address { bytes: [128u8; 20] };
+        let value = Uint256 { bytes: [0u8; 32] };
+        let create2_salt = Bytes32 { bytes: [255u8; 32] };
+        let code_address = Address { bytes: [64u8; 20] };
+        let code = vec![0x5f, 0x5f, 0xfd];
+
+        let msg = ffi::evmc_message {
+            kind: MessageKind::EVMC_CALL,
+            flags: 44,
+            depth: 66,
+            gas: 4466,
+            recipient,
+            sender,
+            input_data: std::ptr::null(),
+            input_size: 0,
+            value,
+            create2_salt,
+            code_address,
+            code: code.as_ptr(),
+            code_size: code.len(),
+        };
+
+        let ret: ExecutionMessage = (&msg).into();
+
+        assert_eq!(ret.kind(), msg.kind);
+        assert_eq!(ret.flags(), msg.flags);
+        assert_eq!(ret.depth(), msg.depth);
+        assert_eq!(ret.gas(), msg.gas);
+        assert_eq!(*ret.recipient(), msg.recipient);
+        assert_eq!(*ret.sender(), msg.sender);
+        assert!(ret.input().is_none());
+        assert_eq!(*ret.value(), msg.value);
+        assert_eq!(*ret.create2_salt(), msg.create2_salt);
+        assert_eq!(*ret.code_address(), msg.code_address);
+        assert!(ret.code().is_some());
+        assert_eq!(*ret.code().unwrap(), code);
     }
 
     unsafe extern "C" fn get_dummy_tx_context(
@@ -918,6 +1027,7 @@ mod tests {
             Uint256::default(),
             Bytes32::default(),
             test_addr,
+            None,
         );
 
         let b = exe_context.call(&message);
@@ -950,6 +1060,7 @@ mod tests {
             Uint256::default(),
             Bytes32::default(),
             test_addr,
+            None,
         );
 
         let b = exe_context.call(&message);

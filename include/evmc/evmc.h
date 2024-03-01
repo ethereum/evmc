@@ -79,7 +79,8 @@ enum evmc_call_kind
                                 The value param ignored. */
     EVMC_CALLCODE = 2,     /**< Request CALLCODE. */
     EVMC_CREATE = 3,       /**< Request CREATE. */
-    EVMC_CREATE2 = 4       /**< Request CREATE2. Valid since Constantinople.*/
+    EVMC_CREATE2 = 4,      /**< Request CREATE2. Valid since Constantinople.*/
+    EVMC_EOFCREATE = 5     /**< Request EOFCREATE. Valid since Prague.*/
 };
 
 /** The flags for ::evmc_message. */
@@ -187,6 +188,16 @@ struct evmc_message
      * Defined as `c` in the Yellow Paper.
      */
     evmc_address code_address;
+
+    /**
+     * The code to be executed.
+     */
+    const uint8_t* code;
+
+    /**
+     * The length of the code to be executed.
+     */
+    size_t code_size;
 };
 
 
