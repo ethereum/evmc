@@ -16,8 +16,6 @@ include(CablePackage)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 
-option(EVMC_JAVA "Enable building Java Native Interface (JNI) bindings" OFF)
-
 option(EVMC_INSTALL "Enable EVMC installation (e.g. make install)" ON)
 
 option(EVMC_TESTING "Build everything (libraries, tools, examples, internal tests)" OFF)
@@ -77,10 +75,6 @@ endif()
 set(EVMC_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(lib)
-
-if(EVMC_JAVA)
-    add_subdirectory(bindings/java)
-endif()
 
 if(EVMC_TOOLS)
     add_subdirectory(tools)
