@@ -103,6 +103,8 @@ type HostContext interface {
 		createAddr Address, err error)
 	AccessAccount(addr Address) AccessStatus
 	AccessStorage(addr Address, key Hash) AccessStatus
+	GetTransientStorage(addr Address, key Hash) Hash
+	SetTransientStorage(addr Address, key Hash, value Hash)
 }
 
 //export accountExists
@@ -246,4 +248,16 @@ func accessAccount(pCtx unsafe.Pointer, pAddr *C.evmc_address) C.enum_evmc_acces
 func accessStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32) C.enum_evmc_access_status {
 	ctx := getHostContext(uintptr(pCtx))
 	return C.enum_evmc_access_status(ctx.AccessStorage(goAddress(*pAddr), goHash(*pKey)))
+}
+
+//export getTransientStorage
+func getTransientStorage(pCtx unsafe.Pointer, pAddr *C.struct_evmc_address, pKey *C.evmc_bytes32) C.evmc_bytes32 {
+	ctx := getHostContext(uintptr(pCtx))
+	return evmcBytes32(ctx.GetTransientStorage(goAddress(*pAddr), goHash(*pKey)))
+}
+
+//export setTransientStorage
+func setTransientStorage(pCtx unsafe.Pointer, pAddr *C.evmc_address, pKey *C.evmc_bytes32, pVal *C.evmc_bytes32) {
+	ctx := getHostContext(uintptr(pCtx))
+	ctx.SetTransientStorage(goAddress(*pAddr), goHash(*pKey), goHash(*pVal))
 }
