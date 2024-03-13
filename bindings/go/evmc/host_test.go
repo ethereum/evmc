@@ -72,6 +72,14 @@ func (host *testHostContext) AccessStorage(addr Address, key Hash) AccessStatus 
 	return ColdAccess
 }
 
+func (host *testHostContext) GetTransientStorage(addr Address, key Hash) Hash {
+	return Hash{}
+}
+
+func (host *testHostContext) SetTransientStorage(addr Address, key Hash, value Hash) {
+}
+
+
 func TestGetBlockNumberFromTxContext(t *testing.T) {
 	// Yul: mstore(0, number()) return(0, msize())
 	code := []byte("\x43\x60\x00\x52\x59\x60\x00\xf3")

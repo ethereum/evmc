@@ -27,6 +27,8 @@ const struct evmc_host_interface evmc_go_host = {
     (evmc_emit_log_fn)emitLog,
     (evmc_access_account_fn)accessAccount,
     (evmc_access_storage_fn)accessStorage,
+    (evmc_get_transient_storage_fn)getTransientStorage,
+    (evmc_set_transient_storage_fn)setTransientStorage,
 };
 
 
