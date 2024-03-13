@@ -169,8 +169,8 @@ struct evmc_message
     /**
      * The optional value used in new contract address construction.
      *
-     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2.
-     * Ignored in evmc_execute_fn().
+     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2,
+     * ::EVMC_EOFCREATE. Ignored in evmc_execute_fn().
      */
     evmc_bytes32 create2_salt;
 
@@ -180,7 +180,7 @@ struct evmc_message
      * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL this may be different from
      * the evmc_message::recipient.
      * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
-     * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
+     * Ignored if kind is ::EVMC_CREATE, ::EVMC_CREATE2, ::EVMC_EOFCREATE.
      *
      * In case of ::EVMC_CAPABILITY_PRECOMPILES implementation, this fields should be inspected
      * to identify the requested precompile.
@@ -218,6 +218,13 @@ struct evmc_tx_context
     size_t blob_hashes_count;         /**< The number of blob hashes (EIP-4844). */
 };
 
+/** Return value of the get initcode by hash query (TXCREATE). */
+struct evmc_tx_initcode
+{
+    const uint8_t* data; /**< Initcode. NULL means no initcode with such hash given. */
+    size_t size;         /**< Size of data. */
+};
+
 /**
  * @struct evmc_host_context
  * The opaque data type representing the Host execution context.
@@ -235,6 +242,20 @@ struct evmc_host_context;
  *  @return              The transaction context.
  */
 typedef struct evmc_tx_context (*evmc_get_tx_context_fn)(struct evmc_host_context* context);
+
+/**
+ * Get transaction initcode by hash callback function.
+ *
+ *  This callback function is used by an EVM to retrieve an initcode to
+ *  be supplied to a TXCREATE instruction. Should return result with NULL in case there is no
+ *  initcode with such hash.
+ *
+ *  @param      context  The pointer to the Host execution context.
+ *  @param      hash     The hash of the initcode to get.
+ *  @return              The initcode.
+ */
+typedef struct evmc_tx_initcode (
+    *evmc_get_tx_initcode_by_hash_fn)(struct evmc_host_context* context, const evmc_bytes32* hash);
 
 /**
  * Get block hash callback function.
@@ -862,6 +883,9 @@ struct evmc_host_interface
 
     /** Get transaction context callback function. */
     evmc_get_tx_context_fn get_tx_context;
+
+    /** Get transaction initcode by hash callback function. */
+    evmc_get_tx_initcode_by_hash_fn get_tx_initcode_by_hash;
 
     /** Get block hash callback function. */
     evmc_get_block_hash_fn get_block_hash;

@@ -49,6 +49,10 @@ func (host *testHostContext) GetTxContext() TxContext {
 	return txContext
 }
 
+func (host *testHostContext) GetTxInitcodeByHash(hash Hash) []byte {
+	return nil
+}
+
 func (host *testHostContext) GetBlockHash(number int64) Hash {
 	return Hash{}
 }

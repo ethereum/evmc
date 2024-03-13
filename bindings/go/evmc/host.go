@@ -95,6 +95,7 @@ type HostContext interface {
 	GetCode(addr Address) []byte
 	Selfdestruct(addr Address, beneficiary Address) bool
 	GetTxContext() TxContext
+	GetTxInitcodeByHash(hash Hash) []byte
 	GetBlockHash(number int64) Hash
 	EmitLog(addr Address, topics []Hash, data []byte)
 	Call(kind CallKind,
@@ -189,6 +190,16 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		nil, // TODO: Add support for blob hashes.
 		0,
 	}
+}
+
+//export getTxInitcodeByHash
+func getTxInitcodeByHash(pCtx unsafe.Pointer, pHash *C.evmc_bytes32) C.struct_evmc_tx_initcode {
+	ctx := getHostContext(uintptr(pCtx))
+	txInitcode := ctx.GetTxInitcodeByHash(goHash(*pHash))
+	if txInitcode == nil {
+	    return C.struct_evmc_tx_initcode{(*C.uint8_t)(nil), 0}
+	}
+    return C.struct_evmc_tx_initcode{(*C.uint8_t)(&txInitcode[0]), C.size_t(len(txInitcode))}
 }
 
 //export getBlockHash

@@ -242,6 +242,22 @@ impl<'a> ExecutionContext<'a> {
         &self.tx_context
     }
 
+    /// Get initcode from initcode transaction (TXCREATE).
+    pub fn get_tx_initcode_by_hash(&self, hash: &Bytes32) -> Option<Vec<u8>> {
+        unsafe {
+            assert!((*self.host).get_tx_initcode_by_hash.is_some());
+            let tx_initcode =
+                (*self.host).get_tx_initcode_by_hash.unwrap()(self.context, hash as *const Bytes32);
+            if tx_initcode.data.is_null() {
+                None
+            } else if tx_initcode.size == 0 {
+                None
+            } else {
+                Some(from_buf_raw::<u8>(tx_initcode.data, tx_initcode.size))
+            }
+        }
+    }
+
     /// Check if an account exists.
     pub fn account_exists(&self, address: &Address) -> bool {
         unsafe {
@@ -970,6 +986,7 @@ mod tests {
             selfdestruct: None,
             call: Some(execute_call),
             get_tx_context: Some(get_dummy_tx_context),
+            get_tx_initcode_by_hash: None,
             get_block_hash: None,
             emit_log: None,
             access_account: None,

@@ -62,6 +62,11 @@ public:
 
     evmc_tx_context get_tx_context() const noexcept final { return {}; }
 
+    evmc_tx_initcode get_tx_initcode_by_hash(const evmc_bytes32& /*hash*/) const noexcept final
+    {
+        return {};
+    }
+
     evmc::bytes32 get_block_hash(int64_t /*block_number*/) const noexcept final { return {}; }
 
     void emit_log(const evmc::address& /*addr*/,
