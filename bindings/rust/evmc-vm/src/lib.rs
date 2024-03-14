@@ -937,6 +937,25 @@ mod tests {
         }
     }
 
+    static DUMMY_INITCODE: [u8; 2] = [0xef, 0x00];
+
+    unsafe extern "C" fn get_dummy_tx_initcode_by_hash(
+        _context: *mut ffi::evmc_host_context,
+        hash: *const ffi::evmc_bytes32,
+    ) -> ffi::evmc_tx_initcode {
+        if (*hash).bytes[0] == 255u8 {
+            ffi::evmc_tx_initcode {
+                data: &DUMMY_INITCODE[0],
+                size: DUMMY_INITCODE.len(),
+            }
+        } else {
+            ffi::evmc_tx_initcode {
+                data: std::ptr::null(),
+                size: 0,
+            }
+        }
+    }
+
     unsafe extern "C" fn get_dummy_code_size(
         _context: *mut ffi::evmc_host_context,
         _addr: *const Address,
@@ -986,7 +1005,7 @@ mod tests {
             selfdestruct: None,
             call: Some(execute_call),
             get_tx_context: Some(get_dummy_tx_context),
-            get_tx_initcode_by_hash: None,
+            get_tx_initcode_by_hash: Some(get_dummy_tx_initcode_by_hash),
             get_block_hash: None,
             emit_log: None,
             access_account: None,
@@ -1023,6 +1042,21 @@ mod tests {
         let b = exe_context.get_code_size(&test_addr);
 
         assert_eq!(a, b);
+    }
+
+    #[test]
+    fn test_get_tx_initcode_by_hash() {
+        let host_context = std::ptr::null_mut();
+        let host_interface = get_dummy_host_interface();
+        let exe_context = ExecutionContext::new(&host_interface, host_context);
+
+        let hash = Bytes32 { bytes: [255u8; 32] };
+        let tx_initcode = exe_context.get_tx_initcode_by_hash(&hash);
+        assert!(tx_initcode.is_some());
+        assert_eq!(tx_initcode.unwrap(), DUMMY_INITCODE);
+
+        let tx_initcode_none = exe_context.get_tx_initcode_by_hash(&Bytes32 { bytes: [0u8; 32] });
+        assert!(tx_initcode_none.is_none());
     }
 
     #[test]
