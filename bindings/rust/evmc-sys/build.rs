@@ -14,7 +14,7 @@ fn gen_bindings() {
         // do not generate an empty enum for EVMC_ABI_VERSION
         .constified_enum("")
         // generate Rust enums for each evmc enum
-        .rustified_enum("*")
+        .rustified_enum(".*")
         // force deriving the Hash trait on basic types (address, bytes32)
         .derive_hash(true)
         // force deriving the PratialEq trait on basic types (address, bytes32)

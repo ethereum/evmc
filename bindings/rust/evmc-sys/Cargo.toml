@@ -13,4 +13,4 @@ categories = ["external-ffi-bindings"]
 edition = "2018"
 
 [build-dependencies]
-bindgen = "0.59"
+bindgen = "0.69.4"
