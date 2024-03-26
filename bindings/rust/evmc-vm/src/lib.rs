@@ -918,6 +918,8 @@ mod tests {
             blob_base_fee: Uint256::default(),
             blob_hashes: std::ptr::null(),
             blob_hashes_count: 0,
+            initcodes: std::ptr::null(),
+            initcodes_count: 0,
         }
     }
 
