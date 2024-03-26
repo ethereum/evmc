@@ -4,5 +4,6 @@ members = [
     "bindings/rust/evmc-vm",
     "bindings/rust/evmc-declare",
     "bindings/rust/evmc-declare-tests",
+    "bindings/rust/evmc-loader",
     "examples/example-rust-vm"
 ]
