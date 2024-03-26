@@ -36,7 +36,6 @@ impl EvmcVm for ExampleRustVM {
     fn execute<'a>(
         &self,
         _revision: Revision,
-        _code: &'a [u8],
         message: &'a ExecutionMessage,
         _context: Option<&'a mut ExecutionContext<'a>>,
     ) -> ExecutionResult {
@@ -53,7 +52,7 @@ impl EvmcVm for ExampleRustVM {
             return ExecutionResult::failure();
         }
 
-        if _code.is_empty() {
+        if message.code().unwrap().is_empty() {
             return ExecutionResult::failure();
         }
 
@@ -63,7 +62,7 @@ impl EvmcVm for ExampleRustVM {
             0x43, 0x60, 0x00, 0x55, 0x43, 0x60, 0x00, 0x52, 0x59, 0x60, 0x00, 0xf3,
         ];
 
-        if save_return_block_number != _code {
+        if save_return_block_number != *message.code().unwrap() {
             return ExecutionResult::failure();
         }
 

@@ -495,7 +495,7 @@ TEST(cpp, vm)
     const auto host = evmc_host_interface{};
     auto msg = evmc_message{};
     msg.gas = 1;
-    auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, msg, nullptr, 0);
+    auto res = vm.execute(host, nullptr, EVMC_MAX_REVISION, msg);
     EXPECT_EQ(res.status_code, EVMC_SUCCESS);
     EXPECT_EQ(res.gas_left, 1);
 }
@@ -616,7 +616,7 @@ TEST(cpp, vm_execute_precompiles)
     msg.input_size = input.size();
     msg.gas = 18;
 
-    auto res = vm.execute(EVMC_MAX_REVISION, msg, nullptr, 0);
+    auto res = vm.execute(EVMC_MAX_REVISION, msg);
     EXPECT_EQ(res.status_code, EVMC_SUCCESS);
     EXPECT_EQ(res.gas_left, 0);
     ASSERT_EQ(res.output_size, input.size());
@@ -632,7 +632,7 @@ TEST(cpp, vm_execute_with_null_host)
 
     auto vm = evmc::VM{evmc_create_example_vm()};
     const evmc_message msg{};
-    auto res = vm.execute(host, EVMC_FRONTIER, msg, nullptr, 0);
+    auto res = vm.execute(host, EVMC_FRONTIER, msg);
     EXPECT_EQ(res.status_code, EVMC_SUCCESS);
     EXPECT_EQ(res.gas_left, 0);
 }

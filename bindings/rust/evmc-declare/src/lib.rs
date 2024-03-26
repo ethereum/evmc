@@ -21,7 +21,7 @@
 //!             ExampleVM {}
 //!     }
 //!
-//!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, code: &[u8], message: &evmc_vm::ExecutionMessage, context: Option<&mut evmc_vm::ExecutionContext>) -> evmc_vm::ExecutionResult {
+//!     fn execute(&self, revision: evmc_vm::ffi::evmc_revision, message: &evmc_vm::ExecutionMessage, context: Option<&mut evmc_vm::ExecutionContext>) -> evmc_vm::ExecutionResult {
 //!             evmc_vm::ExecutionResult::success(1337, 0, None)
 //!     }
 //! }
@@ -395,34 +395,16 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
             host: *const ::evmc_vm::ffi::evmc_host_interface,
             context: *mut ::evmc_vm::ffi::evmc_host_context,
             revision: ::evmc_vm::ffi::evmc_revision,
-            msg: *const ::evmc_vm::ffi::evmc_message,
-            code: *const u8,
-            code_size: usize
+            msg: *const ::evmc_vm::ffi::evmc_message
         ) -> ::evmc_vm::ffi::evmc_result
         {
             use evmc_vm::EvmcVm;
-
-            // TODO: context is optional in case of the "precompiles" capability
-            if instance.is_null() || msg.is_null() || (code.is_null() && code_size != 0) {
-                // These are irrecoverable errors that violate the EVMC spec.
-                std::process::abort();
-            }
 
             assert!(!instance.is_null());
             assert!(!msg.is_null());
 
             let execution_message: ::evmc_vm::ExecutionMessage = unsafe {
                 msg.as_ref().expect("EVMC message is null").into()
-            };
-
-            let empty_code = [0u8;0];
-            let code_ref: &[u8] = if code.is_null() {
-                assert_eq!(code_size, 0);
-                &empty_code
-            } else {
-                unsafe {
-                    ::std::slice::from_raw_parts(code, code_size)
-                }
             };
 
             let container = unsafe {
@@ -432,7 +414,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
 
             let result = ::std::panic::catch_unwind(|| {
                 if host.is_null() {
-                    container.execute(revision, code_ref, &execution_message, None)
+                    container.execute(revision, &execution_message, None)
                 } else {
                     let mut execution_context = unsafe {
                         ::evmc_vm::ExecutionContext::new(
@@ -440,7 +422,7 @@ fn build_execute_fn(names: &VMNameSet) -> proc_macro2::TokenStream {
                             context,
                         )
                     };
-                    container.execute(revision, code_ref, &execution_message, Some(&mut execution_context))
+                    container.execute(revision, &execution_message, Some(&mut execution_context))
                 }
             });
 
