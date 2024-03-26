@@ -188,6 +188,8 @@ func getTxContext(pCtx unsafe.Pointer) C.struct_evmc_tx_context {
 		evmcBytes32(txContext.BlobBaseFee),
 		nil, // TODO: Add support for blob hashes.
 		0,
+		nil, // TODO: Add support for transaction initcodes.
+		0,
 	}
 }
 

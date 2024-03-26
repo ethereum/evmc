@@ -169,7 +169,8 @@ struct evmc_message
     /**
      * The optional value used in new contract address construction.
      *
-     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2.
+     * Needed only for a Host to calculate created address when kind is ::EVMC_CREATE2 or
+     * ::EVMC_EOFCREATE.
      * Ignored in evmc_execute_fn().
      */
     evmc_bytes32 create2_salt;
@@ -180,7 +181,7 @@ struct evmc_message
      * For ::EVMC_CALLCODE or ::EVMC_DELEGATECALL this may be different from
      * the evmc_message::recipient.
      * Not required when invoking evmc_execute_fn(), only when invoking evmc_call_fn().
-     * Ignored if kind is ::EVMC_CREATE or ::EVMC_CREATE2.
+     * Ignored if kind is ::EVMC_CREATE, ::EVMC_CREATE2 or ::EVMC_EOFCREATE.
      *
      * In case of ::EVMC_CAPABILITY_PRECOMPILES implementation, this fields should be inspected
      * to identify the requested precompile.
@@ -200,22 +201,31 @@ struct evmc_message
     size_t code_size;
 };
 
+/** The hashed initcode used for TXCREATE instruction. */
+typedef struct evmc_tx_initcode
+{
+    evmc_bytes32 hash;   /**< The initcode hash. */
+    const uint8_t* code; /**< The code. */
+    size_t code_size;    /**< The length of the code. */
+} evmc_tx_initcode;
 
 /** The transaction and block data for execution. */
 struct evmc_tx_context
 {
-    evmc_uint256be tx_gas_price;      /**< The transaction gas price. */
-    evmc_address tx_origin;           /**< The transaction origin account. */
-    evmc_address block_coinbase;      /**< The miner of the block. */
-    int64_t block_number;             /**< The block number. */
-    int64_t block_timestamp;          /**< The block timestamp. */
-    int64_t block_gas_limit;          /**< The block gas limit. */
-    evmc_uint256be block_prev_randao; /**< The block previous RANDAO (EIP-4399). */
-    evmc_uint256be chain_id;          /**< The blockchain's ChainID. */
-    evmc_uint256be block_base_fee;    /**< The block base fee per gas (EIP-1559, EIP-3198). */
-    evmc_uint256be blob_base_fee;     /**< The blob base fee (EIP-7516). */
-    const evmc_bytes32* blob_hashes;  /**< The array of blob hashes (EIP-4844). */
-    size_t blob_hashes_count;         /**< The number of blob hashes (EIP-4844). */
+    evmc_uint256be tx_gas_price;       /**< The transaction gas price. */
+    evmc_address tx_origin;            /**< The transaction origin account. */
+    evmc_address block_coinbase;       /**< The miner of the block. */
+    int64_t block_number;              /**< The block number. */
+    int64_t block_timestamp;           /**< The block timestamp. */
+    int64_t block_gas_limit;           /**< The block gas limit. */
+    evmc_uint256be block_prev_randao;  /**< The block previous RANDAO (EIP-4399). */
+    evmc_uint256be chain_id;           /**< The blockchain's ChainID. */
+    evmc_uint256be block_base_fee;     /**< The block base fee per gas (EIP-1559, EIP-3198). */
+    evmc_uint256be blob_base_fee;      /**< The blob base fee (EIP-7516). */
+    const evmc_bytes32* blob_hashes;   /**< The array of blob hashes (EIP-4844). */
+    size_t blob_hashes_count;          /**< The number of blob hashes (EIP-4844). */
+    const evmc_tx_initcode* initcodes; /**< The array of transaction initcodes (TXCREATE). */
+    size_t initcodes_count;            /**< The number of transaction initcodes (TXCREATE). */
 };
 
 /**
