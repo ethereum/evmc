@@ -72,6 +72,40 @@ elseif(CABLE_COMPILER_GNU)
     set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
 endif()
 
+add_compile_options(
+    #-Wcast-qual
+    #-Wcast-align
+    -Wmissing-declarations
+    $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wextra-semi>
+)
+cable_add_cxx_compiler_flag_if_supported(-Wno-unknown-attributes)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    option(WEVERYTHING "Enable almost all compiler warnings" OFF)
+    if(WEVERYTHING)
+        add_compile_options(-Weverything)
+        add_compile_options(
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-covered-switch-default
+            -Wno-double-promotion
+            -Wno-float-equal
+            -Wno-padded
+            -Wno-return-std-move-in-c++11
+            -Wno-switch-enum
+            -Wno-cast-qual
+            -Wno-cast-align
+            -Wno-old-style-cast
+            -Wno-weak-vtables
+            -Wno-documentation
+            -Wno-documentation-unknown-command
+            -Wno-bad-function-cast
+            -Wno-exit-time-destructors
+        )
+    endif()
+endif()
+
 set(EVMC_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(lib)
