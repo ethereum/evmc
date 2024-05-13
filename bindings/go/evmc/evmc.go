@@ -111,6 +111,7 @@ const (
 	Shanghai             Revision = C.EVMC_SHANGHAI
 	Cancun               Revision = C.EVMC_CANCUN
 	Prague               Revision = C.EVMC_PRAGUE
+	Osaka                Revision = C.EVMC_OSAKA
 	MaxRevision          Revision = C.EVMC_MAX_REVISION
 	LatestStableRevision Revision = C.EVMC_LATEST_STABLE_REVISION
 )

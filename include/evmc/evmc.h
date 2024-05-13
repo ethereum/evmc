@@ -1040,8 +1040,15 @@ enum evmc_revision
      */
     EVMC_PRAGUE = 13,
 
+    /**
+     * The Osaka revision.
+     *
+     * The future next revision after Prague.
+     */
+    EVMC_OSAKA = 14,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_PRAGUE,
+    EVMC_MAX_REVISION = EVMC_OSAKA,
 
     /**
      * The latest known EVM revision with finalized specification.
