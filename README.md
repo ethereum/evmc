@@ -2,6 +2,7 @@
 
 [![chat: on gitter][gitter badge]][Gitter]
 [![readme style: standard][readme style standard badge]][standard readme]
+[![GitPOAP Badge](https://public-api.gitpoap.io/v1/repo/ethereum/evmc/badge)](https://www.gitpoap.io/gh/ethereum/evmc)
 
 > Ethereum Client-VM Connector API
 
