@@ -163,9 +163,7 @@ evmc_result execute(evmc_vm* instance,
                     const evmc_host_interface* host,
                     evmc_host_context* context,
                     enum evmc_revision rev,
-                    const evmc_message* msg,
-                    const uint8_t* code,
-                    size_t code_size)
+                    const evmc_message* msg)
 {
     auto* vm = static_cast<ExampleVM*>(instance);
 
@@ -176,14 +174,14 @@ evmc_result execute(evmc_vm* instance,
     Stack stack;
     Memory memory;
 
-    for (size_t pc = 0; pc < code_size; ++pc)
+    for (size_t pc = 0; pc < msg->code_size; ++pc)
     {
         // Check remaining gas, assume each instruction costs 1.
         gas_left -= 1;
         if (gas_left < 0)
             return evmc_make_result(EVMC_OUT_OF_GAS, 0, 0, nullptr, 0);
 
-        switch (code[pc])
+        switch (msg->code[pc])
         {
         default:
             return evmc_make_result(EVMC_UNDEFINED_INSTRUCTION, 0, 0, nullptr, 0);
@@ -296,9 +294,9 @@ evmc_result execute(evmc_vm* instance,
         case OP_PUSH32:
         {
             evmc_uint256be value = {};
-            size_t num_push_bytes = size_t{code[pc]} - OP_PUSH1 + 1;
+            size_t num_push_bytes = size_t{msg->code[pc]} - OP_PUSH1 + 1;
             size_t offset = sizeof(value) - num_push_bytes;
-            std::memcpy(&value.bytes[offset], &code[pc + 1], num_push_bytes);
+            std::memcpy(&value.bytes[offset], &msg->code[pc + 1], num_push_bytes);
             pc += num_push_bytes;
             stack.push(value);
             break;
