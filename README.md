@@ -34,8 +34,6 @@ Please visit the [documentation].
 
 * **evmc run** ([tools/evmc]) — executes bytecode in any EVMC-compatible VM implementation.
 * **evmc-vmtester** ([tools/vmtester]) — can test any EVM implementation for compatibility with EVMC.
-* **evm-test** ([evmone → test/unittests]) — allows running the collection of [evmone]'s unit tests on any EVMC-compatible EVM implementation.
-* **evmone-fuzzer** ([evmone → test/fuzzer]) — differential fuzzer for EVMC-compatible EVM implementations. 
 
 
 ## Related projects
@@ -103,8 +101,6 @@ Licensed under the [Apache License, Version 2.0].
 [ewasm]: https://github.com/ewasm/design
 [evmjit]: https://github.com/ethereum/evmjit
 [evmone]: https://github.com/ethereum/evmone
-[evmone → test/fuzzer]: https://github.com/ethereum/evmone/tree/master/test/fuzzer
-[evmone → test/unittests]: https://github.com/ethereum/evmone/tree/master/test/unittests
 [Hera]: https://github.com/ewasm/hera
 [Hera.rs]: https://github.com/ewasm/hera.rs
 [Daytona]: https://github.com/axic/daytona
