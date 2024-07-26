@@ -2,10 +2,10 @@ version: "{build}"
 image: Visual Studio 2017
 branches:
   only:
-  - master
-  - /release\/.*/
-  - appveyor
-  - hunter
+    - master
+    - /release\/.*/
+    - appveyor
+    - hunter
 configuration:
   - Release
 environment:
