@@ -5,6 +5,37 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [12.0.0] — unreleased
+
+### Added
+
+- Add Osaka EVM revision.
+  [#711](https://github.com/ethereum/evmc/pull/711)
+- Add EOF `TXCREATE` instruction support.
+  [#709](https://github.com/ethereum/evmc/pull/709)
+- Add `EOFCREATE` message kind support.
+  [#681](https://github.com/ethereum/evmc/pull/681)
+- Add support for EOF creation transaction (`EOFCREATE`) in the `evmc run`.
+  [#713](https://github.com/ethereum/evmc/pull/713)
+- go: Expose transient storage API.
+  [#708](https://github.com/ethereum/evmc/pull/708)
+
+### Changed
+
+- Set Cancun as the latest stable revision `EVMC_LATEST_STABLE_REVISION`.
+  [#716](https://github.com/ethereum/evmc/pull/716)
+
+### Fixed
+
+- C++: Fix `basic_string<unsigned char>` incompatibility with latest libc++.
+  [#712](https://github.com/ethereum/evmc/pull/712)
+- rust: Update `bindgen` to fix bindings generation.
+  [#707](https://github.com/ethereum/evmc/pull/707)
+
+### Removed
+
+- Java bindings have been removed. [#706](https://github.com/ethereum/evmc/pull/706)
+
 ## [11.0.1] — 2023-12-20
 
 ### Changed
@@ -16,12 +47,12 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
-- Extended `tx_context` with the [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) blob hashes
+- Extended `tx_context` with the [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) blob hashes.
   [#691](https://github.com/ethereum/evmc/pull/691)
 - Extended `tx_context` with the [EIP-7516](https://eips.ethereum.org/EIPS/eip-7516) "blob base fee"
   for the `BLOBBASEFEE` EVM instruction.
   [#696](https://github.com/ethereum/evmc/pull/696)
-- Added [EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) transient storage support
+- Added [EIP-1153](https://eips.ethereum.org/EIPS/eip-1153) transient storage support.
   [#693](https://github.com/ethereum/evmc/pull/693)
 - Go: the `Execute()` now also returns the amount of gas refunded.
   [#690](https://github.com/ethereum/evmc/pull/690)
@@ -30,16 +61,16 @@ and this project adheres to [Semantic Versioning].
 
 ### Fixed
 
-- cmake: Fix `evmc_add_vm_test()` not working in cross-compilation
+- cmake: Fix `evmc_add_vm_test()` not working in cross-compilation.
   [#695](https://github.com/ethereum/evmc/pull/695)
 
 ## [10.1.0] — 2023-04-22
 
 ### Added
 
-- The Prague EVM revision (anticipated after Cancun)
+- The Prague EVM revision (anticipated after Cancun).
   [#683](https://github.com/ethereum/evmc/pull/683)
-- C++: Make `evmc::Result` accessible via `evmc_result` reference
+- C++: Make `evmc::Result` accessible via `evmc_result` reference.
   [#686](https://github.com/ethereum/evmc/pull/686)
 
 ### Changed
@@ -471,7 +502,7 @@ removed.
   which provides the same features.
   [#358](https://github.com/ethereum/evmc/pull/358)
 - The tracing API has been deprecated as there have been some design flaws discovered. 
-  New API is expected to be introduced in future.
+  New API is expected to be introduced in the future.
   [#376](https://github.com/ethereum/evmc/pull/376)
 
 ### Fixed
@@ -503,7 +534,7 @@ removed.
 ### Fixed
 
 - Disallow implicit conversion from C++ `evmc::result` to `evmc_result` 
-  causing unintendent premature releasing of resources.
+  causing unintended premature releasing of resources.
   [#256](https://github.com/ethereum/evmc/issues/256)
   [#257](https://github.com/ethereum/evmc/issues/257)
 
@@ -533,7 +564,7 @@ removed.
   [#195](https://github.com/ethereum/evmc/pull/195)
 - Go bindings improved by introduction of the `TxContext` struct.
   [#197](https://github.com/ethereum/evmc/pull/197)
-- A lot improvements to the `evmc-vmtester` tool.
+- A lot of improvements to the `evmc-vmtester` tool.
   [#221](https://github.com/ethereum/evmc/pull/221)
   [#234](https://github.com/ethereum/evmc/pull/234)
   [#238](https://github.com/ethereum/evmc/pull/238)
