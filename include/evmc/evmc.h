@@ -1028,7 +1028,6 @@ enum evmc_revision
     /**
      * The Cancun revision.
      *
-     * The future next revision after Shanghai.
      * https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/cancun.md
      */
     EVMC_CANCUN = 12,
@@ -1055,7 +1054,7 @@ enum evmc_revision
      *
      * This is handy for EVM tools to always use the latest revision available.
      */
-    EVMC_LATEST_STABLE_REVISION = EVMC_SHANGHAI
+    EVMC_LATEST_STABLE_REVISION = EVMC_CANCUN
 };
 
 

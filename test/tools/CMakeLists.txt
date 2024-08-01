@@ -36,7 +36,7 @@ add_evmc_tool_test(
 add_evmc_tool_test(
     default_revision
     "--vm $<TARGET_FILE:evmc::example-vm> run 00"
-    "Executing on Shanghai"
+    "Executing on Cancun"
 )
 
 add_evmc_tool_test(
