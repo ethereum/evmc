@@ -81,7 +81,6 @@ mod tests {
         fn execute(
             &self,
             _revision: evmc_sys::evmc_revision,
-            _code: &[u8],
             _message: &ExecutionMessage,
             _context: Option<&mut ExecutionContext>,
         ) -> ExecutionResult {
@@ -121,8 +120,6 @@ mod tests {
             get_capabilities: None,
             set_option: None,
         };
-
-        let code = [0u8; 0];
 
         let message = ::evmc_sys::evmc_message {
             kind: ::evmc_sys::evmc_call_kind::EVMC_CALL,
@@ -167,7 +164,6 @@ mod tests {
             container
                 .execute(
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
-                    &code,
                     &message,
                     Some(&mut context)
                 )
@@ -183,7 +179,6 @@ mod tests {
             container
                 .execute(
                     evmc_sys::evmc_revision::EVMC_PETERSBURG,
-                    &code,
                     &message,
                     Some(&mut context)
                 )
