@@ -90,7 +90,7 @@ func TestGetBlockNumberFromTxContext(t *testing.T) {
 	host := &testHostContext{}
 	addr := Address{}
 	h := Hash{}
-	result, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code)
+	result, err := vm.Execute(host, Byzantium, Call, false, false, 1, 100, addr, addr, nil, h, code)
 	output := result.Output
 	gasLeft := result.GasLeft
 
@@ -121,7 +121,7 @@ func TestCall(t *testing.T) {
 	host := &testHostContext{}
 	addr := Address{}
 	h := Hash{}
-	result, err := vm.Execute(host, Byzantium, Call, false, 1, 100, addr, addr, nil, h, code)
+	result, err := vm.Execute(host, Byzantium, Call, false, false, 1, 100, addr, addr, nil, h, code)
 	output := result.Output
 	gasLeft := result.GasLeft
 
