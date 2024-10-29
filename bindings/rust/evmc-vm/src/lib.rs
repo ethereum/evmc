@@ -12,6 +12,8 @@
 mod container;
 mod types;
 
+use std::slice;
+
 pub use container::EvmcContainer;
 pub use evmc_sys as ffi;
 pub use types::*;
@@ -54,29 +56,55 @@ pub struct ExecutionResult {
 
 /// EVMC execution message structure.
 #[derive(Debug)]
-pub struct ExecutionMessage {
+pub struct ExecutionMessage<'a> {
     kind: MessageKind,
     flags: u32,
     depth: i32,
     gas: i64,
     recipient: Address,
     sender: Address,
-    input: Option<Vec<u8>>,
+    input: Option<&'a [u8]>,
     value: Uint256,
     create2_salt: Bytes32,
     code_address: Address,
-    code: Option<Vec<u8>>,
+    code: Option<&'a [u8]>,
 }
 
 /// EVMC transaction context structure.
-pub type ExecutionTxContext = ffi::evmc_tx_context;
+#[derive(Debug, Copy, Clone, Hash, PartialEq)]
+pub struct ExecutionTxContext<'a> {
+    #[doc = "The transaction gas price."]
+    pub tx_gas_price: Bytes32,
+    #[doc = "The transaction origin account."]
+    pub tx_origin: Address,
+    #[doc = "The miner of the block."]
+    pub block_coinbase: Address,
+    #[doc = "The block number."]
+    pub block_number: i64,
+    #[doc = "The block timestamp."]
+    pub block_timestamp: i64,
+    #[doc = "The block gas limit."]
+    pub block_gas_limit: i64,
+    #[doc = "The block previous RANDAO (EIP-4399)."]
+    pub block_prev_randao: Bytes32,
+    #[doc = "The blockchain's ChainID."]
+    pub chain_id: Bytes32,
+    #[doc = "The block base fee per gas (EIP-1559, EIP-3198)."]
+    pub block_base_fee: Bytes32,
+    #[doc = "The blob base fee (EIP-7516)."]
+    pub blob_base_fee: Bytes32,
+    #[doc = "The array of blob hashes (EIP-4844)."]
+    pub blob_hashes: &'a [Bytes32],
+    #[doc = "The array of transaction initcodes (TXCREATE)."]
+    pub initcodes: &'a [ffi::evmc_tx_initcode],
+}
 
 /// EVMC context structure. Exposes the EVMC host functions, message data, and transaction context
 /// to the executing VM.
 pub struct ExecutionContext<'a> {
     host: &'a ffi::evmc_host_interface,
     context: *mut ffi::evmc_host_context,
-    tx_context: ExecutionTxContext,
+    tx_context: ExecutionTxContext<'a>,
 }
 
 impl ExecutionResult {
@@ -138,7 +166,7 @@ impl ExecutionResult {
     }
 }
 
-impl ExecutionMessage {
+impl<'a> ExecutionMessage<'a> {
     pub fn new(
         kind: MessageKind,
         flags: u32,
@@ -146,11 +174,11 @@ impl ExecutionMessage {
         gas: i64,
         recipient: Address,
         sender: Address,
-        input: Option<&[u8]>,
+        input: Option<&'a [u8]>,
         value: Uint256,
         create2_salt: Bytes32,
         code_address: Address,
-        code: Option<&[u8]>,
+        code: Option<&'a [u8]>,
     ) -> Self {
         ExecutionMessage {
             kind,
@@ -159,11 +187,11 @@ impl ExecutionMessage {
             gas,
             recipient,
             sender,
-            input: input.map(|s| s.to_vec()),
+            input,
             value,
             create2_salt,
             code_address,
-            code: code.map(|s| s.to_vec()),
+            code,
         }
     }
 
@@ -198,8 +226,8 @@ impl ExecutionMessage {
     }
 
     /// Read the optional input message.
-    pub fn input(&self) -> Option<&Vec<u8>> {
-        self.input.as_ref()
+    pub fn input(&self) -> Option<&[u8]> {
+        self.input
     }
 
     /// Read the value of the message.
@@ -218,8 +246,8 @@ impl ExecutionMessage {
     }
 
     /// Read the optional init code.
-    pub fn code(&self) -> Option<&Vec<u8>> {
-        self.code.as_ref()
+    pub fn code(&self) -> Option<&[u8]> {
+        self.code
     }
 }
 
@@ -233,7 +261,7 @@ impl<'a> ExecutionContext<'a> {
         ExecutionContext {
             host,
             context: _context,
-            tx_context: _tx_context,
+            tx_context: _tx_context.into(),
         }
     }
 
@@ -450,28 +478,21 @@ impl From<ffi::evmc_result> for ExecutionResult {
     }
 }
 
-fn allocate_output_data(output: Option<&Vec<u8>>) -> (*const u8, usize) {
-    if let Some(buf) = output {
-        let buf_len = buf.len();
-
-        // Manually allocate heap memory for the new home of the output buffer.
-        let memlayout = std::alloc::Layout::from_size_align(buf_len, 1).expect("Bad layout");
-        let new_buf = unsafe { std::alloc::alloc(memlayout) };
-        unsafe {
-            // Copy the data into the allocated buffer.
-            std::ptr::copy(buf.as_ptr(), new_buf, buf_len);
+fn vec_into_boxed_slice_into_raw<T>(v: Option<Vec<T>>) -> (*const T, usize) {
+    match v {
+        Some(v) => {
+            let slice = Box::into_raw(v.into_boxed_slice());
+            (slice as *const T, slice.len())
         }
-
-        (new_buf as *const u8, buf_len)
-    } else {
-        (std::ptr::null(), 0)
+        None => (std::ptr::null(), 0),
     }
 }
 
-unsafe fn deallocate_output_data(ptr: *const u8, size: usize) {
-    if !ptr.is_null() {
-        let buf_layout = std::alloc::Layout::from_size_align(size, 1).expect("Bad layout");
-        std::alloc::dealloc(ptr as *mut u8, buf_layout);
+fn boxed_slice_from_raw_parts<T>(ptr: *const T, len: usize) -> Option<Box<[T]>> {
+    if ptr.is_null() {
+        None
+    } else {
+        Some(unsafe { Box::<[T]>::from_raw(slice::from_raw_parts_mut(ptr as *mut T, len)) })
     }
 }
 
@@ -488,20 +509,20 @@ impl From<ExecutionResult> for *const ffi::evmc_result {
 extern "C" fn release_heap_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = Box::from_raw(result as *mut ffi::evmc_result);
-        deallocate_output_data(tmp.output_data, tmp.output_size);
+        drop(boxed_slice_from_raw_parts(tmp.output_data, tmp.output_size));
     }
 }
 
 /// Returns a pointer to a stack-allocated evmc_result.
 impl From<ExecutionResult> for ffi::evmc_result {
     fn from(value: ExecutionResult) -> Self {
-        let (buffer, len) = allocate_output_data(value.output.as_ref());
+        let (output_data, output_size) = vec_into_boxed_slice_into_raw(value.output);
         Self {
             status_code: value.status_code,
             gas_left: value.gas_left,
             gas_refund: value.gas_refund,
-            output_data: buffer,
-            output_size: len,
+            output_data,
+            output_size,
             release: Some(release_stack_result),
             create_address: if value.create_address.is_some() {
                 value.create_address.unwrap()
@@ -517,12 +538,12 @@ impl From<ExecutionResult> for ffi::evmc_result {
 extern "C" fn release_stack_result(result: *const ffi::evmc_result) {
     unsafe {
         let tmp = *result;
-        deallocate_output_data(tmp.output_data, tmp.output_size);
+        drop(boxed_slice_from_raw_parts(tmp.output_data, tmp.output_size));
     }
 }
 
-impl From<&ffi::evmc_message> for ExecutionMessage {
-    fn from(message: &ffi::evmc_message) -> Self {
+impl<'a> From<&'a ffi::evmc_message> for ExecutionMessage<'a> {
+    fn from(message: &'a ffi::evmc_message) -> Self {
         ExecutionMessage {
             kind: message.kind,
             flags: message.flags,
@@ -536,7 +557,9 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             } else if message.input_size == 0 {
                 None
             } else {
-                Some(from_buf_raw::<u8>(message.input_data, message.input_size))
+                Some(unsafe {
+                    slice::from_raw_parts_mut(message.input_data as *mut u8, message.input_size)
+                })
             },
             value: message.value,
             create2_salt: message.create2_salt,
@@ -547,8 +570,41 @@ impl From<&ffi::evmc_message> for ExecutionMessage {
             } else if message.code_size == 0 {
                 None
             } else {
-                Some(from_buf_raw::<u8>(message.code, message.code_size))
+                Some(unsafe {
+                    slice::from_raw_parts_mut(message.code as *mut u8, message.code_size)
+                })
             },
+        }
+    }
+}
+
+impl<'a> From<ffi::evmc_tx_context> for ExecutionTxContext<'a> {
+    fn from(message: ffi::evmc_tx_context) -> Self {
+        let blob_hashes = if message.blob_hashes.is_null() {
+            &[]
+        } else {
+            assert_ne!(message.blob_hashes_count, 0);
+            unsafe { slice::from_raw_parts(message.blob_hashes, message.blob_hashes_count) }
+        };
+        let initcodes = if message.initcodes.is_null() {
+            &[]
+        } else {
+            assert_ne!(message.initcodes_count, 0);
+            unsafe { slice::from_raw_parts(message.initcodes, message.initcodes_count) }
+        };
+        ExecutionTxContext {
+            tx_gas_price: message.tx_gas_price,
+            tx_origin: message.tx_origin,
+            block_coinbase: message.block_coinbase,
+            block_number: message.block_number,
+            block_timestamp: message.block_timestamp,
+            block_gas_limit: message.block_gas_limit,
+            block_prev_randao: message.block_prev_randao,
+            chain_id: message.chain_id,
+            block_base_fee: message.block_base_fee,
+            blob_base_fee: message.blob_base_fee,
+            blob_hashes,
+            initcodes,
         }
     }
 }

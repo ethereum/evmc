@@ -38,10 +38,7 @@ where
     }
 
     /// Convert boxed self into an FFI pointer, surrendering ownership of the heap data.
-    ///
-    /// # Safety
-    /// This function will return a valid instance pointer.
-    pub unsafe fn into_ffi_pointer(boxed: Box<Self>) -> *mut ::evmc_sys::evmc_vm {
+    pub fn into_ffi_pointer(boxed: Box<Self>) -> *mut ::evmc_sys::evmc_vm {
         Box::into_raw(boxed) as *mut ::evmc_sys::evmc_vm
     }
 }
@@ -175,7 +172,7 @@ mod tests {
             ::evmc_sys::evmc_status_code::EVMC_FAILURE
         );
 
-        let ptr = unsafe { EvmcContainer::into_ffi_pointer(container) };
+        let ptr = EvmcContainer::into_ffi_pointer(container);
 
         let mut context = ExecutionContext::new(&host, host_context);
         let container = unsafe { EvmcContainer::<TestVm>::from_ffi_pointer(ptr) };
