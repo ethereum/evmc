@@ -57,6 +57,7 @@ Please visit the [documentation].
 - [evmc-js]
 - [go-ethereum] (in progress)
 - [nim-evmc]
+- [phant] (in progress)
 - [pyevm] (in progress)
 - [pyethereum] (abandoned)
 - [rust-ssvm] (Rust Host-side)
@@ -113,6 +114,7 @@ Licensed under the [Apache License, Version 2.0].
 [Solidity]: https://github.com/ethereum/solidity
 [nim-evmc]: https://github.com/status-im/nim-evmc
 [go-ethereum]: https://github.com/ethereum/go-ethereum/pull/17954
+[phant]: https://github.com/jsign/phant
 [pyevm]: https://github.com/ethereum/py-evm
 [pyethereum]: https://github.com/ethereum/pyethereum/pull/406
 [silkworm]: https://github.com/erigontech/silkworm
