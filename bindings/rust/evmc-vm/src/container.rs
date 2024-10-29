@@ -69,8 +69,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::*;
-    use crate::{ExecutionContext, ExecutionMessage, ExecutionResult};
+    use crate::{types::*, ExecutionContext, ExecutionMessage, ExecutionResult};
 
     struct TestVm {}
 
