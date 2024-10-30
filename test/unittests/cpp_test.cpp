@@ -156,6 +156,12 @@ TEST(cpp, std_hash)
     std::fill_n(eb.bytes, sizeof(eb), uint8_t{0xee});
     EXPECT_EQ(std::hash<evmc::bytes32>{}(eb), static_cast<size_t>(0xbb14e5c56b477375));
 
+    const auto zero_address = 0x0_address;
+    EXPECT_EQ(zero_address, evmc::address{});
+
+    const auto zero_bytes32 = 0x0_bytes32;
+    EXPECT_EQ(zero_bytes32, evmc::bytes32{});
+
     const auto rand_address_1 = 0xaa00bb00cc00dd00ee00ff001100220033004400_address;
     EXPECT_EQ(std::hash<evmc::address>{}(rand_address_1), static_cast<size_t>(0x30022347e325524e));
 
