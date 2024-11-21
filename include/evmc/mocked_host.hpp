@@ -507,5 +507,12 @@ public:
         record_account_access(addr);
         accounts[addr].transient_storage[key] = value;
     }
+
+    /// Get account's delegate address.
+    address get_delegate_address(const address& addr) const noexcept override
+    {
+        record_account_access(addr);
+        return {};
+    }
 };
 }  // namespace evmc

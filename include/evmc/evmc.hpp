@@ -499,6 +499,9 @@ public:
     virtual void set_transient_storage(const address& addr,
                                        const bytes32& key,
                                        const bytes32& value) noexcept = 0;
+
+    /// @copydoc evmc_host_interface::get_delegate_address
+    virtual address get_delegate_address(const address& addr) const noexcept = 0;
 };
 
 
@@ -608,6 +611,11 @@ public:
                                const bytes32& value) noexcept final
     {
         host->set_transient_storage(context, &address, &key, &value);
+    }
+
+    address get_delegate_address(const address& address) const noexcept final
+    {
+        return host->get_delegate_address(context, &address);
     }
 };
 
@@ -877,6 +885,11 @@ inline void set_transient_storage(evmc_host_context* h,
 {
     Host::from_context(h)->set_transient_storage(*addr, *key, *value);
 }
+
+inline evmc_address get_delegate_address(evmc_host_context* h, const evmc_address* addr) noexcept
+{
+    return Host::from_context(h)->get_delegate_address(*addr);
+}
 }  // namespace internal
 
 inline const evmc_host_interface& Host::get_interface() noexcept
@@ -898,6 +911,7 @@ inline const evmc_host_interface& Host::get_interface() noexcept
         ::evmc::internal::access_storage,
         ::evmc::internal::get_transient_storage,
         ::evmc::internal::set_transient_storage,
+        ::evmc::internal::get_delegate_address,
     };
     return interface;
 }

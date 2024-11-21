@@ -92,6 +92,11 @@ public:
                                const evmc::bytes32& /*key*/,
                                const evmc::bytes32& /*value*/) noexcept override
     {}
+
+    evmc::address get_delegate_address(const evmc::address& addr) const noexcept override
+    {
+        return {};
+    }
 };
 
 TEST(cpp, address)

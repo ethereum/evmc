@@ -835,6 +835,23 @@ typedef struct evmc_result (*evmc_call_fn)(struct evmc_host_context* context,
                                            const struct evmc_message* msg);
 
 /**
+ * Get delegate address function.
+ *
+ * This callback function is used by a VM to get target address of EIP-7702 delegation designation,
+ * in case it is set for given account.
+ * If account's code does not contain delegation designation, this function returns address
+ * 0x0000000000000000000000000000000000000000.
+ *
+ * @param context  The pointer to the Host execution context.
+ * @param address  The address of the account.
+ * @return         The address of delegation designation target account
+ *                 or 0 if delegation is not set.
+ */
+typedef evmc_address (*evmc_get_delegate_address_fn)(struct evmc_host_context* context,
+                                                     const evmc_address* address);
+
+
+/**
  * The Host interface.
  *
  * The set of all callback functions expected by VM instances. This is C
@@ -891,6 +908,9 @@ struct evmc_host_interface
 
     /** Set transient storage callback function. */
     evmc_set_transient_storage_fn set_transient_storage;
+
+    /** Get delegate address function. */
+    evmc_get_delegate_address_fn get_delegate_address;
 };
 
 

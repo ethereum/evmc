@@ -196,6 +196,8 @@ public:
     {
         accounts[addr].transient_storage[key] = value;
     }
+
+    evmc::address get_delegate_address(const evmc::address&) const noexcept override { return {}; }
 };
 
 
