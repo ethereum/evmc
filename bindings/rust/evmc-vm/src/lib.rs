@@ -419,6 +419,31 @@ impl<'a> ExecutionContext<'a> {
             )
         }
     }
+
+    /// Read from a transient storage key.
+    pub fn get_transient_storage(&self, address: &Address, key: &Bytes32) -> Bytes32 {
+        unsafe {
+            assert!((*self.host).get_transient_storage.is_some());
+            (*self.host).get_transient_storage.unwrap()(
+                self.context,
+                address as *const Address,
+                key as *const Bytes32,
+            )
+        }
+    }
+
+    /// Set value of a transient storage key.
+    pub fn set_transient_storage(&mut self, address: &Address, key: &Bytes32, value: &Bytes32) {
+        unsafe {
+            assert!((*self.host).set_transient_storage.is_some());
+            (*self.host).set_transient_storage.unwrap()(
+                self.context,
+                address as *const Address,
+                key as *const Bytes32,
+                value as *const Bytes32,
+            )
+        }
+    }
 }
 
 impl From<ffi::evmc_result> for ExecutionResult {
