@@ -299,7 +299,7 @@ impl<'a> ExecutionContext<'a> {
     /// Get code hash of an account.
     pub fn get_code_hash(&self, address: &Address) -> Bytes32 {
         unsafe {
-            assert!((*self.host).get_code_size.is_some());
+            assert!((*self.host).get_code_hash.is_some());
             (*self.host).get_code_hash.unwrap()(self.context, address as *const Address)
         }
     }
