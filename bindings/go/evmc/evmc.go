@@ -112,6 +112,7 @@ const (
 	Cancun               Revision = C.EVMC_CANCUN
 	Prague               Revision = C.EVMC_PRAGUE
 	Osaka                Revision = C.EVMC_OSAKA
+	Experimental         Revision = C.EVMC_EXPERIMENTAL
 	MaxRevision          Revision = C.EVMC_MAX_REVISION
 	LatestStableRevision Revision = C.EVMC_LATEST_STABLE_REVISION
 )

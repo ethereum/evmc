@@ -1034,21 +1034,27 @@ enum evmc_revision
     EVMC_CANCUN = 12,
 
     /**
-     * The Prague revision.
+     * The Prague / Pectra revision.
      *
-     * The future next revision after Cancun.
+     * https://eips.ethereum.org/EIPS/eip-7600
      */
     EVMC_PRAGUE = 13,
 
     /**
-     * The Osaka revision.
+     * The Osaka / Fusaka revision.
      *
-     * The future next revision after Prague.
+     * https://eips.ethereum.org/EIPS/eip-7607
      */
     EVMC_OSAKA = 14,
 
+    /**
+     * The unspecified EVM revision used for EVM implementations to expose
+     * experimental features.
+     */
+    EVMC_EXPERIMENTAL = 15,
+
     /** The maximum EVM revision supported. */
-    EVMC_MAX_REVISION = EVMC_OSAKA,
+    EVMC_MAX_REVISION = EVMC_EXPERIMENTAL,
 
     /**
      * The latest known EVM revision with finalized specification.

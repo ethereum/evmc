@@ -64,7 +64,7 @@ func TestExecuteEmptyCode(t *testing.T) {
 }
 
 func TestRevision(t *testing.T) {
-	if MaxRevision != Osaka {
+	if MaxRevision != Experimental {
 		t.Errorf("missing constant for revision %d", MaxRevision)
 	}
 	if LatestStableRevision != Cancun {
