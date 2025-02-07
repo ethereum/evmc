@@ -86,7 +86,8 @@ enum evmc_call_kind
 /** The flags for ::evmc_message. */
 enum evmc_flags
 {
-    EVMC_STATIC = 1 /**< Static call mode. */
+    EVMC_STATIC = 1,   /**< Static call mode. */
+    EVMC_DELEGATED = 2 /**< Delegated call mode (EIP-7702). Valid since Prague. */
 };
 
 /**
@@ -101,7 +102,7 @@ struct evmc_message
 
     /**
      * Additional flags modifying the call execution behavior.
-     * In the current version the only valid values are ::EVMC_STATIC or 0.
+     *
      */
     uint32_t flags;
 
