@@ -5,6 +5,17 @@ Documentation of all notable changes to the **EVMC** project.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [12.1.0] — 2025-02-07
+
+### Added
+
+- Add `EVMC_DELEGATED` call flag.
+  [#720](https://github.com/ethereum/evmc/pull/720)
+- Add `EVMC_EXPERIMENTAL` revision to enable experimental features of EVMs.
+  [#728](https://github.com/ethereum/evmc/pull/728)
+- Add support for transient storage in Rust bindings.
+  [#725](https://github.com/ethereum/evmc/pull/725)
+
 ## [12.0.0] — 2024-08-05
 
 ### Added
@@ -742,6 +753,7 @@ removed.
   [#52](https://github.com/ethereum/evmc/pull/52)
 
 
+[12.1.0]: https://github.com/ethereum/evmc/releases/tag/v12.1.0
 [12.0.0]: https://github.com/ethereum/evmc/releases/tag/v12.0.0
 [11.0.1]: https://github.com/ethereum/evmc/releases/tag/v11.0.1
 [11.0.0]: https://github.com/ethereum/evmc/releases/tag/v11.0.0
