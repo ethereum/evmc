@@ -6,6 +6,7 @@
 #include <evmc/helpers.h>
 #include <evmc/loader.h>
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <cstring>
 #include <unordered_map>
 #include <vector>
