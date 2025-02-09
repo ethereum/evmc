@@ -29,7 +29,6 @@ pub trait EvmcVm {
     fn execute<'a>(
         &self,
         revision: Revision,
-        code: &'a [u8],
         message: &'a ExecutionMessage,
         context: Option<&'a mut ExecutionContext<'a>>,
     ) -> ExecutionResult;
@@ -368,7 +367,7 @@ impl<'a> ExecutionContext<'a> {
             create2_salt: *message.create2_salt(),
             code_address: *message.code_address(),
             code: code_data,
-            code_size,
+            code_size: code_size,
         };
         unsafe {
             assert!((*self.host).call.is_some());

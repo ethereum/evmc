@@ -55,12 +55,13 @@ TEST_F(evmc_vm_test, capabilities)
 TEST_F(evmc_vm_test, execute_call)
 {
     evmc::MockedHost mockedHost;
-    const evmc_message msg{};
+    evmc_message msg{};
     std::array<uint8_t, 2> code = {{0xfe, 0x00}};
+    msg.code = code.data();
+    msg.code_size = code.size();
 
-    const evmc_result result =
-        vm->execute(vm, &evmc::MockedHost::get_interface(), mockedHost.to_context(),
-                    EVMC_MAX_REVISION, &msg, code.data(), code.size());
+    const evmc_result result = vm->execute(vm, &evmc::MockedHost::get_interface(),
+                                           mockedHost.to_context(), EVMC_MAX_REVISION, &msg);
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -86,6 +87,7 @@ TEST_F(evmc_vm_test, execute_call)
 
 TEST_F(evmc_vm_test, execute_create)
 {
+    std::array<uint8_t, 2> code = {{0xfe, 0x00}};
     evmc::MockedHost mockedHost;
     const evmc_message msg{EVMC_CREATE,
                            0,
@@ -98,13 +100,11 @@ TEST_F(evmc_vm_test, execute_create)
                            evmc_uint256be{},
                            evmc_bytes32{},
                            evmc_address{},
-                           nullptr,
-                           0};
-    std::array<uint8_t, 2> code = {{0xfe, 0x00}};
+                           code.data(),
+                           code.size()};
 
-    const evmc_result result =
-        vm->execute(vm, &evmc::MockedHost::get_interface(), mockedHost.to_context(),
-                    EVMC_MAX_REVISION, &msg, code.data(), code.size());
+    const evmc_result result = vm->execute(vm, &evmc::MockedHost::get_interface(),
+                                           mockedHost.to_context(), EVMC_MAX_REVISION, &msg);
 
     // Validate some constraints
     if (result.status_code != EVMC_SUCCESS && result.status_code != EVMC_REVERT)
@@ -194,8 +194,7 @@ TEST_F(evmc_vm_test, precompile_test)
                                nullptr,
                                0};
 
-        const evmc_result result =
-            vm->execute(vm, nullptr, nullptr, EVMC_MAX_REVISION, &msg, nullptr, 0);
+        const evmc_result result = vm->execute(vm, nullptr, nullptr, EVMC_MAX_REVISION, &msg);
 
         // Validate some constraints
 

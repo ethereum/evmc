@@ -58,8 +58,10 @@ int main(int argc, char* argv[])
         .input_size = sizeof(input),
         .gas = gas,
         .depth = 0,
+        .code = code,
+        .code_size = code_size,
     };
-    struct evmc_result result = evmc_execute(vm, host, ctx, EVMC_HOMESTEAD, &msg, code, code_size);
+    struct evmc_result result = evmc_execute(vm, host, ctx, EVMC_HOMESTEAD, &msg);
     printf("Execution result:\n");
     int exit_code = 0;
     if (result.status_code != EVMC_SUCCESS)

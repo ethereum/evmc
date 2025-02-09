@@ -26,7 +26,6 @@ auto bench(MockedHost& host,
            evmc::VM& vm,
            evmc_revision rev,
            const evmc_message& msg,
-           bytes_view code,
            const evmc::Result& expected_result,
            std::ostream& out)
 {
@@ -40,7 +39,7 @@ auto bench(MockedHost& host,
 
         // Probe run: execute once again the already warm code to estimate a single run time.
         const auto probe_start = clock::now();
-        const auto result = vm.execute(host, rev, msg, code.data(), code.size());
+        const auto result = vm.execute(host, rev, msg);
         const auto bench_start = clock::now();
         const auto probe_time = bench_start - probe_start;
 
@@ -53,7 +52,7 @@ auto bench(MockedHost& host,
         // Benchmark loop.
         const auto num_iterations = std::max(static_cast<int>(target_bench_time / probe_time), 1);
         for (int i = 0; i < num_iterations; ++i)
-            vm.execute(host, rev, msg, code.data(), code.size());
+            vm.execute(host, rev, msg);
         const auto bench_time = (clock::now() - bench_start) / num_iterations;
 
         out << "Time:     " << std::chrono::duration_cast<unit>(bench_time).count() << unit_name
@@ -85,16 +84,19 @@ int run(VM& vm,
     msg.gas = gas;
     msg.input_data = input.data();
     msg.input_size = input.size();
+    msg.code = code.data();
+    msg.code_size = code.size();
 
-    bytes_view exec_code = code;
     if (create)
     {
         evmc_message create_msg{};
         create_msg.kind = is_eof_container(code) ? EVMC_EOFCREATE : EVMC_CREATE;
         create_msg.recipient = create_address;
         create_msg.gas = create_gas;
+        create_msg.code = code.data();
+        create_msg.code_size = code.size();
 
-        const auto create_result = vm.execute(host, rev, create_msg, code.data(), code.size());
+        const auto create_result = vm.execute(host, rev, create_msg);
         if (create_result.status_code != EVMC_SUCCESS)
         {
             out << "Contract creation failed: " << create_result.status_code << "\n";
@@ -105,14 +107,15 @@ int run(VM& vm,
         created_account.code = bytes(create_result.output_data, create_result.output_size);
 
         msg.recipient = create_address;
-        exec_code = created_account.code;
+        msg.code = created_account.code.data();
+        msg.code_size = created_account.code.size();
     }
     out << "\n";
 
-    const auto result = vm.execute(host, rev, msg, exec_code.data(), exec_code.size());
+    const auto result = vm.execute(host, rev, msg);
 
     if (bench)
-        tooling::bench(host, vm, rev, msg, exec_code, result, out);
+        tooling::bench(host, vm, rev, msg, result, out);
 
     const auto gas_used = msg.gas - result.gas_left;
     out << "Result:   " << result.status_code << "\nGas used: " << gas_used << "\n";

@@ -717,21 +717,15 @@ public:
     Result execute(const evmc_host_interface& host,
                    evmc_host_context* ctx,
                    evmc_revision rev,
-                   const evmc_message& msg,
-                   const uint8_t* code,
-                   size_t code_size) noexcept
+                   const evmc_message& msg) noexcept
     {
-        return Result{m_instance->execute(m_instance, &host, ctx, rev, &msg, code, code_size)};
+        return Result{m_instance->execute(m_instance, &host, ctx, rev, &msg)};
     }
 
     /// Convenient variant of the VM::execute() that takes reference to evmc::Host class.
-    Result execute(Host& host,
-                   evmc_revision rev,
-                   const evmc_message& msg,
-                   const uint8_t* code,
-                   size_t code_size) noexcept
+    Result execute(Host& host, evmc_revision rev, const evmc_message& msg) noexcept
     {
-        return execute(Host::get_interface(), host.to_context(), rev, msg, code, code_size);
+        return execute(Host::get_interface(), host.to_context(), rev, msg);
     }
 
     /// Executes code without the Host context.
@@ -742,13 +736,9 @@ public:
     /// but without providing the Host context and interface.
     /// This method is for experimental precompiles support where execution is
     /// guaranteed not to require any Host access.
-    Result execute(evmc_revision rev,
-                   const evmc_message& msg,
-                   const uint8_t* code,
-                   size_t code_size) noexcept
+    Result execute(evmc_revision rev, const evmc_message& msg) noexcept
     {
-        return Result{
-            m_instance->execute(m_instance, nullptr, nullptr, rev, &msg, code, code_size)};
+        return Result{m_instance->execute(m_instance, nullptr, nullptr, rev, &msg)};
     }
 
     /// Returns the pointer to C EVMC struct representing the VM.
