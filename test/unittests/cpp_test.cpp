@@ -413,6 +413,28 @@ TEST(cpp, bytes32_from_uint)
               0x000000000000000000000000000000000000000000000000c1c2c3c4c5c6c7c8_bytes32);
 }
 
+TEST(cpp, uint256be_from_uint)
+{
+    using evmc::uint256be;
+    using evmc::operator""_uint256be;
+
+    static_assert(uint256be{0} == uint256be{}, "");
+    static_assert(uint256be{3}.bytes[31] == 3, "");
+    static_assert(uint256be{0xfe00000000000000}.bytes[24] == 0xfe, "");
+
+    EXPECT_EQ(uint256be{0}, uint256be{});
+    EXPECT_EQ(uint256be{0x01},
+              0x0000000000000000000000000000000000000000000000000000000000000001_uint256be);
+    EXPECT_EQ(uint256be{0xff},
+              0x00000000000000000000000000000000000000000000000000000000000000ff_uint256be);
+    EXPECT_EQ(uint256be{0x500},
+              0x0000000000000000000000000000000000000000000000000000000000000500_uint256be);
+    EXPECT_EQ(uint256be{0x8000000000000000},
+              0x0000000000000000000000000000000000000000000000008000000000000000_uint256be);
+    EXPECT_EQ(uint256be{0xc1c2c3c4c5c6c7c8},
+              0x000000000000000000000000000000000000000000000000c1c2c3c4c5c6c7c8_uint256be);
+}
+
 TEST(cpp, address_from_uint)
 {
     using evmc::address;

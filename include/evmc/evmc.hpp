@@ -300,6 +300,13 @@ constexpr bytes32 operator""_bytes32(const char* s) noexcept
 {
     return parse<bytes32>(s);
 }
+
+/// Literal for evmc::uint256be.
+template <char... c>
+constexpr uint256be operator""_uint256be() noexcept
+{
+    return internal::from_literal<uint256be, c...>();
+}
 }  // namespace literals
 
 using namespace literals;
