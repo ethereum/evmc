@@ -413,7 +413,7 @@ jobs:
           name: Update environment
           command: |
             apt -qq update
-            apt -yq install libclang-dev clang --no-install-recommends
+            apt -yq install cmake libclang-dev clang --no-install-recommends
             rustup component add rustfmt
       - run:
           name: Check formatting
@@ -451,7 +451,7 @@ jobs:
           name: Update environment
           command: |
             apt -qq update
-            apt -yq install llvm-11-dev clang-11 --no-install-recommends
+            apt -yq install cmake llvm-11-dev clang-11 --no-install-recommends
             rustup toolchain install nightly-x86_64-unknown-linux-gnu
       - run:
           name: Build
